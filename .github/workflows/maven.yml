@@ -31,3 +31,13 @@ jobs:
           -Dproject.settings=./sonar-project.properties
         env:
           SONAR_TOKEN: cff5887531341fb3fcf5c0ef17023887f3206f56
+
+addons:
+  sonarcloud:
+    organization: "helihex"
+    token:
+      secure: "**************************" # encrypted value of your token
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
