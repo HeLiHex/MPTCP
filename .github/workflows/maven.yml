@@ -24,8 +24,8 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v1.4
-      with:
-        args:
-          -Dproject.settings=./sonar-project.properties
+      #with:
+        #args:
+          #-Dproject.settings=./sonar-project.properties
       env:
         SONAR_TOKEN: cff5887531341fb3fcf5c0ef17023887f3206f56
