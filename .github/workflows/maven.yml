@@ -28,4 +28,4 @@ jobs:
         #args:
           #-Dproject.settings=./sonar-project.properties
       env:
-        SONAR_TOKEN: cff5887531341fb3fcf5c0ef17023887f3206f56
+        SONAR_TOKEN: 55c3700bf35726fbf48175c7993d2a92ecc1676e
