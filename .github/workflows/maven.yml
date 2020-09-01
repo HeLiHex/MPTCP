@@ -27,7 +27,7 @@ jobs:
       # uses: SonarSource/sonarcloud-github-action@f4c6e4d91ea9785ec823eaeed459042606123402
       uses: SonarSource/sonarcloud-github-action@v1.4
       with:
-        args: >
+        args:
           -Dproject.settings=./sonar-project.properties
         env:
           SONAR_TOKEN: cff5887531341fb3fcf5c0ef17023887f3206f56
