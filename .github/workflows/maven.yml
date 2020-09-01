@@ -26,8 +26,9 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: SonarSource/sonarcloud-github-action@f4c6e4d91ea9785ec823eaeed459042606123402
       uses: SonarSource/sonarcloud-github-action@v1.4
-      # with:
-        # Additional arguments to the sonarcloud scanner
-        # args: # optional
-        # Set the sonar.projectBaseDir analysis property
-        # projectBaseDir: # optional, default is .
+      with:
+        args: >
+          -Dproject.settings=./sonar-project.properties
+        env:
+          GITHUB_TOKEN: 6070c8fe2f67af7f3edf674c700f562325eddbeb
+          SONAR_TOKEN: cff5887531341fb3fcf5c0ef17023887f3206f56
