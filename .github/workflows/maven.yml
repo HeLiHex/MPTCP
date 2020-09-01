@@ -30,5 +30,4 @@ jobs:
         args: >
           -Dproject.settings=./sonar-project.properties
         env:
-          GITHUB_TOKEN: 6070c8fe2f67af7f3edf674c700f562325eddbeb
           SONAR_TOKEN: cff5887531341fb3fcf5c0ef17023887f3206f56
