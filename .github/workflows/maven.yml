@@ -23,7 +23,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: SonarCloud Scan
-      #uses: SonarSource/sonarcloud-github-action@v1.4
+      uses: SonarSource/sonarcloud-github-action@v1.4
       with:
         args:
           -Dproject.settings=./sonar-project.properties
