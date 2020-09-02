@@ -97,7 +97,7 @@ public class Client extends Thread{
 
 
     public List<Socket> createSockets(){
-        List<Socket> sockets = new ArrayList<>();
+        List<Socket> newSockets = new ArrayList<>();
         Enumeration<NetworkInterface> nets = null;
         try {
             nets = NetworkInterface.getNetworkInterfaces();
@@ -121,13 +121,13 @@ public class Client extends Thread{
             try {
                 s.bind(inetSocketAddress);
                 System.out.println("Socket bound to: " + inetSocketAddress.getHostString() );
-                sockets.add(s);
+                newSockets.add(s);
             } catch (IOException e) {
                 //TODO error msg
                 e.printStackTrace();
             }
         }
-        return sockets;
+        return newSockets;
     }
 
     public void closeSocket(Socket socket){
