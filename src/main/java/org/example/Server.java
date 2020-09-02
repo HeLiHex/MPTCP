@@ -25,14 +25,14 @@ public class Server extends Thread{
     }
 
     private ServerSocket createServerSocket() {
-        ServerSocket serverSocket = null;
+        ServerSocket newServerSocket = null;
         try {
-            serverSocket = new ServerSocket();
+            newServerSocket = new ServerSocket();
         } catch (IOException e) {
             System.err.println("Error occurred trying to create a ServerSocket");
             e.printStackTrace();
         }
-        return serverSocket;
+        return newServerSocket;
     }
 
     private void bindServerSocket(ServerSocket serverSocket, String hostToBeBound, int portToBeBound) {
