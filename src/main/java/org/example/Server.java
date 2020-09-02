@@ -7,24 +7,24 @@ import java.net.Socket;
 
 public class Server extends Thread{
 
-    private final String HOST_ADDRESS = "localhost";
-    private final int PORT = 6666;
+    private final String hostAddress = "localhost";
+    private final int port = 6666;
     private ServerSocket serverSocket;
 
     public Server(){
         this.serverSocket = createServerSocket();
-        bindServerSocket(this.serverSocket, this.HOST_ADDRESS, this.PORT);
+        bindServerSocket(this.serverSocket, this.hostAddress, this.port);
     }
 
-    public String getHOST_ADDRESS() {
-        return HOST_ADDRESS;
+    public String getHostAddress() {
+        return hostAddress;
     }
 
-    public int getPORT() {
-        return PORT;
+    public int getPort() {
+        return port;
     }
 
-    private static ServerSocket createServerSocket() {
+    private ServerSocket createServerSocket() {
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket();
@@ -35,7 +35,7 @@ public class Server extends Thread{
         return serverSocket;
     }
 
-    private static void bindServerSocket(ServerSocket serverSocket, String hostToBeBound, int portToBeBound) {
+    private void bindServerSocket(ServerSocket serverSocket, String hostToBeBound, int portToBeBound) {
         try {
             serverSocket.bind(new InetSocketAddress(hostToBeBound, portToBeBound));
             System.out.println("Server running on: " + serverSocket.getLocalSocketAddress());

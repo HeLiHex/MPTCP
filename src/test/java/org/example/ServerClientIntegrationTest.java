@@ -1,12 +1,9 @@
 package org.example;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,8 +28,8 @@ public class ServerClientIntegrationTest {
 
     @Test(expected = Test.None.class)
     public void connectClientToServerTest() {
-        String host = this.server.getHOST_ADDRESS();
-        int port = this.server.getPORT();
+        String host = this.server.getHostAddress();
+        int port = this.server.getPort();
         this.client.setHostAndPort(host, port);
 
         this.server.start();
