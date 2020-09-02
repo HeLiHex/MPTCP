@@ -7,8 +7,8 @@ import java.net.Socket;
 
 public class Server extends Thread{
 
-    private final String hostAddress = "localhost";
-    private final int port = 6666;
+    private final static String hostAddress = "localhost";
+    private final static int port = 6666;
     private ServerSocket serverSocket;
 
     public Server(){
