@@ -1,30 +1,63 @@
 package org.example;
 
+
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
-public class Client {
+public class Client extends Thread{
 
-    public static void main(String[] args) throws IOException {
-        String serverAddress = "localhost";
-        int serverPort =  6666;
+    private ArrayList<Socket> sockets;
+    private String host;
+    private int port;
 
-        //exploreNetworkInterfaces();
-
-
-        ArrayList<Socket> sockets = createSockets();
-        Socket socketOne = sockets.get(0);
-        Socket socketTwo = sockets.get(1);
-
-        socketOne.connect(new InetSocketAddress(serverAddress, serverPort));
-        socketTwo.connect(new InetSocketAddress(serverAddress, serverPort));
-
-
-
-        closeAllSockets(sockets);
-
+    public Client(){
+        this.sockets = createSockets();
     }
+
+    public Client(String host, int port){
+        this.sockets = createSockets();
+        setHostAndPort(host, port);
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setHostAndPort(String host, int port){
+        this.setHost(host);
+        this.setPort(port);
+    }
+
+    private boolean isValidPort(int port){
+        return port > 0 && port < 65536;
+    }
+
+    public void connect(String host, int port) {
+        if (host == null){
+            System.out.println("No host was given");
+            return;
+        }
+        if (!isValidPort(port)){
+            System.out.println("Given port is not valid");
+            return;
+        }
+
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
+        for (Socket socket : this.sockets) {
+            try {
+                socket.connect(inetSocketAddress);
+            }catch (IOException e){
+                e.printStackTrace();
+                System.err.println("Could not connect to host: " + inetSocketAddress.getHostName());
+            }
+        }
+    }
+
 
     public static void exploreNetworkInterfaces() throws IOException {
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
@@ -101,6 +134,7 @@ public class Client {
         try{
             socket.close();
         }catch (IOException e){
+            e.printStackTrace();
             System.err.println("Could not close socket: " + socket.getInetAddress().getHostName());
         }
     }
@@ -110,4 +144,10 @@ public class Client {
             closeSocket(socket);
         }
     }
+
+    @Override
+    public void run() {
+        this.connect(this.host, this.port);
+    }
+
 }
