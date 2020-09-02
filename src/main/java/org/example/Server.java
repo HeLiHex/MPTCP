@@ -7,21 +7,21 @@ import java.net.Socket;
 
 public class Server extends Thread{
 
-    private final static String hostAddress = "localhost";
-    private final static int port = 6666;
+    private final static String HOST_ADDRESS = "localhost";
+    private final static int PORT = 6666;
     private ServerSocket serverSocket;
 
     public Server(){
         this.serverSocket = createServerSocket();
-        bindServerSocket(this.serverSocket, this.hostAddress, this.port);
+        bindServerSocket(this.serverSocket, this.HOST_ADDRESS, this.PORT);
     }
 
     public String getHostAddress() {
-        return hostAddress;
+        return HOST_ADDRESS;
     }
 
     public int getPort() {
-        return port;
+        return PORT;
     }
 
     private ServerSocket createServerSocket() {
