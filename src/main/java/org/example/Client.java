@@ -20,6 +20,10 @@ public class Client {
         socketOne.connect(new InetSocketAddress(serverAddress, serverPort));
         socketTwo.connect(new InetSocketAddress(serverAddress, serverPort));
 
+
+
+        closeAllSockets(sockets);
+
     }
 
     public static void exploreNetworkInterfaces() throws IOException {
@@ -91,5 +95,19 @@ public class Client {
             }
         }
         return sockets;
+    }
+
+    public static void closeSocket(Socket socket){
+        try{
+            socket.close();
+        }catch (IOException e){
+            System.err.println("Could not close socket: " + socket.getInetAddress().getHostName());
+        }
+    }
+
+    public static void closeAllSockets(ArrayList<Socket> sockets) {
+        for (Socket socket: sockets) {
+            closeSocket(socket);
+        }
     }
 }
