@@ -96,8 +96,8 @@ public class Client extends Thread{
     }
 
 
-    public static ArrayList<Socket> createSockets(){
-        ArrayList<Socket> sockets = new ArrayList<>();
+    public static List<Socket> createSockets(){
+        List<Socket> sockets = new ArrayList<>();
         Enumeration<NetworkInterface> nets = null;
         try {
             nets = NetworkInterface.getNetworkInterfaces();
