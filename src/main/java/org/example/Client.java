@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Client extends Thread{
 
-    private ArrayList<Socket> sockets;
+    private List<Socket> sockets;
     private String host;
     private int port;
 
@@ -59,7 +59,7 @@ public class Client extends Thread{
     }
 
 
-    public static void exploreNetworkInterfaces() throws IOException {
+    public void exploreNetworkInterfaces() throws IOException {
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
         for (NetworkInterface nif : Collections.list(nets)) {
             if (!nif.isUp()) {
@@ -96,7 +96,7 @@ public class Client extends Thread{
     }
 
 
-    public static List<Socket> createSockets(){
+    public List<Socket> createSockets(){
         List<Socket> sockets = new ArrayList<>();
         Enumeration<NetworkInterface> nets = null;
         try {
@@ -130,7 +130,7 @@ public class Client extends Thread{
         return sockets;
     }
 
-    public static void closeSocket(Socket socket){
+    public void closeSocket(Socket socket){
         try{
             socket.close();
         }catch (IOException e){
@@ -139,7 +139,7 @@ public class Client extends Thread{
         }
     }
 
-    public static void closeAllSockets(ArrayList<Socket> sockets) {
+    public void closeAllSockets(ArrayList<Socket> sockets) {
         for (Socket socket: sockets) {
             closeSocket(socket);
         }
