@@ -20,12 +20,20 @@ public class Client extends Thread{
         setHostAndPort(host, port);
     }
 
-    public void setHost(String host) {
+    private void setHost(String host) {
         this.host = host;
     }
 
-    public void setPort(int port) {
+    private void setPort(int port) {
         this.port = port;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public void setHostAndPort(String host, int port){
