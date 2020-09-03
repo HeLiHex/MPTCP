@@ -103,7 +103,7 @@ public class Client extends Thread{
                 if (addr instanceof Inet6Address){
                     continue;
                 }
-                String ipMsg = "IPv4: " + addr.getHostAddress()
+                String ipMsg = "IPv4: " + addr.getHostAddress();
                 this.logger.log(Level.INFO, ipMsg);
             }
 
@@ -120,7 +120,7 @@ public class Client extends Thread{
             this.logger.log(Level.INFO, isLoopbackMsg);
 
             String isPointToPointMsg = "Is point to point: " + nif.isPointToPoint();
-            this.logger.log(Level.INFO, isPointToPointMsg;
+            this.logger.log(Level.INFO, isPointToPointMsg);
 
             String supportsMulticatsMsg = "Supports Multicast: " + nif.supportsMulticast();
             this.logger.log(Level.INFO, supportsMulticatsMsg);
