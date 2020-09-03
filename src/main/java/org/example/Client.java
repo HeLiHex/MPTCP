@@ -12,7 +12,7 @@ public class Client extends Thread{
     private List<Socket> sockets;
     private String host;
     private int port;
-    private Logger logger = Logger.getLogger(Client.class.getName());;
+    private Logger logger = Logger.getLogger(Client.class.getName());
 
     public Client(){
         this.sockets = createSockets();
@@ -72,7 +72,8 @@ public class Client extends Thread{
                 socket.connect(inetSocketAddress);
             }catch (IOException e){
                 e.printStackTrace();
-                this.logger.log(Level.WARNING, "Could not connect to host: " + inetSocketAddress.getHostName());
+                String msg = "Could not connect to host: " + inetSocketAddress.getHostName();
+                this.logger.log(Level.WARNING, msg);
             }
         }
     }
@@ -85,12 +86,14 @@ public class Client extends Thread{
                 continue;
             }
             this.logger.log(Level.INFO, nif.getName());
-            this.logger.log(Level.INFO, "Hardware address: " + nif.getHardwareAddress());
+            String hardwareAddressMsg = "Hardware address: " + nif.getHardwareAddress();
+            this.logger.log(Level.INFO, hardwareAddressMsg);
 
             List<InterfaceAddress> iFaceList = nif.getInterfaceAddresses();
             for (InterfaceAddress iFace : iFaceList) {
                 if(iFace.getAddress() instanceof Inet6Address) continue;
-                this.logger.log(Level.INFO, "Interface address: " + iFace);
+                String iFaceAddressMsg = "Interface address: " + iFace;
+                this.logger.log(Level.INFO, iFaceAddressMsg);
                 break;
             }
 
@@ -100,15 +103,27 @@ public class Client extends Thread{
                 if (addr instanceof Inet6Address){
                     continue;
                 }
-                this.logger.log(Level.INFO, "IPv4: " + addr.getHostAddress());
+                String ipMsg = "IPv4: " + addr.getHostAddress()
+                this.logger.log(Level.INFO, ipMsg);
             }
 
-            this.logger.log(Level.INFO, "MTU: " + nif.getMTU());
-            this.logger.log(Level.INFO, "Is virtual: " + nif.isVirtual());
-            this.logger.log(Level.INFO, "Is up: " + nif.isUp());
-            this.logger.log(Level.INFO, "Is loopback: " + nif.isLoopback());
-            this.logger.log(Level.INFO, "Is point to point: " + nif.isPointToPoint());
-            this.logger.log(Level.INFO, "Supports Multicast: " + nif.supportsMulticast());
+            String mtuMsg = "MTU: " + nif.getMTU();
+            this.logger.log(Level.INFO, mtuMsg);
+
+            String isVirtualMsg = "Is virtual: " + nif.isVirtual();
+            this.logger.log(Level.INFO, isVirtualMsg);
+
+            String isUpMsg = "Is up: " + nif.isUp();
+            this.logger.log(Level.INFO, isUpMsg);
+
+            String isLoopbackMsg = "Is loopback: " + nif.isLoopback();
+            this.logger.log(Level.INFO, isLoopbackMsg);
+
+            String isPointToPointMsg = "Is point to point: " + nif.isPointToPoint();
+            this.logger.log(Level.INFO, isPointToPointMsg;
+
+            String supportsMulticatsMsg = "Supports Multicast: " + nif.supportsMulticast();
+            this.logger.log(Level.INFO, supportsMulticatsMsg);
         }
 
     }
@@ -138,7 +153,8 @@ public class Client extends Thread{
             Socket s = new Socket();
             try {
                 s.bind(inetSocketAddress);
-                this.logger.log(Level.INFO, "Socket bound to: " + inetSocketAddress.getHostString() );
+                String msg = "Socket bound to: " + inetSocketAddress.getHostString();
+                this.logger.log(Level.INFO, msg);
                 newSockets.add(s);
             } catch (IOException e) {
                 //TODO error msg
@@ -153,7 +169,8 @@ public class Client extends Thread{
             socket.close();
         }catch (IOException e){
             e.printStackTrace();
-            this.logger.log(Level.WARNING, "Could not close socket: " + socket.getInetAddress().getHostName());
+            String msg = "Could not close socket: " + socket.getInetAddress().getHostName();
+            this.logger.log(Level.WARNING, msg);
         }
     }
 
