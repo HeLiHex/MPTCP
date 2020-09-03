@@ -20,7 +20,7 @@ public class ClientTest {
         Client client = new Client(testHost, testPort);
         Assert.assertTrue(client instanceof Client);
         Assert.assertEquals(testHost, client.getHost());
-        Assert.assertTrue(client.getPort() == testPort);
+        Assert.assertEquals(testPort, client.getPort());
     }
 
 
@@ -34,7 +34,7 @@ public class ClientTest {
 
         Assert.assertTrue(client instanceof Client);
         Assert.assertEquals(testHost, client.getHost());
-        Assert.assertTrue(client.getPort() == testPort);
+        Assert.assertEquals(testPort, client.getPort());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ClientTest {
         client.setPort(validPort);
 
         String errorMsg = "Valid port was not accepted";
-        Assert.assertTrue(errorMsg, validPort == client.getPort());
+        Assert.assertEquals(errorMsg, validPort, client.getPort());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ClientTest {
         client.setPort(invalidPort);
 
         String errorMsg = "Invalid port was accepted";
-        Assert.assertFalse(errorMsg, invalidPort == client.getPort());
+        Assert.assertNotEquals(errorMsg, invalidPort, client.getPort());
     }
 
     @Test
