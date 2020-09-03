@@ -4,15 +4,19 @@ package org.example;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Client extends Thread{
 
     private List<Socket> sockets;
     private String host;
     private int port;
+    private Logger logger;
 
     public Client(){
         this.sockets = createSockets();
+        this.logger = Logger.getLogger(Client.class.getName());
     }
 
     public Client(String host, int port){
@@ -29,7 +33,7 @@ public class Client extends Thread{
             this.port = port;
             return;
         }
-        System.err.println("Given port is invalid");
+        this.logger.log(Level.SEVERE, "Given port is invalid");
     }
 
     public String getHost() {
@@ -55,11 +59,11 @@ public class Client extends Thread{
 
     public void connect(String host, int port) {
         if (host == null){
-            System.out.println("No host was given");
+            this.logger.log(Level.WARNING, "No host was given");
             return;
         }
         if (!isValidPort(port)){
-            System.out.println("Given port is not valid");
+            this.logger.log(Level.SEVERE, "Given port is not valid");
             return;
         }
 
@@ -69,7 +73,7 @@ public class Client extends Thread{
                 socket.connect(inetSocketAddress);
             }catch (IOException e){
                 e.printStackTrace();
-                System.err.println("Could not connect to host: " + inetSocketAddress.getHostName());
+                this.logger.log(Level.WARNING, "Could not connect to host: " + inetSocketAddress.getHostName());
             }
         }
     }
@@ -81,13 +85,13 @@ public class Client extends Thread{
             if (!nif.isUp()) {
                 continue;
             }
-            System.out.println(nif.getName());
-            System.out.println("Hardware address: " + nif.getHardwareAddress());
+            this.logger.log(Level.INFO, nif.getName());
+            this.logger.log(Level.INFO, "Hardware address: " + nif.getHardwareAddress());
 
             List<InterfaceAddress> iFaceList = nif.getInterfaceAddresses();
             for (InterfaceAddress iFace : iFaceList) {
                 if(iFace.getAddress() instanceof Inet6Address) continue;
-                System.out.println("Interface address: " + iFace);
+                this.logger.log(Level.INFO, "Interface address: " + iFace);
                 break;
             }
 
@@ -97,16 +101,15 @@ public class Client extends Thread{
                 if (addr instanceof Inet6Address){
                     continue;
                 }
-                System.out.println("IPv4: " + addr.getHostAddress());
+                this.logger.log(Level.INFO, "IPv4: " + addr.getHostAddress());
             }
 
-            System.out.println("MTU: " + nif.getMTU());
-            System.out.println("Is virtual: " + nif.isVirtual());
-            System.out.println("Is up: " + nif.isUp());
-            System.out.println("Is loopback: " + nif.isLoopback());
-            System.out.println("Is point to point: " + nif.isPointToPoint());
-            System.out.println("Supports Multicast: " + nif.supportsMulticast());
-            System.out.println();
+            this.logger.log(Level.INFO, "MTU: " + nif.getMTU());
+            this.logger.log(Level.INFO, "Is virtual: " + nif.isVirtual());
+            this.logger.log(Level.INFO, "Is up: " + nif.isUp());
+            this.logger.log(Level.INFO, "Is loopback: " + nif.isLoopback());
+            this.logger.log(Level.INFO, "Is point to point: " + nif.isPointToPoint());
+            this.logger.log(Level.INFO, "Supports Multicast: " + nif.supportsMulticast());
         }
 
     }
@@ -136,7 +139,7 @@ public class Client extends Thread{
             Socket s = new Socket();
             try {
                 s.bind(inetSocketAddress);
-                System.out.println("Socket bound to: " + inetSocketAddress.getHostString() );
+                this.logger.log(Level.INFO, "Socket bound to: " + inetSocketAddress.getHostString() );
                 newSockets.add(s);
             } catch (IOException e) {
                 //TODO error msg
@@ -151,7 +154,7 @@ public class Client extends Thread{
             socket.close();
         }catch (IOException e){
             e.printStackTrace();
-            System.err.println("Could not close socket: " + socket.getInetAddress().getHostName());
+            this.logger.log(Level.WARNING, "Could not close socket: " + socket.getInetAddress().getHostName());
         }
     }
 
