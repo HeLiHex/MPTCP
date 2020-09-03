@@ -16,7 +16,7 @@ public class Server extends Thread {
 
     public Server() {
         this.serverSocket = createServerSocket();
-        bindServerSocket(this.serverSocket, this.HOST_ADDRESS, this.PORT);
+        bindServerSocket(this.serverSocket, HOST_ADDRESS, PORT);
     }
 
     public String getHostAddress() {
