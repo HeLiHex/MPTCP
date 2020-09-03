@@ -12,11 +12,10 @@ public class Client extends Thread{
     private List<Socket> sockets;
     private String host;
     private int port;
-    private Logger logger;
+    private Logger logger = Logger.getLogger(Client.class.getName());;
 
     public Client(){
         this.sockets = createSockets();
-        this.logger = Logger.getLogger(Client.class.getName());
     }
 
     public Client(String host, int port){

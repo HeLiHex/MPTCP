@@ -12,12 +12,11 @@ public class Server extends Thread {
     private final static String HOST_ADDRESS = "localhost";
     private final static int PORT = 6666;
     private ServerSocket serverSocket;
-    private Logger logger;
+    private Logger logger = Logger.getLogger(Server.class.getName());
 
     public Server() {
         this.serverSocket = createServerSocket();
         bindServerSocket(this.serverSocket, this.HOST_ADDRESS, this.PORT);
-        this.logger = Logger.getLogger(Server.class.getName());
     }
 
     public String getHostAddress() {
