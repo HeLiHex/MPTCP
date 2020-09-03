@@ -41,11 +41,11 @@ public class Server extends Thread {
     private void bindServerSocket(ServerSocket serverSocket, String hostToBeBound, int portToBeBound) {
         try {
             serverSocket.bind(new InetSocketAddress(hostToBeBound, portToBeBound));
-            this.logger.log(Level.INFO, "Server running on: " + serverSocket.getLocalSocketAddress());
+            String msg = "Server running on: " + serverSocket.getLocalSocketAddress();
+            this.logger.log(Level.INFO, msg);
         } catch (IOException e) {
-            this.logger.log(Level.SEVERE,
-                    "Could not bind server to address: " + hostToBeBound + " and port " + portToBeBound
-            );
+            String msg = "Could not bind server to address: " + hostToBeBound + " and port " + portToBeBound;
+            this.logger.log(Level.SEVERE, msg);
             e.printStackTrace();
         }
     }
@@ -55,7 +55,8 @@ public class Server extends Thread {
         while (true) {
             try {
                 Socket firstClient = serverSocket.accept();//establishes connection
-                this.logger.log(Level.INFO,"connection established with " + firstClient.getInetAddress());
+                String msg = "connection established with " + firstClient.getInetAddress();
+                this.logger.log(Level.INFO, msg);
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
