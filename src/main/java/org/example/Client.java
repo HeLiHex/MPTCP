@@ -174,7 +174,7 @@ public class Client extends Thread{
         }
     }
 
-    public void closeAllSockets(ArrayList<Socket> sockets) {
+    public void closeAllSockets(List<Socket> sockets) {
         for (Socket socket: sockets) {
             closeSocket(socket);
         }
