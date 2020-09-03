@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 
 public class Server extends Thread {
 
-    private final static String HOST_ADDRESS = "localhost";
-    private final static int PORT = 6666;
+    private static final String HOST_ADDRESS = "localhost";
+    private static final int PORT = 6666;
     private ServerSocket serverSocket;
     private Logger logger = Logger.getLogger(Server.class.getName());
 
