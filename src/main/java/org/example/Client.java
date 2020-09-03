@@ -20,12 +20,16 @@ public class Client extends Thread{
         setHostAndPort(host, port);
     }
 
-    private void setHost(String host) {
+    protected void setHost(String host) {
         this.host = host;
     }
 
-    private void setPort(int port) {
-        this.port = port;
+    protected void setPort(int port) {
+        if(isValidPort(port)){
+            this.port = port;
+            return;
+        }
+        System.err.println("Given port is invalid");
     }
 
     public String getHost() {
@@ -41,8 +45,12 @@ public class Client extends Thread{
         this.setPort(port);
     }
 
-    private boolean isValidPort(int port){
+    protected boolean isValidPort(int port){
         return port > 0 && port < 65536;
+    }
+
+    public void connect(){
+        connect(this.host, this.port);
     }
 
     public void connect(String host, int port) {
