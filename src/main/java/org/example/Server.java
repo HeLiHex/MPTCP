@@ -28,25 +28,33 @@ public class Server extends Thread {
     }
 
     private ServerSocket createServerSocket() {
-        ServerSocket newServerSocket = null;
         try {
-            newServerSocket = new ServerSocket();
+            return new ServerSocket();
         } catch (IOException e) {
             this.logger.log(Level.SEVERE, "Error occurred trying to create a ServerSocket");
             e.printStackTrace();
         }
-        return newServerSocket;
+        return null;
     }
 
     private void bindServerSocket(ServerSocket serverSocket, String hostToBeBound, int portToBeBound) {
+        InetSocketAddress addressToBind = new InetSocketAddress(hostToBeBound, portToBeBound);
         try {
-            serverSocket.bind(new InetSocketAddress(hostToBeBound, portToBeBound));
+            serverSocket.bind(addressToBind);
             String msg = "Server running on: " + serverSocket.getLocalSocketAddress();
             this.logger.log(Level.INFO, msg);
         } catch (IOException e) {
             String msg = "Could not bind server to address: " + hostToBeBound + " and port " + portToBeBound;
-            this.logger.log(Level.SEVERE, msg);
-            e.printStackTrace();
+            this.logger.log(Level.WARNING, msg);
+            //e.printStackTrace();
+        }
+    }
+
+    public void close() {
+        try {
+            serverSocket.close();
+        }catch (IOException e) {
+            this.logger.log(Level.WARNING, e.getMessage());
         }
     }
 
