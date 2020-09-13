@@ -2,12 +2,12 @@ package org.example.protocol;
 
 public class Address {
 
-    private final int port;
     private final String address;
+    private final int port;
 
-    public Address(int port, String address) {
-        this.port = port;
+    public Address(String address, int port) {
         this.address = address;
+        this.port = port;
     }
 
     public int getPort() {
