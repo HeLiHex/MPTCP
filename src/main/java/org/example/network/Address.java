@@ -1,4 +1,4 @@
-package org.example.protocol;
+package org.example.network;
 
 public class Address {
 

@@ -1,5 +1,6 @@
 package org.example.protocol;
 
+import org.example.network.Address;
 import org.junit.Assert;
 import org.junit.Test;
 

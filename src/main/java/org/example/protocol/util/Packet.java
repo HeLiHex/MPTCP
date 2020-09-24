@@ -1,4 +1,4 @@
-package org.example.protocol;
+package org.example.protocol.util;
 
 public class Packet {
 
@@ -9,4 +9,16 @@ public class Packet {
     private int windowSize;
     private String checksum;
 
+    //tmp
+    private String msg;
+
+    //tmp
+    public Packet(String msg) {
+        this.msg = msg;
+    }
+
+    //tmp
+    public String getMsg() {
+        return msg;
+    }
 }

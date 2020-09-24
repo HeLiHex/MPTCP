@@ -1,4 +1,4 @@
-package org.example.protocol;
+package org.example.protocol.util;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
