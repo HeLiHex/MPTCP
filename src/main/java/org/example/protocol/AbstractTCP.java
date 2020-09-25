@@ -1,11 +1,16 @@
 package org.example.protocol;
 
+import org.example.Client;
 import org.example.protocol.util.BufferQueue;
 import org.example.protocol.util.Packet;
 
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AbstractTCP implements TCP{
+
+    private Logger logger = Logger.getLogger(Client.class.getName());
 
     private Queue<Packet> inputBuffer;
     private Queue<Packet> outputBuffer;
@@ -22,13 +27,13 @@ public class AbstractTCP implements TCP{
 
     @Override
     public void send(Packet packet) {
-        this.outputBuffer.add(packet);
+        boolean wasAdded = this.outputBuffer.offer(packet);
+        if (!wasAdded) logger.log(Level.WARNING, "packet was not added to the output queue");
     }
 
     @Override
     public Packet receive() {
-
-        return null;
+        return this.inputBuffer.remove();
     }
 
     @Override
