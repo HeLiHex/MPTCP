@@ -27,11 +27,6 @@ public class Router extends Thread implements NetworkNode{
     }
 
     @Override
-    public Address getAddress() {
-        return this.address;
-    }
-
-    @Override
     public List<NetworkNode> getNeighbours() {
         return this.neighbours;
     }
@@ -65,5 +60,10 @@ public class Router extends Thread implements NetworkNode{
     @Override
     public String toString() {
         return address.getAddress();
+    }
+
+    @Override
+    public void route(Packet packet) {
+
     }
 }

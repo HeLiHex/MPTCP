@@ -19,12 +19,11 @@ public class AbstractTCP implements TCP, NetworkNode{
 
     private Queue<Packet> inputBuffer;
     private Queue<Packet> outputBuffer;
-    private Router router;
+    private NetworkNode neighbourNode;
 
     public AbstractTCP(int inputBufferSize, int outputBufferSize) {
         this.outputBuffer = new BufferQueue<>(outputBufferSize);
         this.inputBuffer = new BufferQueue<>(inputBufferSize);
-        this.router = new Router();
     }
 
     @Override
@@ -52,22 +51,20 @@ public class AbstractTCP implements TCP, NetworkNode{
 
     }
 
-
-    @Override
-    public Address getAddress() {
-        return null;
-    }
-
     @Override
     public List<NetworkNode> getNeighbours() {
         List<NetworkNode> router = new ArrayList<>(1);
-        router.add(this.router);
+        router.add(this.neighbourNode);
         return router;
     }
 
     @Override
     public void addNeighbour(NetworkNode node) {
-
+        if(this.neighbourNode == null){
+            this.neighbourNode = node;
+            return;
+        }
+        System.out.println("This node endpoint already has a neighbour");
     }
 
     @Override
@@ -85,6 +82,10 @@ public class AbstractTCP implements TCP, NetworkNode{
 
     }
 
+    @Override
+    public void route(Packet packet) {
+
+    }
 
     public Queue<Packet> getOutputBuffer() {
         return this.outputBuffer;

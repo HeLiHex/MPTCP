@@ -1,19 +1,26 @@
 package org.example.network;
 
+import org.example.protocol.util.Packet;
+
 import java.util.List;
 
 public interface NetworkNode {
 
-    public Address getAddress();
+    List<NetworkNode> getNeighbours();
 
-    public List<NetworkNode> getNeighbours();
+    void addNeighbour(NetworkNode node);
 
-    public void addNeighbour(NetworkNode node);
+    int getCost();
 
-    public int getCost();
-
-    public NetworkNode getPath(NetworkNode destination);
+    NetworkNode getPath(NetworkNode destination);
 
     void updateRoutingTable();
+
+
+    /**
+     * This function should route the packet thorough the nodes until the packets destination is reached
+     * @param packet
+     */
+    void route(Packet packet);
 
 }
