@@ -12,7 +12,4 @@ public class AddressTest {
         Assert.assertTrue(address instanceof Address);
     }
 
-
-
-
 }
