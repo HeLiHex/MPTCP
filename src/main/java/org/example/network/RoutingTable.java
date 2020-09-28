@@ -1,6 +1,5 @@
 package org.example.network;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class RoutingTable {
         addEntry(this.networkNode, 0, null);
     }
 
-    private void update(NetworkNode node, int cost, NetworkNode comingFrom){
+    private void updateTable(NetworkNode node, int cost, NetworkNode comingFrom){
         if (this.contains(node)){
             updateEntry(node, cost, comingFrom);
             return;
@@ -41,6 +40,7 @@ public class RoutingTable {
         List<NetworkNode> prevNodes = this.table.get(2);
 
         if (costs.get(index) > cost){
+            System.out.println("update");
             costs.set(index, cost);
             prevNodes.set(index, comingFrom);
         }
@@ -64,12 +64,12 @@ public class RoutingTable {
     }
 
 
-    public void updateTable(NetworkNode staringNode){
-        updateTable(staringNode, new ArrayList<NetworkNode>(), 0);
+    public void update(NetworkNode staringNode){
+        update(staringNode, new ArrayList<NetworkNode>(), 0);
     }
 
     //Dijstra
-    private void updateTable(NetworkNode staringNode, List<NetworkNode> visited, int cost){
+    public void update(NetworkNode staringNode, List<NetworkNode> visited, int cost){
         if (visited.contains(staringNode)){
             System.out.println("table updated!");
             return;
@@ -82,18 +82,18 @@ public class RoutingTable {
             System.out.println("this node has no neighbours");
             return;
         }
-        this.update(bestNode, cost + bestNode.getCost(), staringNode);
+        this.updateTable(bestNode, cost + bestNode.getCost(), staringNode);
 
         for (int i = 1; i < staringNode.getNeighbours().size(); i++) {
             NetworkNode nextNode = neighbourList.get(i);
-            this.update(nextNode, cost + nextNode.getCost(), staringNode);
+            this.updateTable(nextNode, cost + nextNode.getCost(), staringNode);
             if(bestNode.getCost() > nextNode.getCost()){
                 bestNode = nextNode;
             }
         }
 
         visited.add(bestNode);
-        updateTable(bestNode, visited, bestNode.getCost() + cost);
+        update(bestNode, visited, bestNode.getCost() + cost);
     }
 
 

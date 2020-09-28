@@ -15,25 +15,13 @@ public class Router extends Thread implements NetworkNode{
     private Queue<Packet> inputBuffer;
     private Queue<Packet> outputBuffer;
 
-
     private Address address;
-    Queue ackChannelTMP;
 
     private int cost;
 
     public Router() {
         this.routingTable = new RoutingTable(this);
         this.address = new Address(UUID.randomUUID().toString(), 10);
-        this.neighbours = new ArrayList<>();
-        this.cost = 10;
-    }
-
-
-    //tmp
-    public Router(Queue ackChannelTMP) {
-        this.routingTable = new RoutingTable(this);
-        this.address = new Address(UUID.randomUUID().toString(), 10);
-        this.ackChannelTMP = ackChannelTMP;
         this.neighbours = new ArrayList<>();
         this.cost = 10;
     }
@@ -51,9 +39,9 @@ public class Router extends Thread implements NetworkNode{
     @Override
     public void addNeighbour(NetworkNode node){
         if (!this.neighbours.contains(node)){
-            System.out.println("hello"); //todo something weird
             this.neighbours.add(node);
             node.getNeighbours().add(this);
+            return;
         }
         System.out.println("Node is already added as neighbour");
     }
@@ -68,20 +56,9 @@ public class Router extends Thread implements NetworkNode{
         return this.routingTable.getPath(destination);
     }
 
-    public void route(Packet packet) {
-        NetworkNode destination = packet.getDestination();
-        this.routingTable.getPath(destination);
-        System.out.println("Packet sent");
-        try {
-            sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ackChannelTMP.offer(new Packet("ACK"));
-    }
-
-    public void update(){
-        this.routingTable.updateTable(this);
+    @Override
+    public void updateRoutingTable() {
+        this.routingTable.update(this);
         System.out.println(this.routingTable);
     }
 

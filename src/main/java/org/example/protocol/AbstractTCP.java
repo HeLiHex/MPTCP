@@ -1,26 +1,30 @@
 package org.example.protocol;
 
 import org.example.Client;
+import org.example.network.Address;
 import org.example.network.NetworkNode;
 import org.example.network.Router;
 import org.example.protocol.util.BufferQueue;
 import org.example.protocol.util.Packet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AbstractTCP extends Router implements TCP{
+public class AbstractTCP implements TCP, NetworkNode{
 
     private Logger logger = Logger.getLogger(Client.class.getName());
 
     private Queue<Packet> inputBuffer;
     private Queue<Packet> outputBuffer;
+    private Router router;
 
     public AbstractTCP(int inputBufferSize, int outputBufferSize) {
-        super();
         this.outputBuffer = new BufferQueue<>(outputBufferSize);
         this.inputBuffer = new BufferQueue<>(inputBufferSize);
+        this.router = new Router();
     }
 
     @Override
@@ -37,33 +41,50 @@ public class AbstractTCP extends Router implements TCP{
         }
     }
 
-    public Packet trySend(){
-        if (this.outputBuffer.isEmpty()) return null;
-
-        Packet packet = this.outputBuffer.poll();
-        NetworkNode pathNode = this.getPath(packet.getDestination());
-
-        while (this.inputBuffer.isEmpty()){
-            //wait until an ACK is received
-            System.out.println("waiting");
-        }
-
-        if (!this.inputBuffer.peek().getMsg().equals("ACK")){
-            this.logger.log(Level.FINE, "msg was not ACK");
-            return null;
-        }
-        return this.inputBuffer.poll();
-    }
 
     @Override
     public Packet receive() {
-        return this.inputBuffer.remove();
+        return null;
     }
 
     @Override
     public void close() {
 
     }
+
+
+    @Override
+    public Address getAddress() {
+        return null;
+    }
+
+    @Override
+    public List<NetworkNode> getNeighbours() {
+        List<NetworkNode> router = new ArrayList<>(1);
+        router.add(this.router);
+        return router;
+    }
+
+    @Override
+    public void addNeighbour(NetworkNode node) {
+
+    }
+
+    @Override
+    public int getCost() {
+        return 0;
+    }
+
+    @Override
+    public NetworkNode getPath(NetworkNode destination) {
+        return null;
+    }
+
+    @Override
+    public void updateRoutingTable() {
+
+    }
+
 
     public Queue<Packet> getOutputBuffer() {
         return this.outputBuffer;

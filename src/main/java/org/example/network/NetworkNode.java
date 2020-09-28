@@ -13,4 +13,7 @@ public interface NetworkNode {
     public int getCost();
 
     public NetworkNode getPath(NetworkNode destination);
+
+    void updateRoutingTable();
+
 }
