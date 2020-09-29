@@ -2,15 +2,25 @@ package org.example.network;
 
 import java.util.UUID;
 
-public class Address {
+public class Address implements Comparable<Address>{
 
-    private final String address;
+    private final UUID address;
 
     public Address() {
-        this.address = UUID.randomUUID().toString();
+        this.address = UUID.randomUUID();
     }
 
-    public String getAddress() {
-        return address;
+    public UUID getAddress(){
+        return this.address;
+    }
+
+    @Override
+    public String toString() {
+        return this.address.toString();
+    }
+
+    @Override
+    public int compareTo(Address address) {
+        return this.address.compareTo(address.getAddress());
     }
 }

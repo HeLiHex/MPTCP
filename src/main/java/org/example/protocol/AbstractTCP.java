@@ -10,6 +10,7 @@ import org.example.protocol.util.Packet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -99,13 +100,18 @@ public class AbstractTCP implements TCP, NetworkNode {
     }
 
     @Override
-    public String getAddress() {
+    public UUID getAddress() {
         return this.address.getAddress();
     }
 
     @Override
     public String toString() {
-        return this.address.getAddress();
+        return this.address.toString();
+    }
+
+    @Override
+    public int compareTo(NetworkNode networkNode) {
+        return this.getCost();
     }
 
     public Queue<Packet> getOutputBuffer() {

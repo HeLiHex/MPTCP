@@ -43,4 +43,8 @@ public class Packet {
     }
 
 
+    @Override
+    public String toString() {
+        return getMsg();
+    }
 }

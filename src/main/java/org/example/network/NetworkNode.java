@@ -3,10 +3,11 @@ package org.example.network;
 import org.example.protocol.util.Packet;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface NetworkNode {
+public interface NetworkNode extends Comparable<NetworkNode> {
 
-    String getAddress();
+    UUID getAddress();
 
     List<NetworkNode> getNeighbours();
 

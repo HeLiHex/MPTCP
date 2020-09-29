@@ -2,6 +2,8 @@ package org.example.network;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class RoutingTable {
 
@@ -55,7 +57,7 @@ public class RoutingTable {
     public NetworkNode getPath(NetworkNode source, NetworkNode destination) {
         int index = this.getDestinationNodes().indexOf(destination);
         if (index < 0) {
-            System.out.println("this destination does not exist");
+            System.out.println("Destination " + destination + " does not exist");
             return null;
         }
 
@@ -66,7 +68,8 @@ public class RoutingTable {
 
 
     public void update(NetworkNode staringNode) {
-        update(staringNode, new ArrayList<NetworkNode>(), new ArrayList<NetworkNode>(), 0);
+        //update(staringNode, new ArrayList<NetworkNode>(), new ArrayList<NetworkNode>(), 0);
+        djikstra(staringNode, new ArrayList<NetworkNode>(), new PriorityQueue<NetworkNode>(), 0);
     }
 
     private void update(NetworkNode staringNode, List<NetworkNode> visited, List<NetworkNode> nodesToVisit, int cost) {
@@ -96,6 +99,28 @@ public class RoutingTable {
 
         update(bestNode, visited, nodesToVisit, cost + bestNode.getCost());
     }
+
+
+    private void djikstra(NetworkNode curNode, List<NetworkNode> visited, Queue<NetworkNode> priorityQueue, int accumulatedCost){
+        visited.add(curNode);
+        List<NetworkNode> neighbouringNodes = curNode.getNeighbours();
+        for (NetworkNode neighbour : neighbouringNodes) {
+            priorityQueue.offer(neighbour);
+            updateTable(neighbour, neighbour.getCost() + accumulatedCost, curNode);
+        }
+
+        while (!priorityQueue.isEmpty()){
+            NetworkNode bestNode = priorityQueue.poll();
+
+            if (visited.contains(bestNode)) continue;
+
+            djikstra(bestNode, visited, priorityQueue, bestNode.getCost() + accumulatedCost);
+        }
+
+    }
+
+
+
 
     private List<NetworkNode> getDestinationNodes(){
         return this.table.get(0);

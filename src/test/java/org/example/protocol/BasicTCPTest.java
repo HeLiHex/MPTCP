@@ -57,7 +57,7 @@ public class BasicTCPTest {
         r3.start();
         r4.start();
 
-        client.route(new Packet("hello på deg"));
+        client.route(new Packet("hello på deg", server));
 
         try {
             Thread.sleep(1000);
