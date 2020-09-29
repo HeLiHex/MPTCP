@@ -1,5 +1,6 @@
 package org.example.network;
 
+import org.example.protocol.util.BufferQueue;
 import org.example.protocol.util.Packet;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class Router extends Thread implements NetworkNode {
     private int cost;
 
     public Router() {
+        this.inputBuffer = new BufferQueue<>(100);
         this.routingTable = new RoutingTable(this);
         this.address = new Address();
         this.neighbours = new ArrayList<>();
@@ -55,9 +57,17 @@ public class Router extends Thread implements NetworkNode {
 
     @Override
     public void route(Packet packet) {
+        System.out.println(this.address.getAddress());
         NetworkNode destination = packet.getDestination();
-        NetworkNode nextNodeOnPath = this.routingTable.getPath(destination);
+        NetworkNode nextNodeOnPath = this.routingTable.getPath(this, destination);
+        nextNodeOnPath.deliverPackage(packet);
+    }
 
+    @Override
+    public void deliverPackage(Packet packet) {
+        if (!this.inputBuffer.offer(packet)){
+            System.out.println("Packet was not delivered to next NetworkNode");
+        }
     }
 
     @Override
@@ -70,5 +80,12 @@ public class Router extends Thread implements NetworkNode {
         return address.getAddress();
     }
 
-
+    @Override
+    public void run() {
+        while (true){
+            if (!this.inputBuffer.isEmpty()){
+                this.route(this.inputBuffer.poll());
+            }
+        }
+    }
 }

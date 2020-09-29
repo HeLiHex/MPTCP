@@ -26,19 +26,18 @@ public class RoutingTable {
     }
 
     private void addEntry(NetworkNode nodeToAdd, int cost, NetworkNode comingFrom) {
-        System.out.println("add entry");
-        List<NetworkNode> nodes = this.table.get(0);
-        List<Integer> costs = this.table.get(1);
-        List<NetworkNode> prevNodes = this.table.get(2);
+        List<NetworkNode> nodes = this.getDestinationNodes();
+        List<Integer> costs = this.getCosts();
+        List<NetworkNode> prevNodes = this.getPreviousNodes();
         nodes.add(nodeToAdd);
         costs.add(cost);
         prevNodes.add(comingFrom);
     }
 
     private void updateEntry(NetworkNode nodeToUpdate, int cost, NetworkNode comingFrom) {
-        int index = this.table.get(0).indexOf(nodeToUpdate);
-        List<Integer> costs = this.table.get(1);
-        List<NetworkNode> prevNodes = this.table.get(2);
+        int index = this.getDestinationNodes().indexOf(nodeToUpdate);
+        List<Integer> costs = this.getCosts();
+        List<NetworkNode> prevNodes = this.getPreviousNodes();
 
         if (costs.get(index) > cost) {
             System.out.println("update entry");
@@ -48,21 +47,21 @@ public class RoutingTable {
     }
 
     private boolean contains(NetworkNode node) {
-        List<NetworkNode> nodes = this.table.get(0);
+        List<NetworkNode> nodes = this.getDestinationNodes();
         return nodes.contains(node);
     }
 
     //todo -- funker ikke
-    public NetworkNode getPath(NetworkNode destination) {
-        int index = this.table.get(0).indexOf(destination);
+    public NetworkNode getPath(NetworkNode source, NetworkNode destination) {
+        int index = this.getDestinationNodes().indexOf(destination);
         if (index < 0) {
             System.out.println("this destination does not exist");
             return null;
         }
 
-        NetworkNode prevNode = (NetworkNode) this.table.get(2).get(index);
-        //return prevNode.getPath(destination);
-        return null;
+        NetworkNode prevNode = this.getPreviousNodes().get(index);
+        if (source.equals(prevNode)) return destination;
+        return getPath(source, prevNode);
     }
 
 
@@ -96,6 +95,18 @@ public class RoutingTable {
         if (bestNode == null) return;
 
         update(bestNode, visited, nodesToVisit, cost + bestNode.getCost());
+    }
+
+    private List<NetworkNode> getDestinationNodes(){
+        return this.table.get(0);
+    }
+
+    private List<Integer> getCosts(){
+        return this.table.get(1);
+    }
+
+    private List<NetworkNode> getPreviousNodes(){
+        return this.table.get(2);
     }
 
 

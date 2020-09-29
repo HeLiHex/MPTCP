@@ -48,7 +48,7 @@ public class AbstractTCP implements TCP, NetworkNode {
 
     @Override
     public Packet receive() {
-        return null;
+        return this.inputBuffer.poll();
     }
 
     @Override
@@ -84,7 +84,18 @@ public class AbstractTCP implements TCP, NetworkNode {
 
     @Override
     public void route(Packet packet) {
+        System.out.println(this.address.getAddress());
+        NetworkNode destination = packet.getDestination();
+        NetworkNode nextNodeOnPath = this.routingTable.getPath(this, destination);
+        nextNodeOnPath.deliverPackage(packet);
+    }
 
+    @Override
+    public void deliverPackage(Packet packet) {
+        if (!this.inputBuffer.offer(packet)){
+            System.out.println("Packet was not delivered to next NetworkNode");
+        }
+        System.out.println(this.inputBuffer.size());
     }
 
     @Override

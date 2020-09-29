@@ -16,9 +16,11 @@ public interface NetworkNode {
 
     void updateRoutingTable();
 
+    void deliverPackage(Packet packet);
+
 
     /**
-     * This function should route the packet thorough the nodes until the packets destination is reached
+     * This function should route the packet through the nodes until the packets destination is reached
      *
      * @param packet
      */

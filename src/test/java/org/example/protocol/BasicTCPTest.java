@@ -45,16 +45,29 @@ public class BasicTCPTest {
         r3.addNeighbour(r4);
         r4.addNeighbour(server);
 
-
-        System.out.println("client: " + client.getAddress());
-        System.out.println("server: " + server.getAddress());
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
+        server.updateRoutingTable();
 
-        //r1.updateRoutingTable();
-        //r2.updateRoutingTable();
-        //r3.updateRoutingTable();
-        //r4.updateRoutingTable();
-        //server.updateRoutingTable();
+        r1.start();
+        r2.start();
+        r3.start();
+        r4.start();
+
+        client.route(new Packet("hello på deg"));
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(server.receive());
+
+
 
 /**
  Packet packet = new Packet("Hello server! this is client", server);
