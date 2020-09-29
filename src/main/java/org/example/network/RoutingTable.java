@@ -17,15 +17,16 @@ public class RoutingTable {
         addEntry(this.networkNode, 0, null);
     }
 
-    private void updateTable(NetworkNode node, int cost, NetworkNode comingFrom){
-        if (this.contains(node)){
+    private void updateTable(NetworkNode node, int cost, NetworkNode comingFrom) {
+        if (this.contains(node)) {
             updateEntry(node, cost, comingFrom);
             return;
         }
         addEntry(node, cost, comingFrom);
     }
 
-    private void addEntry(NetworkNode nodeToAdd, int cost, NetworkNode comingFrom){
+    private void addEntry(NetworkNode nodeToAdd, int cost, NetworkNode comingFrom) {
+        System.out.println("add entry");
         List<NetworkNode> nodes = this.table.get(0);
         List<Integer> costs = this.table.get(1);
         List<NetworkNode> prevNodes = this.table.get(2);
@@ -34,66 +35,67 @@ public class RoutingTable {
         prevNodes.add(comingFrom);
     }
 
-    private void updateEntry(NetworkNode nodeToUpdate, int cost, NetworkNode comingFrom){
+    private void updateEntry(NetworkNode nodeToUpdate, int cost, NetworkNode comingFrom) {
         int index = this.table.get(0).indexOf(nodeToUpdate);
         List<Integer> costs = this.table.get(1);
         List<NetworkNode> prevNodes = this.table.get(2);
 
-        if (costs.get(index) > cost){
-            System.out.println("update");
+        if (costs.get(index) > cost) {
+            System.out.println("update entry");
             costs.set(index, cost);
             prevNodes.set(index, comingFrom);
         }
     }
 
-    private boolean contains(NetworkNode node){
+    private boolean contains(NetworkNode node) {
         List<NetworkNode> nodes = this.table.get(0);
         return nodes.contains(node);
     }
 
     //todo -- funker ikke
-    public NetworkNode getPath(NetworkNode destination){
+    public NetworkNode getPath(NetworkNode destination) {
         int index = this.table.get(0).indexOf(destination);
-        if (index < 0){
+        if (index < 0) {
             System.out.println("this destination does not exist");
             return null;
         }
 
         NetworkNode prevNode = (NetworkNode) this.table.get(2).get(index);
-        return prevNode.getPath(destination);
+        //return prevNode.getPath(destination);
+        return null;
     }
 
 
-    public void update(NetworkNode staringNode){
-        update(staringNode, new ArrayList<NetworkNode>(), 0);
+    public void update(NetworkNode staringNode) {
+        update(staringNode, new ArrayList<NetworkNode>(), new ArrayList<NetworkNode>(), 0);
     }
 
-    //Dijstra
-    public void update(NetworkNode staringNode, List<NetworkNode> visited, int cost){
-        if (visited.contains(staringNode)){
-            System.out.println("table updated!");
-            return;
-        }
-
+    private void update(NetworkNode staringNode, List<NetworkNode> visited, List<NetworkNode> nodesToVisit, int cost) {
+        visited.add(staringNode);
+        nodesToVisit.remove(staringNode);
         List<NetworkNode> neighbourList = staringNode.getNeighbours();
-        NetworkNode bestNode = neighbourList.get(0);
 
-        if(bestNode == null){
-            System.out.println("this node has no neighbours");
-            return;
-        }
-        this.updateTable(bestNode, cost + bestNode.getCost(), staringNode);
+        NetworkNode bestNode = null;
+        for (NetworkNode n : neighbourList) {
+            this.updateTable(n, cost + n.getCost(), staringNode);
 
-        for (int i = 1; i < staringNode.getNeighbours().size(); i++) {
-            NetworkNode nextNode = neighbourList.get(i);
-            this.updateTable(nextNode, cost + nextNode.getCost(), staringNode);
-            if(bestNode.getCost() > nextNode.getCost()){
-                bestNode = nextNode;
+            boolean nodeShouldBeVisited = !visited.contains(n) && !nodesToVisit.contains(n);
+            if (nodeShouldBeVisited) {
+                nodesToVisit.add(n);
+            }
+
+            if (visited.contains(n)) continue;
+
+            if (bestNode == null) {
+                bestNode = n;
+            } else if (bestNode.getCost() > n.getCost() && !visited.contains(n)) {
+                bestNode = n;
             }
         }
 
-        visited.add(bestNode);
-        update(bestNode, visited, bestNode.getCost() + cost);
+        if (bestNode == null) return;
+
+        update(bestNode, visited, nodesToVisit, cost + bestNode.getCost());
     }
 
 
@@ -101,7 +103,10 @@ public class RoutingTable {
     public String toString() {
         String returnString = "";
         for (int i = 0; i < table.get(0).size(); i++) {
-            returnString += "Destination: " + table.get(0).get(i) + " | Cost: " + table.get(1).get(i) + " | Previous: " + table.get(2).get(i) + "\n";
+            returnString += "Destination: " + table.get(0).get(i)
+                    + " | Cost: " + table.get(1).get(i)
+                    + " | Previous: " + table.get(2).get(i)
+                    + "\n";
         }
         return returnString;
     }

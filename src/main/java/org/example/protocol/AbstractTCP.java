@@ -3,7 +3,7 @@ package org.example.protocol;
 import org.example.Client;
 import org.example.network.Address;
 import org.example.network.NetworkNode;
-import org.example.network.Router;
+import org.example.network.RoutingTable;
 import org.example.protocol.util.BufferQueue;
 import org.example.protocol.util.Packet;
 
@@ -13,17 +13,22 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AbstractTCP implements TCP, NetworkNode{
+public class AbstractTCP implements TCP, NetworkNode {
 
     private Logger logger = Logger.getLogger(Client.class.getName());
 
     private Queue<Packet> inputBuffer;
     private Queue<Packet> outputBuffer;
-    private NetworkNode neighbourNode;
+    private List<NetworkNode> neighbours;
+    private final Address address;
+    private RoutingTable routingTable;
 
     public AbstractTCP(int inputBufferSize, int outputBufferSize) {
         this.outputBuffer = new BufferQueue<>(outputBufferSize);
         this.inputBuffer = new BufferQueue<>(inputBufferSize);
+        this.address = new Address();
+        this.routingTable = new RoutingTable(this);
+        this.neighbours = new ArrayList<>(1);
     }
 
     @Override
@@ -34,7 +39,7 @@ public class AbstractTCP implements TCP, NetworkNode{
     @Override
     public void send(Packet packet) {
         boolean wasAdded = this.outputBuffer.offer(packet);
-        if (!wasAdded){
+        if (!wasAdded) {
             logger.log(Level.WARNING, "packet was not added to the output queue");
             return;
         }
@@ -53,18 +58,17 @@ public class AbstractTCP implements TCP, NetworkNode{
 
     @Override
     public List<NetworkNode> getNeighbours() {
-        List<NetworkNode> router = new ArrayList<>(1);
-        router.add(this.neighbourNode);
-        return router;
+        return this.neighbours;
     }
 
     @Override
     public void addNeighbour(NetworkNode node) {
-        if(this.neighbourNode == null){
-            this.neighbourNode = node;
+        if (!this.neighbours.contains(node)) {
+            this.neighbours.add(node);
+            node.getNeighbours().add(this);
             return;
         }
-        System.out.println("This node endpoint already has a neighbour");
+        System.out.println("Node is already added as neighbour");
     }
 
     @Override
@@ -73,18 +77,24 @@ public class AbstractTCP implements TCP, NetworkNode{
     }
 
     @Override
-    public NetworkNode getPath(NetworkNode destination) {
-        return null;
-    }
-
-    @Override
     public void updateRoutingTable() {
-
+        this.routingTable.update(this);
+        System.out.println(this.routingTable);
     }
 
     @Override
     public void route(Packet packet) {
 
+    }
+
+    @Override
+    public String getAddress() {
+        return this.address.getAddress();
+    }
+
+    @Override
+    public String toString() {
+        return this.address.getAddress();
     }
 
     public Queue<Packet> getOutputBuffer() {

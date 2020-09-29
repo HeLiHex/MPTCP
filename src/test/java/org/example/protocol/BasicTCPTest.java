@@ -9,18 +9,18 @@ public class BasicTCPTest {
 
 
     @Test
-    public void sendEnqueuesPackageToOutputBufferTest(){
+    public void sendEnqueuesPackageToOutputBufferTest() {
         TCP tcp = new BasicTCP();
         String msg = "test";
         tcp.send(new Packet(msg));
 
-        Packet getPacketInBuffer = ((BasicTCP)tcp).getOutputBuffer().peek();
+        Packet getPacketInBuffer = ((BasicTCP) tcp).getOutputBuffer().peek();
         Assert.assertEquals(getPacketInBuffer.getMsg(), msg);
 
     }
 
     @Test
-    public void trySendWaitsForAck(){
+    public void trySendWaitsForAck() {
         TCP tcp = new BasicTCP();
         String msg = "test";
         tcp.send(new Packet(msg));
@@ -31,7 +31,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public void main(){
+    public void main() {
         BasicTCP client = new BasicTCP();
         Router r1 = new Router();
         Router r2 = new Router();
@@ -45,21 +45,24 @@ public class BasicTCPTest {
         r3.addNeighbour(r4);
         r4.addNeighbour(server);
 
+
+        System.out.println("client: " + client.getAddress());
+        System.out.println("server: " + server.getAddress());
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
-        server.updateRoutingTable();
+
+        //r1.updateRoutingTable();
+        //r2.updateRoutingTable();
+        //r3.updateRoutingTable();
+        //r4.updateRoutingTable();
+        //server.updateRoutingTable();
 
 /**
-        Packet packet = new Packet("Hello server! this is client", server);
+ Packet packet = new Packet("Hello server! this is client", server);
 
-        client.send(packet); // legger i buffer
-        Packet answer = client.trySend(); // prøver å sende og venter på ack
-        System.out.println(answer.getMsg());
-
-**/
+ client.send(packet); // legger i buffer
+ Packet answer = client.trySend(); // prøver å sende og venter på ack
+ System.out.println(answer.getMsg());
+ **/
     }
 
 

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 
-public class Router extends Thread implements NetworkNode{
+public class Router extends Thread implements NetworkNode {
 
     private RoutingTable routingTable;
     private List<NetworkNode> neighbours;
@@ -21,7 +21,7 @@ public class Router extends Thread implements NetworkNode{
 
     public Router() {
         this.routingTable = new RoutingTable(this);
-        this.address = new Address(UUID.randomUUID().toString(), 10);
+        this.address = new Address();
         this.neighbours = new ArrayList<>();
         this.cost = 10;
     }
@@ -32,8 +32,8 @@ public class Router extends Thread implements NetworkNode{
     }
 
     @Override
-    public void addNeighbour(NetworkNode node){
-        if (!this.neighbours.contains(node)){
+    public void addNeighbour(NetworkNode node) {
+        if (!this.neighbours.contains(node)) {
             this.neighbours.add(node);
             node.getNeighbours().add(this);
             return;
@@ -46,10 +46,6 @@ public class Router extends Thread implements NetworkNode{
         return this.cost;
     }
 
-    @Override
-    public NetworkNode getPath(NetworkNode destination) {
-        return this.routingTable.getPath(destination);
-    }
 
     @Override
     public void updateRoutingTable() {
@@ -58,12 +54,21 @@ public class Router extends Thread implements NetworkNode{
     }
 
     @Override
+    public void route(Packet packet) {
+        NetworkNode destination = packet.getDestination();
+        NetworkNode nextNodeOnPath = this.routingTable.getPath(destination);
+
+    }
+
+    @Override
+    public String getAddress() {
+        return this.address.getAddress();
+    }
+
+    @Override
     public String toString() {
         return address.getAddress();
     }
 
-    @Override
-    public void route(Packet packet) {
 
-    }
 }

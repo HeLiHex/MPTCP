@@ -1,17 +1,13 @@
 package org.example.network;
 
+import java.util.UUID;
+
 public class Address {
 
     private final String address;
-    private final int port;
 
-    public Address(String address, int port) {
-        this.address = address;
-        this.port = port;
-    }
-
-    public int getPort() {
-        return port;
+    public Address() {
+        this.address = UUID.randomUUID().toString();
     }
 
     public String getAddress() {
