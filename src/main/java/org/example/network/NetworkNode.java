@@ -27,4 +27,5 @@ public interface NetworkNode extends Comparable<NetworkNode> {
      */
     void route(Packet packet);
 
+
 }

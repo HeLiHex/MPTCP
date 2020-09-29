@@ -93,4 +93,14 @@ public class Router extends Thread implements NetworkNode {
     public int compareTo(NetworkNode networkNode) {
         return this.getCost();
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NetworkNode){
+            NetworkNode node = (NetworkNode) obj;
+            return this.getAddress().equals(node.getAddress());
+        }
+        return false;
+    }
 }

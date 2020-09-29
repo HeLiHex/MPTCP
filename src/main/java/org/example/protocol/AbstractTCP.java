@@ -116,6 +116,15 @@ public class AbstractTCP implements TCP, NetworkNode {
         return this.getCost();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NetworkNode){
+            NetworkNode node = (NetworkNode) obj;
+            return this.getAddress().equals(node.getAddress());
+        }
+        return false;
+    }
+
     public Queue<Packet> getOutputBuffer() {
         return this.outputBuffer;
     }
