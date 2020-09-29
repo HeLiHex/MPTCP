@@ -31,9 +31,15 @@ public class RoutingTable {
         List<NetworkNode> nodes = this.getDestinationNodes();
         List<Integer> costs = this.getCosts();
         List<NetworkNode> prevNodes = this.getPreviousNodes();
+
         nodes.add(nodeToAdd);
-        costs.add(cost);
         prevNodes.add(comingFrom);
+
+        int prevIndex = nodes.indexOf(comingFrom);
+        boolean nodeIsVisited = prevIndex >= 0;
+        int newCost = nodeIsVisited ? cost + costs.get(prevIndex) : cost;
+
+        costs.add(newCost);
     }
 
     private void updateEntry(NetworkNode nodeToUpdate, int cost, NetworkNode comingFrom) {
@@ -41,10 +47,15 @@ public class RoutingTable {
         List<Integer> costs = this.getCosts();
         List<NetworkNode> prevNodes = this.getPreviousNodes();
 
-        if (costs.get(index) > cost) {
+        int prevIndex = this.getDestinationNodes().indexOf(comingFrom);
+        boolean nodeIsVisited = prevIndex >= 0;
+        int newCost = nodeIsVisited ? cost + this.getCosts().get(prevIndex) : 0;
+
+        if (costs.get(index) > newCost) {
             System.out.println("update entry");
-            costs.set(index, cost);
             prevNodes.set(index, comingFrom);
+            costs.set(index, cost + this.getDestinationNodes().get(prevIndex).getCost());
+
         }
     }
 
@@ -68,55 +79,23 @@ public class RoutingTable {
 
 
     public void update(NetworkNode staringNode) {
-        //update(staringNode, new ArrayList<NetworkNode>(), new ArrayList<NetworkNode>(), 0);
-        djikstra(staringNode, new ArrayList<NetworkNode>(), new PriorityQueue<NetworkNode>(), 0);
+        djikstra(staringNode, new ArrayList<NetworkNode>(), new PriorityQueue<NetworkNode>());
     }
 
-    private void update(NetworkNode staringNode, List<NetworkNode> visited, List<NetworkNode> nodesToVisit, int cost) {
-        visited.add(staringNode);
-        nodesToVisit.remove(staringNode);
-        List<NetworkNode> neighbourList = staringNode.getNeighbours();
-
-        NetworkNode bestNode = null;
-        for (NetworkNode n : neighbourList) {
-            this.updateTable(n, cost + n.getCost(), staringNode);
-
-            boolean nodeShouldBeVisited = !visited.contains(n) && !nodesToVisit.contains(n);
-            if (nodeShouldBeVisited) {
-                nodesToVisit.add(n);
-            }
-
-            if (visited.contains(n)) continue;
-
-            if (bestNode == null) {
-                bestNode = n;
-            } else if (bestNode.getCost() > n.getCost() && !visited.contains(n)) {
-                bestNode = n;
-            }
-        }
-
-        if (bestNode == null) return;
-
-        update(bestNode, visited, nodesToVisit, cost + bestNode.getCost());
-    }
-
-
-    private void djikstra(NetworkNode curNode, List<NetworkNode> visited, Queue<NetworkNode> priorityQueue, int accumulatedCost){
+    private void djikstra(NetworkNode curNode, List<NetworkNode> visited, Queue<NetworkNode> priorityQueue){
         visited.add(curNode);
         List<NetworkNode> neighbouringNodes = curNode.getNeighbours();
+
         for (NetworkNode neighbour : neighbouringNodes) {
             priorityQueue.offer(neighbour);
-            updateTable(neighbour, neighbour.getCost() + accumulatedCost, curNode);
+            this.updateTable(neighbour, neighbour.getCost(), curNode);
         }
 
         while (!priorityQueue.isEmpty()){
             NetworkNode bestNode = priorityQueue.poll();
-
             if (visited.contains(bestNode)) continue;
-
-            djikstra(bestNode, visited, priorityQueue, bestNode.getCost() + accumulatedCost);
+            djikstra(bestNode, visited, priorityQueue);
         }
-
     }
 
 

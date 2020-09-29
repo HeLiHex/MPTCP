@@ -67,15 +67,6 @@ public class BasicTCPTest {
 
         System.out.println(server.receive());
 
-
-
-/**
- Packet packet = new Packet("Hello server! this is client", server);
-
- client.send(packet); // legger i buffer
- Packet answer = client.trySend(); // prøver å sende og venter på ack
- System.out.println(answer.getMsg());
- **/
     }
 
 

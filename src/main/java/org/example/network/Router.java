@@ -57,7 +57,7 @@ public class Router extends Thread implements NetworkNode {
 
     @Override
     public void route(Packet packet) {
-        System.out.println(this.address.getAddress());
+        System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         NetworkNode nextNodeOnPath = this.routingTable.getPath(this, destination);
         nextNodeOnPath.deliverPackage(packet);

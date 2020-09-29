@@ -23,6 +23,7 @@ public class AbstractTCP implements TCP, NetworkNode {
     private List<NetworkNode> neighbours;
     private final Address address;
     private RoutingTable routingTable;
+    private int cost;
 
     public AbstractTCP(int inputBufferSize, int outputBufferSize) {
         this.outputBuffer = new BufferQueue<>(outputBufferSize);
@@ -30,6 +31,7 @@ public class AbstractTCP implements TCP, NetworkNode {
         this.address = new Address();
         this.routingTable = new RoutingTable(this);
         this.neighbours = new ArrayList<>(1);
+        this.cost = 100;
     }
 
     @Override
@@ -74,7 +76,7 @@ public class AbstractTCP implements TCP, NetworkNode {
 
     @Override
     public int getCost() {
-        return 0;
+        return this.cost;
     }
 
     @Override

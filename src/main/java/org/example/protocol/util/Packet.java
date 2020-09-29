@@ -2,6 +2,8 @@ package org.example.protocol.util;
 
 import org.example.network.NetworkNode;
 
+import java.util.NoSuchElementException;
+
 public class Packet {
 
     private String sourcePort; //todo mulig disse bare skal være represnetert gjennom Address
@@ -13,11 +15,9 @@ public class Packet {
 
 
     private NetworkNode destination;
-
-    //tmp
     private String msg;
 
-    //tmp
+
     public Packet(String msg) {
         this.msg = msg;
     }
@@ -35,6 +35,7 @@ public class Packet {
 
 
     public NetworkNode getDestination() {
+        if (this.destination == null) System.out.println("This packet has no destination");
         return this.destination;
     }
 
@@ -45,6 +46,6 @@ public class Packet {
 
     @Override
     public String toString() {
-        return getMsg();
+        return "["+getMsg()+"]";
     }
 }
