@@ -7,18 +7,8 @@ import java.util.UUID;
 
 public interface NetworkNode extends Comparable<NetworkNode> {
 
-    UUID getAddress();
-
-    List<NetworkNode> getNeighbours();
-
-    void addNeighbour(NetworkNode node);
-
-    int getCost();
 
     void updateRoutingTable();
-
-    void deliverPackage(Packet packet);
-
 
     /**
      * This function should route the packet through the nodes until the packets destination is reached
@@ -26,6 +16,17 @@ public interface NetworkNode extends Comparable<NetworkNode> {
      * @param packet
      */
     void route(Packet packet);
+
+    void deliverPackage(Packet packet);
+
+    List<NetworkNode> getNeighbours();
+
+    void addNeighbour(NetworkNode node);
+
+    //todo change to address
+    UUID getAddress();
+
+    int getCost();
 
 
 }

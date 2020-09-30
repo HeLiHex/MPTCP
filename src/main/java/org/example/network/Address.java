@@ -23,4 +23,10 @@ public class Address implements Comparable<Address>{
     public int compareTo(Address address) {
         return this.address.compareTo(address.getAddress());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Address other = (Address) obj;
+        return this.address.equals(other);
+    }
 }
