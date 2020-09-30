@@ -24,7 +24,7 @@ public interface NetworkNode extends Comparable<NetworkNode> {
     void addNeighbour(NetworkNode node);
 
     //todo change to address
-    UUID getAddress();
+    Address getAddress();
 
     int getCost();
 

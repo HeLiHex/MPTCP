@@ -6,7 +6,6 @@ import org.example.protocol.util.Packet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.UUID;
 
 public abstract class Routable extends Thread implements NetworkNode {
 
@@ -65,14 +64,15 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     @Override
-    public UUID getAddress() {
-        return this.address.getAddress();
+    public Address getAddress() {
+        return this.address;
     }
 
     @Override
     public int getCost() {
         return this.cost;
     }
+
 
     @Override
     public int compareTo(NetworkNode networkNode) {

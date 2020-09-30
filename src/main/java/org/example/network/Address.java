@@ -4,33 +4,34 @@ import java.util.UUID;
 
 public class Address implements Comparable<Address>{
 
-    private final UUID address;
+    private final UUID identifier;
 
     public Address() {
-        this.address = UUID.randomUUID();
+        this.identifier = UUID.randomUUID();
     }
 
-    public UUID getAddress(){
-        return this.address;
+    private UUID getIdentifier(){
+        return this.identifier;
     }
 
     @Override
     public String toString() {
-        return this.address.toString();
+        return this.identifier.toString();
     }
 
     @Override
     public int compareTo(Address address) {
-        return this.address.compareTo(address.getAddress());
+        return this.identifier.compareTo(address.getIdentifier());
     }
 
     @Override
     public boolean equals(Object obj) {
-        return this.address.equals(obj);
+        if(obj instanceof Address) return this.identifier.hashCode() == ((Address)obj).hashCode();
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return this.address.hashCode();
+        return this.identifier.hashCode();
     }
 }

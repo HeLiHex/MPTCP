@@ -64,7 +64,6 @@ public class RoutingTable {
         return nodes.contains(node);
     }
 
-    //todo -- funker ikke
     public NetworkNode getPath(NetworkNode source, NetworkNode destination) {
         int index = this.getDestinationNodes().indexOf(destination);
         if (index < 0) {
@@ -97,8 +96,6 @@ public class RoutingTable {
             djikstra(bestNode, visited, priorityQueue);
         }
     }
-
-
 
 
     private List<NetworkNode> getDestinationNodes(){
