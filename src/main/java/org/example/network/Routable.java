@@ -89,6 +89,11 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     @Override
+    public int hashCode() {
+        return this.getAddress().hashCode();
+    }
+
+    @Override
     public String toString() {
         return this.address.toString();
     }
