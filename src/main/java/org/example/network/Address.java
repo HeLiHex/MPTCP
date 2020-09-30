@@ -26,7 +26,11 @@ public class Address implements Comparable<Address>{
 
     @Override
     public boolean equals(Object obj) {
-        Address other = (Address) obj;
-        return this.address.equals(other);
+        return this.address.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.address.hashCode();
     }
 }
