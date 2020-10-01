@@ -3,7 +3,6 @@ package org.example.network;
 import org.example.protocol.util.Packet;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface NetworkNode extends Comparable<NetworkNode> {
 
@@ -23,7 +22,6 @@ public interface NetworkNode extends Comparable<NetworkNode> {
 
     void addNeighbour(NetworkNode node);
 
-    //todo change to address
     Address getAddress();
 
     int getCost();
