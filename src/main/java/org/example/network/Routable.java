@@ -41,6 +41,7 @@ public abstract class Routable extends Thread implements NetworkNode {
         nextNodeOnPath.deliverPackage(packet);
     }
 
+
     @Override
     public void deliverPackage(Packet packet) {
         if (!this.inputBuffer.offer(packet)) {

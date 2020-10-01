@@ -7,23 +7,52 @@ import java.util.List;
 public interface NetworkNode extends Comparable<NetworkNode> {
 
 
+    /**
+     * A method that updates the routing table according to the cost
+     */
     void updateRoutingTable();
 
     /**
-     * This function should route the packet through the nodes until the packets destination is reached
+     * A method that routes the packet to the next router on the path to it's destination
      *
      * @param packet
      */
     void route(Packet packet);
 
+
+    /**
+     * A method that delivers the packet to the next NetworkNode on the path to it's destination
+     *
+     * @param packet
+     */
     void deliverPackage(Packet packet);
 
+    /**
+     * A method that returns a list og the neighbouring NetworkNodes
+     *
+     * @return a list of neighbouring NetworkNodes
+     */
     List<NetworkNode> getNeighbours();
 
+    /**
+     * A mathod that adds a NetworkNode as neighbour to this NetworkNode
+     *
+     * @param node to be added as neighbour
+     */
     void addNeighbour(NetworkNode node);
 
+    /**
+     * A method that returns the unique Address associated with this NetworkNode
+     *
+     * @return unique Address
+     */
     Address getAddress();
 
+    /**
+     * A method that returns the cost of visiting this node
+     *
+     * @return the cost of traversing to this node
+     */
     int getCost();
 
 
