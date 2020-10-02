@@ -8,16 +8,6 @@ import org.junit.Test;
 public class BasicTCPTest {
 
 
-    @Test
-    public void sendEnqueuesPackageToOutputBufferTest() {
-        TCP tcp = new BasicTCP();
-        String msg = "test";
-        tcp.send(new Packet(msg));
-
-        Packet getPacketInBuffer = ((BasicTCP) tcp).getOutputBuffer().peek();
-        Assert.assertEquals(getPacketInBuffer.getMsg(), msg);
-
-    }
 
     @Test
     public void trySendWaitsForAck() {
@@ -65,7 +55,9 @@ public class BasicTCPTest {
             e.printStackTrace();
         }
 
-        System.out.println(server.receive());
+        String msg = server.receive().getMsg();
+        System.out.println(msg);
+        Assert.assertEquals(msg,"hello på deg");
 
     }
 

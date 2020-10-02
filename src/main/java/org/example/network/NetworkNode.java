@@ -56,4 +56,17 @@ public interface NetworkNode extends Comparable<NetworkNode> {
     int getCost();
 
 
+    Packet dequeueOutputBuffer();
+
+    boolean enqueueOutputBuffer(Packet packet);
+
+    boolean outputQueueIsEmpty();
+
+    Packet dequeueInputBuffer();
+
+    boolean enqueueInputBuffer(Packet packet);
+
+    boolean inputQueueIsEmpty();
+
+
 }

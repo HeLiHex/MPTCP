@@ -11,10 +11,8 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     private RoutingTable routingTable;
     private List<NetworkNode> neighbours;
-
     protected Queue<Packet> inputBuffer;
-    private Queue<Packet> outputBuffer;
-
+    protected Queue<Packet> outputBuffer;
     private Address address;
     private int cost;
 
@@ -42,9 +40,10 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
 
+    //todo - rename
     @Override
     public void deliverPackage(Packet packet) {
-        if (!this.inputBuffer.offer(packet)) {
+        if (!this.enqueueInputBuffer(packet)) {
             System.out.println("Packet was not delivered to next NetworkNode");
         }
     }
@@ -74,6 +73,23 @@ public abstract class Routable extends Thread implements NetworkNode {
         return this.cost;
     }
 
+    @Override
+    public abstract boolean enqueueInputBuffer(Packet packet);
+
+    @Override
+    public abstract Packet dequeueInputBuffer();
+
+    @Override
+    public abstract boolean inputQueueIsEmpty();
+
+    @Override
+    public abstract Packet dequeueOutputBuffer();
+
+    @Override
+    public abstract boolean enqueueOutputBuffer(Packet packet);
+
+    @Override
+    public abstract boolean outputQueueIsEmpty();
 
     @Override
     public int compareTo(NetworkNode networkNode) {

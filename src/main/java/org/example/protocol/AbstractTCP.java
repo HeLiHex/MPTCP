@@ -39,7 +39,7 @@ public class AbstractTCP extends Routable implements TCP {
 
     @Override
     public Packet receive() {
-        return this.inputBuffer.poll();
+        return this.dequeueInputBuffer();
     }
 
     @Override
@@ -47,12 +47,43 @@ public class AbstractTCP extends Routable implements TCP {
 
     }
 
-    public Queue<Packet> getOutputBuffer() {
-        return this.outputBuffer;
-    }
-
     @Override
     public void run() {
 
+    }
+
+
+    /**
+     * Layer 1
+     */
+
+    @Override
+    public boolean enqueueInputBuffer(Packet packet) {
+        return this.inputBuffer.offer(packet);
+    }
+
+    @Override
+    public Packet dequeueInputBuffer() {
+        return this.inputBuffer.poll();
+    }
+
+    @Override
+    public boolean inputQueueIsEmpty() {
+        return this.inputBuffer.isEmpty();
+    }
+
+    @Override
+    public Packet dequeueOutputBuffer() {
+        return this.outputBuffer.poll();
+    }
+
+    @Override
+    public boolean enqueueOutputBuffer(Packet packet) {
+        return this.outputBuffer.offer(packet);
+    }
+
+    @Override
+    public boolean outputQueueIsEmpty() {
+        return this.outputBuffer.isEmpty();
     }
 }
