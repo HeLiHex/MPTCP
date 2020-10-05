@@ -23,10 +23,10 @@ public class BasicTCPTest {
     @Test
     public void main() {
         BasicTCP client = new BasicTCP();
-        Router r1 = new Router();
-        Router r2 = new Router();
-        Router r3 = new Router();
-        Router r4 = new Router();
+        Router r1 = new Router(100);
+        Router r2 = new Router(100);
+        Router r3 = new Router(100);
+        Router r4 = new Router(100);
         BasicTCP server = new BasicTCP();
 
         client.addNeighbour(r1);

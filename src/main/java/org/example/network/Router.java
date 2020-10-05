@@ -1,11 +1,12 @@
 package org.example.network;
 
+import org.example.protocol.util.BufferQueue;
 import org.example.protocol.util.Packet;
 
 public class Router extends Routable {
 
-    public Router() {
-        super();
+    public Router(int bufferSize) {
+        super(new BufferQueue<Packet>(bufferSize), null);
     }
 
     @Override

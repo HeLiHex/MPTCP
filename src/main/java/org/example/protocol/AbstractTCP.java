@@ -14,13 +14,8 @@ public class AbstractTCP extends Routable implements TCP {
 
     private Logger logger = Logger.getLogger(Client.class.getName());
 
-    //private Queue<Packet> inputBuffer;
-    private Queue<Packet> outputBuffer;
-
-
-    public AbstractTCP(int inputBufferSize, int outputBufferSize) {
-        this.outputBuffer = new BufferQueue<>(outputBufferSize);
-        //this.inputBuffer = new BufferQueue<>(inputBufferSize);
+    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, int seed) {
+        super(inputBuffer, outputBuffer);
     }
 
     @Override

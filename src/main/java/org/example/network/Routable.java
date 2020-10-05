@@ -16,13 +16,13 @@ public abstract class Routable extends Thread implements NetworkNode {
     private Address address;
     private int cost;
 
-    public Routable() {
+    public Routable(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer) {
+        this.inputBuffer = inputBuffer;
+        this.outputBuffer = outputBuffer;
         this.routingTable = new RoutingTable(this);;
         this.neighbours = new ArrayList<>();
-        this.inputBuffer = new BufferQueue<>(100);
-        this.outputBuffer = new BufferQueue<>(100);
         this.address = new Address();
-        this.cost = 10;
+        setRandomCost();
     }
 
     @Override
@@ -71,6 +71,10 @@ public abstract class Routable extends Thread implements NetworkNode {
     @Override
     public int getCost() {
         return this.cost;
+    }
+
+    private void setRandomCost(){
+        this.cost = (int) ((Math.random() + 1) * 10);
     }
 
     @Override
