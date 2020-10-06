@@ -69,7 +69,7 @@ public class RoutableTest {
         r4.start();
 
         String msg = "hello på deg";
-        client.route(new Packet(msg, server));
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
             Thread.sleep(1000);
@@ -111,7 +111,7 @@ public class RoutableTest {
         r4.start();
 
         String msg = "hello på deg";
-        client.route(new Packet(msg, server));
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
             Thread.sleep(1000);
@@ -149,7 +149,7 @@ public class RoutableTest {
         r3.start();
 
         String msg = "hello på deg";
-        client.route(new Packet(msg, server));
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
             Thread.sleep(1000);
@@ -189,7 +189,7 @@ public class RoutableTest {
         r4.start();
 
         String msg = "hello på deg";
-        client.route(new Packet(msg, server));
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
             Thread.sleep(1000);
@@ -232,7 +232,7 @@ public class RoutableTest {
         r4.start();
 
         String msg = "hello på deg";
-        client.route(new Packet(msg, server));
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
             Thread.sleep(1000);
@@ -271,8 +271,8 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello på deg";
-        client.route(new Packet(msg, server));
+        String msg = "hello";
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
             Thread.sleep(1000);
@@ -353,7 +353,7 @@ public class RoutableTest {
         }
 
         String msg = "hello på deg";
-        client.route(new Packet(msg, server));
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
             Thread.sleep(10000);
