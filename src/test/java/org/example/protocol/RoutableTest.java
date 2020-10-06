@@ -243,6 +243,46 @@ public class RoutableTest {
 
 
     @Test
+    public void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
+        BasicTCP client = new BasicTCP();
+        Router r1 = new Router(100);
+        Router r2 = new Router(100);
+        Router r3 = new Router(100);
+        Router r4 = new Router(100);
+        BasicTCP server = new BasicTCP();
+
+        client.addNeighbour(r1);
+        r1.addNeighbour(r2);
+        r2.addNeighbour(r3);
+        server.addNeighbour(r3);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        r2.start();
+        r3.start();
+        r4.start();
+
+        String msg = "hello på deg";
+        client.route(new Packet(msg, server));
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        String receivedMsg = server.receive().getMsg();
+        Assert.assertEquals(receivedMsg,msg);
+    }
+
+
+    @Test
     public void routingPacketRoutsItToItsDestinationCrazyGraph(){
         BasicTCP client = new BasicTCP();
         Router r1 = new Router(100);
@@ -303,6 +343,11 @@ public class RoutableTest {
         r10.start();
         r11.start();
         r12.start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         String msg = "hello på deg";
         client.route(new Packet(msg, server));
