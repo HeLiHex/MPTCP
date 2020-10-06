@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Packet;
+import org.example.network.NetworkNode;
 
 public interface TCP {
 
@@ -10,7 +11,7 @@ public interface TCP {
      * 2. receive SYN-ACK with A+1 and sequence number random B (the server chooses B)
      * 3. send ACK back to server. The ACK is now A+2 and sequence number is B+1
      */
-    void connect();
+    void connect(NetworkNode host);
 
     /**
      * Enqueues a new Packet to the output-buffer

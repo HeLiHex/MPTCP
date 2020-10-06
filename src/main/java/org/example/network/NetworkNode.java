@@ -60,13 +60,13 @@ public interface NetworkNode extends Comparable<NetworkNode> {
 
     boolean enqueueOutputBuffer(Packet packet);
 
-    boolean outputQueueIsEmpty();
+    boolean outputBufferIsEmpty();
 
     Packet dequeueInputBuffer();
 
     boolean enqueueInputBuffer(Packet packet);
 
-    boolean inputQueueIsEmpty();
+    boolean inputBufferIsEmpty();
 
 
 }

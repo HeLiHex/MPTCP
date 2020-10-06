@@ -52,7 +52,6 @@ public class RoutingTable {
         int newCost = nodeIsVisited ? cost + this.getCosts().get(prevIndex) : 0;
 
         if (costs.get(index) > newCost) {
-            System.out.println("update entry");
             prevNodes.set(index, comingFrom);
             costs.set(index, cost + this.getDestinationNodes().get(prevIndex).getCost());
 

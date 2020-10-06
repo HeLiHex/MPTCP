@@ -1,5 +1,7 @@
 package org.example.protocol;
 
+import org.example.data.Flag;
+import org.example.network.NetworkNode;
 import org.example.network.Routable;
 import org.example.data.BufferQueue;
 import org.example.data.Packet;
@@ -13,27 +15,92 @@ public class AbstractTCP extends Routable implements TCP {
 
     private Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
+
+    private boolean waitingForACK; //todo - rename to lock or something
+    private NetworkNode connectedNode;
+    private Packet receivedPacket;
+
+
     public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator) {
         super(inputBuffer, outputBuffer, randomGenerator);
+        this.waitingForACK = false;
+        this.receivedPacket = null;
+    }
+
+    public NetworkNode getConnectedNode() {
+        return connectedNode;
     }
 
     @Override
-    public void connect() {
+    public void connect(NetworkNode host) {
+        this.updateRoutingTable();
+        Packet syn = new Packet.PacketBuilder()
+                .withDestination(host)
+                .withOrigin(this)
+                .withFlag(Flag.SYN)
+                .build();
+        this.route(syn);
 
+        while (this.inputBufferIsEmpty()){
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Packet synAck = this.dequeueInputBuffer();
+        if (synAck.hasFlag(Flag.SYN) && synAck.hasFlag(Flag.ACK)){
+            System.out.println(synAck);
+            Packet ack = new Packet.PacketBuilder()
+                    .withDestination(host)
+                    .withOrigin(this)
+                    .withFlag(Flag.ACK)
+                    .build();
+            this.route(ack);
+
+            this.connectedNode = host;
+            this.logger.log(Level.INFO, "connection established with host: " + this.connectedNode);
+            this.start();
+        }
+
+    }
+
+    public void incomingConnect(Packet syn){
+        NetworkNode node = syn.getOrigin();
+        Packet ack = new Packet.PacketBuilder()
+                .withDestination(node)
+                .withOrigin(this)
+                .withFlag(Flag.SYN)
+                .withFlag(Flag.ACK)
+                .build();
+        this.route(ack);
+
+        this.connectedNode = node;
+        this.logger.log(Level.INFO, "connection established with: " + this.connectedNode);
     }
 
     @Override
     public void send(Packet packet) {
-        boolean wasAdded = this.outputBuffer.offer(packet);
-        if (!wasAdded) {
-            logger.log(Level.WARNING, "packet was not added to the output queue");
+        if (!packet.getDestination().equals(this.connectedNode)){
+            logger.log(Level.WARNING, "A connection must be established to send packets");
+            System.out.println(this.connectedNode);
             return;
         }
+
+        packet.setOrigin(this);
+        boolean wasAdded = this.outputBuffer.offer(packet);
+        if (!wasAdded) {
+            logger.log(Level.WARNING, "Packet was not added to the output queue");
+            return;
+        }
+        System.out.println("packet sent");
     }
 
     @Override
     public Packet receive() {
-        return this.dequeueInputBuffer();
+        //todo - hand over to socket/client
+        return this.receivedPacket;
     }
 
     @Override
@@ -41,19 +108,60 @@ public class AbstractTCP extends Routable implements TCP {
 
     }
 
-    @Override
-    public void run() {
-        while (true){
-            if (!this.inputQueueIsEmpty()){
-                Packet packet = this.receive();
-                System.out.println("endpunkt har pakken: " + packet);
-            }
+    private synchronized void handleIncoming(){
+        Packet packet = this.dequeueInputBuffer();
+        if (packet == null) return;
+
+        System.out.println("packet: " + packet + "received");
+
+
+        if (packet.hasFlag(Flag.ACK) && !packet.hasFlag(Flag.SYN)){
+            System.out.println("ACK received");
+            this.waitingForACK = false;
+            return;
+        }
+        if (packet.hasFlag(Flag.SYN) && !packet.hasFlag(Flag.ACK)){
+            System.out.println("SYN received");
+            incomingConnect(packet);
+            return;
+        }
+        if (packet.hasFlag(Flag.FIN)){
+            System.out.println("FIN received");
+            close();
+            return;
+        }
+
+        this.receivedPacket = packet;
+        System.out.println("Packet received: " + packet);
+        this.send(new Packet.PacketBuilder()
+                .withOrigin(this)
+                .withDestination(packet.getOrigin())
+                .withFlag(Flag.ACK)
+                .build()
+        );
+    }
+
+    private void trySend(){
+        if (waitingForACK){
+            //System.out.println("waiting for ack");
+            return;
+        }
+        if (!this.outputBufferIsEmpty()){
+            Packet packet = this.dequeueOutputBuffer();
+            this.route(packet);
+            this.waitingForACK = true;
         }
     }
 
-
-
-
+    @Override
+    public void run() {
+        while (true){
+            if (!this.inputBufferIsEmpty()){
+                this.handleIncoming();
+            }
+            trySend();
+        }
+    }
 
     /**
      * Layer 1
@@ -70,7 +178,7 @@ public class AbstractTCP extends Routable implements TCP {
     }
 
     @Override
-    public boolean inputQueueIsEmpty() {
+    public boolean inputBufferIsEmpty() {
         return this.inputBuffer.isEmpty();
     }
 
@@ -85,7 +193,7 @@ public class AbstractTCP extends Routable implements TCP {
     }
 
     @Override
-    public boolean outputQueueIsEmpty() {
+    public boolean outputBufferIsEmpty() {
         return this.outputBuffer.isEmpty();
     }
 }

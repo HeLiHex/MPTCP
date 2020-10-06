@@ -22,7 +22,7 @@ public class Router extends Routable {
     }
 
     @Override
-    public boolean inputQueueIsEmpty() {
+    public boolean inputBufferIsEmpty() {
         return this.inputBuffer.isEmpty();
     }
 
@@ -37,14 +37,14 @@ public class Router extends Routable {
     }
 
     @Override
-    public boolean outputQueueIsEmpty() {
-        return this.inputQueueIsEmpty();
+    public boolean outputBufferIsEmpty() {
+        return this.inputBufferIsEmpty();
     }
 
     @Override
     public void run() {
         while (true){
-            if (!this.inputQueueIsEmpty()){
+            if (!this.inputBufferIsEmpty()){
                 this.route(this.dequeueInputBuffer());
             }
         }

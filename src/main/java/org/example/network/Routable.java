@@ -33,12 +33,12 @@ public abstract class Routable extends Thread implements NetworkNode {
     @Override
     public void updateRoutingTable() {
         this.routingTable.update(this);
-        System.out.println(this.routingTable);
+        //System.out.println(this.routingTable);
     }
 
     @Override
     public void route(Packet packet) {
-        System.out.println("packet: " + packet + " is routed through router: " + this.address);
+        //System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         NetworkNode nextNodeOnPath = this.routingTable.getPath(this, destination);
         nextNodeOnPath.channelPackage(packet);
@@ -96,7 +96,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     public abstract Packet dequeueInputBuffer();
 
     @Override
-    public abstract boolean inputQueueIsEmpty();
+    public abstract boolean inputBufferIsEmpty();
 
     @Override
     public abstract Packet dequeueOutputBuffer();
@@ -105,7 +105,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     public abstract boolean enqueueOutputBuffer(Packet packet);
 
     @Override
-    public abstract boolean outputQueueIsEmpty();
+    public abstract boolean outputBufferIsEmpty();
 
     @Override
     public int compareTo(NetworkNode networkNode) {
@@ -129,6 +129,12 @@ public abstract class Routable extends Thread implements NetworkNode {
     @Override
     public String toString() {
         return this.address.toString();
+    }
+
+    @Override
+    public synchronized void start() {
+        this.updateRoutingTable();
+        super.start();
     }
 
     @Override

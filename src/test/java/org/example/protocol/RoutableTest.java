@@ -57,10 +57,6 @@ public class RoutableTest {
         r4.addNeighbour(server);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -77,7 +73,7 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.receive().getMsg();
+        String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -99,10 +95,6 @@ public class RoutableTest {
         server.addNeighbour(r4);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -119,7 +111,7 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.receive().getMsg();
+        String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -139,9 +131,6 @@ public class RoutableTest {
         server.addNeighbour(r3);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -157,7 +146,7 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.receive().getMsg();
+        String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -177,10 +166,6 @@ public class RoutableTest {
         server.addNeighbour(r4);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -197,7 +182,7 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.receive().getMsg();
+        String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -220,10 +205,6 @@ public class RoutableTest {
         r3.addNeighbour(r4);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -240,7 +221,7 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.receive().getMsg();
+        String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -260,10 +241,6 @@ public class RoutableTest {
         server.addNeighbour(r3);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -280,7 +257,7 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.receive().getMsg();
+        String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -320,18 +297,6 @@ public class RoutableTest {
         r12.addNeighbour(server);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
-        r5.updateRoutingTable();
-        r6.updateRoutingTable();
-        r7.updateRoutingTable();
-        r8.updateRoutingTable();
-        r9.updateRoutingTable();
-        r10.updateRoutingTable();
-        r11.updateRoutingTable();
-        r12.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -361,7 +326,7 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.receive().getMsg();
+        String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg, msg);
     }
 

@@ -11,11 +11,12 @@ public class Packet {
     public static class PacketBuilder {
 
         private NetworkNode destination = null;
+        private NetworkNode origin = null;
         private List<Flag> flags = new ArrayList<>();
         private String msg = null;
 
         public Packet build(){
-            return new Packet(destination, flags, msg);
+            return new Packet(this.destination, this.origin, this.flags, this.msg);
         }
 
         public PacketBuilder withFlag(Flag flag){
@@ -27,7 +28,11 @@ public class Packet {
         public PacketBuilder withMsg(String msg){
             this.msg = msg;
             return this;
+        }
 
+        public PacketBuilder withOrigin(NetworkNode self){
+            this.origin = self;
+            return this;
         }
 
         public PacketBuilder withDestination(NetworkNode destination){
@@ -39,14 +44,20 @@ public class Packet {
 
 
     private NetworkNode destination;
+    private NetworkNode origin;
     private List<Flag> flags;
     private String msg;
 
 
-    public Packet(NetworkNode destination, List<Flag> flags, String msg) {
+    public Packet(NetworkNode destination,NetworkNode origin, List<Flag> flags, String msg) {
         this.destination = destination;
+        this.origin = origin;
         this.flags = flags;
         this.msg = msg;
+    }
+
+    public boolean hasFlag(Flag flag){
+        return this.flags.contains(flag);
     }
 
     //tmp
@@ -60,8 +71,17 @@ public class Packet {
         return this.destination;
     }
 
+    public NetworkNode getOrigin() {
+        return this.origin;
+    }
+
+    public void setOrigin(NetworkNode origin) {
+        this.origin = origin;
+    }
+
     @Override
     public String toString() {
+        if (this.getMsg() == null) return this.flags.toString();
         return "["+getMsg()+"]";
     }
 }
