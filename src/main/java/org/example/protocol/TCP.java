@@ -1,6 +1,6 @@
 package org.example.protocol;
 
-import org.example.protocol.util.Packet;
+import org.example.data.Packet;
 
 public interface TCP {
 

@@ -1,11 +1,11 @@
 package org.example.protocol;
 
-import org.example.network.Router;
-import org.example.protocol.util.Packet;
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Random;
 
 public class BasicTCPTest {
+
+
+    private static final Random RANDOM_GENERATOR = new Random();
 
 
 

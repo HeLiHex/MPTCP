@@ -1,11 +1,12 @@
 package org.example.network;
 
-import org.example.protocol.util.BufferQueue;
-import org.example.protocol.util.Packet;
+import org.example.data.BufferQueue;
+import org.example.data.Packet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 
 public abstract class Routable extends Thread implements NetworkNode {
 
@@ -15,13 +16,17 @@ public abstract class Routable extends Thread implements NetworkNode {
     protected Queue<Packet> outputBuffer;
     private Address address;
     private int cost;
+    private Random randomGenerator;
+    private double noiseTolerance;
 
-    public Routable(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer) {
+    public Routable(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator) {
         this.inputBuffer = inputBuffer;
         this.outputBuffer = outputBuffer;
         this.routingTable = new RoutingTable(this);;
         this.neighbours = new ArrayList<>();
         this.address = new Address();
+        this.randomGenerator = randomGenerator;
+        this.noiseTolerance = 100.0;
         setRandomCost();
     }
 
@@ -36,13 +41,20 @@ public abstract class Routable extends Thread implements NetworkNode {
         System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         NetworkNode nextNodeOnPath = this.routingTable.getPath(this, destination);
-        nextNodeOnPath.deliverPackage(packet);
+        nextNodeOnPath.channelPackage(packet);
+    }
+
+    private boolean lossy(){
+        double gaussianNoise = this.randomGenerator.nextGaussian();
+        double noise = Math.abs(gaussianNoise);
+        return noise > this.noiseTolerance;
     }
 
 
     //todo - rename
     @Override
-    public void deliverPackage(Packet packet) {
+    public void channelPackage(Packet packet) {
+        if (lossy()) return;
         if (!this.enqueueInputBuffer(packet)) {
             System.out.println("Packet was not delivered to next NetworkNode");
         }

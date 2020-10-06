@@ -1,4 +1,4 @@
-package org.example.protocol.util;
+package org.example.data;
 
 import org.example.network.NetworkNode;
 

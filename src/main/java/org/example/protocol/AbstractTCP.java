@@ -1,21 +1,20 @@
 package org.example.protocol;
 
-import org.example.Client;
 import org.example.network.Routable;
-import org.example.protocol.util.BufferQueue;
-import org.example.protocol.util.Packet;
+import org.example.data.BufferQueue;
+import org.example.data.Packet;
 
 
-import java.util.Queue;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AbstractTCP extends Routable implements TCP {
 
-    private Logger logger = Logger.getLogger(Client.class.getName());
+    private Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
-    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, int seed) {
-        super(inputBuffer, outputBuffer);
+    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator) {
+        super(inputBuffer, outputBuffer, randomGenerator);
     }
 
     @Override
@@ -44,8 +43,16 @@ public class AbstractTCP extends Routable implements TCP {
 
     @Override
     public void run() {
-
+        while (true){
+            if (!this.inputQueueIsEmpty()){
+                Packet packet = this.receive();
+                System.out.println("endpunkt har pakken: " + packet);
+            }
+        }
     }
+
+
+
 
 
     /**

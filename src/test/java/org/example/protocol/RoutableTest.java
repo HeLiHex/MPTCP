@@ -1,25 +1,28 @@
 package org.example.protocol;
 
 import org.example.network.Router;
-import org.example.protocol.util.Packet;
+import org.example.data.Packet;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class RoutableTest {
+
+    private static final Random RANDOM_GENERATOR = new Random();
 
 
     @Test
     public void setRandomCostSetsCost(){
-        Router r = new Router(1);
+        Router r = new Router(1, RANDOM_GENERATOR);
         Assert.assertNotEquals(r.getCost(), 0);
     }
 
     @Test
     public void setRandomCostSetsPositiveCostAndNotZero(){
-        Router r = new Router(1);
+        Router r = new Router(1, RANDOM_GENERATOR);
         Assert.assertTrue(r.getCost() > 0);
     }
 
@@ -28,7 +31,7 @@ public class RoutableTest {
         int size = 100;
         int[] listOfCosts = new int[size];
         for (int i = 0; i < listOfCosts.length; i++) {
-            Router r = new Router(1);
+            Router r = new Router(1, RANDOM_GENERATOR);
             listOfCosts[i] = r.getCost();
         }
         Arrays.sort(listOfCosts);
@@ -40,12 +43,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationStraitLine(){
-        BasicTCP client = new BasicTCP();
-        Router r1 = new Router(100);
-        Router r2 = new Router(100);
-        Router r3 = new Router(100);
-        Router r4 = new Router(100);
-        BasicTCP server = new BasicTCP();
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addNeighbour(r1);
         r1.addNeighbour(r2);
@@ -81,12 +84,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationCircleGraph(){
-        BasicTCP client = new BasicTCP();
-        Router r1 = new Router(100);
-        Router r2 = new Router(100);
-        Router r3 = new Router(100);
-        Router r4 = new Router(100);
-        BasicTCP server = new BasicTCP();
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addNeighbour(r1);
         client.addNeighbour(r2);
@@ -123,11 +126,11 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationWithCycle(){
-        BasicTCP client = new BasicTCP();
-        Router r1 = new Router(100);
-        Router r2 = new Router(100);
-        Router r3 = new Router(100);
-        BasicTCP server = new BasicTCP();
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addNeighbour(r1);
         r1.addNeighbour(r2);
@@ -160,12 +163,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationWithDeadEnd(){
-        BasicTCP client = new BasicTCP();
-        Router r1 = new Router(100);
-        Router r2 = new Router(100);
-        Router r3 = new Router(100);
-        Router r4 = new Router(100);
-        BasicTCP server = new BasicTCP();
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addNeighbour(r1);
         r1.addNeighbour(r2);
@@ -201,12 +204,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationForrest(){
-        BasicTCP client = new BasicTCP();
-        Router r1 = new Router(100);
-        Router r2 = new Router(100);
-        Router r3 = new Router(100);
-        Router r4 = new Router(100);
-        BasicTCP server = new BasicTCP();
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         //tree one
         client.addNeighbour(r1);
@@ -244,12 +247,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
-        BasicTCP client = new BasicTCP();
-        Router r1 = new Router(100);
-        Router r2 = new Router(100);
-        Router r3 = new Router(100);
-        Router r4 = new Router(100);
-        BasicTCP server = new BasicTCP();
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addNeighbour(r1);
         r1.addNeighbour(r2);
@@ -284,20 +287,20 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationCrazyGraph(){
-        BasicTCP client = new BasicTCP();
-        Router r1 = new Router(100);
-        Router r2 = new Router(100);
-        Router r3 = new Router(100);
-        Router r4 = new Router(100);
-        Router r5 = new Router(100);
-        Router r6 = new Router(100);
-        Router r7 = new Router(100);
-        Router r8 = new Router(100);
-        Router r9 = new Router(100);
-        Router r10 = new Router(100);
-        Router r11 = new Router(100);
-        Router r12 = new Router(100);
-        BasicTCP server = new BasicTCP();
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r5 = new Router(100, RANDOM_GENERATOR);
+        Router r6 = new Router(100, RANDOM_GENERATOR);
+        Router r7 = new Router(100, RANDOM_GENERATOR);
+        Router r8 = new Router(100, RANDOM_GENERATOR);
+        Router r9 = new Router(100, RANDOM_GENERATOR);
+        Router r10 = new Router(100, RANDOM_GENERATOR);
+        Router r11 = new Router(100, RANDOM_GENERATOR);
+        Router r12 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addNeighbour(r1);
         client.addNeighbour(r2);
@@ -344,7 +347,7 @@ public class RoutableTest {
         r11.start();
         r12.start();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

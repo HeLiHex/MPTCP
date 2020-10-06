@@ -1,6 +1,6 @@
 package org.example.network;
 
-import org.example.protocol.util.Packet;
+import org.example.data.Packet;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public interface NetworkNode extends Comparable<NetworkNode> {
      *
      * @param packet
      */
-    void deliverPackage(Packet packet);
+    void channelPackage(Packet packet);
 
     /**
      * A method that returns a list og the neighbouring NetworkNodes

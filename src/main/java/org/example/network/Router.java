@@ -1,12 +1,14 @@
 package org.example.network;
 
-import org.example.protocol.util.BufferQueue;
-import org.example.protocol.util.Packet;
+import org.example.data.BufferQueue;
+import org.example.data.Packet;
+
+import java.util.Random;
 
 public class Router extends Routable {
 
-    public Router(int bufferSize) {
-        super(new BufferQueue<Packet>(bufferSize), null);
+    public Router(int bufferSize, Random randomGenerator) {
+        super(new BufferQueue<Packet>(bufferSize), null, randomGenerator);
     }
 
     @Override
