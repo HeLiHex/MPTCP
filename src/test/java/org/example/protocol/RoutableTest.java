@@ -261,7 +261,7 @@ public class RoutableTest {
         Assert.assertEquals(receivedMsg,msg);
     }
 
-
+/*
     @Test
     public void routingPacketRoutsItToItsDestinationCrazyGraph(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
@@ -330,7 +330,7 @@ public class RoutableTest {
         Assert.assertEquals(receivedMsg, msg);
     }
 
-
+*/
 
     @Test(expected = NullPointerException.class)
     public void unconnectedClientCantRoutPacketToDestination(){
