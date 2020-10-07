@@ -16,7 +16,9 @@ public class AbstractTCP extends Routable implements TCP {
     private Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
 
-    private boolean waitingForACK; //todo - rename to lock or something
+    //todo - probably ok with boolean, but locking and releasing should be determined by a abstract method
+    private boolean waitingForACK;
+
     private NetworkNode connectedNode;
     private Packet receivedPacket;
 
@@ -94,7 +96,7 @@ public class AbstractTCP extends Routable implements TCP {
             logger.log(Level.WARNING, "Packet was not added to the output queue");
             return;
         }
-        System.out.println("packet sent");
+        System.out.println("packet: " + packet + " sent");
     }
 
     @Override
@@ -112,27 +114,23 @@ public class AbstractTCP extends Routable implements TCP {
         Packet packet = this.dequeueInputBuffer();
         if (packet == null) return;
 
-        System.out.println("packet: " + packet + "received");
+        System.out.println("packet: " + packet + " received");
 
 
         if (packet.hasFlag(Flag.ACK) && !packet.hasFlag(Flag.SYN)){
-            System.out.println("ACK received");
             this.waitingForACK = false;
             return;
         }
         if (packet.hasFlag(Flag.SYN) && !packet.hasFlag(Flag.ACK)){
-            System.out.println("SYN received");
             incomingConnect(packet);
             return;
         }
         if (packet.hasFlag(Flag.FIN)){
-            System.out.println("FIN received");
             close();
             return;
         }
 
         this.receivedPacket = packet;
-        System.out.println("Packet received: " + packet);
         this.send(new Packet.PacketBuilder()
                 .withOrigin(this)
                 .withDestination(packet.getOrigin())
@@ -143,6 +141,11 @@ public class AbstractTCP extends Routable implements TCP {
 
     private void trySend(){
         if (waitingForACK){
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             //System.out.println("waiting for ack");
             return;
         }

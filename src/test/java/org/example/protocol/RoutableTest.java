@@ -321,7 +321,7 @@ public class RoutableTest {
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
