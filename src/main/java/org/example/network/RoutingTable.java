@@ -64,6 +64,11 @@ public class RoutingTable {
     }
 
     public NetworkNode getPath(NetworkNode source, NetworkNode destination) {
+        if (destination == null){
+            System.out.println("ERROR! The destination is null");
+            return null;
+        }
+
         int index = this.getDestinationNodes().indexOf(destination);
         if (index < 0) {
             System.out.println("Destination " + destination + " does not exist");

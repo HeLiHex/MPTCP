@@ -19,14 +19,14 @@ public abstract class Routable extends Thread implements NetworkNode {
     private Random randomGenerator;
     private double noiseTolerance;
 
-    public Routable(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator) {
+    public Routable(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
         this.outputBuffer = outputBuffer;
-        this.routingTable = new RoutingTable(this);;
+        this.routingTable = new RoutingTable(this);
         this.neighbours = new ArrayList<>();
         this.address = new Address();
         this.randomGenerator = randomGenerator;
-        this.noiseTolerance = 100.0;
+        this.noiseTolerance = noiseTolerance;
         setRandomCost();
     }
 
@@ -86,7 +86,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     private void setRandomCost(){
-        this.cost = (int) ((Math.random() + 1) * 10);
+        this.cost = this.randomGenerator.nextInt(100);
     }
 
     @Override

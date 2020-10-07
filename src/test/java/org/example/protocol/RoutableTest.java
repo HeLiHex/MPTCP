@@ -312,7 +312,7 @@ public class RoutableTest {
         r11.start();
         r12.start();
         try {
-            Thread.sleep(3000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -321,7 +321,7 @@ public class RoutableTest {
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
         try {
-            Thread.sleep(20000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -329,6 +329,154 @@ public class RoutableTest {
         String receivedMsg = server.dequeueInputBuffer().getMsg();
         Assert.assertEquals(receivedMsg, msg);
     }
+
+
+
+    @Test(expected = NullPointerException.class)
+    public void unconnectedClientCantRoutPacketToDestination(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        r1.addNeighbour(r2);
+        r2.addNeighbour(r3);
+        server.addNeighbour(r3);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        r2.start();
+        r3.start();
+
+        String msg = "hello";
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+    }
+
+
+
+    @Test(expected = NullPointerException.class)
+    public void unconnectedTreesCantRoutPacket(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addNeighbour(r1);
+        r1.addNeighbour(r2);
+
+        r3.addNeighbour(r4);
+        server.addNeighbour(r4);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        r2.start();
+        r3.start();
+        r4.start();
+
+        String msg = "hello";
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+    }
+
+
+
+    @Test
+    public void faultyChannelsDropPacket(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR, 0);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addNeighbour(r1);
+        r1.addNeighbour(r2);
+        r2.addNeighbour(r3);
+        r3.addNeighbour(r4);
+        server.addNeighbour(r4);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        r2.start();
+        r3.start();
+        r4.start();
+
+        String msg = "hello";
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Packet receivedPacket = server.dequeueInputBuffer();
+        Assert.assertEquals(null, receivedPacket);
+    }
+
+
+    @Test
+    public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR, 3.0);
+        Router r2 = new Router(100, RANDOM_GENERATOR, 3.0);
+        Router r3 = new Router(100, RANDOM_GENERATOR, 3.0);
+        Router r4 = new Router(100, RANDOM_GENERATOR,3.0);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addNeighbour(r1);
+        r1.addNeighbour(r2);
+        r2.addNeighbour(r3);
+        r3.addNeighbour(r4);
+        server.addNeighbour(r4);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        r2.start();
+        r3.start();
+        r4.start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < 1000; i++) {
+            String msg = "hello";
+            client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Packet receivedPacket = server.dequeueInputBuffer();
+            if (receivedPacket == null){
+                Assert.assertTrue(true);
+                return;
+            }
+        }
+        Assert.assertFalse(true);
+    }
+
+
+
+
+
+
+
 
 
 

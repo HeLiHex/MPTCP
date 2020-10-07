@@ -7,9 +7,15 @@ import java.util.Random;
 
 public class Router extends Routable {
 
-    public Router(int bufferSize, Random randomGenerator) {
-        super(new BufferQueue<Packet>(bufferSize), null, randomGenerator);
+    public Router(int bufferSize, Random randomGenerator, double noiseTolerance) {
+        super(new BufferQueue<Packet>(bufferSize), null, randomGenerator, noiseTolerance);
     }
+
+    public Router(int bufferSize, Random randomGenerator) {
+        super(new BufferQueue<Packet>(bufferSize), null, randomGenerator, 100.0);
+    }
+
+
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {

@@ -23,8 +23,8 @@ public class AbstractTCP extends Routable implements TCP {
     private Packet receivedPacket;
 
 
-    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator) {
-        super(inputBuffer, outputBuffer, randomGenerator);
+    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
+        super(inputBuffer, outputBuffer, randomGenerator, noiseTolerance);
         this.waitingForACK = false;
         this.receivedPacket = null;
     }
