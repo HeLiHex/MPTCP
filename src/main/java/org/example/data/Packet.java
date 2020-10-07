@@ -4,8 +4,6 @@ import org.example.network.NetworkNode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
 
 public class Packet {
     public static class PacketBuilder {
