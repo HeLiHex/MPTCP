@@ -48,6 +48,7 @@ public class AbstractTCP extends Routable implements TCP {
                 sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                System.exit(1);
             }
         }
 
