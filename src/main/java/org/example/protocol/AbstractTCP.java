@@ -47,8 +47,8 @@ public class AbstractTCP extends Routable implements TCP {
             try {
                 sleep(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                System.exit(1);
+                logger.log(Level.SEVERE, "Thread Interrupted!");
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -145,7 +145,8 @@ public class AbstractTCP extends Routable implements TCP {
             try {
                 sleep(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Thread Interrupted!");
+                Thread.currentThread().interrupt();
             }
             //System.out.println("waiting for ack");
             return;
