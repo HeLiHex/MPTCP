@@ -221,8 +221,8 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.dequeueInputBuffer().getMsg();
-        Assert.assertEquals(receivedMsg,msg);
+        Packet receivedPacket = server.dequeueInputBuffer();
+        Assert.assertEquals(msg, receivedPacket.getMsg());
     }
 
 

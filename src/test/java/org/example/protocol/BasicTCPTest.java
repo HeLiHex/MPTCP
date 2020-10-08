@@ -51,7 +51,7 @@ public class BasicTCPTest {
         client.send(packet);
 
         try {
-            sleep(100);
+            sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -94,7 +94,7 @@ public class BasicTCPTest {
         client.send(packet);
 
         try {
-            sleep(100);
+            sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
