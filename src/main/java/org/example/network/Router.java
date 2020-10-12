@@ -32,20 +32,6 @@ public class Router extends Routable {
         return this.inputBuffer.isEmpty();
     }
 
-    @Override
-    public Packet dequeueOutputBuffer() {
-        return this.dequeueInputBuffer();
-    }
-
-    @Override
-    public boolean enqueueOutputBuffer(Packet packet) {
-        return this.enqueueInputBuffer(packet);
-    }
-
-    @Override
-    public boolean outputBufferIsEmpty() {
-        return this.inputBufferIsEmpty();
-    }
 
     @Override
     public void run() {

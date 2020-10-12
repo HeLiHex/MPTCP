@@ -98,14 +98,6 @@ public abstract class Routable extends Thread implements NetworkNode {
     @Override
     public abstract boolean inputBufferIsEmpty();
 
-    @Override
-    public abstract Packet dequeueOutputBuffer();
-
-    @Override
-    public abstract boolean enqueueOutputBuffer(Packet packet);
-
-    @Override
-    public abstract boolean outputBufferIsEmpty();
 
     @Override
     public int compareTo(NetworkNode networkNode) {

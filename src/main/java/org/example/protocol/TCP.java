@@ -1,9 +1,10 @@
 package org.example.protocol;
 
 import org.example.data.Packet;
+import org.example.network.Endpoint;
 import org.example.network.NetworkNode;
 
-public interface TCP {
+public interface TCP{
 
 
     /**
@@ -33,7 +34,6 @@ public interface TCP {
      * 4. the first endpoint to send FIN waits for a timeout before finally closing connection
      */
     void close();
-
 
 
 

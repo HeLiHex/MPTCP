@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Flag;
+import org.example.network.Endpoint;
 import org.example.network.NetworkNode;
 import org.example.network.Routable;
 import org.example.data.BufferQueue;
@@ -11,7 +12,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AbstractTCP extends Routable implements TCP {
+public class AbstractTCP extends Routable implements TCP, Endpoint {
 
     private Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
@@ -39,7 +40,7 @@ public class AbstractTCP extends Routable implements TCP {
         Packet syn = new Packet.PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
-                .withFlag(Flag.SYN)
+                .withFlags(Flag.SYN)
                 .build();
         this.route(syn);
 
@@ -53,12 +54,12 @@ public class AbstractTCP extends Routable implements TCP {
         }
 
         Packet synAck = this.dequeueInputBuffer();
-        if (synAck.hasFlag(Flag.SYN) && synAck.hasFlag(Flag.ACK)){
+        if (synAck.hasFlag(Flag.SYN, Flag.ACK) /*&& synAck.hasFlag(Flag.ACK)*/){
             System.out.println(synAck);
             Packet ack = new Packet.PacketBuilder()
                     .withDestination(host)
                     .withOrigin(this)
-                    .withFlag(Flag.ACK)
+                    .withFlags(Flag.ACK)
                     .build();
             this.route(ack);
 
@@ -71,13 +72,12 @@ public class AbstractTCP extends Routable implements TCP {
 
     public void incomingConnect(Packet syn){
         NetworkNode node = syn.getOrigin();
-        Packet ack = new Packet.PacketBuilder()
+        Packet synAck = new Packet.PacketBuilder()
                 .withDestination(node)
                 .withOrigin(this)
-                .withFlag(Flag.SYN)
-                .withFlag(Flag.ACK)
+                .withFlags(Flag.SYN, Flag.ACK)
                 .build();
-        this.route(ack);
+        this.route(synAck);
 
         this.connectedNode = node;
         this.logger.log(Level.INFO, "connection established with: " + this.connectedNode);
@@ -135,7 +135,7 @@ public class AbstractTCP extends Routable implements TCP {
         this.send(new Packet.PacketBuilder()
                 .withOrigin(this)
                 .withDestination(packet.getOrigin())
-                .withFlag(Flag.ACK)
+                .withFlags(Flag.ACK)
                 .build()
         );
     }
@@ -171,6 +171,7 @@ public class AbstractTCP extends Routable implements TCP {
     /**
      * Layer 1
      */
+
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
