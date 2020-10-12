@@ -76,7 +76,7 @@ public class Packet {
         return this.origin;
     }
 
-    public synchronized void setOrigin(NetworkNode origin) {
+    public void setOrigin(NetworkNode origin) {
         this.origin = origin;
     }
 
