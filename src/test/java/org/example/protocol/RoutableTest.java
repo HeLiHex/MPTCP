@@ -74,6 +74,12 @@ public class RoutableTest {
         }
 
         String receivedMsg = server.dequeueInputBuffer().getMsg();
+
+        r1.interrupt();
+        r2.interrupt();
+        r3.interrupt();
+        r4.interrupt();
+
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -102,6 +108,12 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
@@ -112,6 +124,12 @@ public class RoutableTest {
         }
 
         String receivedMsg = server.dequeueInputBuffer().getMsg();
+
+        r1.interrupt();
+        r2.interrupt();
+        r3.interrupt();
+        r4.interrupt();
+
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -137,6 +155,12 @@ public class RoutableTest {
         r2.start();
         r3.start();
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
@@ -147,6 +171,11 @@ public class RoutableTest {
         }
 
         String receivedMsg = server.dequeueInputBuffer().getMsg();
+
+        r1.interrupt();
+        r2.interrupt();
+        r3.interrupt();
+
         Assert.assertEquals(receivedMsg,msg);
     }
 
@@ -173,6 +202,12 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
@@ -182,8 +217,14 @@ public class RoutableTest {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.dequeueInputBuffer().getMsg();
-        Assert.assertEquals(receivedMsg,msg);
+        Packet receivedPacket = server.dequeueInputBuffer();
+
+        r1.interrupt();
+        r2.interrupt();
+        r3.interrupt();
+        r4.interrupt();
+
+        Assert.assertEquals(msg, receivedPacket.getMsg());
     }
 
 
@@ -212,6 +253,12 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
@@ -222,6 +269,12 @@ public class RoutableTest {
         }
 
         Packet receivedPacket = server.dequeueInputBuffer();
+
+        r1.interrupt();
+        r2.interrupt();
+        r3.interrupt();
+        r4.interrupt();
+
         Assert.assertEquals(msg, receivedPacket.getMsg());
     }
 
@@ -248,20 +301,37 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
-
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        String receivedMsg = server.dequeueInputBuffer().getMsg();
-        Assert.assertEquals(receivedMsg,msg);
+        String msg = "hello";
+        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+
+
+
+        Packet receivedPacket = null;
+        do {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            receivedPacket = server.dequeueInputBuffer();
+        }while (receivedPacket == null);
+
+        r1.interrupt();
+        r2.interrupt();
+        r3.interrupt();
+        r4.interrupt();
+
+        Assert.assertEquals(msg, receivedPacket.getMsg());
     }
 
-/*
+
     @Test
     public void routingPacketRoutsItToItsDestinationCrazyGraph(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
@@ -327,10 +397,24 @@ public class RoutableTest {
         }
 
         String receivedMsg = server.dequeueInputBuffer().getMsg();
+
+        r1.interrupt();
+        r2.interrupt();
+        r3.interrupt();
+        r4.interrupt();
+        r5.interrupt();
+        r6.interrupt();
+        r7.interrupt();
+        r8.interrupt();
+        r9.interrupt();
+        r10.interrupt();
+        r11.interrupt();
+        r12.interrupt();
+
         Assert.assertEquals(receivedMsg, msg);
     }
 
-*/
+
 
     @Test(expected = NullPointerException.class)
     public void unconnectedClientCantRoutPacketToDestination(){
