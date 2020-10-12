@@ -12,11 +12,16 @@ public class RoutingTable {
 
     public RoutingTable(NetworkNode networkNode) {
         this.networkNode = networkNode;
-        this.table = new ArrayList<List>(2);
-        this.table.add(new ArrayList<NetworkNode>());
-        this.table.add(new ArrayList<Integer>());
-        this.table.add(new ArrayList<NetworkNode>());
-        addEntry(this.networkNode, 0, null);
+        this.table = initTable();
+        this.addEntry(this.networkNode, 0, null);
+    }
+
+    private ArrayList<List> initTable(){
+        ArrayList t = new ArrayList<List>(3);
+        t.add(new ArrayList<NetworkNode>());
+        t.add(new ArrayList<Integer>());
+        t.add(new ArrayList<NetworkNode>());
+        return t;
     }
 
     private void updateTable(NetworkNode node, int cost, NetworkNode comingFrom) {
