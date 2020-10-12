@@ -92,7 +92,7 @@ public class AbstractTCP extends Routable implements TCP {
         }
 
         packet.setOrigin(this);
-        boolean wasAdded = this.outputBuffer.offer(packet);
+        boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
             logger.log(Level.WARNING, "Packet was not added to the output queue");
             return;
@@ -179,6 +179,7 @@ public class AbstractTCP extends Routable implements TCP {
 
     @Override
     public Packet dequeueInputBuffer() {
+
         return this.inputBuffer.poll();
     }
 
