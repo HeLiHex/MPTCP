@@ -7,7 +7,6 @@ import java.util.List;
 
 public class Packet {
     public static class PacketBuilder {
-
         private NetworkNode destination = null;
         private NetworkNode origin = null;
         private List<Flag> flags = new ArrayList<>();
@@ -17,9 +16,11 @@ public class Packet {
             return new Packet(this.destination, this.origin, this.flags, this.msg);
         }
 
-        public PacketBuilder withFlag(Flag flag){
-            if (this.flags.contains(flag)) return this;
-            this.flags.add(flag);
+        public PacketBuilder withFlags(Flag... flags){
+            for (Flag flag : flags) {
+                if (this.flags.contains(flag)) continue;
+                this.flags.add(flag);
+            }
             return this;
         }
 
@@ -37,9 +38,7 @@ public class Packet {
             this.destination = destination;
             return this;
         }
-
     }
-
 
     private NetworkNode destination;
     private NetworkNode origin;
@@ -54,8 +53,12 @@ public class Packet {
         this.msg = msg;
     }
 
-    public boolean hasFlag(Flag flag){
-        return this.flags.contains(flag);
+    public boolean hasFlag(Flag... flags){
+        boolean hasFlag = true;
+        for (Flag flag : flags) {
+            hasFlag &= this.flags.contains(flag);
+        }
+        return hasFlag;
     }
 
     //tmp
@@ -73,7 +76,7 @@ public class Packet {
         return this.origin;
     }
 
-    public void setOrigin(NetworkNode origin) {
+    public synchronized void setOrigin(NetworkNode origin) {
         this.origin = origin;
     }
 
