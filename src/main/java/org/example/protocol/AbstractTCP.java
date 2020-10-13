@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AbstractTCP extends RoutableEndpoint implements TCP, Endpoint {
+public class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
