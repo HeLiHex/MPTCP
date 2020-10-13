@@ -16,23 +16,6 @@ public class Router extends Routable {
     }
 
 
-
-    @Override
-    public boolean enqueueInputBuffer(Packet packet) {
-        return this.inputBuffer.offer(packet);
-    }
-
-    @Override
-    public Packet dequeueInputBuffer() {
-        return this.inputBuffer.poll();
-    }
-
-    @Override
-    public boolean inputBufferIsEmpty() {
-        return this.inputBuffer.isEmpty();
-    }
-
-
     @Override
     public void run() {
         while (true){
