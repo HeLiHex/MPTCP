@@ -8,11 +8,11 @@ import java.util.Random;
 public class Router extends Routable {
 
     public Router(int bufferSize, Random randomGenerator, double noiseTolerance) {
-        super(new BufferQueue<Packet>(bufferSize), null, randomGenerator, noiseTolerance);
+        super(new BufferQueue<Packet>(bufferSize), randomGenerator, noiseTolerance);
     }
 
     public Router(int bufferSize, Random randomGenerator) {
-        super(new BufferQueue<Packet>(bufferSize), null, randomGenerator, 100.0);
+        super(new BufferQueue<Packet>(bufferSize), randomGenerator, 100.0);
     }
 
 

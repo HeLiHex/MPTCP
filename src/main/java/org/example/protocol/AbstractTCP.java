@@ -6,13 +6,14 @@ import org.example.network.NetworkNode;
 import org.example.network.Routable;
 import org.example.data.BufferQueue;
 import org.example.data.Packet;
+import org.example.network.RoutableEndpoint;
 
 
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AbstractTCP extends Routable implements TCP, Endpoint {
+public class AbstractTCP extends RoutableEndpoint implements TCP, Endpoint {
 
     private Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
@@ -168,39 +169,5 @@ public class AbstractTCP extends Routable implements TCP, Endpoint {
         }
     }
 
-    /**
-     * Layer 1
-     */
 
-
-    @Override
-    public boolean enqueueInputBuffer(Packet packet) {
-        return this.inputBuffer.offer(packet);
-    }
-
-    @Override
-    public Packet dequeueInputBuffer() {
-
-        return this.inputBuffer.poll();
-    }
-
-    @Override
-    public boolean inputBufferIsEmpty() {
-        return this.inputBuffer.isEmpty();
-    }
-
-    @Override
-    public Packet dequeueOutputBuffer() {
-        return this.outputBuffer.poll();
-    }
-
-    @Override
-    public boolean enqueueOutputBuffer(Packet packet) {
-        return this.outputBuffer.offer(packet);
-    }
-
-    @Override
-    public boolean outputBufferIsEmpty() {
-        return this.outputBuffer.isEmpty();
-    }
 }

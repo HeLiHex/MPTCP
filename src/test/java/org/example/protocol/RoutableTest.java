@@ -4,6 +4,7 @@ import org.example.network.Router;
 import org.example.data.Packet;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;

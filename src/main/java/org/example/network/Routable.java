@@ -13,21 +13,19 @@ public abstract class Routable extends Thread implements NetworkNode {
     private RoutingTable routingTable;
     private List<NetworkNode> neighbours;
     protected Queue<Packet> inputBuffer;
-    protected Queue<Packet> outputBuffer;
     private Address address;
     private int cost;
     private Random randomGenerator;
     private double noiseTolerance;
 
-    public Routable(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
+    public Routable(BufferQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
-        this.outputBuffer = outputBuffer;
         this.routingTable = new RoutingTable(this);
         this.neighbours = new ArrayList<>();
         this.address = new Address();
         this.randomGenerator = randomGenerator;
         this.noiseTolerance = noiseTolerance;
-        setRandomCost();
+        this.setRandomCost();
     }
 
     @Override
@@ -90,13 +88,20 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     @Override
-    public abstract boolean enqueueInputBuffer(Packet packet);
+    public boolean enqueueInputBuffer(Packet packet) {
+        return this.inputBuffer.offer(packet);
+    }
 
     @Override
-    public abstract Packet dequeueInputBuffer();
+    public Packet dequeueInputBuffer() {
+
+        return this.inputBuffer.poll();
+    }
 
     @Override
-    public abstract boolean inputBufferIsEmpty();
+    public boolean inputBufferIsEmpty() {
+        return this.inputBuffer.isEmpty();
+    }
 
 
     @Override
