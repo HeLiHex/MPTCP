@@ -55,7 +55,7 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Run SonarCloud analyse
         run: >
-          ./mvnw --batch-mode
+          mvn --batch-mode
           -Pcoverage
           clean verify
           sonar:sonar
