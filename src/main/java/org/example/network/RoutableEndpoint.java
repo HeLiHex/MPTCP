@@ -2,10 +2,11 @@ package org.example.network;
 
 import org.example.data.BufferQueue;
 import org.example.data.Packet;
+import org.example.network.interfaces.Endpoint;
 
 import java.util.Random;
 
-public abstract class RoutableEndpoint extends Routable implements Endpoint{
+public abstract class RoutableEndpoint extends Routable implements Endpoint {
 
     private BufferQueue<Packet> outputBuffer;
 

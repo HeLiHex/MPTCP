@@ -2,11 +2,12 @@ package org.example.protocol;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
-import org.example.network.NetworkNode;
+import org.example.network.interfaces.NetworkNode;
 import org.example.network.Router;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.PriorityQueue;
 import java.util.Random;
 
 public class ChannelTest {
@@ -94,4 +95,20 @@ public class ChannelTest {
         }
         Assert.assertFalse(true);
     }
+
+    @Test
+    public void channelCompareToWorksInPriorityQueueTest(){
+        int size = 1000;
+        PriorityQueue<Channel> pq = new PriorityQueue<>(size);
+        for (int i = 0; i < size; i++) {
+            Channel c = new Channel(source, destination, rand, 0);
+            pq.add(c);
+        }
+        while (pq.size() > 1){
+            Assert.assertTrue(pq.poll().getCost() <= pq.peek().getCost());
+        }
+    }
+
+
+
 }

@@ -1,6 +1,7 @@
 package org.example.network;
 
 import org.example.data.Packet;
+import org.example.network.interfaces.NetworkNode;
 
 import java.util.Random;
 
@@ -65,8 +66,8 @@ public class Channel implements Comparable<Channel>{
 
     @Override
     public int compareTo(Channel channel) {
-        if (this.cost > channel.getCost()) return -1;
-        if (this.cost < channel.getCost()) return 1;
+        if (this.cost > channel.getCost()) return 1;
+        if (this.cost < channel.getCost()) return -1;
         return 0;
     }
 }

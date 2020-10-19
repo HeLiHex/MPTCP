@@ -1,8 +1,8 @@
-package org.example.network;
+package org.example.network.interfaces;
 
 import org.example.data.Packet;
 
-public interface Endpoint extends NetworkNode{
+public interface Endpoint extends NetworkNode {
 
     /**
      * A method that returns and dequeues a Packet form the outputBuffer

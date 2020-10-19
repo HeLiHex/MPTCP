@@ -1,6 +1,6 @@
 package org.example.data;
 
-import org.example.network.NetworkNode;
+import org.example.network.interfaces.NetworkNode;
 
 import java.util.ArrayList;
 import java.util.List;

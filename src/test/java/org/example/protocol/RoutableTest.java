@@ -1,14 +1,12 @@
 package org.example.protocol;
 
-import org.example.network.Endpoint;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.Router;
 import org.example.data.Packet;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class RoutableTest {

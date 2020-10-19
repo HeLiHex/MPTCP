@@ -1,5 +1,7 @@
 package org.example.network;
 
+import org.example.network.interfaces.NetworkNode;
+
 import java.util.*;
 
 public class RoutingTable {
