@@ -39,10 +39,6 @@ jobs:
           clean verify
           sonar:sonar
           -Dsonar.sources=src/main
-      - name: Generate Report
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   #sonar:
     #name: analyse with sonarqube
