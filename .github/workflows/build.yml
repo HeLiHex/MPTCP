@@ -39,3 +39,4 @@ jobs:
           clean verify
           sonar:sonar
           -Dsonar.sources=src/main
+          -Dsonar.java.binaries=**/target/classes
