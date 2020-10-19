@@ -39,4 +39,4 @@ jobs:
           clean verify
           sonar:sonar
           -Dsonar.sources=src/main
-          -Dsonar.java.binaries=**/target/classes
+          -Dsonar.java.binaries=${{ runner.os }}-m2-${{ hashFiles('**/target/classes') }}
