@@ -15,7 +15,7 @@ public class BasicTCPTest {
     private static final Random RANDOM_GENERATOR = new Random();
 
     @Test
-    public void connectToEndpointTest(){
+    public synchronized void connectToEndpointTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -33,7 +33,7 @@ public class BasicTCPTest {
     }
 
     @Test
-    public void connectThenSendMsgWorksTest(){
+    public synchronized void connectThenSendMsgWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -67,7 +67,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public void connectThenSendMsgOverMultipleNodesLineWorksTest(){
+    public synchronized void connectThenSendMsgOverMultipleNodesLineWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);

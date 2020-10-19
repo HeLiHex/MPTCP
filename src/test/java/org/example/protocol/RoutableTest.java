@@ -33,19 +33,19 @@ public class RoutableTest {
     }
 
     @Test
-    public void setRandomCostSetsCost(){
+    public synchronized void setRandomCostSetsCost(){
         Router r = new Router(1, RANDOM_GENERATOR);
         Assert.assertNotEquals(r.getCost(), 0);
     }
 
     @Test
-    public void setRandomCostSetsPositiveCostAndNotZero(){
+    public synchronized void setRandomCostSetsPositiveCostAndNotZero(){
         Router r = new Router(1, RANDOM_GENERATOR);
         Assert.assertTrue(r.getCost() > 0);
     }
 
     @Test
-    public void setRandomCostIsRandom(){
+    public synchronized void setRandomCostIsRandom(){
         int size = 100;
         int[] listOfCosts = new int[size];
         for (int i = 0; i < listOfCosts.length; i++) {
