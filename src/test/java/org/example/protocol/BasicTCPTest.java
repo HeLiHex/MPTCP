@@ -20,7 +20,9 @@ public class BasicTCPTest {
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(server);
+
         client.updateRoutingTable();
+        server.updateRoutingTable();
 
         server.start();
 
@@ -36,6 +38,9 @@ public class BasicTCPTest {
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
 
         server.start();
 
@@ -75,6 +80,13 @@ public class BasicTCPTest {
         r2.addChannel(r3);
         r3.addChannel(r4);
         r4.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
+        server.updateRoutingTable();
 
         r1.start();
         r2.start();
