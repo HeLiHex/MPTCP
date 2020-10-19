@@ -59,8 +59,6 @@ jobs:
           -Pcoverage
           clean verify
           sonar:sonar
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml
           -Dsonar.sources=src/main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
