@@ -32,32 +32,6 @@ public class RoutableTest {
         return null;
     }
 
-    @Test
-    public synchronized void setRandomCostSetsCost(){
-        Router r = new Router(1, RANDOM_GENERATOR);
-        Assert.assertNotEquals(r.getCost(), 0);
-    }
-
-    @Test
-    public synchronized void setRandomCostSetsPositiveCostAndNotZero(){
-        Router r = new Router(1, RANDOM_GENERATOR);
-        Assert.assertTrue(r.getCost() > 0);
-    }
-
-    @Test
-    public synchronized void setRandomCostIsRandom(){
-        int size = 100;
-        int[] listOfCosts = new int[size];
-        for (int i = 0; i < listOfCosts.length; i++) {
-            Router r = new Router(1, RANDOM_GENERATOR);
-            listOfCosts[i] = r.getCost();
-        }
-        Arrays.sort(listOfCosts);
-        for (int i = 20; i < listOfCosts.length; i+=20) {
-            Assert.assertFalse("The method is not random", listOfCosts[i] == listOfCosts[i-20]);
-        }
-    }
-
 
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationStraitLine(){

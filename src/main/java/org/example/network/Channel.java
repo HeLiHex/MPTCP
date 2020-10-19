@@ -15,18 +15,18 @@ public class Channel implements Comparable<Channel>{
     public Channel(NetworkNode source, NetworkNode destination, Random randomGenerator, double noiseTolerance) {
         this.source = source;
         this.destination = destination;
-        this.cost = 10;//randomGenerator.nextInt(100);
+        this.cost = randomGenerator.nextInt(100);
         this.randomGenerator = randomGenerator;
         this.noiseTolerance = noiseTolerance;
     }
 
     public Channel(NetworkNode source){
+        //loopback
         this.source = source;
-        this.destination = null;
+        this.destination = source;
         this.cost = 0;
         this.randomGenerator = null;
         this.noiseTolerance = 0;
-
     }
 
     private boolean lossy(){
@@ -60,8 +60,7 @@ public class Channel implements Comparable<Channel>{
 
     @Override
     public String toString() {
-        return "[" + cost + "]";
-        //return this.source.toString() + " - " +  this.destination.toString() + "["+ this.cost +"]";
+        return this.source.toString() + " -> [" + this.cost  +  "] -> " +  this.destination.toString();
     }
 
     @Override

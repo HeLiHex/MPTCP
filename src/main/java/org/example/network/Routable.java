@@ -15,7 +15,6 @@ public abstract class Routable extends Thread implements NetworkNode {
     private List<Channel> channels;
     protected Queue<Packet> inputBuffer;
     private Address address;
-    private int cost;
     private Random randomGenerator;
     private double noiseTolerance;
 
@@ -26,14 +25,12 @@ public abstract class Routable extends Thread implements NetworkNode {
         this.address = new Address();
         this.randomGenerator = randomGenerator;
         this.noiseTolerance = noiseTolerance;
-        this.setRandomCost();
         this.routingTable = new RoutingTable(this);
     }
 
     @Override
     public void updateRoutingTable() {
         this.routingTable.update(this);
-        //System.out.println(this.routingTable);
     }
 
     @Override
@@ -43,7 +40,6 @@ public abstract class Routable extends Thread implements NetworkNode {
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
         nextChannelOnPath.channelPackage(packet);
     }
-
 
     @Override
     public List<Channel> getChannels(){
@@ -60,36 +56,10 @@ public abstract class Routable extends Thread implements NetworkNode {
         this.channels.add(channel);
         node.addChannel(this);
     }
-/*
-    @Override
-    public List<NetworkNode> getNeighbours() {
-        return this.neighbours;
-    }
-
-    @Override
-    public void addNeighbour(NetworkNode node) {
-        if (!this.neighbours.contains(node)) {
-            this.neighbours.add(node);
-            node.getNeighbours().add(this);
-            return;
-        }
-        System.out.println("Node is already added as neighbour");
-    }
-
- */
 
     @Override
     public Address getAddress() {
         return this.address;
-    }
-
-    @Override
-    public int getCost() {
-        return this.cost;
-    }
-
-    private void setRandomCost(){
-        this.cost = this.randomGenerator.nextInt(100);
     }
 
     @Override
@@ -99,7 +69,6 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     @Override
     public Packet dequeueInputBuffer() {
-
         return this.inputBuffer.poll();
     }
 
@@ -108,11 +77,6 @@ public abstract class Routable extends Thread implements NetworkNode {
         return this.inputBuffer.isEmpty();
     }
 
-
-    @Override
-    public int compareTo(NetworkNode networkNode) {
-        return this.getCost();
-    }
 
     @Override
     public boolean equals(Object obj) {

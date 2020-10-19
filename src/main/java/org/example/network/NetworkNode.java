@@ -4,7 +4,7 @@ import org.example.data.Packet;
 
 import java.util.List;
 
-public interface NetworkNode extends Comparable<NetworkNode> {
+public interface NetworkNode {
 
 
     /**
@@ -21,29 +21,21 @@ public interface NetworkNode extends Comparable<NetworkNode> {
 
 
     /**
-     * A method that delivers the packet to the next NetworkNode on the path to it's destination
+     * A method that returns a List of the NetworkNode's outgoing Channels
      *
-     * @param /packet
+     * @return List of outgoing Channels from this NetworkNode
      */
-    //void channelPackage(Packet packet);
-
-    /**
-     * A method that returns a list og the neighbouring NetworkNodes
-     *
-     * @return a list of neighbouring NetworkNodes
-     */
-    //List<NetworkNode> getNeighbours();
-
     List<Channel> getChannels();
 
-    /**
-     * A method that adds a NetworkNode as neighbour to this NetworkNode
-     *
-     * @param node to be added as neighbour
-     */
-    //void addNeighbour(NetworkNode node);
 
+    /**
+     * A method that creates and adds a Channel to this and the given node.
+     * Effectively creating two directed edges in each direction with their own individual attributes
+     *
+     * @param node to add Channel to
+     */
     void addChannel(NetworkNode node);
+
 
     /**
      * A method that returns the unique Address associated with this NetworkNode
@@ -52,12 +44,6 @@ public interface NetworkNode extends Comparable<NetworkNode> {
      */
     Address getAddress();
 
-    /**
-     * A method that returns the cost of visiting this node
-     *
-     * @return the cost of traversing to this node
-     */
-    int getCost();
 
     Packet dequeueInputBuffer();
 
