@@ -12,6 +12,7 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     private RoutingTable routingTable;
     private List<NetworkNode> neighbours;
+    private List<Channel> channels;
     protected Queue<Packet> inputBuffer;
     private Address address;
     private int cost;
@@ -20,12 +21,13 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     public Routable(BufferQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
-        this.routingTable = new RoutingTable(this);
         this.neighbours = new ArrayList<>();
+        this.channels = new ArrayList<>();
         this.address = new Address();
         this.randomGenerator = randomGenerator;
         this.noiseTolerance = noiseTolerance;
         this.setRandomCost();
+        this.routingTable = new RoutingTable(this);
     }
 
     @Override
@@ -36,28 +38,29 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     @Override
     public void route(Packet packet) {
-        //System.out.println("packet: " + packet + " is routed through router: " + this.address);
+        System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
-        NetworkNode nextNodeOnPath = this.routingTable.getPath(this, destination);
-        nextNodeOnPath.channelPackage(packet);
-    }
-
-    private boolean lossy(){
-        double gaussianNoise = this.randomGenerator.nextGaussian();
-        double noise = Math.abs(gaussianNoise);
-        return noise > this.noiseTolerance;
+        Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
+        nextChannelOnPath.channelPackage(packet);
     }
 
 
-    //todo - rename
     @Override
-    public void channelPackage(Packet packet) {
-        if (lossy()) return;
-        if (!this.enqueueInputBuffer(packet)) {
-            System.out.println("Packet was not delivered to next NetworkNode");
-        }
+    public List<Channel> getChannels(){
+        return this.channels;
     }
 
+    @Override
+    public void addChannel(NetworkNode node) {
+        for (Channel channel : this.getChannels()){
+            boolean thisContainsNode = channel.getDestination().equals(node);
+            if (thisContainsNode) return;
+        }
+        Channel channel = new Channel(this, node, this.randomGenerator, this.noiseTolerance);
+        this.channels.add(channel);
+        node.addChannel(this);
+    }
+/*
     @Override
     public List<NetworkNode> getNeighbours() {
         return this.neighbours;
@@ -72,6 +75,8 @@ public abstract class Routable extends Thread implements NetworkNode {
         }
         System.out.println("Node is already added as neighbour");
     }
+
+ */
 
     @Override
     public Address getAddress() {
@@ -130,7 +135,6 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     @Override
     public synchronized void start() {
-        this.updateRoutingTable();
         super.start();
     }
 

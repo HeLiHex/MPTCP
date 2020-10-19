@@ -1,5 +1,6 @@
 package org.example.protocol;
 
+import org.example.network.Endpoint;
 import org.example.network.Router;
 import org.example.data.Packet;
 
@@ -14,6 +15,22 @@ public class RoutableTest {
 
     private static final Random RANDOM_GENERATOR = new Random();
 
+
+    public synchronized String getMsg(Endpoint server){
+        for (int i = 0; i < 1000; i++) {
+            Packet receivedPacket = server.dequeueInputBuffer();
+            if (receivedPacket == null){
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
+            return receivedPacket.getMsg();
+        }
+        return null;
+    }
 
     @Test
     public void setRandomCostSetsCost(){
@@ -43,7 +60,7 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationStraitLine(){
+    public synchronized void routingPacketRoutsItToItsDestinationStraitLine(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -51,13 +68,17 @@ public class RoutableTest {
         Router r4 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        r1.addNeighbour(r2);
-        r2.addNeighbour(r3);
-        r3.addNeighbour(r4);
-        r4.addNeighbour(server);
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
+        r4.addChannel(server);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -68,13 +89,7 @@ public class RoutableTest {
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        String receivedMsg = server.dequeueInputBuffer().getMsg();
+        String receivedMsg = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
@@ -86,7 +101,7 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationCircleGraph(){
+    public synchronized void routingPacketRoutsItToItsDestinationCircleGraph(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -94,14 +109,18 @@ public class RoutableTest {
         Router r4 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        client.addNeighbour(r2);
-        r1.addNeighbour(r3);
-        r2.addNeighbour(r4);
-        server.addNeighbour(r3);
-        server.addNeighbour(r4);
+        client.addChannel(r1);
+        client.addChannel(r2);
+        r1.addChannel(r3);
+        r2.addChannel(r4);
+        server.addChannel(r3);
+        server.addChannel(r4);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -109,22 +128,10 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        String receivedMsg = server.dequeueInputBuffer().getMsg();
+        String receivedMsg = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
@@ -136,42 +143,33 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationWithCycle(){
+    public synchronized void routingPacketRoutsItToItsDestinationWithCycle(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
         Router r3 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        r1.addNeighbour(r2);
-        r1.addNeighbour(r3);
-        r2.addNeighbour(r3);
-        server.addNeighbour(r3);
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r1.addChannel(r3);
+        r2.addChannel(r3);
+        server.addChannel(r3);
 
         client.updateRoutingTable();
         server.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
 
         r1.start();
         r2.start();
         r3.start();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        String receivedMsg = server.dequeueInputBuffer().getMsg();
+        String receivedMsg = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
@@ -181,7 +179,7 @@ public class RoutableTest {
     }
 
     @Test
-    public void routingPacketRoutsItToItsDestinationWithDeadEnd(){
+    public synchronized void routingPacketRoutsItToItsDestinationWithDeadEnd(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -189,13 +187,17 @@ public class RoutableTest {
         Router r4 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        r1.addNeighbour(r2);
-        r1.addNeighbour(r4);
-        r2.addNeighbour(r3);
-        server.addNeighbour(r4);
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r1.addChannel(r4);
+        r2.addChannel(r3);
+        server.addChannel(r4);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -203,34 +205,22 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Packet receivedPacket = server.dequeueInputBuffer();
+        String receivedMsg = getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(msg, receivedPacket.getMsg());
+        Assert.assertEquals(msg, receivedMsg);
     }
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationForrest(){
+    public synchronized void routingPacketRoutsItToItsDestinationForrest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -239,14 +229,18 @@ public class RoutableTest {
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         //tree one
-        client.addNeighbour(r1);
-        r1.addNeighbour(server);
+        client.addChannel(r1);
+        r1.addChannel(server);
 
         //tree two
-        r2.addNeighbour(r3);
-        r3.addNeighbour(r4);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -254,34 +248,22 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Packet receivedPacket = server.dequeueInputBuffer();
+        String receivedMsg = getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(msg, receivedPacket.getMsg());
+        Assert.assertEquals(msg, receivedMsg);
     }
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
+    public synchronized void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -289,12 +271,16 @@ public class RoutableTest {
         Router r4 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        r1.addNeighbour(r2);
-        r2.addNeighbour(r3);
-        server.addNeighbour(r3);
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        server.addChannel(r3);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -302,39 +288,22 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         String msg = "hello";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-
-
-        Packet receivedPacket = null;
-        do {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            receivedPacket = server.dequeueInputBuffer();
-        }while (receivedPacket == null);
+        String receivedMsg = getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(msg, receivedPacket.getMsg());
+        Assert.assertEquals(msg, receivedMsg);
     }
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationCrazyGraph(){
+    public synchronized void routingPacketRoutsItToItsDestinationCrazyGraph(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -350,24 +319,36 @@ public class RoutableTest {
         Router r12 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        client.addNeighbour(r2);
-        r1.addNeighbour(r3);
-        r2.addNeighbour(r3);
-        r3.addNeighbour(r4);
-        r3.addNeighbour(r9);
-        r4.addNeighbour(r5);
-        r4.addNeighbour(r6);
-        r5.addNeighbour(r6);
-        r6.addNeighbour(r9);
-        r6.addNeighbour(r7);
-        r7.addNeighbour(r8);
-        r9.addNeighbour(r10);
-        r10.addNeighbour(r11);
-        r11.addNeighbour(r12);
-        r12.addNeighbour(server);
+        client.addChannel(r1);
+        client.addChannel(r2);
+        r1.addChannel(r3);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
+        r3.addChannel(r9);
+        r4.addChannel(r5);
+        r4.addChannel(r6);
+        r5.addChannel(r6);
+        r6.addChannel(r9);
+        r6.addChannel(r7);
+        r7.addChannel(r8);
+        r9.addChannel(r10);
+        r10.addChannel(r11);
+        r11.addChannel(r12);
+        r12.addChannel(server);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
+        r5.updateRoutingTable();
+        r6.updateRoutingTable();
+        r7.updateRoutingTable();
+        r8.updateRoutingTable();
+        r9.updateRoutingTable();
+        r10.updateRoutingTable();
+        r11.updateRoutingTable();
+        r12.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -382,22 +363,11 @@ public class RoutableTest {
         r10.start();
         r11.start();
         r12.start();
-        try {
-            Thread.sleep(25000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         String msg = "hello på deg";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        String receivedMsg = server.dequeueInputBuffer().getMsg();
+        String receivedMsg = getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
@@ -412,24 +382,27 @@ public class RoutableTest {
         r11.interrupt();
         r12.interrupt();
 
-        Assert.assertEquals(receivedMsg, msg);
+        Assert.assertEquals(msg, receivedMsg);
     }
 
 
 
     @Test(expected = NullPointerException.class)
-    public void unconnectedClientCantRoutPacketToDestination(){
+    public synchronized void unconnectedClientCantRoutPacketToDestination(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
         Router r3 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        r1.addNeighbour(r2);
-        r2.addNeighbour(r3);
-        server.addNeighbour(r3);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        server.addChannel(r3);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -443,7 +416,7 @@ public class RoutableTest {
 
 
     @Test(expected = NullPointerException.class)
-    public void unconnectedTreesCantRoutPacket(){
+    public synchronized void unconnectedTreesCantRoutPacket(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -451,13 +424,16 @@ public class RoutableTest {
         Router r4 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        r1.addNeighbour(r2);
+        client.addChannel(r1);
+        r1.addChannel(r2);
 
-        r3.addNeighbour(r4);
-        server.addNeighbour(r4);
+        r3.addChannel(r4);
+        server.addChannel(r4);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -472,7 +448,7 @@ public class RoutableTest {
 
 
     @Test
-    public void faultyChannelsDropPacket(){
+    public synchronized void faultyChannelsDropPacket(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
         Router r2 = new Router(100, RANDOM_GENERATOR);
@@ -480,13 +456,17 @@ public class RoutableTest {
         Router r4 = new Router(100, RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        r1.addNeighbour(r2);
-        r2.addNeighbour(r3);
-        r3.addNeighbour(r4);
-        server.addNeighbour(r4);
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
+        server.addChannel(r4);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -497,19 +477,13 @@ public class RoutableTest {
         String msg = "hello";
         client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Packet receivedPacket = server.dequeueInputBuffer();
-        Assert.assertEquals(null, receivedPacket);
+        String receivedMsg = getMsg(server);
+        Assert.assertEquals(null, receivedMsg);
     }
 
 
     @Test
-    public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
+    public synchronized void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR, 3.0);
         Router r2 = new Router(100, RANDOM_GENERATOR, 3.0);
@@ -517,13 +491,17 @@ public class RoutableTest {
         Router r4 = new Router(100, RANDOM_GENERATOR,3.0);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addNeighbour(r1);
-        r1.addNeighbour(r2);
-        r2.addNeighbour(r3);
-        r3.addNeighbour(r4);
-        server.addNeighbour(r4);
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
+        server.addChannel(r4);
 
         client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
         server.updateRoutingTable();
 
         r1.start();
@@ -531,38 +509,18 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         for (int i = 0; i < 1000; i++) {
             String msg = "hello";
             client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            Packet receivedPacket = server.dequeueInputBuffer();
-            if (receivedPacket == null){
+            String receivedMsg = getMsg(server);
+            if (receivedMsg == null){
                 Assert.assertTrue(true);
                 return;
             }
         }
         Assert.assertFalse(true);
     }
-
-
-
-
-
-
-
-
 
 
 }

@@ -23,23 +23,27 @@ public interface NetworkNode extends Comparable<NetworkNode> {
     /**
      * A method that delivers the packet to the next NetworkNode on the path to it's destination
      *
-     * @param packet
+     * @param /packet
      */
-    void channelPackage(Packet packet);
+    //void channelPackage(Packet packet);
 
     /**
      * A method that returns a list og the neighbouring NetworkNodes
      *
      * @return a list of neighbouring NetworkNodes
      */
-    List<NetworkNode> getNeighbours();
+    //List<NetworkNode> getNeighbours();
+
+    List<Channel> getChannels();
 
     /**
-     * A mathod that adds a NetworkNode as neighbour to this NetworkNode
+     * A method that adds a NetworkNode as neighbour to this NetworkNode
      *
      * @param node to be added as neighbour
      */
-    void addNeighbour(NetworkNode node);
+    //void addNeighbour(NetworkNode node);
+
+    void addChannel(NetworkNode node);
 
     /**
      * A method that returns the unique Address associated with this NetworkNode
