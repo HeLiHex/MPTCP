@@ -45,10 +45,23 @@ public interface NetworkNode {
     Address getAddress();
 
 
+    /**
+     * A method that returns and dequeues a Packet form the inputBuffer
+     * @return the dequeued Packet
+     */
     Packet dequeueInputBuffer();
 
+    /**
+     * A method that enqueues the given Packet to the inputBuffer
+     * @param packet to be enqueued
+     * @return True if successful
+     */
     boolean enqueueInputBuffer(Packet packet);
 
+    /**
+     * A method that checks if the inputBuffer has any Packets
+     * @return True if the inputBuffer is empty
+     */
     boolean inputBufferIsEmpty();
 
 

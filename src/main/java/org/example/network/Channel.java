@@ -29,7 +29,7 @@ public class Channel implements Comparable<Channel>{
         this.noiseTolerance = 0;
     }
 
-    private boolean lossy(){
+    private synchronized boolean lossy(){
         if (randomGenerator == null) return false;
         double gaussianNoise = this.randomGenerator.nextGaussian();
         double noise = Math.abs(gaussianNoise);
@@ -40,7 +40,7 @@ public class Channel implements Comparable<Channel>{
     public synchronized void channelPackage(Packet packet) {
         if (lossy()) return;
         if (!this.destination.enqueueInputBuffer(packet)) {
-            System.out.println("Packet was not deliveredm " + this.destination);
+            System.out.println("Packet was not delivered " + this.destination);
             return;
         }
         System.out.println("Channel " + this);
