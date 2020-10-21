@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class Routable extends Thread implements NetworkNode {
 
+    private Logger logger;
     private RoutingTable routingTable;
-    private List<NetworkNode> neighbours;
     private List<Channel> channels;
     protected Queue<Packet> inputBuffer;
     private Address address;
@@ -20,8 +22,9 @@ public abstract class Routable extends Thread implements NetworkNode {
     private double noiseTolerance;
 
     public Routable(BufferQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
+        this.logger = Logger.getLogger(this.getName());
+
         this.inputBuffer = inputBuffer;
-        this.neighbours = new ArrayList<>();
         this.channels = new ArrayList<>();
         this.address = new Address();
         this.randomGenerator = randomGenerator;
@@ -48,7 +51,8 @@ public abstract class Routable extends Thread implements NetworkNode {
         try {
             sleep(Math.round(Math.abs(randomGenerator.nextGaussian()) * this.channels.size()));
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            this.logger.log(Level.WARNING, "Interrupted!");
+            Thread.currentThread().interrupt();
         }
     }
 
