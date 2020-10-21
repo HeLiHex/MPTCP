@@ -75,7 +75,7 @@ public class RoutingTableTest {
 
     @Test
     public void getPathChoosesShortestPath(){
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             NetworkNode r1 = new Router(100, new Random(), 100);
             NetworkNode r2 = new Router(100, new Random(), 100);
             NetworkNode r3 = new Router(100, new Random(), 100);

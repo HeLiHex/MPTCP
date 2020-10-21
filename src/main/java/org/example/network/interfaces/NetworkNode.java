@@ -22,6 +22,9 @@ public interface NetworkNode {
     void route(Packet packet);
 
 
+    void processingDelay();
+
+
     /**
      * A method that returns a List of the NetworkNode's outgoing Channels
      *
