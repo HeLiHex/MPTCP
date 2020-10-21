@@ -14,7 +14,6 @@ public class RoutingTable {
     }
 
 
-
     private void updateTable(NetworkNode node, Channel channel) {
         if (this.table.containsKey(node)) {
             this.updateEntry(node, channel);

@@ -15,7 +15,6 @@ public class Router extends Routable {
         super(new BufferQueue<Packet>(bufferSize), randomGenerator, 100.0);
     }
 
-
     @Override
     public void run() {
         while (true){
