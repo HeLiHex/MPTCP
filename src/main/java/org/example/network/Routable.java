@@ -22,7 +22,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     private double noiseTolerance;
 
     public Routable(BufferQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
-        this.logger = Logger.getLogger(this.getName());
+        this.logger = Logger.getLogger(getClass().getName());
 
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();

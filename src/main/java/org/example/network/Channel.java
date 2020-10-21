@@ -4,9 +4,12 @@ import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Channel implements Comparable<Channel>{
 
+    private Logger logger;
     private NetworkNode source;
     private NetworkNode destination;
     private int cost;
@@ -14,6 +17,8 @@ public class Channel implements Comparable<Channel>{
     private double noiseTolerance;
 
     public Channel(NetworkNode source, NetworkNode destination, Random randomGenerator, double noiseTolerance) {
+        this.logger = Logger.getLogger(getClass().getName());
+
         this.source = source;
         this.destination = destination;
         this.cost = randomGenerator.nextInt(100);
@@ -23,6 +28,7 @@ public class Channel implements Comparable<Channel>{
 
     public Channel(NetworkNode source){
         //loopback
+        this.logger = Logger.getLogger(getClass().getName());
         this.source = source;
         this.destination = source;
         this.cost = 0;
@@ -41,7 +47,7 @@ public class Channel implements Comparable<Channel>{
     public synchronized void channelPackage(Packet packet) {
         if (lossy()) return;
         if (!this.destination.enqueueInputBuffer(packet)) {
-            throw new RuntimeException("Packet was not delivered " + this.destination);
+            this.logger.log(Level.INFO, "Packet was not delivered " + this.destination);
         }
         //System.out.println("Channel " + this);w
     }
