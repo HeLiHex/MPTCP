@@ -75,4 +75,14 @@ public class Channel implements Comparable<Channel>{
         if (this.cost < channel.getCost()) return -1;
         return 0;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
 }
