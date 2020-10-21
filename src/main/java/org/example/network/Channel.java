@@ -60,7 +60,7 @@ public class Channel implements Comparable<Channel>{
 
     @Override
     public String toString() {
-        return this.source.toString() + " -> [" + this.cost  +  "] -> " +  this.destination.toString();
+        return this.source.toString() + " -> [" + this.cost + "] -> " +  this.destination.toString();
     }
 
     @Override
