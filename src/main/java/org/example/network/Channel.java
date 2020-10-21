@@ -41,10 +41,9 @@ public class Channel implements Comparable<Channel>{
     public synchronized void channelPackage(Packet packet) {
         if (lossy()) return;
         if (!this.destination.enqueueInputBuffer(packet)) {
-            System.out.println("Packet was not delivered " + this.destination);
-            return;
+            throw new RuntimeException("Packet was not delivered " + this.destination);
         }
-        System.out.println("Channel " + this);
+        //System.out.println("Channel " + this);w
     }
 
     public NetworkNode getSource() {

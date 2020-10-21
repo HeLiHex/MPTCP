@@ -47,9 +47,6 @@ public class RoutingTable {
     public void update(NetworkNode startingNode) {
         this.addEntry(startingNode, null);
         update(startingNode, new ArrayList<>(), new PriorityQueue<>());
-
-        //todo - remove
-        System.out.println(this);
     }
 
     private void update(NetworkNode curNode, List<NetworkNode> visited, Queue<Channel> priorityQueue){

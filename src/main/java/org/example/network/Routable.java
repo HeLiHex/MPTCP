@@ -37,7 +37,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     @Override
     public void route(Packet packet) {
         processingDelay();
-        System.out.println("packet: " + packet + " is routed through router: " + this.address);
+        //System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
         nextChannelOnPath.channelPackage(packet);
