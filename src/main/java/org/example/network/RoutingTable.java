@@ -69,16 +69,9 @@ public class RoutingTable {
 
 
     public Channel getPath(NetworkNode source, NetworkNode destination) {
-        if (destination == null){
-            System.out.println("ERROR! The destination is null");
-            return null;
-        }
-
-        boolean containsNode = this.table.containsKey(destination);
-        if (!containsNode){
-            System.out.println("Destination " + destination + " does not exist");
-            return null;
-        }
+        if (this.table.isEmpty()) throw new IllegalStateException("The routing table is empty");
+        if (destination == null) throw new IllegalArgumentException("The destination can't be null");
+        if (!this.table.containsKey(destination)) throw new IllegalArgumentException("Destination " + destination + " does not exist in this routing table");
 
         Channel curChannel = this.table.get(destination).getKey();
         NetworkNode prevNode = curChannel.getSource();

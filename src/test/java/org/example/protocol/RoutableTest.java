@@ -359,7 +359,7 @@ public class RoutableTest {
 
 
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedClientCantRoutPacketToDestination(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
@@ -387,7 +387,7 @@ public class RoutableTest {
 
 
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedTreesCantRoutPacket(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
