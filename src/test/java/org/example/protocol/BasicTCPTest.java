@@ -14,6 +14,19 @@ public class BasicTCPTest {
 
     private static final Random RANDOM_GENERATOR = new Random();
 
+    private Packet getPacket(TCP endpoint){
+        for (int i = 0; i < 1000; i++) {
+            Packet packet = endpoint.receive();
+            if (packet != null) return packet;
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    return null;
+    }
+
     @Test
     public synchronized void connectToEndpointTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
@@ -55,13 +68,8 @@ public class BasicTCPTest {
 
         client.send(packet);
 
-        try {
-            sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        Assert.assertEquals(server.receive(), packet);
+        Assert.assertEquals(getPacket(server), packet);
 
     }
 
@@ -111,7 +119,7 @@ public class BasicTCPTest {
             e.printStackTrace();
         }
 
-        Assert.assertEquals(server.receive(), packet);
+        Assert.assertEquals(getPacket(server), packet);
 
     }
 

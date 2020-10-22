@@ -45,7 +45,7 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
 
         while (this.inputBufferIsEmpty()){
             try {
-                sleep(100);
+                sleep(10);
             } catch (InterruptedException e) {
                 logger.log(Level.SEVERE, "Thread Interrupted!");
                 Thread.currentThread().interrupt();
@@ -53,7 +53,7 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         Packet synAck = this.dequeueInputBuffer();
-        if (synAck.hasFlag(Flag.SYN, Flag.ACK) /*&& synAck.hasFlag(Flag.ACK)*/){
+        if (synAck.hasFlag(Flag.SYN, Flag.ACK)){
             System.out.println(synAck);
             Packet ack = new Packet.PacketBuilder()
                     .withDestination(host)
@@ -66,7 +66,6 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
             this.logger.log(Level.INFO, "connection established with host: " + this.connectedNode);
             this.start();
         }
-
     }
 
     public void incomingConnect(Packet syn){
@@ -142,7 +141,7 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
     private void trySend(){
         if (waitingForACK){
             try {
-                sleep(100);
+                sleep(10);
             } catch (InterruptedException e) {
                 logger.log(Level.SEVERE, "Thread Interrupted!");
                 Thread.currentThread().interrupt();
@@ -163,7 +162,7 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
             if (!this.inputBufferIsEmpty()){
                 this.handleIncoming();
             }
-            trySend();
+            this.trySend();
         }
     }
 

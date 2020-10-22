@@ -2,7 +2,6 @@ package org.example.protocol;
 
 import org.example.data.Flag;
 import org.example.data.Packet;
-import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
 import org.junit.Assert;
 import org.junit.Test;
