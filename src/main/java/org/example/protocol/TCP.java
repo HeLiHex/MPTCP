@@ -5,13 +5,21 @@ import org.example.network.interfaces.NetworkNode;
 
 public interface TCP{
 
-
     /**
-     * 1. send SYN with random number A
-     * 2. receive SYN-ACK with A+1 and sequence number random B (the server chooses B)
-     * 3. send ACK back to server. The ACK is now A+2 and sequence number is B+1
+     * 1. Send SYN with random number A
+     * 2. Receive SYN-ACK with A+1 and sequence number random B (the server chooses B)
+     * 3. Send ACK back to server. The ACK is now A+2 and sequence number is B+1
+     * @param host to connect to
      */
     void connect(NetworkNode host);
+
+    /**
+     * 1. Receive SYN Packet with random number A that indicates that a client wants to connect
+     * 2. Send SYN-ACK with A+1 and sequence number random B
+     * 3. Receive ACK with ACK-number A+2 and sequence number is B+1
+     * @param syn Packet to start incoming connection from a client
+     */
+    void connect(Packet syn);
 
     /**
      * Enqueues a new Packet to the output-buffer

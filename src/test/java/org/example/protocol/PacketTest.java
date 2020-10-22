@@ -37,6 +37,20 @@ public class PacketTest {
     }
 
     @Test
+    public void buildPacketWithSeqNumBuildsPacketSeqNumOriginTest(){
+        int seqNum = 123;
+        Packet packet = new Packet.PacketBuilder().withSequenceNumber(seqNum).build();
+        Assert.assertEquals(seqNum, packet.getSequenceNumber());
+    }
+
+    @Test
+    public void buildPacketWithAckNumBuildsPacketAckNumOriginTest(){
+        int ackNum = 321;
+        Packet packet = new Packet.PacketBuilder().withAcknowledgmentNumber(ackNum).build();
+        Assert.assertEquals(ackNum, packet.getAcknowledgmentNumber());
+    }
+
+    @Test
     public void buildPacketWithFlagBuildsPacketThatHasFlagTest(){
         Flag flag = Flag.ACK;
         Packet packet = new Packet.PacketBuilder().withFlags(flag).build();

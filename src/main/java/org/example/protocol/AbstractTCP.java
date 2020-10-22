@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class AbstractTCP extends RoutableEndpoint implements TCP {
 
-    private Logger logger = Logger.getLogger(AbstractTCP.class.getName());
+    private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
 
     //todo - probably ok with boolean, but locking and releasing should be determined by a abstract method
@@ -44,12 +44,7 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
         this.route(syn);
 
         while (this.inputBufferIsEmpty()){
-            try {
-                sleep(10);
-            } catch (InterruptedException e) {
-                logger.log(Level.SEVERE, "Thread Interrupted!");
-                Thread.currentThread().interrupt();
-            }
+            this.sleep();
         }
 
         Packet synAck = this.dequeueInputBuffer();
@@ -68,7 +63,8 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
         }
     }
 
-    public void incomingConnect(Packet syn){
+    @Override
+    public void connect(Packet syn){
         NetworkNode node = syn.getOrigin();
         Packet synAck = new Packet.PacketBuilder()
                 .withDestination(node)
@@ -110,18 +106,18 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     private synchronized void handleIncoming(){
-        Packet packet = this.dequeueInputBuffer();
-        if (packet == null) return;
+        if (this.inputBufferIsEmpty()) return;
 
+        Packet packet = this.dequeueInputBuffer();
         System.out.println("packet: " + packet + " received");
 
-
+        //TODO - dette kan gjøres bedre
         if (packet.hasFlag(Flag.ACK) && !packet.hasFlag(Flag.SYN)){
             this.waitingForACK = false;
             return;
         }
         if (packet.hasFlag(Flag.SYN) && !packet.hasFlag(Flag.ACK)){
-            incomingConnect(packet);
+            connect(packet);
             return;
         }
         if (packet.hasFlag(Flag.FIN)){
@@ -140,12 +136,7 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private void trySend(){
         if (waitingForACK){
-            try {
-                sleep(10);
-            } catch (InterruptedException e) {
-                logger.log(Level.SEVERE, "Thread Interrupted!");
-                Thread.currentThread().interrupt();
-            }
+            this.sleep();
             //System.out.println("waiting for ack");
             return;
         }
@@ -153,6 +144,15 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
             Packet packet = this.dequeueOutputBuffer();
             this.route(packet);
             this.waitingForACK = true;
+        }
+    }
+
+    private void sleep(){
+        try {
+            sleep(10);
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "Thread Interrupted!");
+            Thread.currentThread().interrupt();
         }
     }
 
