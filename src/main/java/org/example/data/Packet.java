@@ -12,8 +12,11 @@ public class Packet {
         private List<Flag> flags = new ArrayList<>();
         private String msg = null;
 
+        private int sequenceNumber;
+        private int acknowledgmentNumber;
+
         public Packet build(){
-            return new Packet(this.destination, this.origin, this.flags, this.msg);
+            return new Packet(this.destination, this.origin, this.flags, this.msg, this.sequenceNumber, this.acknowledgmentNumber);
         }
 
         public PacketBuilder withFlags(Flag... flags){
@@ -38,6 +41,16 @@ public class Packet {
             this.destination = destination;
             return this;
         }
+
+        public PacketBuilder withSequenceNumber(int sequenceNumber){
+            this.sequenceNumber = sequenceNumber;
+            return this;
+        }
+
+        public PacketBuilder withAcknowledgmentNumber(int acknowledgmentNumber){
+            this.acknowledgmentNumber = acknowledgmentNumber;
+            return this;
+        }
     }
 
     private NetworkNode destination;
@@ -45,12 +58,18 @@ public class Packet {
     private List<Flag> flags;
     private String msg;
 
+    private int sequenceNumber;
+    private int acknowledgmentNumber;
 
-    public Packet(NetworkNode destination,NetworkNode origin, List<Flag> flags, String msg) {
+
+    private Packet(NetworkNode destination, NetworkNode origin, List<Flag> flags, String msg, int sequenceNumber, int acknowledgmentNumber) {
         this.destination = destination;
         this.origin = origin;
         this.flags = flags;
         this.msg = msg;
+
+        this.sequenceNumber = sequenceNumber;
+        this.acknowledgmentNumber = acknowledgmentNumber;
     }
 
     public boolean hasFlag(Flag... flags){
@@ -61,7 +80,6 @@ public class Packet {
         return hasFlag;
     }
 
-    //tmp
     public String getMsg() {
         return msg;
     }
@@ -78,6 +96,14 @@ public class Packet {
 
     public void setOrigin(NetworkNode origin) {
         this.origin = origin;
+    }
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public int getAcknowledgmentNumber() {
+        return acknowledgmentNumber;
     }
 
     @Override
