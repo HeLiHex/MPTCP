@@ -1,5 +1,7 @@
 package org.example.protocol;
 
+import org.example.data.Message;
+import org.example.data.Payload;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.Router;
 import org.example.data.Packet;
@@ -14,7 +16,7 @@ public class RoutableTest {
     private static final Random RANDOM_GENERATOR = new Random();
 
 
-    public synchronized String getMsg(Endpoint server){
+    public synchronized Payload getMsg(Endpoint server){
         for (int i = 0; i < 1000; i++) {
             Packet receivedPacket = server.dequeueInputBuffer();
             if (receivedPacket == null){
@@ -25,7 +27,7 @@ public class RoutableTest {
                 }
                 continue;
             }
-            return receivedPacket.getMsg();
+            return receivedPacket.getPayload();
         }
         return null;
     }
@@ -58,17 +60,17 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello på deg";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = this.getMsg(server);
+        Payload receivedPayload = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(receivedMsg,msg);
+        Assert.assertEquals(receivedPayload,msg);
     }
 
 
@@ -100,17 +102,17 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello på deg";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = this.getMsg(server);
+        Payload receivedPayload = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(receivedMsg,msg);
+        Assert.assertEquals(receivedPayload,msg);
     }
 
 
@@ -138,16 +140,16 @@ public class RoutableTest {
         r2.start();
         r3.start();
 
-        String msg = "hello på deg";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = this.getMsg(server);
+        Payload receivedPayload = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
 
-        Assert.assertEquals(receivedMsg,msg);
+        Assert.assertEquals(receivedPayload,msg);
     }
 
     @Test
@@ -177,17 +179,17 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello på deg";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = getMsg(server);
+        Payload receivedPayload = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(msg, receivedMsg);
+        Assert.assertEquals(msg, receivedPayload);
     }
 
 
@@ -220,17 +222,17 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello på deg";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = getMsg(server);
+        Payload receivedPayload = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(msg, receivedMsg);
+        Assert.assertEquals(msg, receivedPayload);
     }
 
 
@@ -260,17 +262,17 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = getMsg(server);
+        Payload receivedPayload = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
         r3.interrupt();
         r4.interrupt();
 
-        Assert.assertEquals(msg, receivedMsg);
+        Assert.assertEquals(msg, receivedPayload);
     }
 
 
@@ -336,10 +338,10 @@ public class RoutableTest {
         r11.start();
         r12.start();
 
-        String msg = "hello på deg";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = getMsg(server);
+        Payload receivedPayload = this.getMsg(server);
 
         r1.interrupt();
         r2.interrupt();
@@ -354,7 +356,7 @@ public class RoutableTest {
         r11.interrupt();
         r12.interrupt();
 
-        Assert.assertEquals(msg, receivedMsg);
+        Assert.assertEquals(msg, receivedPayload);
     }
 
 
@@ -381,8 +383,8 @@ public class RoutableTest {
         r2.start();
         r3.start();
 
-        String msg = "hello";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
     }
 
 
@@ -413,8 +415,8 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
     }
 
 
@@ -446,11 +448,11 @@ public class RoutableTest {
         r3.start();
         r4.start();
 
-        String msg = "hello";
-        client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+        Message msg = new Message( "hello på do!");
+        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-        String receivedMsg = getMsg(server);
-        Assert.assertEquals(null, receivedMsg);
+        Payload receivedPayload = this.getMsg(server);
+        Assert.assertEquals(null, receivedPayload);
     }
 
 
@@ -482,11 +484,11 @@ public class RoutableTest {
         r4.start();
 
         for (int i = 0; i < 1000; i++) {
-            String msg = "hello";
-            client.route(new Packet.PacketBuilder().withMsg(msg).withDestination(server).build());
+            Message msg = new Message( "hello på do!");
+            client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
 
-            String receivedMsg = getMsg(server);
-            if (receivedMsg == null){
+            Payload receivedPayload = this.getMsg(server);
+            if (receivedPayload == null){
                 Assert.assertTrue(true);
                 return;
             }

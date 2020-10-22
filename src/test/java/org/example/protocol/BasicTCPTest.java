@@ -1,10 +1,12 @@
 package org.example.protocol;
 
+import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.swing.*;
 import java.util.Random;
 
 import static java.lang.Thread.sleep;
@@ -59,10 +61,10 @@ public class BasicTCPTest {
 
         client.connect(server);
 
-        String msg = "hello på do!";
+        Message msg = new Message( "hello på do!");
         Packet packet = new Packet.PacketBuilder()
                 .withOrigin(client)
-                .withMsg(msg)
+                .withPayload(msg)
                 .withDestination(server)
                 .build();
 
@@ -104,10 +106,10 @@ public class BasicTCPTest {
 
         client.connect(server);
 
-        String msg = "hello på do!";
+        Message msg = new Message( "hello på do!");
         Packet packet = new Packet.PacketBuilder()
                 .withOrigin(client)
-                .withMsg(msg)
+                .withPayload(msg)
                 .withDestination(server)
                 .build();
 

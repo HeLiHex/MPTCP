@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Flag;
+import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 import org.junit.Assert;
@@ -31,9 +32,9 @@ public class PacketTest {
 
     @Test
     public void buildPacketWithMsgBuildsPacketMsgOriginTest(){
-        String msg = "test";
-        Packet packet = new Packet.PacketBuilder().withMsg(msg).build();
-        Assert.assertEquals(msg, packet.getMsg());
+        Message msg = new Message( "hello på do!");
+        Packet packet = new Packet.PacketBuilder().withPayload(msg).build();
+        Assert.assertEquals(msg, packet.getPayload());
     }
 
     @Test

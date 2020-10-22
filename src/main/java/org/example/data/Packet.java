@@ -10,13 +10,13 @@ public class Packet {
         private NetworkNode destination = null;
         private NetworkNode origin = null;
         private List<Flag> flags = new ArrayList<>();
-        private String msg = null;
+        private Payload payload = null;
 
         private int sequenceNumber;
         private int acknowledgmentNumber;
 
         public Packet build(){
-            return new Packet(this.destination, this.origin, this.flags, this.msg, this.sequenceNumber, this.acknowledgmentNumber);
+            return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
         }
 
         public PacketBuilder withFlags(Flag... flags){
@@ -27,8 +27,8 @@ public class Packet {
             return this;
         }
 
-        public PacketBuilder withMsg(String msg){
-            this.msg = msg;
+        public PacketBuilder withPayload(Payload payload){
+            this.payload = payload;
             return this;
         }
 
@@ -56,17 +56,17 @@ public class Packet {
     private NetworkNode destination;
     private NetworkNode origin;
     private List<Flag> flags;
-    private String msg;
+    private Payload payload;
 
     private int sequenceNumber;
     private int acknowledgmentNumber;
 
 
-    private Packet(NetworkNode destination, NetworkNode origin, List<Flag> flags, String msg, int sequenceNumber, int acknowledgmentNumber) {
+    private Packet(NetworkNode destination, NetworkNode origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
         this.destination = destination;
         this.origin = origin;
         this.flags = flags;
-        this.msg = msg;
+        this.payload = payload;
 
         this.sequenceNumber = sequenceNumber;
         this.acknowledgmentNumber = acknowledgmentNumber;
@@ -80,10 +80,9 @@ public class Packet {
         return hasFlag;
     }
 
-    public String getMsg() {
-        return msg;
+    public Payload getPayload() {
+        return payload;
     }
-
 
     public NetworkNode getDestination() {
         if (this.destination == null) System.out.println("This packet has no destination");
@@ -108,8 +107,8 @@ public class Packet {
 
     @Override
     public String toString() {
-        if (this.getMsg() == null) return this.flags.toString();
-        return "["+getMsg()+"]";
+        if (this.payload == null) return this.flags.toString();
+        return "[" + this.payload.toString() + "]";
     }
 }
 
