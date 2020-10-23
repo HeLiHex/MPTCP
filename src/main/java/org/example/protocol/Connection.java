@@ -1,19 +1,20 @@
 package org.example.protocol;
 
 import org.example.data.Packet;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 
 import java.util.Objects;
 
 public class Connection {
 
-    private NetworkNode self;
-    private NetworkNode other;
+    private Endpoint self;
+    private Endpoint other;
     private int sequenceNumber;
     private int acknowledgementNumber;
 
 
-    public Connection(NetworkNode self, NetworkNode other, int sequenceNumber, int acknowledgementNumber) {
+    public Connection(Endpoint self, Endpoint other, int sequenceNumber, int acknowledgementNumber) {
         this.self = self;
         this.other = other;
         this.sequenceNumber = sequenceNumber;
@@ -33,11 +34,11 @@ public class Connection {
         return acknowledgementNumber;
     }
 
-    public NetworkNode getConnectedNode() {
+    public Endpoint getConnectedNode() {
         return other;
     }
 
-    public NetworkNode getConnectionSource() {
+    public Endpoint getConnectionSource() {
         return self;
     }
 

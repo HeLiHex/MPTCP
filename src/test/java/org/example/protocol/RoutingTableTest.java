@@ -3,6 +3,7 @@ package org.example.protocol;
 import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.Router;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,10 +16,10 @@ public class RoutingTableTest {
 
     @Test(expected = IllegalStateException.class)
     public void routingTableTrowsIllegalStateExceptionIfNotUpdated(){
-        NetworkNode r1 = new Router(100, new Random(), 100);
+        Endpoint r1 = new BasicTCP(new Random());
         NetworkNode r2 = new Router(100, new Random(), 100);
         NetworkNode r3 = new Router(100, new Random(), 100);
-        NetworkNode r4 = new Router(100, new Random(), 100);
+        Endpoint r4 = new BasicTCP( new Random());
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
@@ -47,10 +48,10 @@ public class RoutingTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void routingTableTrowsIllegalArgumentExceptionIfDestinationIsUnconnected(){
-        NetworkNode r1 = new Router(100, new Random(), 100);
+        Endpoint r1 = new BasicTCP( new Random());
         NetworkNode r2 = new Router(100, new Random(), 100);
         NetworkNode r3 = new Router(100, new Random(), 100);
-        NetworkNode r4 = new Router(100, new Random(), 100);
+        Endpoint r4 = new BasicTCP(new Random());
 
         r1.addChannel(r2);
         r2.addChannel(r3);
@@ -76,10 +77,10 @@ public class RoutingTableTest {
     @Test
     public void getPathChoosesShortestPathTest(){
         for (int i = 0; i < 100; i++) {
-            NetworkNode r1 = new Router(100, new Random(), 100);
+            Endpoint r1 = new BasicTCP(new Random());
             NetworkNode r2 = new Router(100, new Random(), 100);
             NetworkNode r3 = new Router(100, new Random(), 100);
-            NetworkNode r4 = new Router(100, new Random(), 100);
+            Endpoint r4 = new BasicTCP(new Random());
 
             r1.addChannel(r2);
             r1.addChannel(r3);

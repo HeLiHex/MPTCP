@@ -1,5 +1,6 @@
 package org.example.data;
 
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.Connection;
 
@@ -8,8 +9,8 @@ import java.util.List;
 
 public class Packet {
     public static class PacketBuilder {
-        private NetworkNode destination = null;
-        private NetworkNode origin = null;
+        private Endpoint destination = null;
+        private Endpoint origin = null;
         private List<Flag> flags = new ArrayList<>();
         private Payload payload = null;
 
@@ -36,12 +37,12 @@ public class Packet {
             return this;
         }
 
-        public PacketBuilder withOrigin(NetworkNode self){
+        public PacketBuilder withOrigin(Endpoint self){
             this.origin = self;
             return this;
         }
 
-        public PacketBuilder withDestination(NetworkNode destination){
+        public PacketBuilder withDestination(Endpoint destination){
             this.destination = destination;
             return this;
         }
@@ -74,8 +75,8 @@ public class Packet {
 
     }
 
-    private NetworkNode destination;
-    private NetworkNode origin;
+    private Endpoint destination;
+    private Endpoint origin;
     private List<Flag> flags;
     private Payload payload;
 
@@ -83,7 +84,7 @@ public class Packet {
     private int acknowledgmentNumber;
 
 
-    private Packet(NetworkNode destination, NetworkNode origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
+    private Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
         this.destination = destination;
         this.origin = origin;
         this.flags = flags;
@@ -105,18 +106,18 @@ public class Packet {
         return payload;
     }
 
-    public NetworkNode getDestination() {
+    public Endpoint getDestination() {
         if (this.destination == null) System.out.println("This packet has no destination");
         return this.destination;
     }
 
-    public NetworkNode getOrigin() {
+    public Endpoint getOrigin() {
         return this.origin;
     }
 
-    public void setOrigin(NetworkNode origin) {
-        this.origin = origin;
-    }
+    //public void setOrigin(Endpoint origin) {
+        //this.origin = origin;
+    //}
 
     public int getSequenceNumber() {
         return sequenceNumber;

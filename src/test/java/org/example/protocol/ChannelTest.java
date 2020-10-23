@@ -4,6 +4,7 @@ import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.data.Payload;
 import org.example.network.Channel;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.network.Router;
 import org.junit.Assert;
@@ -15,8 +16,8 @@ import java.util.Random;
 public class ChannelTest {
 
     private Random rand = new Random();
-    private NetworkNode source = new Router(100, rand);
-    private NetworkNode destination = new Router(100, rand);
+    private Endpoint source = new BasicTCP(rand);
+    private Endpoint destination = new BasicTCP(rand);
 
     @Test
     public void channelConstructor1Test(){

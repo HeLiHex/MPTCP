@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Flag;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.data.BufferQueue;
 import org.example.data.Packet;
@@ -33,7 +34,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     @Override
-    public void connect(NetworkNode host) {
+    public void connect(Endpoint host) {
         this.updateRoutingTable();
         int initSeqNum = random(100);
         Packet syn = new Packet.PacketBuilder()
@@ -74,7 +75,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void connect(Packet syn){
-        NetworkNode node = syn.getOrigin();
+        Endpoint node = syn.getOrigin();
         int seqNum = random(100);
         int ackNum = syn.getSequenceNumber() + 1;
         Packet synAck = new Packet.PacketBuilder()

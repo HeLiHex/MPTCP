@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Packet;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 
 public interface TCP{
@@ -11,7 +12,7 @@ public interface TCP{
      * 3. Send ACK back to server. The ACK is now A+2 and sequence number is B+1
      * @param host to connect to
      */
-    void connect(NetworkNode host);
+    void connect(Endpoint host);
 
     /**
      * 1. Receive SYN Packet with random number A that indicates that a client wants to connect
