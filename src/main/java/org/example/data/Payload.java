@@ -8,4 +8,7 @@ public interface Payload {
     @Override
     boolean equals(Object obj);
 
+    @Override
+    int hashCode();
+
 }

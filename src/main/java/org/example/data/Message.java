@@ -15,7 +15,12 @@ public class Message implements Payload{
 
     @Override
     public boolean equals(Object obj) {
-        return this.toString().equals(obj.toString());
+        if (obj instanceof Payload) return this.toString().equals(obj.toString());
+        return false;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
