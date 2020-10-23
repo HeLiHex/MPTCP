@@ -14,5 +14,4 @@ public class BasicTCP extends AbstractTCP {
         super(new BufferQueue<Packet>(BUFFER_SIZE), new BufferQueue<Packet>(BUFFER_SIZE), randomGenerator, NOISE_TOLERANCE);
     }
 
-
 }

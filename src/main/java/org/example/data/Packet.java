@@ -1,6 +1,7 @@
 package org.example.data;
 
 import org.example.network.interfaces.NetworkNode;
+import org.example.protocol.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,13 @@ public class Packet {
         private List<Flag> flags = new ArrayList<>();
         private Payload payload = null;
 
-        private int sequenceNumber;
-        private int acknowledgmentNumber;
+        private int sequenceNumber = -1;
+        private int acknowledgmentNumber = -1;
 
         public Packet build(){
+            if (!this.hasFlag(Flag.ACK)){
+                this.acknowledgmentNumber = -1;
+            }
             return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
         }
 
@@ -51,6 +55,23 @@ public class Packet {
             this.acknowledgmentNumber = acknowledgmentNumber;
             return this;
         }
+
+        public PacketBuilder withConnection(Connection connection){
+            this.withOrigin(connection.getConnectionSource());
+            this.withDestination(connection.getConnectedNode());
+            this.withSequenceNumber(connection.getNextSequenceNumber());
+            this.withAcknowledgmentNumber(connection.getNextAcknowledgementNumber());
+            return this;
+        }
+
+        public boolean hasFlag(Flag... flags){
+            boolean hasFlag = true;
+            for (Flag flag : flags) {
+                hasFlag &= this.flags.contains(flag);
+            }
+            return hasFlag;
+        }
+
     }
 
     private NetworkNode destination;

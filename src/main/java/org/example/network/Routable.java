@@ -4,6 +4,7 @@ import org.example.data.BufferQueue;
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -16,7 +17,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     private Logger logger;
     private RoutingTable routingTable;
     private List<Channel> channels;
-    protected Queue<Packet> inputBuffer;
+    protected BufferQueue<Packet> inputBuffer;
     private Address address;
     private Random randomGenerator;
     private double noiseTolerance;
@@ -44,6 +45,10 @@ public abstract class Routable extends Thread implements NetworkNode {
         NetworkNode destination = packet.getDestination();
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
         nextChannelOnPath.channelPackage(packet);
+    }
+
+    protected int random(int bound){
+        return this.randomGenerator.nextInt(bound);
     }
 
     @Override

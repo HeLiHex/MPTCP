@@ -1,0 +1,62 @@
+package org.example.protocol;
+
+import org.example.data.Packet;
+import org.example.network.interfaces.NetworkNode;
+
+import java.util.Objects;
+
+public class Connection {
+
+    private NetworkNode self;
+    private NetworkNode other;
+    private int sequenceNumber;
+    private int acknowledgementNumber;
+
+
+    public Connection(NetworkNode self, NetworkNode other, int sequenceNumber, int acknowledgementNumber) {
+        this.self = self;
+        this.other = other;
+        this.sequenceNumber = sequenceNumber;
+        this.acknowledgementNumber = acknowledgementNumber;
+    }
+
+    public void update(Packet packet){
+        this.acknowledgementNumber = packet.getSequenceNumber() + 1;
+        this.sequenceNumber = packet.getAcknowledgmentNumber() + 1;
+    }
+
+    public int getNextSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public int getNextAcknowledgementNumber() {
+        return acknowledgementNumber;
+    }
+
+    public NetworkNode getConnectedNode() {
+        return other;
+    }
+
+    public NetworkNode getConnectionSource() {
+        return self;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Connection that = (Connection) o;
+        return Objects.equals(self, that.self) &&
+                Objects.equals(other, that.other);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(self, other);
+    }
+
+    @Override
+    public String toString() {
+        return "Connection[" + other + "]";
+    }
+}

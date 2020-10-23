@@ -43,8 +43,8 @@ public class BasicTCPTest {
 
         client.connect(server);
 
-        Assert.assertEquals(server, client.getConnectedNode());
-        Assert.assertEquals(client, server.getConnectedNode());
+        Assert.assertEquals(server, client.getConnection().getConnectedNode());
+        Assert.assertEquals(client, server.getConnection().getConnectedNode());
     }
 
     @Test
@@ -122,6 +122,35 @@ public class BasicTCPTest {
         }
 
         Assert.assertEquals(getPacket(server), packet);
+
+    }
+
+
+    @Test
+    public synchronized void PacketsAreOrderedTest(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        Message msg = new Message( "test");
+        for (int i = 0; i < 10; i++) {
+            Packet packet = new Packet.PacketBuilder()
+                    .withOrigin(client)
+                    .withPayload(msg)
+                    .withSequenceNumber(i)
+                    .withDestination(server)
+                    .build();
+            client.send(packet);
+
+            //Assert.assertEquals(getPacket(server), packet);
+        }
 
     }
 

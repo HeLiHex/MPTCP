@@ -459,10 +459,11 @@ public class RoutableTest {
     @Test
     public synchronized void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR, 3.0);
-        Router r2 = new Router(100, RANDOM_GENERATOR, 3.0);
-        Router r3 = new Router(100, RANDOM_GENERATOR, 3.0);
-        Router r4 = new Router(100, RANDOM_GENERATOR,3.0);
+        double noiseTolerance = 2.5;
+        Router r1 = new Router(100, RANDOM_GENERATOR, noiseTolerance);
+        Router r2 = new Router(100, RANDOM_GENERATOR, noiseTolerance);
+        Router r3 = new Router(100, RANDOM_GENERATOR, noiseTolerance);
+        Router r4 = new Router(100, RANDOM_GENERATOR,noiseTolerance);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);

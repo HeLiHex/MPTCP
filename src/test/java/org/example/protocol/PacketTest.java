@@ -47,7 +47,7 @@ public class PacketTest {
     @Test
     public void buildPacketWithAckNumBuildsPacketAckNumOriginTest(){
         int ackNum = 321;
-        Packet packet = new Packet.PacketBuilder().withAcknowledgmentNumber(ackNum).build();
+        Packet packet = new Packet.PacketBuilder().withAcknowledgmentNumber(ackNum).withFlags(Flag.ACK).build();
         Assert.assertEquals(ackNum, packet.getAcknowledgmentNumber());
     }
 

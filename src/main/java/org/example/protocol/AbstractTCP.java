@@ -11,15 +11,14 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AbstractTCP extends RoutableEndpoint implements TCP {
+public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
 
     //todo - probably ok with boolean, but locking and releasing should be determined by a abstract method
     private boolean waitingForACK;
-
-    private NetworkNode connectedNode;
+    private Connection connection;
     private Packet receivedPacket;
 
 
@@ -29,17 +28,19 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
         this.receivedPacket = null;
     }
 
-    public NetworkNode getConnectedNode() {
-        return connectedNode;
+    public Connection getConnection() {
+        return this.connection;
     }
 
     @Override
     public void connect(NetworkNode host) {
         this.updateRoutingTable();
+        int initSeqNum = random(100);
         Packet syn = new Packet.PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
                 .withFlags(Flag.SYN)
+                .withSequenceNumber(initSeqNum)
                 .build();
         this.route(syn);
 
@@ -49,16 +50,24 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
 
         Packet synAck = this.dequeueInputBuffer();
         if (synAck.hasFlag(Flag.SYN, Flag.ACK)){
+            if (synAck.getAcknowledgmentNumber() != initSeqNum + 1){
+                System.err.println("wrong ack number");
+                return;
+            }
             System.out.println(synAck);
+            int finalSeqNum = synAck.getAcknowledgmentNumber();
+            int ackNum = synAck.getSequenceNumber() + 1;
             Packet ack = new Packet.PacketBuilder()
                     .withDestination(host)
                     .withOrigin(this)
                     .withFlags(Flag.ACK)
+                    .withSequenceNumber(finalSeqNum)
+                    .withAcknowledgmentNumber(ackNum)
                     .build();
             this.route(ack);
 
-            this.connectedNode = host;
-            this.logger.log(Level.INFO, "connection established with host: " + this.connectedNode);
+            this.connection = new Connection(this, host, finalSeqNum, ackNum);
+            this.logger.log(Level.INFO, "connection established with host: " + this.connection);
             this.start();
         }
     }
@@ -66,26 +75,30 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void connect(Packet syn){
         NetworkNode node = syn.getOrigin();
+        int seqNum = random(100);
+        int ackNum = syn.getSequenceNumber() + 1;
         Packet synAck = new Packet.PacketBuilder()
                 .withDestination(node)
                 .withOrigin(this)
                 .withFlags(Flag.SYN, Flag.ACK)
+                .withSequenceNumber(seqNum)
+                .withAcknowledgmentNumber(ackNum)
                 .build();
         this.route(synAck);
 
-        this.connectedNode = node;
-        this.logger.log(Level.INFO, "connection established with: " + this.connectedNode);
+        this.connection = new Connection(this, node, seqNum, ackNum);
+        this.logger.log(Level.INFO, "connection established with: " + this.connection);
     }
 
     @Override
     public void send(Packet packet) {
-        if (!packet.getDestination().equals(this.connectedNode)){
+        //todo - dette er ikke sant. dette håndteres hos mottaker
+        if (!packet.getDestination().equals(this.connection.getConnectedNode())){
             logger.log(Level.WARNING, "A connection must be established to send packets");
-            System.out.println(this.connectedNode);
+            System.out.println(this.connection);
             return;
         }
 
-        packet.setOrigin(this);
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
             logger.log(Level.WARNING, "Packet was not added to the output queue");
@@ -105,8 +118,12 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
 
     }
 
+
     private synchronized void handleIncoming(){
-        if (this.inputBufferIsEmpty()) return;
+        if (this.inputBufferIsEmpty()){
+            sleep();
+            return;
+        }
 
         Packet packet = this.dequeueInputBuffer();
         System.out.println("packet: " + packet + " received");
@@ -125,26 +142,26 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
 
+        this.connection.update(packet);
         this.receivedPacket = packet;
         this.send(new Packet.PacketBuilder()
                 .withOrigin(this)
                 .withDestination(packet.getOrigin())
                 .withFlags(Flag.ACK)
+                .withSequenceNumber(this.connection.getNextSequenceNumber())
+                .withAcknowledgmentNumber(this.connection.getNextAcknowledgementNumber())
                 .build()
         );
     }
 
     private void trySend(){
-        if (waitingForACK){
+        if (this.waitingForACK || this.outputBufferIsEmpty()){
             this.sleep();
-            //System.out.println("waiting for ack");
             return;
         }
-        if (!this.outputBufferIsEmpty()){
-            Packet packet = this.dequeueOutputBuffer();
-            this.route(packet);
-            this.waitingForACK = true;
-        }
+        Packet packet = this.dequeueOutputBuffer();
+        this.route(packet);
+        this.waitingForACK = true;
     }
 
     private void sleep(){
@@ -159,9 +176,7 @@ public class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void run() {
         while (true){
-            if (!this.inputBufferIsEmpty()){
-                this.handleIncoming();
-            }
+            this.handleIncoming();
             this.trySend();
         }
     }
