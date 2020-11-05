@@ -127,6 +127,11 @@ public class Packet {
         return acknowledgmentNumber;
     }
 
+    public int size(){
+        if (this.payload == null) return 0;
+        return payload.size();
+    }
+
     @Override
     public String toString() {
         if (this.payload == null) return this.flags.toString();

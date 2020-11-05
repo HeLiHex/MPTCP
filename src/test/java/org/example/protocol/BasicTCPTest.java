@@ -16,7 +16,7 @@ public class BasicTCPTest {
 
     private static final Random RANDOM_GENERATOR = new Random();
 
-    private Packet getPacket(TCP endpoint){
+    private synchronized Packet getPacket(TCP endpoint){
         for (int i = 0; i < 1000; i++) {
             Packet packet = endpoint.receive();
             if (packet != null) return packet;
@@ -26,7 +26,7 @@ public class BasicTCPTest {
                 e.printStackTrace();
             }
         }
-    return null;
+        return null;
     }
 
     @Test
@@ -45,6 +45,8 @@ public class BasicTCPTest {
 
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
         Assert.assertEquals(client, server.getConnection().getConnectedNode());
+
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() + 1, client.getConnection().getNextAcknowledgementNumber());
     }
 
     @Test
@@ -63,9 +65,8 @@ public class BasicTCPTest {
 
         Message msg = new Message( "hello på do!");
         Packet packet = new Packet.PacketBuilder()
-                .withOrigin(client)
+                .withConnection(client.getConnection())
                 .withPayload(msg)
-                .withDestination(server)
                 .build();
 
         client.send(packet);
@@ -108,9 +109,8 @@ public class BasicTCPTest {
 
         Message msg = new Message( "hello på do!");
         Packet packet = new Packet.PacketBuilder()
-                .withOrigin(client)
+                .withConnection(client.getConnection())
                 .withPayload(msg)
-                .withDestination(server)
                 .build();
 
         client.send(packet);
@@ -139,17 +139,18 @@ public class BasicTCPTest {
         server.start();
         client.connect(server);
 
-        Message msg = new Message( "test");
         for (int i = 0; i < 10; i++) {
-            Packet packet = new Packet.PacketBuilder()
-                    .withOrigin(client)
-                    .withPayload(msg)
-                    .withSequenceNumber(i)
-                    .withDestination(server)
-                    .build();
-            client.send(packet);
+            Message msg = new Message( "test " + i);
+            client.send(msg);
 
-            //Assert.assertEquals(getPacket(server), packet);
+            //todo - the delay is here because lost packets are not retransmitted
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Assert.assertEquals(getPacket(server).getPayload(), msg);
         }
 
     }

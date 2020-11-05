@@ -2,6 +2,8 @@ package org.example.data;
 
 public interface Payload {
 
+    int size();
+
     @Override
     String toString();
 

@@ -1,12 +1,15 @@
 package org.example.protocol;
 
 import org.example.data.Packet;
+import org.example.data.Payload;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 
 public interface TCP{
 
     /**
+     * A method that initiates connection with a host
+     *
      * 1. Send SYN with random number A
      * 2. Receive SYN-ACK with A+1 and sequence number random B (the server chooses B)
      * 3. Send ACK back to server. The ACK is now A+2 and sequence number is B+1
@@ -15,6 +18,8 @@ public interface TCP{
     void connect(Endpoint host);
 
     /**
+     * A method that handles incoming connections
+     *
      * 1. Receive SYN Packet with random number A that indicates that a client wants to connect
      * 2. Send SYN-ACK with A+1 and sequence number random B
      * 3. Receive ACK with ACK-number A+2 and sequence number is B+1
@@ -27,6 +32,12 @@ public interface TCP{
      * @param packet
      */
     void send(Packet packet);
+
+    /**
+     * Creates a packet with Payload and enqueues the new Packet to the output-buffer
+     * @param payload
+     */
+    void send(Payload payload);
 
     /**
      * Dequeues the Packet from the input-buffer

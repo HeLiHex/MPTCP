@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Flag;
+import org.example.data.Payload;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.data.BufferQueue;
@@ -92,7 +93,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     @Override
-    public void send(Packet packet) {
+    public synchronized void send(Packet packet) {
         //todo - dette er ikke sant. dette håndteres hos mottaker
         if (!packet.getDestination().equals(this.connection.getConnectedNode())){
             logger.log(Level.WARNING, "A connection must be established to send packets");
@@ -103,15 +104,30 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
             logger.log(Level.WARNING, "Packet was not added to the output queue");
+            //todo - throw?
             return;
         }
         System.out.println("packet: " + packet + " sent");
     }
 
     @Override
-    public Packet receive() {
-        //todo - hand over to socket/client
-        return this.receivedPacket;
+    public synchronized void send(Payload payload) {
+        Packet packet = new Packet.PacketBuilder()
+                .withSequenceNumber(this.connection.getNextSequenceNumber())
+                .withConnection(this.connection)
+                .withPayload(payload)
+                .build();
+        send(packet);
+    }
+
+    @Override
+    public synchronized Packet receive() {
+        if (this.receivedPacket != null){
+            Packet packet = this.receivedPacket;
+            this.receivedPacket = null;
+            return packet;
+        }
+        return null;
     }
 
     @Override
@@ -126,11 +142,13 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
 
+        //todo - er denne pakken fra en connection?
         Packet packet = this.dequeueInputBuffer();
         System.out.println("packet: " + packet + " received");
 
         //TODO - dette kan gjøres bedre
         if (packet.hasFlag(Flag.ACK) && !packet.hasFlag(Flag.SYN)){
+            this.connection.update(packet);
             this.waitingForACK = false;
             return;
         }
@@ -143,14 +161,19 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
 
+        System.out.println(this.connection.getNextAcknowledgementNumber());
+        System.out.println(packet.getSequenceNumber());
+
+        boolean isNextPacket = packet.getSequenceNumber() == this.connection.getNextAcknowledgementNumber();
+        if (!isNextPacket){
+            this.logger.log(Level.INFO, "the received packet was discarded due to arriving out of order");
+            return;
+        }
         this.connection.update(packet);
         this.receivedPacket = packet;
         this.send(new Packet.PacketBuilder()
-                .withOrigin(this)
-                .withDestination(packet.getOrigin())
+                .withConnection(this.connection)
                 .withFlags(Flag.ACK)
-                .withSequenceNumber(this.connection.getNextSequenceNumber())
-                .withAcknowledgmentNumber(this.connection.getNextAcknowledgementNumber())
                 .build()
         );
     }
@@ -162,6 +185,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
         Packet packet = this.dequeueOutputBuffer();
         this.route(packet);
+        if (packet.hasFlag(Flag.ACK)) return;
+
         this.waitingForACK = true;
     }
 

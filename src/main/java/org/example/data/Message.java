@@ -9,6 +9,11 @@ public class Message implements Payload{
     }
 
     @Override
+    public int size() {
+        return this.msg.length();
+    }
+
+    @Override
     public String toString() {
         return this.msg;
     }

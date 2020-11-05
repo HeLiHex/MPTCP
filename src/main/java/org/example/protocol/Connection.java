@@ -1,5 +1,6 @@
 package org.example.protocol;
 
+import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
@@ -22,9 +23,13 @@ public class Connection {
     }
 
     public void update(Packet packet){
+        if (packet.hasFlag(Flag.ACK)){
+            this.sequenceNumber = packet.getAcknowledgmentNumber();
+            return;
+        }
         this.acknowledgementNumber = packet.getSequenceNumber() + 1;
-        this.sequenceNumber = packet.getAcknowledgmentNumber() + 1;
     }
+
 
     public int getNextSequenceNumber() {
         return sequenceNumber;
