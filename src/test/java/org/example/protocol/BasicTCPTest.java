@@ -127,7 +127,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void PacketsAreOrderedTest(){
+    public synchronized void packetsAreOrderedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -152,7 +152,52 @@ public class BasicTCPTest {
 
             Assert.assertEquals(getPacket(server).getPayload(), msg);
         }
+    }
 
+    @Test
+    public synchronized void unorderedPacketsAreNotReceivedTest(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        Message msg = new Message( "test1");
+        Packet packet = new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withOrigin(client)
+                .withDestination(server)
+                .withSequenceNumber(client.getConnection().getNextSequenceNumber())
+                .build();
+        client.send(packet);
+
+        try {
+            sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        msg = new Message( "test2");
+        packet = new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withOrigin(client)
+                .withDestination(server)
+                .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100)
+                .build();
+        client.send(packet);
+
+        try {
+            sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertNotEquals(getPacket(server).getPayload(), msg);
     }
 
 
