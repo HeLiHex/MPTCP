@@ -3,7 +3,6 @@ package org.example.protocol;
 import org.example.data.Flag;
 import org.example.data.Payload;
 import org.example.network.interfaces.Endpoint;
-import org.example.network.interfaces.NetworkNode;
 import org.example.data.BufferQueue;
 import org.example.data.Packet;
 import org.example.network.RoutableEndpoint;
@@ -19,20 +18,15 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
 
     //todo - probably ok with boolean, but locking and releasing should be determined by a abstract method
-    private boolean waitingForACK;
     private Connection connection;
     private Packet receivedPacket;
 
 
     public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, outputBuffer, randomGenerator, noiseTolerance);
-        this.waitingForACK = false;
         this.receivedPacket = null;
     }
 
-    public Connection getConnection() {
-        return this.connection;
-    }
 
     @Override
     public void connect(Endpoint host) {
@@ -135,6 +129,17 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     }
 
+    protected abstract boolean isWaitingForACK();
+
+    protected abstract void releaseWaitForAck();
+
+    protected abstract void setWaitForAck();
+
+
+    public Connection getConnection() {
+        return this.connection;
+    }
+
 
     private synchronized void handleIncoming(){
         if (this.inputBufferIsEmpty()){
@@ -149,7 +154,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         //TODO - dette kan gjøres bedre
         if (packet.hasFlag(Flag.ACK) && !packet.hasFlag(Flag.SYN)){
             this.connection.update(packet);
-            this.waitingForACK = false;
+            this.releaseWaitForAck();
             return;
         }
         if (packet.hasFlag(Flag.SYN) && !packet.hasFlag(Flag.ACK)){
@@ -179,7 +184,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     private void trySend(){
-        if (this.waitingForACK || this.outputBufferIsEmpty()){
+        if (this.isWaitingForACK() || this.outputBufferIsEmpty()){
             this.sleep();
             return;
         }
@@ -187,7 +192,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.route(packet);
         if (packet.hasFlag(Flag.ACK)) return;
 
-        this.waitingForACK = true;
+        this.setWaitForAck();
     }
 
     private void sleep(){
