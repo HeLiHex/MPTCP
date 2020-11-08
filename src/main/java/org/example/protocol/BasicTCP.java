@@ -29,6 +29,15 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected void setWaitForAck() {
         this.waitingForACK = true;
+    }
 
+    @Override
+    protected boolean packetIsFromValidConnection(Packet packet) {
+        Connection conn = this.getConnection();
+        if (conn == null) return false;
+        return packet.getSequenceNumber() == conn.getNextAcknowledgementNumber()
+                && packet.getOrigin().equals(conn.getConnectedNode())
+                && packet.getDestination().equals(conn.getConnectionSource()
+        );
     }
 }

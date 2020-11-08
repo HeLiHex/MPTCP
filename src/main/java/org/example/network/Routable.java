@@ -17,7 +17,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     private Logger logger;
     private RoutingTable routingTable;
     private List<Channel> channels;
-    protected BufferQueue<Packet> inputBuffer;
+    protected volatile BufferQueue<Packet> inputBuffer;
     private Address address;
     private Random randomGenerator;
     private double noiseTolerance;
@@ -118,7 +118,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     @Override
-    public synchronized void start() {
+    public void start() {
         super.start();
     }
 

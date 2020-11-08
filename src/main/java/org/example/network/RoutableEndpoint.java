@@ -8,7 +8,7 @@ import java.util.Random;
 
 public abstract class RoutableEndpoint extends Routable implements Endpoint {
 
-    private BufferQueue<Packet> outputBuffer;
+    private volatile BufferQueue<Packet> outputBuffer;
 
     public RoutableEndpoint(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
