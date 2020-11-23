@@ -174,8 +174,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
             if (packet.hasFlag(Flag.FIN)){
                 this.close();
-                this.ack(packet);
-                return;
             }
             this.ack(packet);
 

@@ -40,13 +40,18 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         server.start();
-
         client.connect(server);
+
+        try {
+            sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
         Assert.assertEquals(client, server.getConnection().getConnectedNode());
 
-        Assert.assertEquals(server.getConnection().getNextSequenceNumber() + 1, client.getConnection().getNextAcknowledgementNumber());
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
     }
 
     @Test
