@@ -30,7 +30,7 @@ public class BasicTCPTest {
     }
 
     @Test
-    public synchronized void connectToEndpointTest(){
+    public void connectToEndpointTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 

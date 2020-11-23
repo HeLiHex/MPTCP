@@ -16,7 +16,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
-    private Connection connection;
     private Packet receivedPacket;
 
 
@@ -60,8 +59,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                     .build();
             this.route(ack);
 
-            this.connection = new Connection(this, host, finalSeqNum, ackNum);
-            this.logger.log(Level.INFO, "connection established with host: " + this.connection);
+            this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
+            this.logger.log(Level.INFO, "connection established with host: " + this.getConnection());
             this.start();
         }
     }
@@ -80,8 +79,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .build();
         this.route(synAck);
 
-        this.connection = new Connection(this, node, seqNum, ackNum);
-        this.logger.log(Level.INFO, "connection established with: " + this.connection);
+        this.setConnection(new Connection(this, node, seqNum, ackNum));
+        this.logger.log(Level.INFO, "connection established with: " + this.getConnection());
     }
 
     @Override
@@ -97,8 +96,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void send(Payload payload) {
         Packet packet = new Packet.PacketBuilder()
-                .withSequenceNumber(this.connection.getNextSequenceNumber())
-                .withConnection(this.connection)
+                .withSequenceNumber(this.getConnection().getNextSequenceNumber())
+                .withConnection(this.getConnection())
                 .withPayload(payload)
                 .build();
         send(packet);
@@ -127,29 +126,31 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract boolean packetIsFromValidConnection(Packet packet);
 
+    protected abstract Connection getConnection();
 
-    //todo - abstract
-    public Connection getConnection() {
-        if (this.connection == null) logger.log(Level.WARNING, "no connection established!");
-        return this.connection;
-    }
+    protected abstract void updateConnection(Packet packet);
 
-    //todo - abstract
-    private void updateConnection(Packet packet){
-        this.connection.update(packet);
-    }
+    protected abstract void setConnection(Connection connection);
 
-    private void ack(Packet packet){
-        boolean isNextPacket = packet.getSequenceNumber() == this.connection.getNextAcknowledgementNumber();
+    private void ack(Packet packet, Flag... flags){
+        boolean isNextPacket = packet.getSequenceNumber() == this.getConnection().getNextAcknowledgementNumber();
         if (!isNextPacket){
             this.logger.log(Level.INFO, "the received packet was discarded due to arriving out of order");
             return;
         }
-        this.connection.update(packet);
+
+        //add ack to flags
+        Flag[] flagsWithAck = new Flag[flags.length + 1];
+        for (int i = 0; i < flags.length; i++) {
+            flagsWithAck[i] = flags[i];
+        }
+        flagsWithAck[flagsWithAck.length-1] = Flag.ACK;
+
+        this.updateConnection(packet);
         this.receivedPacket = packet;
         this.send(new Packet.PacketBuilder()
-                .withConnection(this.connection)
-                .withFlags(Flag.ACK)
+                .withConnection(this.getConnection())
+                .withFlags(flagsWithAck)
                 .build()
         );
     }
@@ -173,6 +174,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
             if (packet.hasFlag(Flag.FIN)){
                 this.close();
+                this.ack(packet);
                 return;
             }
             this.ack(packet);

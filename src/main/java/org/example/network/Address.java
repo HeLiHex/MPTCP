@@ -19,10 +19,12 @@ public class Address implements Comparable<Address>{
         return this.identifier.toString();
     }
 
+
     @Override
     public int compareTo(Address address) {
         return this.identifier.compareTo(address.getIdentifier());
     }
+
 
     @Override
     public boolean equals(Object obj) {
