@@ -38,6 +38,16 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
+    protected void closeConnection() {
+        if (this.connection == null){
+            logger.log(Level.WARNING, "There is noe connection to be closed");
+            return;
+        }
+        logger.log(Level.INFO, () -> "Connection to " + this.connection.getConnectedNode() + " is closed");
+        this.connection = null;
+    }
+
+    @Override
     protected boolean isWaitingForACK() {
         return this.waitingForACK;
     }

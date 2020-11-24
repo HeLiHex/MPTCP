@@ -115,7 +115,11 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void close() {
-
+        Packet fin = new Packet.PacketBuilder()
+                .withConnection(this.getConnection())
+                .withFlags(Flag.FIN)
+                .build();
+        send(fin);
     }
 
     protected abstract boolean isWaitingForACK();
@@ -131,6 +135,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     protected abstract void updateConnection(Packet packet);
 
     protected abstract void setConnection(Connection connection);
+
+    protected abstract void closeConnection();
 
     private void ack(Packet packet, Flag... flags){
         boolean isNextPacket = packet.getSequenceNumber() == this.getConnection().getNextAcknowledgementNumber();
