@@ -132,6 +132,44 @@ public class BasicTCPTest {
 
 
     @Test
+    public void connectToEndpointAndCloseConnectionWorksTest(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        try {
+            sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals(server, client.getConnection().getConnectedNode());
+        Assert.assertEquals(client, server.getConnection().getConnectedNode());
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
+
+        //connection established
+        client.close();
+
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals(null, client.getConnection());
+        Assert.assertEquals(null, server.getConnection());
+
+    }
+
+
+    @Test
     public synchronized void packetsAreOrderedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
