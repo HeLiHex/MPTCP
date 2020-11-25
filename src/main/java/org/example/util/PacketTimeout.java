@@ -11,6 +11,10 @@ public class PacketTimeout extends Timeout {
         this.packet = packet;
     }
 
+    public Packet getPacket() {
+        return packet;
+    }
+
     public void stopTimeout(Packet ack){
         if (ack.getAcknowledgmentNumber() == packet.getSequenceNumber()){
             this.deactivate();

@@ -4,11 +4,17 @@ import org.example.data.Packet;
 
 public interface Window {
 
-    boolean isWaiting();
+    boolean waitingForAck();
 
-    void packetToAck(Packet packet);
+    void retransmit(Packet Packet);
 
-    void receivedAck(Packet ack);
+    void add(Packet packet);
+
+    void ackReceived(Packet ack);
+
+    Packet getPacketToSend();
+
+    void updateTimers();
 
     int windowSize();
 

@@ -1,47 +1,65 @@
 package org.example.protocol.window;
 
-import org.example.data.BufferQueue;
 import org.example.data.Packet;
+import org.example.protocol.BasicTCP;
+import org.example.util.PacketTimeout;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class BasicWindow implements Window {
+public class BasicWindow extends ArrayBlockingQueue<WindowEntry> implements Window {
 
-    //todo - dette burde ligge direkte i bufferqueue
+    private final Logger logger = Logger.getLogger(BasicWindow.class.getName());
+    private int timerDuration;
 
-    private BlockingQueue<Packet> window;
-    private int size;
+    public BasicWindow(int windowSize, int timerDuration) {
+        //todo - test for both true and false in the fair argument
+        super(windowSize, true);
+        this.timerDuration = timerDuration;
+    }
 
-    public BasicWindow(int windowSize) {
-        this.window =  new BufferQueue(windowSize);
-        this.size = windowSize;
+    @Override
+    public boolean waitingForAck() {
+        return super.remainingCapacity() == 0;
+    }
+
+    @Override
+    public void retransmit(Packet Packet) {
 
     }
 
     @Override
-    public boolean isWaiting() {
-        return this.window.remainingCapacity() == 0;
+    public void add(Packet packet) {
+        PacketTimeout packetTimeout = new PacketTimeout(this.timerDuration, packet);
+        WindowEntry entry = new WindowEntry(packet, packetTimeout);
+        boolean added = this.offer(entry);
+        if (!added) throw new IllegalStateException("this Window could not accept the entry given");
+
     }
 
     @Override
-    public void packetToAck(Packet packet) {
-        if (isWaiting()) return;
-        window.add(packet);
+    public void ackReceived(Packet ack) {
+
     }
 
     @Override
-    public void receivedAck(Packet ack) {
-        for (Packet packet : this.window) {
-            if (packet.getSequenceNumber() == ack.getAcknowledgmentNumber()){
-                this.window.remove(packet);
-                return;
+    public Packet getPacketToSend() {
+        return null;
+    }
+
+    @Override
+    public void updateTimers() {
+        for (WindowEntry entry : this) {
+            entry.getPacketTimeout().decrement();
+            if (entry.getPacketTimeout().isDone()){
+                retransmit(entry.getPacket());
             }
         }
-
     }
 
     @Override
     public int windowSize() {
-        return this.size;
+        return super.size() + super.remainingCapacity();
     }
 }

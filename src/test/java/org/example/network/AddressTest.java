@@ -1,4 +1,4 @@
-package org.example.protocol;
+package org.example.network;
 
 import org.example.network.Address;
 import org.junit.Assert;

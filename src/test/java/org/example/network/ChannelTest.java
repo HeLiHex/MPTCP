@@ -1,4 +1,4 @@
-package org.example.protocol;
+package org.example.network;
 
 import org.example.data.Message;
 import org.example.data.Packet;
@@ -7,6 +7,7 @@ import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.network.Router;
+import org.example.protocol.BasicTCP;
 import org.junit.Assert;
 import org.junit.Test;
 

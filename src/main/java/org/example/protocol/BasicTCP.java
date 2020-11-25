@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class BasicTCP extends AbstractTCP {
 
-    private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
+    private final Logger logger = Logger.getLogger(BasicTCP.class.getName());
 
     private static final int BUFFER_SIZE = 20;
     private static final double NOISE_TOLERANCE = 100.0;
