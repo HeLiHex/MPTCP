@@ -2,6 +2,7 @@ package org.example.protocol;
 
 import org.example.data.BufferQueue;
 import org.example.data.Packet;
+import org.example.protocol.window.BasicWindow;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -17,7 +18,7 @@ public class BasicTCP extends AbstractTCP {
     private Connection connection;
 
     public BasicTCP(Random randomGenerator) {
-        super(new BufferQueue<Packet>(BUFFER_SIZE), new BufferQueue<Packet>(BUFFER_SIZE), randomGenerator, NOISE_TOLERANCE);
+        super(new BufferQueue<Packet>(BUFFER_SIZE), new BufferQueue<Packet>(BUFFER_SIZE), randomGenerator, NOISE_TOLERANCE, new BasicWindow(10, 10));
         this.waitingForACK = false;
     }
 

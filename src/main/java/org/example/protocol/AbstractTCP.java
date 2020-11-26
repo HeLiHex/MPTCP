@@ -6,6 +6,7 @@ import org.example.network.interfaces.Endpoint;
 import org.example.data.BufferQueue;
 import org.example.data.Packet;
 import org.example.network.RoutableEndpoint;
+import org.example.protocol.window.Window;
 
 
 import java.util.Random;
@@ -17,10 +18,12 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
     private Packet receivedPacket;
+    private Window window;
 
 
-    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
+    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance, Window window) {
         super(inputBuffer, outputBuffer, randomGenerator, noiseTolerance);
+        this.window = window;
         this.receivedPacket = null;
     }
 

@@ -2,7 +2,10 @@ package org.example.protocol.window;
 
 import org.example.data.Packet;
 
-public interface Window {
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public interface Window extends BlockingQueue<WindowEntry> {
 
     boolean waitingForAck();
 

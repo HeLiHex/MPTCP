@@ -1,7 +1,6 @@
 package org.example.protocol.window;
 
 import org.example.data.Packet;
-import org.example.protocol.BasicTCP;
 import org.example.util.PacketTimeout;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,7 +25,7 @@ public class BasicWindow extends ArrayBlockingQueue<WindowEntry> implements Wind
 
     @Override
     public void retransmit(Packet Packet) {
-
+        //todo - tror ikke denne er nødvendig
     }
 
     @Override
@@ -40,11 +39,28 @@ public class BasicWindow extends ArrayBlockingQueue<WindowEntry> implements Wind
 
     @Override
     public void ackReceived(Packet ack) {
-
+        //todo - test om du må sjekke om pakken er et ack
+        for (WindowEntry entry : this) {
+            if (entry.getPacketTimeout().isActive()){
+                boolean isAckOnPacket = entry.getPacket().getSequenceNumber() == ack.getAcknowledgmentNumber();
+                if (isAckOnPacket){
+                    this.remove(entry);
+                    return;
+                }
+            }
+        }
     }
 
     @Override
     public Packet getPacketToSend() {
+        for (WindowEntry entry : this) {
+            if (entry.getPacketTimeout().isActive()) continue;
+
+            //todo - må du ta hensyn til packets der timeren har gått ut. dvs. status.DONE
+            entry.getPacketTimeout().start();
+            return entry.getPacket();
+        }
+        logger.log(Level.INFO, "there are no packets in the window or all packets are waiting for ACK");
         return null;
     }
 
