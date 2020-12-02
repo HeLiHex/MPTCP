@@ -4,13 +4,14 @@ import org.example.data.BufferQueue;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
+import java.util.Queue;
 import java.util.Random;
 
 public abstract class RoutableEndpoint extends Routable implements Endpoint {
 
-    private volatile BufferQueue<Packet> outputBuffer;
+    private volatile Queue<Packet> outputBuffer;
 
-    public RoutableEndpoint(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
+    public RoutableEndpoint(Queue<Packet> inputBuffer, Queue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
         this.outputBuffer = outputBuffer;
     }

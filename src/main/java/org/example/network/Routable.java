@@ -17,12 +17,12 @@ public abstract class Routable extends Thread implements NetworkNode {
     private Logger logger;
     private RoutingTable routingTable;
     private List<Channel> channels;
-    protected volatile BufferQueue<Packet> inputBuffer;
+    protected volatile Queue<Packet> inputBuffer;
     private Address address;
     private Random randomGenerator;
     private double noiseTolerance;
 
-    public Routable(BufferQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
+    public Routable(Queue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
         this.logger = Logger.getLogger(getClass().getName());
 
         this.inputBuffer = inputBuffer;

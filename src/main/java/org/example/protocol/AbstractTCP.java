@@ -1,14 +1,12 @@
 package org.example.protocol;
 
-import org.example.data.Flag;
-import org.example.data.Payload;
+import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
-import org.example.data.BufferQueue;
-import org.example.data.Packet;
 import org.example.network.RoutableEndpoint;
 import org.example.protocol.window.Window;
 
 
+import java.util.Queue;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,12 +16,12 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
     private Packet receivedPacket;
-    private Window window;
+    //private Window window;
 
 
-    public AbstractTCP(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance, Window window) {
+    public AbstractTCP(Queue<Packet> inputBuffer, Queue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance, Window window) {
         super(inputBuffer, outputBuffer, randomGenerator, noiseTolerance);
-        this.window = window;
+        //this.window = window;
         this.receivedPacket = null;
     }
 
@@ -108,12 +106,21 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public Packet receive() {
+        /*ReceivingWindowQueue receivingWindow = this.getReceivingWindow();
+        if (receivingWindow.readyToReceive()){
+            return receivingWindow.receive();
+        }
+        return null;
+
+         */
+
         if (this.receivedPacket != null){
             Packet packet = this.receivedPacket;
             this.receivedPacket = null;
             return packet;
         }
         return null;
+
     }
 
     @Override
@@ -123,6 +130,10 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withFlags(Flag.FIN)
                 .build();
         send(fin);
+    }
+
+    protected ReceivingWindowQueue getReceivingWindow(){
+        return (ReceivingWindowQueue)this.inputBuffer;
     }
 
     protected abstract boolean isWaitingForACK();
@@ -157,6 +168,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         this.updateConnection(packet);
         this.receivedPacket = packet;
+        //this.getReceivingWindow().addToReceived();
         this.send(new Packet.PacketBuilder()
                 .withConnection(this.getConnection())
                 .withFlags(flagsWithAck)
