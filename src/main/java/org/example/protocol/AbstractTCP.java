@@ -3,11 +3,10 @@ package org.example.protocol;
 import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
-import org.example.protocol.window.Window;
 
 
-import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,14 +14,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
 
-    private Packet receivedPacket;
-    //private Window window;
 
-
-    public AbstractTCP(Queue<Packet> inputBuffer, Queue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance, Window window) {
+    public AbstractTCP(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, outputBuffer, randomGenerator, noiseTolerance);
-        //this.window = window;
-        this.receivedPacket = null;
     }
 
 
@@ -60,7 +54,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                     .build();
             this.route(ack);
 
-            this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
+            this.setConnection(new Connection(this, host, finalSeqNum, ackNum, getWindowSize()));
             this.logger.log(Level.INFO, "connection established with host: " + this.getConnection());
             this.start();
         }
@@ -68,6 +62,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void connect(Packet syn){
+        this.dequeueInputBuffer();
         Endpoint node = syn.getOrigin();
         int seqNum = random(100);
         int ackNum = syn.getSequenceNumber() + 1;
@@ -80,7 +75,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .build();
         this.route(synAck);
 
-        this.setConnection(new Connection(this, node, seqNum, ackNum));
+        this.setConnection(new Connection(this, node, seqNum, ackNum, getWindowSize()));
         this.logger.log(Level.INFO, "connection established with: " + this.getConnection());
     }
 
@@ -105,23 +100,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     @Override
-    public Packet receive() {
-        /*ReceivingWindowQueue receivingWindow = this.getReceivingWindow();
-        if (receivingWindow.readyToReceive()){
-            return receivingWindow.receive();
-        }
-        return null;
+    public abstract Packet receive();
 
-         */
-
-        if (this.receivedPacket != null){
-            Packet packet = this.receivedPacket;
-            this.receivedPacket = null;
-            return packet;
-        }
-        return null;
-
-    }
+    protected abstract void setReceived();
 
     @Override
     public void close() {
@@ -132,9 +113,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         send(fin);
     }
 
-    protected ReceivingWindowQueue getReceivingWindow(){
-        return (ReceivingWindowQueue)this.inputBuffer;
-    }
+    protected abstract int getWindowSize();
 
     protected abstract boolean isWaitingForACK();
 
@@ -152,13 +131,13 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract void closeConnection();
 
-    private void ack(Packet packet, Flag... flags){
-        boolean isNextPacket = packet.getSequenceNumber() == this.getConnection().getNextAcknowledgementNumber();
-        if (!isNextPacket){
-            this.logger.log(Level.INFO, "the received packet was discarded due to arriving out of order");
-            return;
-        }
+    @Override
+    public boolean enqueueInputBuffer(Packet packet) {
+        if (!packetIsFromValidConnection(packet) && !packet.hasFlag(Flag.SYN)) return false;
+        return super.enqueueInputBuffer(packet);
+    }
 
+    private void ack(Packet packet, Flag... flags){
         //add ack to flags
         Flag[] flagsWithAck = new Flag[flags.length + 1];
         for (int i = 0; i < flags.length; i++) {
@@ -167,8 +146,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         flagsWithAck[flagsWithAck.length-1] = Flag.ACK;
 
         this.updateConnection(packet);
-        this.receivedPacket = packet;
-        //this.getReceivingWindow().addToReceived();
+        this.setReceived();
         this.send(new Packet.PacketBuilder()
                 .withConnection(this.getConnection())
                 .withFlags(flagsWithAck)
@@ -187,6 +165,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         System.out.println("packet: " + packet + " received");
 
         if (packetIsFromValidConnection(packet)){
+            System.out.println(packet + " accepted");
             if (packet.hasFlag(Flag.ACK)){
                 this.updateConnection(packet);
                 this.releaseWaitForAck();
@@ -203,6 +182,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
 
+        this.dequeueInputBuffer();
     }
 
 

@@ -248,5 +248,67 @@ public class BasicTCPTest {
 
 
 
+    @Test
+    public synchronized void packetsAreDroppedWhenArrivingTooEarly(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR);
+        Router r2 = new Router(100, RANDOM_GENERATOR);
+        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r4 = new Router(100, RANDOM_GENERATOR);
+
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
+        r4.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        r2.start();
+        r3.start();
+        r4.start();
+        server.start();
+
+        client.connect(server);
+
+        for (int i = 0; i < 10; i++) {
+            Message msg = new Message( "test " + i);
+            client.send(new Packet.PacketBuilder()
+                    .withSequenceNumber(50 + i)
+                    .withDestination(server)
+                    .build()
+            );
+
+            client.send(msg);
+
+            client.send(new Packet.PacketBuilder()
+                    .withSequenceNumber(100 + i)
+                    .withDestination(server)
+                    .build()
+            );
+
+            //todo - the delay is here because lost packets are not retransmitted
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Assert.assertEquals("test 0", getPacket(server).getPayload().toString());
+        Assert.assertEquals("test 1", getPacket(server).getPayload().toString());
+        Assert.assertEquals("test 2", getPacket(server).getPayload().toString());
+        Assert.assertEquals("test 3", getPacket(server).getPayload().toString());
+
+    }
+
+
 
 }

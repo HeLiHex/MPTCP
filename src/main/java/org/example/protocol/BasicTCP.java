@@ -1,11 +1,10 @@
 package org.example.protocol;
 
-import org.example.data.BufferQueue;
 import org.example.data.Packet;
-import org.example.data.ReceivingWindowQueue;
-import org.example.protocol.window.BasicWindow;
 
+import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,14 +12,41 @@ public class BasicTCP extends AbstractTCP {
 
     private final Logger logger = Logger.getLogger(BasicTCP.class.getName());
 
-    private static final int BUFFER_SIZE = 20;
+    private static final int BUFFER_SIZE = 4;
     private static final double NOISE_TOLERANCE = 100.0;
     private boolean waitingForACK;
     private Connection connection;
+    private PriorityQueue<Packet> received;
 
     public BasicTCP(Random randomGenerator) {
-        super(new ReceivingWindowQueue(BUFFER_SIZE), new BufferQueue<Packet>(BUFFER_SIZE), randomGenerator, NOISE_TOLERANCE, new BasicWindow(10, 10));
+        super(new ArrayBlockingQueue<>(4),
+                new ArrayBlockingQueue<>(4),
+                randomGenerator,
+                NOISE_TOLERANCE
+        );
+        this.received = new PriorityQueue<>(((packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber()));
         this.waitingForACK = false;
+    }
+
+    @Override
+    public Packet receive() {
+        if (received.isEmpty()) return null;
+        return received.poll();
+    }
+
+    @Override
+    protected int getWindowSize() {
+        return BUFFER_SIZE;
+    }
+
+    private int getRemainingWindowCapacity(){
+        return this.inputBufferRemainingCapacity();
+    }
+
+
+    @Override
+    protected void setReceived() {
+        this.received.offer(this.dequeueInputBuffer());
     }
 
     @Override
@@ -68,7 +94,7 @@ public class BasicTCP extends AbstractTCP {
     protected boolean packetIsFromValidConnection(Packet packet) {
         Connection conn = this.connection;
         if (conn == null) return false;
-        return packet.getSequenceNumber() == conn.getNextAcknowledgementNumber()
+        return packet.getSequenceNumber() < conn.getNextAcknowledgementNumber() + this.getRemainingWindowCapacity()
                 && packet.getOrigin().equals(conn.getConnectedNode())
                 && packet.getDestination().equals(conn.getConnectionSource()
         );

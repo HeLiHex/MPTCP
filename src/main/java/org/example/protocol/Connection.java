@@ -13,13 +13,15 @@ public class Connection {
     private Endpoint other;
     private int sequenceNumber;
     private int acknowledgementNumber;
+    private int bufferSize;
 
 
-    public Connection(Endpoint self, Endpoint other, int sequenceNumber, int acknowledgementNumber) {
+    public Connection(Endpoint self, Endpoint other, int sequenceNumber, int acknowledgementNumber, int bufferSize) {
         this.self = self;
         this.other = other;
         this.sequenceNumber = sequenceNumber;
         this.acknowledgementNumber = acknowledgementNumber;
+        this.bufferSize = bufferSize;
     }
 
     public void update(Packet packet){
