@@ -49,10 +49,6 @@ public class BasicTCP extends AbstractTCP {
         return BUFFER_SIZE;
     }
 
-    private int getRemainingWindowCapacity(){
-        return this.inputBufferRemainingCapacity();
-    }
-
     @Override
     protected void addToAcked(Packet ackedPacket) {
         this.acknowledged.offer(ackedPacket);
@@ -122,8 +118,6 @@ public class BasicTCP extends AbstractTCP {
         if (packet.hasFlag(Flag.ACK)) return true;
         int packetIndex = packetIndex(packet);
         int windowSize = this.getWindowSize();
-        System.out.println("packet index: " + packetIndex);
-        System.out.println("window Size: " + windowSize);
         return packetIndex < windowSize && packetIndex >= 0;
     }
 

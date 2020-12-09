@@ -1,14 +1,10 @@
 package org.example.util;
 
-import org.example.data.Packet;
-
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public class BoundedPriorityBlockingQueue<T> implements Serializable, Iterable<T>, Collection<T>, BlockingQueue<T>, Queue<T> {
 
@@ -60,11 +56,13 @@ public class BoundedPriorityBlockingQueue<T> implements Serializable, Iterable<T
     }
 
     @Override
+    @Deprecated
     public int drainTo(Collection<? super T> collection) {
         return this.pbq.drainTo(collection);
     }
 
     @Override
+    @Deprecated
     public int drainTo(Collection<? super T> collection, int i) {
         return this.pbq.drainTo(collection, i);
     }
@@ -131,6 +129,7 @@ public class BoundedPriorityBlockingQueue<T> implements Serializable, Iterable<T
     }
 
     @Override
+    @Deprecated
     public boolean addAll(Collection<? extends T> collection) {
         return this.pbq.addAll(collection);
     }
@@ -141,6 +140,7 @@ public class BoundedPriorityBlockingQueue<T> implements Serializable, Iterable<T
     }
 
     @Override
+    @Deprecated
     public boolean retainAll(Collection<?> collection) {
         return this.pbq.retainAll(collection);
     }
