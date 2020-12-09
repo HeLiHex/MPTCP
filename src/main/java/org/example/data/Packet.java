@@ -24,6 +24,16 @@ public class Packet {
             return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
         }
 
+        public Packet ackBuild(Packet packetToAck){
+            this.withDestination(packetToAck.getOrigin());
+            this.withOrigin(packetToAck.getDestination());
+            this.withFlags(Flag.ACK);
+            this.withPayload(null);
+            this.withAcknowledgmentNumber(packetToAck.getSequenceNumber() + 1);
+            this.withSequenceNumber(packetToAck.getAcknowledgmentNumber());
+            return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
+        }
+
         public PacketBuilder withFlags(Flag... flags){
             for (Flag flag : flags) {
                 if (this.flags.contains(flag)) continue;

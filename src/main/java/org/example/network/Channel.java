@@ -45,7 +45,10 @@ public class Channel implements Comparable<Channel>{
 
 
     public synchronized void channelPackage(Packet packet) {
-        if (lossy()) return;
+        if (lossy()){
+            this.logger.log(Level.INFO, "packet lost due to noise");
+            return;
+        }
         if (!this.destination.enqueueInputBuffer(packet)) {
             this.logger.log(Level.INFO, "Packet was not delivered to " + this.destination);
         }

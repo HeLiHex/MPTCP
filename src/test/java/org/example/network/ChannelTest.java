@@ -1,5 +1,6 @@
 package org.example.network;
 
+import org.example.data.Flag;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.data.Payload;
@@ -61,6 +62,7 @@ public class ChannelTest {
                 .withOrigin(source)
                 .withDestination(destination)
                 .withPayload(payload)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                 .build();
         channel.channelPackage(packet);
         Packet receivedPacket = destination.dequeueInputBuffer();
@@ -76,6 +78,7 @@ public class ChannelTest {
                 .withOrigin(source)
                 .withDestination(destination)
                 .withPayload(payload)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                 .build();
         channel.channelPackage(packet);
         Packet receivedPacket = destination.dequeueInputBuffer();
@@ -92,6 +95,7 @@ public class ChannelTest {
                     .withOrigin(source)
                     .withDestination(destination)
                     .withPayload(payload)
+                    .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                     .build();
             channel.channelPackage(packet);
             Packet receivedPacket = destination.dequeueInputBuffer();

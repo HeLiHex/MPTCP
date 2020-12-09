@@ -132,47 +132,6 @@ public class BasicTCPTest {
 
 
     @Test
-    public void connectToEndpointAndCloseConnectionWorksTest(){
-        /*
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-
-        client.addChannel(server);
-
-        client.updateRoutingTable();
-        server.updateRoutingTable();
-
-        server.start();
-        client.connect(server);
-
-
-        try {
-            sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        Assert.assertEquals(server, client.getConnection().getConnectedNode());
-        Assert.assertEquals(client, server.getConnection().getConnectedNode());
-        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
-
-        //connection established
-        client.close();
-
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Assert.assertEquals(null, client.getConnection());
-        Assert.assertEquals(null, server.getConnection());
-*/
-    }
-
-
-    @Test
     public synchronized void packetsAreOrderedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
@@ -249,7 +208,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void packetsAreDroppedWhenArrivingTooEarly(){
+    public synchronized void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
@@ -278,19 +237,25 @@ public class BasicTCPTest {
 
         client.connect(server);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 4; i++) {
             Message msg = new Message( "test " + i);
             client.send(new Packet.PacketBuilder()
-                    .withSequenceNumber(50 + i)
+                    .withSequenceNumber(5000 + i)
+                    .withAcknowledgmentNumber(20000 + i)
+                    .withOrigin(client)
                     .withDestination(server)
+                    .withPayload(new Message("should not be received"))
                     .build()
             );
 
             client.send(msg);
 
-            client.send(new Packet.PacketBuilder()
+            client.route(new Packet.PacketBuilder()
                     .withSequenceNumber(100 + i)
+                    .withAcknowledgmentNumber(20 + i)
+                    .withOrigin(client)
                     .withDestination(server)
+                    .withPayload(new Message("should not be received"))
                     .build()
             );
 
@@ -302,10 +267,122 @@ public class BasicTCPTest {
             }
         }
 
-        Assert.assertEquals("test 0", getPacket(server).getPayload().toString());
-        Assert.assertEquals("test 1", getPacket(server).getPayload().toString());
-        Assert.assertEquals("test 2", getPacket(server).getPayload().toString());
-        Assert.assertEquals("test 3", getPacket(server).getPayload().toString());
+
+        Packet received;
+
+        received = getPacket(server);
+        Assert.assertNotNull(received);
+        Assert.assertEquals("test 0", received.getPayload().toString());
+
+        received = getPacket(server);
+        Assert.assertNotNull(received);
+        Assert.assertEquals("test 1", received.getPayload().toString());
+
+        received = getPacket(server);
+        Assert.assertNotNull(received);
+        Assert.assertEquals("test 2", received.getPayload().toString());
+
+        received = getPacket(server);
+        Assert.assertNotNull(received);
+        Assert.assertEquals("test 3", received.getPayload().toString());
+
+        received = getPacket(server);
+        Assert.assertNull(received);
+    }
+
+
+    @Test
+    public synchronized void sendMessagesUnorderedReceiveOrderedTest() {
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+
+        client.connect(server);
+
+        int seqNum = client.getConnection().getNextSequenceNumber();
+        int ackNum = client.getConnection().getNextAcknowledgementNumber();
+
+
+        for (int i = client.getWindowSize() - 1; i >= 0 ; i--) {
+            client.send(new Packet.PacketBuilder()
+                    .withOrigin(client)
+                    .withDestination(server)
+                    .withSequenceNumber(seqNum + i)
+                    .withAcknowledgmentNumber(ackNum + i)
+                    .withPayload(new Message(i + ""))
+                    .build()
+            );
+        }
+
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        for (int i = 0; i < client.getWindowSize(); i++) {
+            Packet received = getPacket(server);
+            Assert.assertNotNull("iteration: " + i, received);
+            Assert.assertEquals(i + "", received.getPayload().toString());
+        }
+
+        Packet received = getPacket(server);
+        Assert.assertNull(received);
+
+    }
+
+
+    @Test
+    public synchronized void sendToManyMessagesUnorderedReceiveOrderedAndDropCorrectTest() {
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+
+        client.connect(server);
+
+        int seqNum = client.getConnection().getNextSequenceNumber();
+        int ackNum = client.getConnection().getNextAcknowledgementNumber();
+
+
+        for (int i = client.getWindowSize()*2; i >= 0 ; i--) {
+            client.send(new Packet.PacketBuilder()
+                    .withOrigin(client)
+                    .withDestination(server)
+                    .withSequenceNumber(seqNum + i)
+                    .withAcknowledgmentNumber(ackNum + i)
+                    .withPayload(new Message(i + ""))
+                    .build()
+            );
+        }
+
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        for (int i = 0; i < client.getWindowSize(); i++) {
+            Packet received = getPacket(server);
+            Assert.assertNotNull(received);
+            Assert.assertEquals(i + "", received.getPayload().toString());
+        }
+
+        Packet received = getPacket(server);
+        Assert.assertNull(received);
 
     }
 

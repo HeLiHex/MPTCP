@@ -41,7 +41,7 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     @Override
     public void route(Packet packet) {
-        processingDelay();
+        //processingDelay();
         //System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
@@ -84,7 +84,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     @Override
-    public boolean enqueueInputBuffer(Packet packet) {
+    public synchronized boolean enqueueInputBuffer(Packet packet) {
         return this.inputBuffer.offer(packet);
     }
 

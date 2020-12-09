@@ -1,5 +1,6 @@
 package org.example.network;
 
+import org.example.data.Flag;
 import org.example.data.Message;
 import org.example.data.Payload;
 import org.example.network.interfaces.Endpoint;
@@ -62,7 +63,11 @@ public class RoutableTest {
         r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
 
@@ -104,7 +109,11 @@ public class RoutableTest {
         r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
 
@@ -142,7 +151,11 @@ public class RoutableTest {
         r3.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
 
@@ -181,7 +194,11 @@ public class RoutableTest {
         r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
 
@@ -224,7 +241,11 @@ public class RoutableTest {
         r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
 
@@ -264,7 +285,11 @@ public class RoutableTest {
         r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
 
@@ -340,7 +365,11 @@ public class RoutableTest {
         r12.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
 
@@ -385,7 +414,11 @@ public class RoutableTest {
         r3.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
     }
 
 
@@ -417,7 +450,11 @@ public class RoutableTest {
         r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
     }
 
 
@@ -450,7 +487,11 @@ public class RoutableTest {
         r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+        client.route(new Packet.PacketBuilder()
+                .withPayload(msg)
+                .withDestination(server)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build());
 
         Payload receivedPayload = this.getMsg(server);
         Assert.assertEquals(null, receivedPayload);
@@ -487,7 +528,11 @@ public class RoutableTest {
 
         for (int i = 0; i < 1000; i++) {
             Message msg = new Message( "hello på do!");
-            client.route(new Packet.PacketBuilder().withPayload(msg).withDestination(server).build());
+            client.route(new Packet.PacketBuilder()
+                    .withPayload(msg)
+                    .withDestination(server)
+                    .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                    .build());
 
             Payload receivedPayload = this.getMsg(server);
             if (receivedPayload == null){
