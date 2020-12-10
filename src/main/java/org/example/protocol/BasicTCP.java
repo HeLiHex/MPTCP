@@ -21,8 +21,8 @@ public class BasicTCP extends AbstractTCP {
     private static final double NOISE_TOLERANCE = 100.0;
     private boolean waitingForACK;
     private volatile Connection connection;
-    private volatile BlockingQueue<Packet> received;
-    private volatile BlockingQueue<Packet> acknowledged;
+    private BlockingQueue<Packet> received;
+    private BlockingQueue<Packet> acknowledged;
     private final static Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
 
     public BasicTCP(Random randomGenerator) {
@@ -41,12 +41,7 @@ public class BasicTCP extends AbstractTCP {
     @Override
     public Packet receive() {
         if (received.isEmpty()) return null;
-        try {
-            return received.poll(10, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return received.poll();
     }
 
     @Override
@@ -81,8 +76,15 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected Connection getConnection() {
-        if (this.connection == null) logger.log(Level.WARNING, "no connection established!");
+    protected synchronized Connection getConnection() {
+        while (this.connection == null){
+            logger.log(Level.WARNING, "no connection established!");
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return this.connection;
     }
 

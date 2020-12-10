@@ -437,7 +437,6 @@ public class BasicTCPTest {
 
         int indexBeforeSending = server.packetIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexBeforeSending);
-        client.send(packet);
 
         client.send(packet);
         getPacket(server);
@@ -458,6 +457,12 @@ public class BasicTCPTest {
 
         server.start();
         client.connect(server);
+
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();

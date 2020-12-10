@@ -137,6 +137,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     private boolean packetIsFromValidConnection(Packet packet) {
+        if (packet.hasFlag(Flag.SYN)) return true;
         Connection conn = this.getConnection();
         if (conn == null) return false;
         return this.inWindow(packet)
@@ -147,7 +148,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
-        if (!packetIsFromValidConnection(packet) && !packet.hasFlag(Flag.SYN)) return false;
+        if (!packetIsFromValidConnection(packet)) return false;
         return super.enqueueInputBuffer(packet);
     }
 
