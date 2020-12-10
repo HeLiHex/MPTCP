@@ -446,5 +446,59 @@ public class BasicTCPTest {
         Assert.assertEquals(client.getWindowSize()-1, indexAfterReceived);
     }
 
+    @Test
+    public void inWindowShouldWorkOnPacketsThatShouldBeInWindowTest() {
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        int seqNum = client.getConnection().getNextSequenceNumber();
+        int ackNum = client.getConnection().getNextAcknowledgementNumber();
+
+        for (int i = 0; i < client.getWindowSize(); i++) {
+            Packet packet = new Packet.PacketBuilder()
+                    .withOrigin(client)
+                    .withDestination(server)
+                    .withSequenceNumber(seqNum + i)
+                    .withAcknowledgmentNumber(ackNum + i)
+                    .build();
+            Assert.assertTrue(server.inWindow(packet));
+        }
+    }
+
+    @Test
+    public void inWindowShouldNotWorkOnPacketsThatShouldNotBeInWindowTest() {
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        int seqNum = client.getConnection().getNextSequenceNumber();
+        int ackNum = client.getConnection().getNextAcknowledgementNumber();
+
+        for (int i = 0; i < client.getWindowSize(); i++) {
+            Packet packet = new Packet.PacketBuilder()
+                    .withOrigin(client)
+                    .withDestination(server)
+                    .withSequenceNumber(seqNum + i + 1000)
+                    .withAcknowledgmentNumber(ackNum + i + 1000)
+                    .build();
+            Assert.assertFalse(server.inWindow(packet));
+        }
+    }
+
 
 }
