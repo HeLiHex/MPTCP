@@ -118,7 +118,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract boolean isWaitingForACK();
 
-    protected abstract boolean packetIsFromValidConnection(Packet packet);
+    protected abstract boolean inWindow(Packet packet);
 
     protected abstract Connection getConnection();
 
@@ -127,6 +127,23 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     protected abstract void setConnection(Connection connection);
 
     protected abstract void closeConnection();
+
+    protected int packetIndex(Packet packet){
+        Connection conn = this.getConnection();
+        int seqNum = packet.getSequenceNumber();
+        int ackNum = conn.getNextAcknowledgementNumber();
+
+        return seqNum - ackNum;
+    }
+
+    private boolean packetIsFromValidConnection(Packet packet) {
+        Connection conn = this.getConnection();
+        if (conn == null) return false;
+        return this.inWindow(packet)
+                && packet.getOrigin().equals(conn.getConnectedNode())
+                && packet.getDestination().equals(conn.getConnectionSource()
+        );
+    }
 
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {

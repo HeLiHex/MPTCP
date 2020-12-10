@@ -63,6 +63,7 @@ public class BasicTCP extends AbstractTCP {
 
             Packet received = this.dequeueInputBuffer();
             System.out.println("packet: " + received + " received");
+
             this.updateConnection(received);
             this.received.offer(received);
             this.acknowledged.remove();
@@ -105,29 +106,11 @@ public class BasicTCP extends AbstractTCP {
         return false;
     }
 
-
-    private int packetIndex(Packet packet){
-        Connection conn = this.connection;
-        int seqNum = packet.getSequenceNumber();
-        int ackNum = conn.getNextAcknowledgementNumber();
-
-        return seqNum - ackNum;
-    }
-
-    private boolean inWindow(Packet packet){
+    @Override
+    protected boolean inWindow(Packet packet){
         if (packet.hasFlag(Flag.ACK)) return true;
         int packetIndex = packetIndex(packet);
         int windowSize = this.getWindowSize();
         return packetIndex < windowSize && packetIndex >= 0;
-    }
-
-    @Override
-    protected boolean packetIsFromValidConnection(Packet packet) {
-        Connection conn = this.connection;
-        if (conn == null) return false;
-        return inWindow(packet)
-                && packet.getOrigin().equals(conn.getConnectedNode())
-                && packet.getDestination().equals(conn.getConnectionSource()
-        );
     }
 }
