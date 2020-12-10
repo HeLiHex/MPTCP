@@ -1,15 +1,15 @@
 package org.example.protocol;
 
+import org.example.data.BufferQueue;
 import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.util.BoundedPriorityBlockingQueue;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,9 +20,9 @@ public class BasicTCP extends AbstractTCP {
     private static final int BUFFER_SIZE = 4;
     private static final double NOISE_TOLERANCE = 100.0;
     private boolean waitingForACK;
-    private Connection connection;
-    private volatile PriorityQueue<Packet> received;
-    private volatile PriorityQueue<Packet> acknowledged;
+    private volatile Connection connection;
+    private volatile BlockingQueue<Packet> received;
+    private volatile BlockingQueue<Packet> acknowledged;
     private final static Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
 
     public BasicTCP(Random randomGenerator) {
@@ -31,8 +31,8 @@ public class BasicTCP extends AbstractTCP {
                 randomGenerator,
                 NOISE_TOLERANCE
         );
-        this.received = new PriorityQueue<>(PACKET_COMPARATOR);
-        this.acknowledged = new PriorityQueue<>(PACKET_COMPARATOR);
+        this.received = new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
+        this.acknowledged = new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
         this.waitingForACK = false;
     }
 
@@ -41,7 +41,12 @@ public class BasicTCP extends AbstractTCP {
     @Override
     public Packet receive() {
         if (received.isEmpty()) return null;
-        return received.poll();
+        try {
+            return received.poll(10, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
