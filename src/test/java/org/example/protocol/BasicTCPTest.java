@@ -382,9 +382,69 @@ public class BasicTCPTest {
 
         Packet received = getPacket(server);
         Assert.assertNull(received);
-
     }
 
+    @Test
+    public void packetIndexShouldUpdateAfterReceivingPacketInOrderTest() {
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        Packet packet = new Packet.PacketBuilder()
+                .withConnection(client.getConnection())
+                .build();
+
+        int indexBeforeSending = server.packetIndex(packet);
+        Assert.assertEquals(0, indexBeforeSending);
+
+        client.send(packet);
+        getPacket(server);
+
+        int indexAfterReceived = server.packetIndex(packet);
+        Assert.assertEquals(-1, indexAfterReceived);
+    }
+
+    @Test
+    public void packetIndexShouldNotUpdateAfterReceivingPacketOutOfOrderButInWindowTest() {
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        int seqNum = client.getConnection().getNextSequenceNumber();
+        int ackNum = client.getConnection().getNextAcknowledgementNumber();
+
+
+        Packet packet = new Packet.PacketBuilder()
+                .withOrigin(client)
+                .withDestination(server)
+                .withSequenceNumber(seqNum + client.getWindowSize()-1)
+                .withAcknowledgmentNumber(ackNum + client.getWindowSize()-1)
+                .build();
+
+        int indexBeforeSending = server.packetIndex(packet);
+        Assert.assertEquals(client.getWindowSize()-1, indexBeforeSending);
+        client.send(packet);
+
+        client.send(packet);
+        getPacket(server);
+
+        int indexAfterReceived = server.packetIndex(packet);
+        Assert.assertEquals(client.getWindowSize()-1, indexAfterReceived);
+    }
 
 
 }
