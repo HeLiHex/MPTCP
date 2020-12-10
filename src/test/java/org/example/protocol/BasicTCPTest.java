@@ -6,7 +6,6 @@ import org.example.network.Router;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.swing.*;
 import java.util.Random;
 
 import static java.lang.Thread.sleep;
@@ -55,7 +54,7 @@ public class BasicTCPTest {
     }
 
     @Test
-    public synchronized void connectThenSendMsgWorksTest(){
+    public void connectThenSendMsgWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -83,7 +82,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void connectThenSendMsgOverMultipleNodesLineWorksTest(){
+    public void connectThenSendMsgOverMultipleNodesLineWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
@@ -132,7 +131,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void packetsAreOrderedTest(){
+    public void packetsAreOrderedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -160,7 +159,7 @@ public class BasicTCPTest {
     }
 
     @Test
-    public synchronized void unorderedPacketsAreNotReceivedTest(){
+    public void unorderedPacketsAreNotReceivedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -208,7 +207,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
+    public void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
@@ -292,7 +291,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void sendMessagesUnorderedReceiveOrderedTest() {
+    public void sendMessagesUnorderedReceiveOrderedTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -340,7 +339,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void sendToManyMessagesUnorderedReceiveOrderedAndDropCorrectTest() {
+    public void sendToManyMessagesUnorderedReceiveOrderedAndDropCorrectTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
