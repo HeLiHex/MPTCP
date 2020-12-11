@@ -82,7 +82,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public void connectThenSendMsgOverMultipleNodesLineWorksTest(){
+    public synchronized void connectThenSendMsgOverMultipleNodesLineWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
@@ -111,6 +111,12 @@ public class BasicTCPTest {
 
         client.connect(server);
 
+        try {
+            sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         Message msg = new Message( "hello på do!");
         Packet packet = new Packet.PacketBuilder()
                 .withConnection(client.getConnection())
@@ -120,12 +126,12 @@ public class BasicTCPTest {
         client.send(packet);
 
         try {
-            sleep(2000);
+            sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        Assert.assertEquals(getPacket(server), packet);
+        Assert.assertEquals(packet, getPacket(server));
 
     }
 
@@ -143,7 +149,7 @@ public class BasicTCPTest {
         server.start();
         client.connect(server);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i <= server.getWindowSize() * 2; i++) {
             Message msg = new Message( "test " + i);
             client.send(msg);
 
@@ -159,7 +165,7 @@ public class BasicTCPTest {
     }
 
     @Test
-    public void unorderedPacketsAreNotReceivedTest(){
+    public synchronized void unorderedPacketsAreNotReceivedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -193,7 +199,7 @@ public class BasicTCPTest {
                 .withDestination(server)
                 .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100)
                 .build();
-        client.send(packet);
+        client.route(packet);
 
         try {
             sleep(100);
@@ -207,7 +213,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
+    public synchronized void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR);
@@ -235,15 +241,21 @@ public class BasicTCPTest {
         server.start();
 
         client.connect(server);
+        try {
+            sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        for (int i = 0; i < 4; i++) {
+
+        for (int i = 0; i < server.getWindowSize(); i++) {
             Message msg = new Message( "test " + i);
-            client.send(new Packet.PacketBuilder()
+            client.route(new Packet.PacketBuilder()
                     .withSequenceNumber(5000 + i)
                     .withAcknowledgmentNumber(20000 + i)
                     .withOrigin(client)
                     .withDestination(server)
-                    .withPayload(new Message("should not be received"))
+                    .withPayload(new Message("should not be received 1"))
                     .build()
             );
 
@@ -254,44 +266,32 @@ public class BasicTCPTest {
                     .withAcknowledgmentNumber(20 + i)
                     .withOrigin(client)
                     .withDestination(server)
-                    .withPayload(new Message("should not be received"))
+                    .withPayload(new Message("should not be received 2"))
                     .build()
             );
 
             //todo - the delay is here because lost packets are not retransmitted
             try {
-                sleep(1000);
+                sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
 
 
-        Packet received;
+        for (int i = 0; i < server.getWindowSize(); i++) {
+            Packet received = getPacket(server);
+            Assert.assertNotNull(received);
+            Assert.assertEquals("test " + i, received.getPayload().toString());
+        }
 
-        received = getPacket(server);
-        Assert.assertNotNull(received);
-        Assert.assertEquals("test 0", received.getPayload().toString());
-
-        received = getPacket(server);
-        Assert.assertNotNull(received);
-        Assert.assertEquals("test 1", received.getPayload().toString());
-
-        received = getPacket(server);
-        Assert.assertNotNull(received);
-        Assert.assertEquals("test 2", received.getPayload().toString());
-
-        received = getPacket(server);
-        Assert.assertNotNull(received);
-        Assert.assertEquals("test 3", received.getPayload().toString());
-
-        received = getPacket(server);
+        Packet received = getPacket(server);
         Assert.assertNull(received);
     }
 
 
     @Test
-    public void sendMessagesUnorderedReceiveOrderedTest() {
+    public void routedMessagesUnorderedReceiveOrderedTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -309,7 +309,7 @@ public class BasicTCPTest {
 
 
         for (int i = client.getWindowSize() - 1; i >= 0 ; i--) {
-            client.send(new Packet.PacketBuilder()
+            client.route(new Packet.PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i)
@@ -339,7 +339,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public void sendToManyMessagesUnorderedReceiveOrderedAndDropCorrectTest() {
+    public void routeToManyMessagesUnorderedReceiveOrderedAndDropCorrectTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
@@ -357,7 +357,7 @@ public class BasicTCPTest {
 
 
         for (int i = client.getWindowSize()*2; i >= 0 ; i--) {
-            client.send(new Packet.PacketBuilder()
+            client.route(new Packet.PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i)
@@ -365,6 +365,11 @@ public class BasicTCPTest {
                     .withPayload(new Message(i + ""))
                     .build()
             );
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         try {
@@ -401,13 +406,13 @@ public class BasicTCPTest {
                 .withConnection(client.getConnection())
                 .build();
 
-        int indexBeforeSending = server.packetIndex(packet);
+        int indexBeforeSending = server.receivingPacketIndex(packet);
         Assert.assertEquals(0, indexBeforeSending);
 
         client.send(packet);
         getPacket(server);
 
-        int indexAfterReceived = server.packetIndex(packet);
+        int indexAfterReceived = server.receivingPacketIndex(packet);
         Assert.assertEquals(-1, indexAfterReceived);
     }
 
@@ -424,6 +429,9 @@ public class BasicTCPTest {
         server.start();
         client.connect(server);
 
+        //this test does not make sens for window size = 1
+        if (client.getWindowSize() <= 1) return;
+
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
@@ -435,13 +443,13 @@ public class BasicTCPTest {
                 .withAcknowledgmentNumber(ackNum + client.getWindowSize()-1)
                 .build();
 
-        int indexBeforeSending = server.packetIndex(packet);
+        int indexBeforeSending = server.receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexBeforeSending);
 
         client.send(packet);
         getPacket(server);
 
-        int indexAfterReceived = server.packetIndex(packet);
+        int indexAfterReceived = server.receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexAfterReceived);
     }
 
@@ -474,7 +482,7 @@ public class BasicTCPTest {
                     .withSequenceNumber(seqNum + i)
                     .withAcknowledgmentNumber(ackNum + i)
                     .build();
-            Assert.assertTrue(server.inWindow(packet));
+            Assert.assertTrue(server.inReceivingWindow(packet));
         }
     }
 
@@ -501,9 +509,8 @@ public class BasicTCPTest {
                     .withSequenceNumber(seqNum + i + 1000)
                     .withAcknowledgmentNumber(ackNum + i + 1000)
                     .build();
-            Assert.assertFalse(server.inWindow(packet));
+            Assert.assertFalse(server.inReceivingWindow(packet));
         }
     }
-
 
 }

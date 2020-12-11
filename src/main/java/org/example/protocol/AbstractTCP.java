@@ -72,10 +72,12 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withSequenceNumber(seqNum)
                 .withAcknowledgmentNumber(ackNum)
                 .build();
-        this.route(synAck);
 
         this.setConnection(new Connection(this, node, seqNum, ackNum, getWindowSize()));
         this.logger.log(Level.INFO, "connection established with: " + this.getConnection());
+
+        this.route(synAck);
+
     }
 
     @Override
@@ -85,7 +87,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             logger.log(Level.WARNING, "Packet was not added to the output queue");
             return;
         }
-        System.out.println("packet: " + packet + " sent");
     }
 
     @Override
@@ -116,7 +117,11 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract boolean isWaitingForACK();
 
-    protected abstract boolean inWindow(Packet packet);
+    protected abstract void addToWaitingOnAckWindow(Packet packet);
+
+    protected abstract boolean inReceivingWindow(Packet packet);
+
+    protected abstract boolean inSendingWindow(Packet packet);
 
     protected abstract Connection getConnection();
 
@@ -126,11 +131,19 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract void closeConnection();
 
-    protected int packetIndex(Packet packet){
+    protected abstract void ackReceived();
+
+    protected int sendingPacketIndex(Packet packet){
+        Connection conn = this.getConnection();
+        int packetSeqNum = packet.getSequenceNumber();
+        int connSeqNum = conn.getNextSequenceNumber();
+        return packetSeqNum - connSeqNum;
+    }
+
+    protected int receivingPacketIndex(Packet packet){
         Connection conn = this.getConnection();
         int seqNum = packet.getSequenceNumber();
         int ackNum = conn.getNextAcknowledgementNumber();
-
         return seqNum - ackNum;
     }
 
@@ -138,7 +151,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         if (packet.hasFlag(Flag.SYN)) return true;
         Connection conn = this.getConnection();
         if (conn == null) return false;
-        return this.inWindow(packet)
+        System.out.println(packet + " is in receiving window: " + this.inReceivingWindow(packet));
+        System.out.println(this.inputBuffer.remainingCapacity());
+        return this.inReceivingWindow(packet)
                 && packet.getOrigin().equals(conn.getConnectedNode())
                 && packet.getDestination().equals(conn.getConnectionSource()
         );
@@ -172,7 +187,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         if (packet.hasFlag(Flag.ACK)){
             this.updateConnection(packet);
-            this.dequeueInputBuffer();
+            this.ackReceived();
+            //this.dequeueInputBuffer();
             return;
         }
 
@@ -197,19 +213,28 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
         if (isWaitingForACK()){
-            logger.log(Level.INFO, "waiting for ack");
+            //logger.log(Level.INFO, "waiting for ack");
+            this.sleep();
+            return;
+        }
+
+        if (!this.inSendingWindow(this.outputBuffer.peek())){
+            this.dequeueOutputBuffer();
+            System.out.println(this.outputBuffer.peek());
+            logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
             this.sleep();
             return;
         }
 
         Packet packet = this.dequeueOutputBuffer();
+        this.addToWaitingOnAckWindow(packet);
         this.route(packet);
-        if (packet.hasFlag(Flag.ACK)) return;
+        System.out.println("packet: " + packet + " sent");
     }
 
     private void sleep(){
         try {
-            sleep(10);
+            sleep(100);
         } catch (InterruptedException e) {
             logger.log(Level.SEVERE, "Thread Interrupted!");
             Thread.currentThread().interrupt();
