@@ -114,8 +114,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract int getWindowSize();
 
-    protected abstract void addToAcked(Packet ackedPacket);
-
     protected abstract boolean isWaitingForACK();
 
     protected abstract boolean inWindow(Packet packet);
@@ -185,7 +183,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         this.ack(packet);
-        this.addToAcked(packet);
         //this.updateConnection(packet);
         this.setReceived(); //this.dequeueInputBuffer();
         return;

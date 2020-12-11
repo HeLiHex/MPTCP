@@ -22,7 +22,6 @@ public class BasicTCP extends AbstractTCP {
     private boolean waitingForACK;
     private volatile Connection connection;
     private BlockingQueue<Packet> received;
-    private BlockingQueue<Packet> acknowledged;
     private final static Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
 
     public BasicTCP(Random randomGenerator) {
@@ -31,8 +30,7 @@ public class BasicTCP extends AbstractTCP {
                 randomGenerator,
                 NOISE_TOLERANCE
         );
-        this.received = new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-        this.acknowledged = new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
+        this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
         this.waitingForACK = false;
     }
 
@@ -49,16 +47,12 @@ public class BasicTCP extends AbstractTCP {
         return BUFFER_SIZE;
     }
 
-    @Override
-    protected void addToAcked(Packet ackedPacket) {
-        this.acknowledged.offer(ackedPacket);
-    }
 
     @Override
     protected synchronized void setReceived() {
-        if (this.acknowledged.isEmpty() || this.inputBuffer.isEmpty()) return;
+        if (this.inputBuffer.isEmpty()) return;
 
-        boolean shouldAddToReceived = packetIndex(this.acknowledged.peek()) == 0;
+        boolean shouldAddToReceived = packetIndex(this.inputBuffer.peek()) == 0;
         while (shouldAddToReceived){
 
             Packet received = this.dequeueInputBuffer();
@@ -66,12 +60,10 @@ public class BasicTCP extends AbstractTCP {
 
             this.updateConnection(received);
             this.received.offer(received);
-            this.acknowledged.remove();
-            this.updateConnection(received);
 
-            if (this.inputBuffer.isEmpty() || this.acknowledged.isEmpty()) return;
+            if (this.inputBuffer.isEmpty()) return;
 
-            shouldAddToReceived = packetIndex(this.acknowledged.peek()) == 0;
+            shouldAddToReceived = packetIndex(this.inputBuffer.peek()) == 0;
         }
     }
 
