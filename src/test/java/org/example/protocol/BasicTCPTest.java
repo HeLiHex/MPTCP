@@ -272,7 +272,7 @@ public class BasicTCPTest {
 
             //todo - the delay is here because lost packets are not retransmitted
             try {
-                sleep(5000);
+                sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -303,6 +303,11 @@ public class BasicTCPTest {
         server.start();
 
         client.connect(server);
+        try {
+            sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();

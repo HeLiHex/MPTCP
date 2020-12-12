@@ -151,8 +151,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         if (packet.hasFlag(Flag.SYN)) return true;
         Connection conn = this.getConnection();
         if (conn == null) return false;
-        System.out.println(packet + " is in receiving window: " + this.inReceivingWindow(packet));
-        System.out.println(this.inputBuffer.remainingCapacity());
         return this.inReceivingWindow(packet)
                 && packet.getOrigin().equals(conn.getConnectedNode())
                 && packet.getDestination().equals(conn.getConnectionSource()
