@@ -23,7 +23,7 @@ public class BasicTCP extends AbstractTCP {
     private BoundedPriorityBlockingQueue<Packet> waitingOnAckPackets;
 
     public BasicTCP(Random randomGenerator) {
-        super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, (PACKET_COMPARATOR)),
+        super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
                 new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 randomGenerator,
                 NOISE_TOLERANCE
