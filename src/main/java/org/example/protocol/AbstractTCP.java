@@ -131,6 +131,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract boolean inSendingWindow(Packet packet);
 
+    protected abstract void ackReceived();
+
     protected synchronized Connection getConnection() {
         while (this.connection == null){
             logger.log(Level.WARNING, "no connection established!");
@@ -159,8 +161,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         logger.log(Level.INFO, () -> "Connection to " + this.connection.getConnectedNode() + " is closed");
         this.connection = null;
     }
-
-    protected abstract void ackReceived();
 
     protected int sendingPacketIndex(Packet packet){
         Connection conn = this.getConnection();
