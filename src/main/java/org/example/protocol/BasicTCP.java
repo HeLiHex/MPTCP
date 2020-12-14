@@ -17,9 +17,8 @@ public class BasicTCP extends AbstractTCP {
     private static final int WINDOW_SIZE = 50;
     private static final int BUFFER_SIZE = 100;
     private static final double NOISE_TOLERANCE = 100.0;
-    private volatile Connection connection;
-    private BlockingQueue<Packet> received;
     private final static Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
+    private BlockingQueue<Packet> received;
     private BoundedPriorityBlockingQueue<Packet> waitingOnAckPackets;
 
     public BasicTCP(Random randomGenerator) {
@@ -31,7 +30,6 @@ public class BasicTCP extends AbstractTCP {
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
         this.waitingOnAckPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
     }
-
 
 
     @Override
@@ -59,38 +57,6 @@ public class BasicTCP extends AbstractTCP {
         }
     }
 
-    @Override
-    protected synchronized Connection getConnection() {
-        while (this.connection == null){
-            logger.log(Level.WARNING, "no connection established!");
-            try {
-                sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return this.connection;
-    }
-
-    @Override
-    protected void updateConnection(Packet packet){
-        this.connection.update(packet);
-    }
-
-    @Override
-    protected void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
-    @Override
-    protected void closeConnection() {
-        if (this.connection == null){
-            logger.log(Level.WARNING, "There is noe connection to be closed");
-            return;
-        }
-        logger.log(Level.INFO, () -> "Connection to " + this.connection.getConnectedNode() + " is closed");
-        this.connection = null;
-    }
 
     @Override
     protected boolean isWaitingForACK() {

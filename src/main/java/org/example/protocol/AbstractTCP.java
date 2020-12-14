@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.*;
+import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
 
@@ -13,10 +14,17 @@ import java.util.logging.Logger;
 public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
+    private volatile Connection connection;
 
 
-    public AbstractTCP(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
-        super(inputBuffer, outputBuffer, randomGenerator, noiseTolerance);
+    public AbstractTCP(BlockingQueue<Packet> inputBuffer,
+                       BlockingQueue<Packet> outputBuffer,
+                       Random randomGenerator,
+                       double noiseTolerance) {
+        super(inputBuffer,
+                outputBuffer,
+                randomGenerator,
+                noiseTolerance);
     }
 
 
@@ -123,13 +131,34 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract boolean inSendingWindow(Packet packet);
 
-    protected abstract Connection getConnection();
+    protected synchronized Connection getConnection() {
+        while (this.connection == null){
+            logger.log(Level.WARNING, "no connection established!");
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return this.connection;
+    }
 
-    protected abstract void updateConnection(Packet packet);
+    protected void updateConnection(Packet packet){
+        this.connection.update(packet);
+    }
 
-    protected abstract void setConnection(Connection connection);
+    protected void setConnection(Connection connection) {
+        this.connection = connection;
+    }
 
-    protected abstract void closeConnection();
+    protected void closeConnection() {
+        if (this.connection == null){
+            logger.log(Level.WARNING, "There is noe connection to be closed");
+            return;
+        }
+        logger.log(Level.INFO, () -> "Connection to " + this.connection.getConnectedNode() + " is closed");
+        this.connection = null;
+    }
 
     protected abstract void ackReceived();
 
