@@ -1,7 +1,6 @@
 package org.example.protocol;
 
 import org.example.data.*;
-import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
 
@@ -188,8 +187,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
-        if (!packetIsFromValidConnection(packet)) return false;
-        return super.enqueueInputBuffer(packet);
+        boolean shouldEnqueue = packet.hasFlag(Flag.ACK) || packet.hasFlag(Flag.SYN) || packetIsFromValidConnection(packet);
+        if (shouldEnqueue) return super.enqueueInputBuffer(packet);
+        return false;
     }
 
     private void ack(Packet packet, Flag... flags){
