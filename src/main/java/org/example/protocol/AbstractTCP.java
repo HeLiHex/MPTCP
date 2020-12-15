@@ -14,7 +14,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
     private volatile Connection connection;
-    private int packetCounter;
 
 
     public AbstractTCP(BlockingQueue<Packet> inputBuffer,
@@ -90,8 +89,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Packet packet) {
-        int nextPacketSeqNum = this.getConnection().getCONSTANT() + this.packetCounter; // todo - wrong. will result in same number multiple times
-        this.packetCounter++;
+        int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.outputBuffer.size();
         packet.setSequenceNumber(nextPacketSeqNum);
 
         boolean wasAdded = this.enqueueOutputBuffer(packet);
