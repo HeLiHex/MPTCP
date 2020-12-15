@@ -1,8 +1,5 @@
 package org.example.data;
 
-import org.example.data.Flag;
-import org.example.data.Message;
-import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.BasicTCP;
 import org.junit.Assert;
@@ -56,7 +53,7 @@ public class PacketTest {
     public void buildPacketWithFlagBuildsPacketThatHasFlagTest(){
         Flag flag = Flag.ACK;
         Packet packet = new PacketBuilder().withFlags(flag).build();
-        Assert.assertTrue(packet.hasFlag(flag));
+        Assert.assertTrue(packet.hasAllFlags(flag));
     }
 
     @Test
@@ -65,8 +62,8 @@ public class PacketTest {
         Flag syn = Flag.SYN;
         Flag fin = Flag.FIN;
         Packet packet = new PacketBuilder().withFlags(ack, syn, fin).build();
-        Assert.assertTrue(packet.hasFlag(syn, fin));
-        Assert.assertTrue(packet.hasFlag(ack));
+        Assert.assertTrue(packet.hasAllFlags(syn, fin));
+        Assert.assertTrue(packet.hasAllFlags(ack));
     }
 
     @Test
@@ -75,9 +72,9 @@ public class PacketTest {
         Flag syn = Flag.SYN;
         Flag fin = Flag.FIN;
         Packet packet = new PacketBuilder().withFlags(syn, fin).build();
-        Assert.assertFalse(packet.hasFlag(syn, fin, ack));
-        Assert.assertFalse(packet.hasFlag(ack));
-        Assert.assertFalse(packet.hasFlag(syn, ack));
-        Assert.assertTrue(packet.hasFlag(syn, fin));
+        Assert.assertFalse(packet.hasAllFlags(syn, fin, ack));
+        Assert.assertFalse(packet.hasAllFlags(ack));
+        Assert.assertFalse(packet.hasAllFlags(syn, ack));
+        Assert.assertTrue(packet.hasAllFlags(syn, fin));
     }
 }

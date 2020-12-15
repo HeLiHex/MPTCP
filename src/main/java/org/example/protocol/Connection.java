@@ -25,7 +25,7 @@ public class Connection {
     }
 
     public void update(Packet packet){
-        if (packet.hasFlag(Flag.ACK)){
+        if (packet.hasAllFlags(Flag.ACK)){
             this.sequenceNumber = packet.getAcknowledgmentNumber();
             return;
         }

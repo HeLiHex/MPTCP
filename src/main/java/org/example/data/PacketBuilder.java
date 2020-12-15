@@ -69,8 +69,6 @@ public class PacketBuilder {
     public PacketBuilder withConnection(Connection connection){
         this.withOrigin(connection.getConnectionSource());
         this.withDestination(connection.getConnectedNode());
-        this.withSequenceNumber(connection.getNextSequenceNumber());
-        this.withAcknowledgmentNumber(connection.getNextAcknowledgementNumber());
         return this;
     }
 

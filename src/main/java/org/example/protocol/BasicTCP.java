@@ -7,7 +7,6 @@ import org.example.util.BoundedPriorityBlockingQueue;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BasicTCP extends AbstractTCP {
@@ -95,7 +94,7 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     protected boolean inReceivingWindow(Packet packet){
-        if (packet.hasFlag(Flag.ACK)) return true; // todo - ack is not in sending window. this is a hack. fix
+        if (packet.hasAllFlags(Flag.ACK)) return true; // todo - ack is not in sending window. this is a hack. fix
         int packetIndex = receivingPacketIndex(packet);
         int windowSize = this.getWindowSize();
         return packetIndex < windowSize && packetIndex >= 0;

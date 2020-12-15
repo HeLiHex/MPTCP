@@ -410,6 +410,7 @@ public class BasicTCPTest {
 
         Packet packet = new PacketBuilder()
                 .withConnection(client.getConnection())
+                .withSequenceNumber(client.getConnection().getNextSequenceNumber())
                 .build();
 
         int indexBeforeSending = server.receivingPacketIndex(packet);
@@ -443,8 +444,7 @@ public class BasicTCPTest {
 
 
         Packet packet = new PacketBuilder()
-                .withOrigin(client)
-                .withDestination(server)
+                .withConnection(client.getConnection())
                 .withSequenceNumber(seqNum + client.getWindowSize()-1)
                 .withAcknowledgmentNumber(ackNum + client.getWindowSize()-1)
                 .build();
@@ -452,7 +452,7 @@ public class BasicTCPTest {
         int indexBeforeSending = server.receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexBeforeSending);
 
-        client.send(packet);
+        client.route(packet);
         getPacket(server);
 
         int indexAfterReceived = server.receivingPacketIndex(packet);

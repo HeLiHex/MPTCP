@@ -28,10 +28,18 @@ public class Packet {
         this.acknowledgmentNumber = acknowledgmentNumber;
     }
 
-    public boolean hasFlag(Flag... flags){
-        boolean hasFlag = true;
-        for (Flag flag : flags) {
-            hasFlag &= this.flags.contains(flag);
+    public boolean hasAllFlags(Flag... flags){
+        boolean hasFlag = this.flags.contains(flags[0]);
+        for (int i = 1; i < flags.length; i++) {
+            hasFlag &= this.flags.contains(flags[i]);
+        }
+        return hasFlag;
+    }
+
+    public boolean hasOneOfFlags(Flag... flags){
+        boolean hasFlag = this.flags.contains(flags[0]);
+        for (int i = 1; i < flags.length; i++) {
+            hasFlag |= this.flags.contains(flags[i]);
         }
         return hasFlag;
     }
@@ -55,6 +63,10 @@ public class Packet {
 
     public int getSequenceNumber() {
         return sequenceNumber;
+    }
+
+    public void setSequenceNumber(int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
     }
 
     public int getAcknowledgmentNumber() {

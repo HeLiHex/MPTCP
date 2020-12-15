@@ -44,7 +44,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         Packet synAck = this.dequeueInputBuffer();
-        if (synAck.hasFlag(Flag.SYN, Flag.ACK)){
+        if (synAck.hasAllFlags(Flag.SYN, Flag.ACK)){
             if (synAck.getAcknowledgmentNumber() != initSeqNum + 1){
                 System.err.println("wrong ack number");
                 return;
@@ -89,8 +89,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Packet packet) {
-
-        //todo - set sequence number here
+        int nextPacketSeqNum = this.getConnection().getNextSequenceNumber();
+        packet.setSequenceNumber(nextPacketSeqNum);
 
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
@@ -102,7 +102,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void send(Payload payload) {
         Packet packet = new PacketBuilder()
-                .withSequenceNumber(this.getConnection().getNextSequenceNumber())
                 .withConnection(this.getConnection())
                 .withPayload(payload)
                 .build();
@@ -179,7 +178,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     private boolean packetIsFromValidConnection(Packet packet) {
-        if (packet.hasFlag(Flag.SYN)) return true;
+        if (packet.hasAllFlags(Flag.SYN)) return true;
         Connection conn = this.getConnection();
         if (conn == null) return false;
         return this.inReceivingWindow(packet)
@@ -190,7 +189,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
-        boolean shouldEnqueue = packet.hasFlag(Flag.ACK) || packet.hasFlag(Flag.SYN) || packetIsFromValidConnection(packet);
+        boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK) || packet.hasAllFlags(Flag.SYN) || packetIsFromValidConnection(packet);
         if (shouldEnqueue) return super.enqueueInputBuffer(packet);
         return false;
     }
@@ -215,14 +214,14 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         Packet packet = this.inputBuffer.peek();
 
-        if (packet.hasFlag(Flag.ACK)){
+        if (packet.hasAllFlags(Flag.ACK)){
             this.updateConnection(packet);
             this.ackReceived();
             //this.dequeueInputBuffer();
             return;
         }
 
-        if (packet.hasFlag(Flag.SYN)){
+        if (packet.hasAllFlags(Flag.SYN)){
             this.connect(packet);
             this.dequeueInputBuffer();
             return;
