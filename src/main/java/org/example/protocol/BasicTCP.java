@@ -57,6 +57,10 @@ public class BasicTCP extends AbstractTCP {
         }
     }
 
+    @Override
+    protected Packet[] packetsToRetransmit() {
+        return new Packet[0];
+    }
 
     @Override
     protected boolean isWaitingForACK() {

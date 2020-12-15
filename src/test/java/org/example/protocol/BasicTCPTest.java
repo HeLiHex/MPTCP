@@ -553,6 +553,58 @@ public class BasicTCPTest {
     }
 
 
+    @Test
+    public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR, 100);
+        Router r2 = new Router(100, RANDOM_GENERATOR, 100);
+        Router r3 = new Router(100, RANDOM_GENERATOR, 2);
+        Router r4 = new Router(100, RANDOM_GENERATOR, 100);
+
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
+        r4.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        r2.start();
+        r3.start();
+        r4.start();
+        server.start();
+
+        client.connect(server);
+
+        int numPacketsToSend = server.getWindowSize() * 2;
+
+        for (int i = 1; i < numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            client.send(msg);
+
+        }
+
+        try {
+            sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 1; i < numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            Assert.assertEquals(getPacket(server).getPayload(), msg);
+        }
+
+    }
+
+
 
 
 
