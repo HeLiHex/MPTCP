@@ -57,9 +57,6 @@ public class Packet {
         return this.origin;
     }
 
-    //public void setOrigin(Endpoint origin) {
-        //this.origin = origin;
-    //}
 
     public int getSequenceNumber() {
         return sequenceNumber;
@@ -80,8 +77,16 @@ public class Packet {
 
     @Override
     public String toString() {
-        if (this.payload == null) return this.flags.toString();
-        return "[" + this.payload.toString() + "]";
+        String returnString;
+        if (this.payload == null){
+            returnString = this.flags.toString();
+        }
+        else{
+            returnString = "[" + this.payload.toString() + "]";
+        }
+        returnString += "[seq: " + this.getSequenceNumber() + "]";
+
+        return returnString;
     }
 }
 

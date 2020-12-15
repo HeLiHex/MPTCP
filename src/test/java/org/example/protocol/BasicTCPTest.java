@@ -519,4 +519,41 @@ public class BasicTCPTest {
         }
     }
 
+    @Test
+    public void floodWithPacketsInOrderShouldWorkTest(){
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+
+        client.addChannel(server);
+
+        client.updateRoutingTable();
+        server.updateRoutingTable();
+
+        server.start();
+        client.connect(server);
+
+        int numPacketsToSend = server.getWindowSize() * 2;
+
+        for (int i = 1; i < numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            client.send(msg);
+
+            //todo - the delay is here because lost packets are not retransmitted
+            /*try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+        }
+        for (int i = 1; i < numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            Assert.assertEquals(getPacket(server).getPayload(), msg);
+        }
+
+    }
+
+
+
+
+
 }

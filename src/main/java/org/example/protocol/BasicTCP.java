@@ -13,7 +13,7 @@ public class BasicTCP extends AbstractTCP {
 
     private final Logger logger = Logger.getLogger(BasicTCP.class.getName());
 
-    private static final int WINDOW_SIZE = 5;
+    private static final int WINDOW_SIZE = 10;
     private static final int BUFFER_SIZE = 100;
     private static final double NOISE_TOLERANCE = 100.0;
     private final static Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
@@ -71,12 +71,15 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
-        Packet waitingPacket = this.waitingOnAckPackets.peek();
-        if (waitingPacket == null) return;
 
-        boolean shouldRelease = ack.getAcknowledgmentNumber() - 1 == waitingPacket.getSequenceNumber();
-        if (shouldRelease){
-            this.waitingOnAckPackets.poll();
+        if (this.waitingOnAckPackets.isEmpty()) return;
+
+        for (Packet waitingPacket : this.waitingOnAckPackets) {
+            boolean shouldRelease = ack.getAcknowledgmentNumber() - 1 == waitingPacket.getSequenceNumber();
+            if (shouldRelease){
+                this.waitingOnAckPackets.poll();
+                return;
+            }
         }
     }
 

@@ -14,12 +14,15 @@ public class Connection {
     private int sequenceNumber;
     private int acknowledgementNumber;
 
+    private final int CONSTANT;
+
 
     public Connection(Endpoint self, Endpoint other, int sequenceNumber, int acknowledgementNumber) {
         this.self = self;
         this.other = other;
         this.sequenceNumber = sequenceNumber;
         this.acknowledgementNumber = acknowledgementNumber;
+        this.CONSTANT = sequenceNumber;
     }
 
     public void update(Packet packet){
@@ -45,6 +48,10 @@ public class Connection {
 
     public Endpoint getConnectionSource() {
         return self;
+    }
+
+    public int getCONSTANT() {
+        return CONSTANT;
     }
 
     @Override
