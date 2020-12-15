@@ -61,7 +61,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                     .build();
             this.route(ack);
 
-            this.setConnection(new Connection(this, host, finalSeqNum, ackNum, getWindowSize()));
+            this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
             this.logger.log(Level.INFO, "connection established with host: " + this.getConnection());
             this.start();
         }
@@ -80,7 +80,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withAcknowledgmentNumber(ackNum)
                 .build();
 
-        this.setConnection(new Connection(this, node, seqNum, ackNum, getWindowSize()));
+        this.setConnection(new Connection(this, node, seqNum, ackNum));
         this.logger.log(Level.INFO, "connection established with: " + this.getConnection());
 
         this.route(synAck);
@@ -89,7 +89,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Packet packet) {
-        int nextPacketSeqNum = this.getConnection().getNextSequenceNumber();
+        int nextPacketSeqNum = this.getConnection().getNextSequenceNumber(); // todo - wrong. will result in same number multiple times
         packet.setSequenceNumber(nextPacketSeqNum);
 
         boolean wasAdded = this.enqueueOutputBuffer(packet);
@@ -248,7 +248,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         if (!this.inSendingWindow(this.outputBuffer.peek())){
-            this.dequeueOutputBuffer();
+            //this.dequeueOutputBuffer();
             System.out.println(this.outputBuffer.peek());
             logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
             this.sleep();
