@@ -31,7 +31,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     public void connect(Endpoint host) {
         this.updateRoutingTable();
         int initSeqNum = random(100);
-        Packet syn = new Packet.PacketBuilder()
+        Packet syn = new PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
                 .withFlags(Flag.SYN)
@@ -52,7 +52,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             System.out.println(synAck);
             int finalSeqNum = synAck.getAcknowledgmentNumber();
             int ackNum = synAck.getSequenceNumber() + 1;
-            Packet ack = new Packet.PacketBuilder()
+            Packet ack = new PacketBuilder()
                     .withDestination(host)
                     .withOrigin(this)
                     .withFlags(Flag.ACK)
@@ -72,7 +72,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         Endpoint node = syn.getOrigin();
         int seqNum = random(100);
         int ackNum = syn.getSequenceNumber() + 1;
-        Packet synAck = new Packet.PacketBuilder()
+        Packet synAck = new PacketBuilder()
                 .withDestination(node)
                 .withOrigin(this)
                 .withFlags(Flag.SYN, Flag.ACK)
@@ -89,6 +89,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Packet packet) {
+
+        //todo - set sequence number here
+
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
             logger.log(Level.WARNING, "Packet was not added to the output queue");
@@ -98,7 +101,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Payload payload) {
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withSequenceNumber(this.getConnection().getNextSequenceNumber())
                 .withConnection(this.getConnection())
                 .withPayload(payload)
@@ -113,7 +116,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void close() {
-        Packet fin = new Packet.PacketBuilder()
+        Packet fin = new PacketBuilder()
                 .withConnection(this.getConnection())
                 .withFlags(Flag.FIN)
                 .build();
@@ -200,7 +203,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
         flagsWithAck[flagsWithAck.length-1] = Flag.ACK;
 
-        this.route(new Packet.PacketBuilder().ackBuild(packet));
+        this.route(new PacketBuilder().ackBuild(packet));
     }
 
 

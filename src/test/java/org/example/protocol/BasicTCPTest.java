@@ -2,6 +2,7 @@ package org.example.protocol;
 
 import org.example.data.Message;
 import org.example.data.Packet;
+import org.example.data.PacketBuilder;
 import org.example.network.Router;
 import org.junit.Assert;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class BasicTCPTest {
         client.connect(server);
 
         Message msg = new Message( "hello på do!");
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withConnection(client.getConnection())
                 .withPayload(msg)
                 .build();
@@ -118,7 +119,7 @@ public class BasicTCPTest {
         }
 
         Message msg = new Message( "hello på do!");
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withConnection(client.getConnection())
                 .withPayload(msg)
                 .build();
@@ -178,7 +179,7 @@ public class BasicTCPTest {
         client.connect(server);
 
         Message msg = new Message( "test1");
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withOrigin(client)
                 .withDestination(server)
@@ -193,7 +194,7 @@ public class BasicTCPTest {
         }
 
         msg = new Message( "test2");
-        packet = new Packet.PacketBuilder()
+        packet = new PacketBuilder()
                 .withPayload(msg)
                 .withOrigin(client)
                 .withDestination(server)
@@ -250,7 +251,7 @@ public class BasicTCPTest {
 
         for (int i = 0; i < server.getWindowSize(); i++) {
             Message msg = new Message( "test " + i);
-            client.route(new Packet.PacketBuilder()
+            client.route(new PacketBuilder()
                     .withSequenceNumber(5000 + i)
                     .withAcknowledgmentNumber(20000 + i)
                     .withOrigin(client)
@@ -261,7 +262,7 @@ public class BasicTCPTest {
 
             client.send(msg);
 
-            client.route(new Packet.PacketBuilder()
+            client.route(new PacketBuilder()
                     .withSequenceNumber(100 + i)
                     .withAcknowledgmentNumber(20 + i)
                     .withOrigin(client)
@@ -314,7 +315,7 @@ public class BasicTCPTest {
 
 
         for (int i = client.getWindowSize() - 1; i >= 0 ; i--) {
-            client.route(new Packet.PacketBuilder()
+            client.route(new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i)
@@ -362,7 +363,7 @@ public class BasicTCPTest {
 
 
         for (int i = client.getWindowSize()*2; i >= 0 ; i--) {
-            client.route(new Packet.PacketBuilder()
+            client.route(new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i)
@@ -407,7 +408,7 @@ public class BasicTCPTest {
         server.start();
         client.connect(server);
 
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withConnection(client.getConnection())
                 .build();
 
@@ -441,7 +442,7 @@ public class BasicTCPTest {
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
 
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withOrigin(client)
                 .withDestination(server)
                 .withSequenceNumber(seqNum + client.getWindowSize()-1)
@@ -481,7 +482,7 @@ public class BasicTCPTest {
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
         for (int i = 0; i < client.getWindowSize(); i++) {
-            Packet packet = new Packet.PacketBuilder()
+            Packet packet = new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i)
@@ -508,7 +509,7 @@ public class BasicTCPTest {
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
         for (int i = 0; i < client.getWindowSize(); i++) {
-            Packet packet = new Packet.PacketBuilder()
+            Packet packet = new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i + 1000)
