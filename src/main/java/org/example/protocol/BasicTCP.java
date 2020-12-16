@@ -95,14 +95,16 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected boolean inSendingWindow(Packet packet){
         int packetIndex = sendingPacketIndex(packet);
-        int windowSize = this.getWindowSize();
-        return packetIndex < windowSize && packetIndex >= 0;
+        return inWindow(packetIndex);
     }
 
     @Override
     protected boolean inReceivingWindow(Packet packet){
-        if (packet.hasAllFlags(Flag.ACK)) return true; // todo - ack is not in sending window. this is a hack. fix
         int packetIndex = receivingPacketIndex(packet);
+        return inWindow(packetIndex);
+    }
+
+    private boolean inWindow(int packetIndex){
         int windowSize = this.getWindowSize();
         return packetIndex < windowSize && packetIndex >= 0;
     }
