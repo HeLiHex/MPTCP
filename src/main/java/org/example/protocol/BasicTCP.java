@@ -60,7 +60,11 @@ public class BasicTCP extends AbstractTCP {
 
             shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         }
-
+        /*
+        if the current first packet in the input buffer is not the first in the window
+        then ack the packet if it's inside the window, but not poll because the poll should happen
+        in correct order.
+         */
         if (inReceivingWindow(this.inputBuffer.peek())){
             this.ack(this.inputBuffer.peek());
         }
@@ -85,19 +89,7 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
-        //if (this.waitingOnAckPackets.peek() == null) return; // todo - this is here because of the connect ack. fix by adding the acked packet to waining on ack
-
         this.receivedAck.add(ack);
-
-        /*
-        System.out.println();
-        System.out.println("ACK");
-        System.out.println("waiting packets: " + this.waitingOnAckPackets.size());
-        System.out.println("received ack: " + this.receivedAck.size());
-        System.out.println("waiting packet peek: " + this.waitingOnAckPackets.peek().getSequenceNumber());
-        System.out.println("received ack: " + (this.receivedAck.peek().getSequenceNumber()));
-        System.out.println();
-         */
 
         if (this.waitingOnAckPackets.isEmpty()){
             logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or passably uncaught invalid connection ");
@@ -108,30 +100,10 @@ public class BasicTCP extends AbstractTCP {
             this.updateConnection(this.receivedAck.peek());
             this.waitingOnAckPackets.poll();
             this.receivedAck.poll();
-            //System.out.println("actually acked");
-            //System.out.println();
 
             if (receivedAck.isEmpty() || waitingOnAckPackets.isEmpty()) return;
         }
 
-
-
-
-
-        /*
-        Packet ack = this.dequeueInputBuffer();
-
-        if (this.waitingOnAckPackets.isEmpty()) return;
-
-        for (Packet waitingPacket : this.waitingOnAckPackets) {
-            boolean shouldRelease = ack.getAcknowledgmentNumber() - 1 == waitingPacket.getSequenceNumber();
-            if (shouldRelease){
-                this.waitingOnAckPackets.poll();
-                return;
-            }
-        }
-
-         */
     }
 
     @Override

@@ -205,7 +205,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         flagsWithAck[flagsWithAck.length-1] = Flag.ACK;
 
         Packet ack = new PacketBuilder().ackBuild(packet);
-        //System.out.println("route ack: " + ack);
         this.route(ack);
     }
 
@@ -220,7 +219,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         if (packet.hasAllFlags(Flag.ACK)){
             this.ackReceived();
-            //this.dequeueInputBuffer();
             return;
         }
 
@@ -230,8 +228,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
 
-        //this.updateConnection(packet);
-        this.setReceived(); //this.dequeueInputBuffer();
+        this.setReceived();
         return;
 
     }
@@ -253,7 +250,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
         if (isWaitingForACK()){
-            logger.log(Level.INFO, "waiting for ack");
+            //logger.log(Level.INFO, "waiting for ack");
             this.sleep();
             return;
         }

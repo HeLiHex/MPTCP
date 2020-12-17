@@ -36,14 +36,6 @@ public class Packet {
         return hasFlag;
     }
 
-    public boolean hasOneOfFlags(Flag... flags){
-        boolean hasFlag = this.flags.contains(flags[0]);
-        for (int i = 1; i < flags.length; i++) {
-            hasFlag |= this.flags.contains(flags[i]);
-        }
-        return hasFlag;
-    }
-
     public Payload getPayload() {
         return payload;
     }
@@ -68,10 +60,6 @@ public class Packet {
 
     public int getAcknowledgmentNumber() {
         return acknowledgmentNumber;
-    }
-
-    public void setAcknowledgmentNumber(int acknowledgmentNumber) {
-        this.acknowledgmentNumber = acknowledgmentNumber;
     }
 
     public int size(){

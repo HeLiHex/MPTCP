@@ -535,23 +535,9 @@ public class BasicTCPTest {
         int numPacketsToSend = server.getWindowSize() * 2;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message( "test " + i);
+            Message msg = new Message("test " + i);
             client.send(msg);
-
-            //todo - the delay is here because lost packets are not retransmitted
-            /*try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
         }
-
-        /*try {
-            sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Assert.assertEquals(getPacket(server).getPayload(), msg);
@@ -612,9 +598,6 @@ public class BasicTCPTest {
         }
 
     }
-
-
-
 
 
 }
