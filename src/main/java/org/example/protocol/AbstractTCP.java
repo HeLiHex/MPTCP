@@ -82,6 +82,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
         this.logger.log(Level.INFO, "connection established with: " + this.getConnection());
+        this.addToWaitingOnAckWindow(synAck);
 
         this.route(synAck);
 
@@ -91,7 +92,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     public void send(Packet packet) {
         int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.outputBuffer.size();
         packet.setSequenceNumber(nextPacketSeqNum);
-        //packet.setAcknowledgmentNumber(nextPacketSeqNum);
 
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {

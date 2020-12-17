@@ -51,7 +51,7 @@ public class BasicTCPTest {
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
         Assert.assertEquals(client, server.getConnection().getConnectedNode());
 
-        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber() - 1);
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
     }
 
     @Test

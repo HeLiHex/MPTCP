@@ -7,6 +7,7 @@ import org.example.util.BoundedPriorityBlockingQueue;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BasicTCP extends AbstractTCP {
@@ -84,7 +85,7 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
-        if (this.waitingOnAckPackets.peek() == null) return; // todo - this is here because of the connect ack. fix by adding the acked packet to waining on ack
+        //if (this.waitingOnAckPackets.peek() == null) return; // todo - this is here because of the connect ack. fix by adding the acked packet to waining on ack
 
         this.receivedAck.add(ack);
 
@@ -98,6 +99,10 @@ public class BasicTCP extends AbstractTCP {
         System.out.println();
          */
 
+        if (this.waitingOnAckPackets.isEmpty()){
+            logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or passably uncaught invalid connection ");
+            return;
+        }
 
         while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingOnAckPackets.peek().getSequenceNumber()){
             this.updateConnection(this.receivedAck.peek());
