@@ -51,7 +51,7 @@ public class BasicTCPTest {
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
         Assert.assertEquals(client, server.getConnection().getConnectedNode());
 
-        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber() - 1);
     }
 
     @Test
@@ -534,7 +534,7 @@ public class BasicTCPTest {
 
         int numPacketsToSend = server.getWindowSize() * 2;
 
-        for (int i = 1; i < numPacketsToSend; i++) {
+        for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             client.send(msg);
 
@@ -545,7 +545,14 @@ public class BasicTCPTest {
                 e.printStackTrace();
             }*/
         }
-        for (int i = 1; i < numPacketsToSend; i++) {
+
+        /*try {
+            sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Assert.assertEquals(getPacket(server).getPayload(), msg);
         }
@@ -599,7 +606,9 @@ public class BasicTCPTest {
 
         for (int i = 1; i < numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
-            Assert.assertEquals(getPacket(server).getPayload(), msg);
+            Packet received = getPacket(server);
+            Assert.assertNotNull(received);
+            Assert.assertEquals(received.getPayload(), msg);
         }
 
     }

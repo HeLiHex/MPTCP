@@ -70,6 +70,10 @@ public class Packet {
         return acknowledgmentNumber;
     }
 
+    public void setAcknowledgmentNumber(int acknowledgmentNumber) {
+        this.acknowledgmentNumber = acknowledgmentNumber;
+    }
+
     public int size(){
         if (this.payload == null) return 0;
         return payload.size();

@@ -29,7 +29,8 @@ public class PacketBuilder {
         this.withFlags(Flag.ACK);
         this.withPayload(null);
         this.withAcknowledgmentNumber(packetToAck.getSequenceNumber() + 1);
-        this.withSequenceNumber(packetToAck.getAcknowledgmentNumber());
+        //this.withSequenceNumber(packetToAck.getAcknowledgmentNumber());
+        this.withSequenceNumber(packetToAck.getSequenceNumber());
         return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
     }
 

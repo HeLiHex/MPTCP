@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class BasicTCP extends AbstractTCP {
 
-    private final Logger logger = Logger.getLogger(BasicTCP.class.getName());
+    private final Logger logger;
 
     private static final int WINDOW_SIZE = 10;
     private static final int BUFFER_SIZE = 100;
@@ -20,6 +20,7 @@ public class BasicTCP extends AbstractTCP {
 
     private BlockingQueue<Packet> received;
     private BlockingQueue<Packet> waitingOnAckPackets;
+    private BlockingQueue<Packet> receivedAck;
 
     public BasicTCP(Random randomGenerator) {
         super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
@@ -27,8 +28,10 @@ public class BasicTCP extends AbstractTCP {
                 randomGenerator,
                 NOISE_TOLERANCE
         );
+        this.logger = Logger.getLogger(this.getName());
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
         this.waitingOnAckPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
+        this.receivedAck = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
     }
 
 
@@ -50,11 +53,17 @@ public class BasicTCP extends AbstractTCP {
 
             this.updateConnection(received);
             this.received.offer(received);
+            this.ack(received);
 
             if (this.inputBuffer.isEmpty()) return;
 
             shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         }
+
+        if (inReceivingWindow(this.inputBuffer.peek())){
+            this.ack(this.inputBuffer.peek());
+        }
+
     }
 
     @Override
@@ -75,6 +84,37 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
+        if (this.waitingOnAckPackets.peek() == null) return; // todo - this is here because of the connect ack. fix by adding the acked packet to waining on ack
+
+        this.receivedAck.add(ack);
+
+        /*
+        System.out.println();
+        System.out.println("ACK");
+        System.out.println("waiting packets: " + this.waitingOnAckPackets.size());
+        System.out.println("received ack: " + this.receivedAck.size());
+        System.out.println("waiting packet peek: " + this.waitingOnAckPackets.peek().getSequenceNumber());
+        System.out.println("received ack: " + (this.receivedAck.peek().getSequenceNumber()));
+        System.out.println();
+         */
+
+
+        while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingOnAckPackets.peek().getSequenceNumber()){
+            this.updateConnection(this.receivedAck.peek());
+            this.waitingOnAckPackets.poll();
+            this.receivedAck.poll();
+            //System.out.println("actually acked");
+            //System.out.println();
+
+            if (receivedAck.isEmpty() || waitingOnAckPackets.isEmpty()) return;
+        }
+
+
+
+
+
+        /*
+        Packet ack = this.dequeueInputBuffer();
 
         if (this.waitingOnAckPackets.isEmpty()) return;
 
@@ -85,6 +125,8 @@ public class BasicTCP extends AbstractTCP {
                 return;
             }
         }
+
+         */
     }
 
     @Override

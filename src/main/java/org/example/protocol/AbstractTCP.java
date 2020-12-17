@@ -91,6 +91,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     public void send(Packet packet) {
         int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.outputBuffer.size();
         packet.setSequenceNumber(nextPacketSeqNum);
+        //packet.setAcknowledgmentNumber(nextPacketSeqNum);
 
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
@@ -195,7 +196,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
-    private void ack(Packet packet, Flag... flags){
+    protected void ack(Packet packet, Flag... flags){
         //add ack to flags
         Flag[] flagsWithAck = new Flag[flags.length + 1];
         for (int i = 0; i < flags.length; i++) {
@@ -203,7 +204,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
         flagsWithAck[flagsWithAck.length-1] = Flag.ACK;
 
-        this.route(new PacketBuilder().ackBuild(packet));
+        Packet ack = new PacketBuilder().ackBuild(packet);
+        //System.out.println("route ack: " + ack);
+        this.route(ack);
     }
 
 
@@ -216,7 +219,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         Packet packet = this.inputBuffer.peek();
 
         if (packet.hasAllFlags(Flag.ACK)){
-            this.updateConnection(packet);
             this.ackReceived();
             //this.dequeueInputBuffer();
             return;
@@ -228,7 +230,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
 
-        this.ack(packet);
         //this.updateConnection(packet);
         this.setReceived(); //this.dequeueInputBuffer();
         return;
@@ -252,7 +253,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             return;
         }
         if (isWaitingForACK()){
-            //logger.log(Level.INFO, "waiting for ack");
+            logger.log(Level.INFO, "waiting for ack");
             this.sleep();
             return;
         }
