@@ -17,6 +17,11 @@ public class BoundedPriorityBlockingQueue<T> implements Serializable, Iterable<T
         this.bound = bound;
     }
 
+    public BoundedPriorityBlockingQueue(int bound) {
+        this.pbq = new PriorityBlockingQueue<T>(bound);
+        this.bound = bound;
+    }
+
     public boolean isFull(){
         if (this.pbq.size() > this.bound) throw new IllegalStateException("The queue contains more elements than it can take");
         return this.pbq.size() == this.bound;

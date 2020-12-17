@@ -532,7 +532,7 @@ public class BasicTCPTest {
         server.start();
         client.connect(server);
 
-        int numPacketsToSend = server.getWindowSize() * 2;
+        int numPacketsToSend = server.getWindowSize() * 5;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
@@ -540,7 +540,9 @@ public class BasicTCPTest {
         }
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
-            Assert.assertEquals(getPacket(server).getPayload(), msg);
+            Packet received = getPacket(server);
+            Assert.assertNotNull(received);
+            Assert.assertEquals(received.getPayload(), msg);
         }
 
     }
@@ -576,13 +578,13 @@ public class BasicTCPTest {
 
         client.connect(server);
 
-        int numPacketsToSend = server.getWindowSize() * 2;
+        int numPacketsToSend = server.getWindowSize() * 5;
 
         for (int i = 1; i < numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             client.send(msg);
-
         }
+
 
         try {
             sleep(100);

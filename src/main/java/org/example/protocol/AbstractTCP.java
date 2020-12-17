@@ -82,7 +82,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
         this.logger.log(Level.INFO, "connection established with: " + this.getConnection());
-        this.addToWaitingOnAckWindow(synAck);
+        this.addToWaitingPacketWindow(synAck);
 
         this.route(synAck);
 
@@ -127,7 +127,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract boolean isWaitingForACK();
 
-    protected abstract void addToWaitingOnAckWindow(Packet packet);
+    protected abstract void addToWaitingPacketWindow(Packet packet);
 
     protected abstract boolean inReceivingWindow(Packet packet);
 
@@ -235,6 +235,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private void retransmit(){
         Packet[] packets = packetsToRetransmit();
+        //System.out.println("number of packets to retransmit: " + packets.length);
         for (Packet packet : packets) {
             logger.log(Level.INFO, () -> "retransmiting packet " + packet);
             this.route(packet);
@@ -264,7 +265,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         Packet packet = this.dequeueOutputBuffer();
-        this.addToWaitingOnAckWindow(packet);
+        this.addToWaitingPacketWindow(packet);
         this.route(packet);
         System.out.println("packet: " + packet + " sent");
     }

@@ -1,8 +1,8 @@
 package org.example.protocol;
 
-import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.util.BoundedPriorityBlockingQueue;
+import org.example.util.WaitingPacket;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -14,13 +14,14 @@ public class BasicTCP extends AbstractTCP {
 
     private final Logger logger;
 
-    private static final int WINDOW_SIZE = 10;
+    private static final int WINDOW_SIZE = 4;
     private static final int BUFFER_SIZE = 100;
     private static final double NOISE_TOLERANCE = 100.0;
+    private static final int TIMEOUT_DURATION = 50;
     private final static Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
 
     private BlockingQueue<Packet> received;
-    private BlockingQueue<Packet> waitingOnAckPackets;
+    private BlockingQueue<WaitingPacket> waitingPackets;
     private BlockingQueue<Packet> receivedAck;
 
     public BasicTCP(Random randomGenerator) {
@@ -31,7 +32,7 @@ public class BasicTCP extends AbstractTCP {
         );
         this.logger = Logger.getLogger(this.getName());
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-        this.waitingOnAckPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
+        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE);
         this.receivedAck = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
     }
 
@@ -65,25 +66,42 @@ public class BasicTCP extends AbstractTCP {
         then ack the packet if it's inside the window, but not poll because the poll should happen
         in correct order.
          */
-        if (inReceivingWindow(this.inputBuffer.peek())){
+        if (inReceivingWindow(this.inputBuffer.peek())){ //todo - dette skjer mange ganger på rad fordi du bruker peek()
             this.ack(this.inputBuffer.peek());
+            return;
+        }
+
+
+        //sending ack on packets that are received but sender does not know its received
+        if (receivingPacketIndex(this.inputBuffer.peek()) < getWindowSize()){
+            this.ack(this.inputBuffer.poll());
         }
 
     }
 
     @Override
     protected Packet[] packetsToRetransmit() {
-        return new Packet[0];
+        ArrayList<Packet> retransmit = new ArrayList<>();
+        for (WaitingPacket wp : this.waitingPackets) {
+            wp.update();
+            //System.out.println("waiting packet: " + wp);
+            if (wp.timeoutFinished() && !this.receivedAck.contains(wp.getPacket())){
+                retransmit.add(wp.getPacket());
+                wp.restart();
+            }
+        }
+        return retransmit.toArray(new Packet[retransmit.size()]);
     }
 
     @Override
     protected boolean isWaitingForACK() {
-        return this.waitingOnAckPackets.remainingCapacity() == 0;
+        return this.waitingPackets.remainingCapacity() == 0;
     }
 
     @Override
-    protected void addToWaitingOnAckWindow(Packet packet){
-        this.waitingOnAckPackets.offer(packet);
+    protected void addToWaitingPacketWindow(Packet packet){
+        WaitingPacket waitingPacket = new WaitingPacket(packet, TIMEOUT_DURATION);
+        this.waitingPackets.offer(waitingPacket);
     }
 
     @Override
@@ -91,17 +109,17 @@ public class BasicTCP extends AbstractTCP {
         Packet ack = this.dequeueInputBuffer();
         this.receivedAck.add(ack);
 
-        if (this.waitingOnAckPackets.isEmpty()){
+        if (this.waitingPackets.isEmpty()){
             logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or passably uncaught invalid connection ");
             return;
         }
 
-        while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingOnAckPackets.peek().getSequenceNumber()){
+        while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getPacket().getSequenceNumber()){
             this.updateConnection(this.receivedAck.peek());
-            this.waitingOnAckPackets.poll();
+            this.waitingPackets.poll();
             this.receivedAck.poll();
 
-            if (receivedAck.isEmpty() || waitingOnAckPackets.isEmpty()) return;
+            if (receivedAck.isEmpty() || waitingPackets.isEmpty()) return;
         }
 
     }
