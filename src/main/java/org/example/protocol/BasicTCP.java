@@ -172,7 +172,7 @@ public class BasicTCP extends AbstractTCP {
             }
 
             if(waitingPackets.isEmpty()){
-                receivedAck.clear();
+                //receivedAck.clear();
                 return;
             }
         }
