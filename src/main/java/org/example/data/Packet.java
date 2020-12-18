@@ -80,6 +80,19 @@ public class Packet {
 
         return returnString;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Packet packet = (Packet) o;
+        return sequenceNumber == packet.sequenceNumber && acknowledgmentNumber == packet.acknowledgmentNumber && destination.equals(packet.destination) && origin.equals(packet.origin) && flags.equals(packet.flags);
+    }
 }
 
 

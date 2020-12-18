@@ -2,7 +2,7 @@ package org.example.util;
 
 import org.example.data.Packet;
 
-public class WaitingPacket implements Comparable<WaitingPacket>{
+public class WaitingPacket /*implements Comparable<WaitingPacket>*/{
 
     private Packet packet;
     private int timeout;
@@ -32,12 +32,12 @@ public class WaitingPacket implements Comparable<WaitingPacket>{
         return packet;
     }
 
-
+/*
     @Override
     public int compareTo(WaitingPacket waitingPacket) {
         return this.packet.getSequenceNumber() - waitingPacket.getPacket().getSequenceNumber();
     }
-
+*/
     @Override
     public String toString() {
         return packet.toString() + "[timeout: " + this.timeout + "]";

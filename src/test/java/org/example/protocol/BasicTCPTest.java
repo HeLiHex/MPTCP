@@ -14,7 +14,7 @@ import static java.lang.Thread.sleep;
 public class BasicTCPTest {
 
 
-    private static final Random RANDOM_GENERATOR = new Random();
+    private static final Random RANDOM_GENERATOR = new Random(69);
 
     private synchronized Packet getPacket(TCP endpoint){
         for (int i = 0; i < 1000; i++) {
@@ -372,7 +372,7 @@ public class BasicTCPTest {
                     .build()
             );
             try {
-                sleep(10);
+                sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -386,6 +386,11 @@ public class BasicTCPTest {
 
 
         for (int i = 0; i < client.getWindowSize(); i++) {
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             Packet received = getPacket(server);
             Assert.assertNotNull(received);
             Assert.assertEquals(i + "", received.getPayload().toString());
@@ -549,7 +554,8 @@ public class BasicTCPTest {
 
 
     @Test
-    public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest(){
+    public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
+
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router(100, RANDOM_GENERATOR, 100);
@@ -578,25 +584,44 @@ public class BasicTCPTest {
 
         client.connect(server);
 
-        int numPacketsToSend = server.getWindowSize() * 5;
+        int multiplier = 100;
+        int numPacketsToSend = server.getWindowSize() * multiplier;
 
         for (int i = 1; i < numPacketsToSend; i++) {
-            Message msg = new Message( "test " + i);
+            Message msg = new Message("test " + i);
             client.send(msg);
         }
 
-
+        /*
         try {
-            sleep(100);
+            sleep(100 * multiplier);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        while (!client.outputBufferIsEmpty()){
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+         */
 
         for (int i = 1; i < numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = getPacket(server);
+
+            while (received == null){
+                received = getPacket(server);
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             Assert.assertNotNull(received);
-            Assert.assertEquals(received.getPayload(), msg);
+            Assert.assertEquals(msg, received.getPayload());
         }
 
     }
