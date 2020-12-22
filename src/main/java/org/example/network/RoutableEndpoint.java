@@ -37,5 +37,10 @@ public abstract class RoutableEndpoint extends Routable implements Endpoint {
     }
 
     @Override
+    public String toString() {
+        return "Endpoint: " + super.toString();
+    }
+
+    @Override
     public abstract void run();
 }

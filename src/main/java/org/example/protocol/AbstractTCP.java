@@ -192,7 +192,10 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
         boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK) || packet.hasAllFlags(Flag.SYN) || packetIsFromValidConnection(packet);
-        if (shouldEnqueue) return super.enqueueInputBuffer(packet);
+        if (shouldEnqueue){
+            return super.enqueueInputBuffer(packet);
+        }
+        this.logger.log(Level.INFO, "packet was not added due to non valid connection");
         return false;
     }
 

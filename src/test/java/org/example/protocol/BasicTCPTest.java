@@ -584,7 +584,7 @@ public class BasicTCPTest {
 
         client.connect(server);
 
-        int multiplier = 100;
+        int multiplier = 10;
         int numPacketsToSend = server.getWindowSize() * multiplier;
 
         for (int i = 1; i < numPacketsToSend; i++) {
@@ -613,11 +613,6 @@ public class BasicTCPTest {
 
             while (received == null){
                 received = getPacket(server);
-                try {
-                    sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
 
             Assert.assertNotNull(received);
