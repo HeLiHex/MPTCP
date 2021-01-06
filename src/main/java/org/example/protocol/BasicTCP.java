@@ -39,7 +39,6 @@ public class BasicTCP extends AbstractTCP {
         this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, (wp, t1) -> wp.getPacket().getSequenceNumber() - t1.getPacket().getSequenceNumber());
         this.receivedAck = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
 
-
     }
 
 

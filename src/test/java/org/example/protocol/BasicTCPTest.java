@@ -620,27 +620,9 @@ public class BasicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(received.getPayload(), msg);
         }
-
-        /*for (int i = 1; i < numPacketsToSend; i++) {
-            Message msg = new Message("test " + i);
-            client.send(msg);
-        }
-
-        while (!client.outputBufferIsEmpty() || client.hasWaitingPackets()){}
-
-        for (int i = 1; i < numPacketsToSend; i++) {
-            Message msg = new Message( "test " + i);
-            Packet received = getPacket(server);
-
-            while (received == null){
-                received = getPacket(server);
-            }
-
-            Assert.assertNotNull(received);
-            Assert.assertEquals(msg, received.getPayload());
-        }*/
-
     }
+
+
 
 
 }
