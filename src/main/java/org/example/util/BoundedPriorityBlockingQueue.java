@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class BoundedPriorityBlockingQueue<T> implements Serializable, Iterable<T>, Collection<T>, BlockingQueue<T>, Queue<T> {
+public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
 
 
     private PriorityBlockingQueue<T> pbq;
@@ -22,6 +22,7 @@ public class BoundedPriorityBlockingQueue<T> implements Serializable, Iterable<T
         this.bound = bound;
     }
 
+    @Override
     public boolean isFull(){
         if (this.pbq.size() > this.bound) throw new IllegalStateException("The queue contains more elements than it can take");
         return this.pbq.size() == this.bound;
