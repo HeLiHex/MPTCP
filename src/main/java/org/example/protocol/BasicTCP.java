@@ -16,20 +16,20 @@ public class BasicTCP extends AbstractTCP {
     private final Logger logger;
 
     private static final int WINDOW_SIZE = 4;
-    private static final int BUFFER_SIZE = 1000;
+    private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final int TIMEOUT_DURATION = 10;
     private static final Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
 
     private BlockingQueue<Packet> received;
-    private BlockingQueue<WaitingPacket> waitingPackets;
+    private BoundedPriorityBlockingQueue<WaitingPacket> waitingPackets;
     private BlockingQueue<Packet> receivedAck;
 
     private Packet lastReceivedPacket = null;
 
     public BasicTCP(Random randomGenerator) {
         super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
-                new PriorityBlockingQueue<>(WINDOW_SIZE*10, PACKET_COMPARATOR),
+                new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 randomGenerator,
                 NOISE_TOLERANCE
         );
@@ -45,6 +45,7 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     public Packet receive() {
+        System.out.println("pool this: " + this.received.peek());
         if (received.isEmpty()) return null;
 
         if (this.lastReceivedPacket == null){
@@ -65,6 +66,8 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected synchronized void setReceived() {
         boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
+        //System.out.println("should receive? " + shouldAddToReceived);
+        //System.out.println(this.inputBuffer.size());
         while (shouldAddToReceived){
 
             Packet received = this.dequeueInputBuffer();
@@ -82,12 +85,13 @@ public class BasicTCP extends AbstractTCP {
         }
 
         for (Packet packet : this.inputBuffer) {
-            if (inReceivingWindow(packet) && receivingPacketIndex(packet) != 0){
+            if (inReceivingWindow(packet) /*&& receivingPacketIndex(packet) != 0*/){
                 if (this.received.contains(packet)) continue;
                 this.received.offer(packet);
                 this.ack(packet);
             }else{
-                this.ack(this.dequeueInputBuffer());
+                this.inputBuffer.remove(packet);
+                this.ack(packet);
             }
         }
 
@@ -111,7 +115,7 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     protected boolean isWaitingForACK() {
-        return this.waitingPackets.remainingCapacity() == 0;
+        return this.waitingPackets.isFull();
     }
 
     @Override
@@ -121,7 +125,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected void ackReceived() {
+    protected synchronized void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
 
         if (this.waitingPackets.isEmpty()){
@@ -129,20 +133,24 @@ public class BasicTCP extends AbstractTCP {
             return;
         }
 
-        if (this.receivedAck.contains(ack)) return;
+        if (this.receivedAck.contains(ack)){
+            logger.log(Level.INFO, "ACK is already received");
+            return;
+        }
 
         if (!this.waitingPackets.stream().anyMatch(
                 (waitingPacket -> waitingPacket.getPacket().getSequenceNumber() == ack.getAcknowledgmentNumber()-1))){
+            logger.log(Level.INFO, "ACK received but no packet to be acknowledge was found");
             return;
         }
 
         this.receivedAck.offer(ack);
 
         while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getPacket().getSequenceNumber()){
-            this.updateConnection(this.receivedAck.peek());
             this.waitingPackets.poll();
-            this.receivedAck.poll();
-            System.out.println("poll");
+            Packet firstAck = this.receivedAck.poll();
+            System.out.println("acknowledged packet");
+            this.updateConnection(firstAck);
 
             if (receivedAck.isEmpty()){
                 return;
@@ -175,5 +183,9 @@ public class BasicTCP extends AbstractTCP {
     private boolean inWindow(int packetIndex){
         int windowSize = this.getWindowSize();
         return packetIndex < windowSize && packetIndex >= 0;
+    }
+
+    public boolean hasWaitingPackets() {
+        return !this.waitingPackets.isEmpty();
     }
 }
