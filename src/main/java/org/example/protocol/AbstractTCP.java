@@ -250,12 +250,12 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     private void trySend(){
         if (this.outputBufferIsEmpty()){
             //logger.log(Level.INFO, "outputbuffer is empty");
-            this.sleep();
+            //this.sleep();
             return;
         }
-        if (isWaitingForACK()){
+        if (this.isWaitingForACK()){
             //logger.log(Level.INFO, "waiting for ack");
-            this.sleep();
+            //this.sleep();
             return;
         }
 
@@ -263,7 +263,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             //this.dequeueOutputBuffer();
             System.out.println(this.outputBuffer.peek());
             logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
-            this.sleep();
+            //this.sleep();
             return;
         }
 
