@@ -252,8 +252,8 @@ public class BasicTCPTest {
         for (int i = 0; i < server.getWindowSize(); i++) {
             Message msg = new Message( "test " + i);
             client.route(new PacketBuilder()
-                    .withSequenceNumber(5000 + i)
-                    .withAcknowledgmentNumber(20000 + i)
+                    .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 5000 + i)
+                    .withAcknowledgmentNumber(client.getConnection().getNextAcknowledgementNumber() + 20000 + i)
                     .withOrigin(client)
                     .withDestination(server)
                     .withPayload(new Message("should not be received 1"))
@@ -263,8 +263,8 @@ public class BasicTCPTest {
             client.send(msg);
 
             client.route(new PacketBuilder()
-                    .withSequenceNumber(100 + i)
-                    .withAcknowledgmentNumber(20 + i)
+                    .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100 + i)
+                    .withAcknowledgmentNumber(client.getConnection().getNextAcknowledgementNumber() + 20 + i)
                     .withOrigin(client)
                     .withDestination(server)
                     .withPayload(new Message("should not be received 2"))
@@ -537,7 +537,7 @@ public class BasicTCPTest {
         server.start();
         client.connect(server);
 
-        int numPacketsToSend = server.getWindowSize() * 5;
+        int numPacketsToSend = server.getWindowSize() * 100;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
@@ -552,60 +552,81 @@ public class BasicTCPTest {
 
     }
 
-
     @Test
-    public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
-
+    public void floodWithPacketsInOrderThenWaitTilAllPacketsHasArrivedShouldWorkTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR, 100);
-        Router r2 = new Router(100, RANDOM_GENERATOR, 100);
-        Router r3 = new Router(100, RANDOM_GENERATOR, 2);
-        Router r4 = new Router(100, RANDOM_GENERATOR, 100);
 
-        client.addChannel(r1);
-        r1.addChannel(r2);
-        r2.addChannel(r3);
-        r3.addChannel(r4);
-        r4.addChannel(server);
+        client.addChannel(server);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
         server.start();
-
         client.connect(server);
 
-        int multiplier = 10;
-        int numPacketsToSend = server.getWindowSize() * multiplier;
+        int numPacketsToSend = server.getWindowSize() * 100;
 
-        for (int i = 1; i < numPacketsToSend; i++) {
+        for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
 
-        /*
-        try {
-            sleep(100 * multiplier);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (!client.outputBufferIsEmpty() || client.hasWaitingPackets()){}
+
+        System.out.println("should be last print");
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            Packet received = getPacket(server);
+            Assert.assertNotNull(received);
+            Assert.assertEquals(received.getPayload(), msg);
         }
-        while (!client.outputBufferIsEmpty()){
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+    }
+
+
+    @Test
+    public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router(100, RANDOM_GENERATOR, 2);
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        r1.start();
+        server.start();
+
+        client.connect(server);
+
+        int multiplier = 100;
+        int numPacketsToSend = server.getWindowSize() * multiplier;
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
         }
-         */
+
+        while (!client.outputBufferIsEmpty() || client.hasWaitingPackets()){}
+        System.out.println("should be last print");
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            Packet received = getPacket(server);
+            Assert.assertNotNull(received);
+            Assert.assertEquals(received.getPayload(), msg);
+        }
+
+        /*for (int i = 1; i < numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+
+        while (!client.outputBufferIsEmpty() || client.hasWaitingPackets()){}
 
         for (int i = 1; i < numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
@@ -617,7 +638,7 @@ public class BasicTCPTest {
 
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
-        }
+        }*/
 
     }
 
