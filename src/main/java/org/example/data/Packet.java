@@ -8,72 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Packet {
-    public static class PacketBuilder {
-        private Endpoint destination = null;
-        private Endpoint origin = null;
-        private List<Flag> flags = new ArrayList<>();
-        private Payload payload = null;
-
-        private int sequenceNumber = -1;
-        private int acknowledgmentNumber = -1;
-
-        public Packet build(){
-            if (!this.hasFlag(Flag.ACK)){
-                this.acknowledgmentNumber = -1;
-            }
-            return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
-        }
-
-        public PacketBuilder withFlags(Flag... flags){
-            for (Flag flag : flags) {
-                if (this.flags.contains(flag)) continue;
-                this.flags.add(flag);
-            }
-            return this;
-        }
-
-        public PacketBuilder withPayload(Payload payload){
-            this.payload = payload;
-            return this;
-        }
-
-        public PacketBuilder withOrigin(Endpoint self){
-            this.origin = self;
-            return this;
-        }
-
-        public PacketBuilder withDestination(Endpoint destination){
-            this.destination = destination;
-            return this;
-        }
-
-        public PacketBuilder withSequenceNumber(int sequenceNumber){
-            this.sequenceNumber = sequenceNumber;
-            return this;
-        }
-
-        public PacketBuilder withAcknowledgmentNumber(int acknowledgmentNumber){
-            this.acknowledgmentNumber = acknowledgmentNumber;
-            return this;
-        }
-
-        public PacketBuilder withConnection(Connection connection){
-            this.withOrigin(connection.getConnectionSource());
-            this.withDestination(connection.getConnectedNode());
-            this.withSequenceNumber(connection.getNextSequenceNumber());
-            this.withAcknowledgmentNumber(connection.getNextAcknowledgementNumber());
-            return this;
-        }
-
-        public boolean hasFlag(Flag... flags){
-            boolean hasFlag = true;
-            for (Flag flag : flags) {
-                hasFlag &= this.flags.contains(flag);
-            }
-            return hasFlag;
-        }
-
-    }
 
     private Endpoint destination;
     private Endpoint origin;
@@ -84,7 +18,7 @@ public class Packet {
     private int acknowledgmentNumber;
 
 
-    private Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
+    public Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
         this.destination = destination;
         this.origin = origin;
         this.flags = flags;
@@ -94,10 +28,10 @@ public class Packet {
         this.acknowledgmentNumber = acknowledgmentNumber;
     }
 
-    public boolean hasFlag(Flag... flags){
-        boolean hasFlag = true;
-        for (Flag flag : flags) {
-            hasFlag &= this.flags.contains(flag);
+    public boolean hasAllFlags(Flag... flags){
+        boolean hasFlag = this.flags.contains(flags[0]);
+        for (int i = 1; i < flags.length; i++) {
+            hasFlag &= this.flags.contains(flags[i]);
         }
         return hasFlag;
     }
@@ -115,12 +49,13 @@ public class Packet {
         return this.origin;
     }
 
-    //public void setOrigin(Endpoint origin) {
-        //this.origin = origin;
-    //}
 
     public int getSequenceNumber() {
         return sequenceNumber;
+    }
+
+    public void setSequenceNumber(int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
     }
 
     public int getAcknowledgmentNumber() {
@@ -134,8 +69,33 @@ public class Packet {
 
     @Override
     public String toString() {
-        if (this.payload == null) return this.flags.toString();
-        return "[" + this.payload.toString() + "]";
+        String returnString;
+        if (this.payload == null){
+            returnString = this.flags.toString();
+        }
+        else{
+            returnString = "[" + this.payload.toString() + "]";
+        }
+        returnString += "[seq: " + this.getSequenceNumber() + "]";
+
+        return returnString;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Packet packet = (Packet) o;
+        return sequenceNumber == packet.sequenceNumber
+                && acknowledgmentNumber == packet.acknowledgmentNumber
+                && destination.equals(packet.destination)
+                && origin.equals(packet.origin)
+                && packet.hasAllFlags((Flag[])this.flags.stream().toArray());
     }
 }
 

@@ -72,5 +72,7 @@ public interface NetworkNode {
      */
     boolean inputBufferIsEmpty();
 
+    int inputBufferRemainingCapacity();
+
 
 }

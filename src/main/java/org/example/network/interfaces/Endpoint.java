@@ -27,4 +27,7 @@ public interface Endpoint extends NetworkNode {
      * @return True if the outputBuffer is empty
      */
     boolean outputBufferIsEmpty();
+
+
+    int outputBufferRemainingCapacity();
 }

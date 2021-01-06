@@ -1,16 +1,17 @@
 package org.example.network;
 
-import org.example.data.BufferQueue;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
+import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
 public abstract class RoutableEndpoint extends Routable implements Endpoint {
 
-    private volatile BufferQueue<Packet> outputBuffer;
+    protected volatile BlockingQueue<Packet> outputBuffer;
 
-    public RoutableEndpoint(BufferQueue<Packet> inputBuffer, BufferQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
+    public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
         this.outputBuffer = outputBuffer;
     }
@@ -30,6 +31,15 @@ public abstract class RoutableEndpoint extends Routable implements Endpoint {
         return this.outputBuffer.isEmpty();
     }
 
+    @Override
+    public int outputBufferRemainingCapacity() {
+        return this.outputBuffer.remainingCapacity();
+    }
+
+    @Override
+    public String toString() {
+        return "Endpoint: " + super.toString();
+    }
 
     @Override
     public abstract void run();

@@ -1,6 +1,7 @@
 package org.example.network;
 
 import org.example.data.Packet;
+import org.example.data.PacketBuilder;
 import org.example.network.Channel;
 import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
@@ -24,7 +25,7 @@ public class RoutingTableTest {
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
-        r1.route(new Packet.PacketBuilder().withDestination(r4).build());
+        r1.route(new PacketBuilder().withDestination(r4).build());
     }
 
 
@@ -44,7 +45,7 @@ public class RoutingTableTest {
         r3.updateRoutingTable();
         r4.updateRoutingTable();
 
-        r1.route(new Packet.PacketBuilder().withDestination(null).build());
+        r1.route(new PacketBuilder().withDestination(null).build());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -62,7 +63,7 @@ public class RoutingTableTest {
         r3.updateRoutingTable();
         r4.updateRoutingTable();
 
-        r1.route(new Packet.PacketBuilder().withDestination(r4).build());
+        r1.route(new PacketBuilder().withDestination(r4).build());
     }
 
 
@@ -106,7 +107,7 @@ public class RoutingTableTest {
             Channel usedChannel = pathOne < pathTwo ? channelOnePathOne : channelOnePathTwo;
             Channel notUsedChannel = pathOne > pathTwo ? channelOnePathOne : channelOnePathTwo;
 
-            r1.route(new Packet.PacketBuilder().withOrigin(r1).withDestination(r4).build());
+            r1.route(new PacketBuilder().withOrigin(r1).withDestination(r4).build());
 
             Assert.assertTrue(!usedChannel.getDestination().inputBufferIsEmpty());
             Assert.assertTrue(notUsedChannel.getDestination().dequeueInputBuffer() == null);

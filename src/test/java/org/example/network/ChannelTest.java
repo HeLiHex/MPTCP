@@ -1,8 +1,6 @@
 package org.example.network;
 
-import org.example.data.Message;
-import org.example.data.Packet;
-import org.example.data.Payload;
+import org.example.data.*;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
@@ -57,10 +55,11 @@ public class ChannelTest {
     public void channelPacketDeliversPacketToDestinationNodeTest(){
         Channel channel = new Channel(source, destination, rand, 100);
         Payload payload = new Message( "Test");
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withOrigin(source)
                 .withDestination(destination)
                 .withPayload(payload)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                 .build();
         channel.channelPackage(packet);
         Packet receivedPacket = destination.dequeueInputBuffer();
@@ -72,10 +71,11 @@ public class ChannelTest {
     public void lossyChannelDropPacketTest(){
         Channel channel = new Channel(source, destination, rand, 0);
         Payload payload = new Message( "Test");
-        Packet packet = new Packet.PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withOrigin(source)
                 .withDestination(destination)
                 .withPayload(payload)
+                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                 .build();
         channel.channelPackage(packet);
         Packet receivedPacket = destination.dequeueInputBuffer();
@@ -88,10 +88,11 @@ public class ChannelTest {
         for (int i = 0; i < 10000; i++) {
             Channel channel = new Channel(source, destination, rand, 3);
             Payload payload = new Message( "Test");
-            Packet packet = new Packet.PacketBuilder()
+            Packet packet = new PacketBuilder()
                     .withOrigin(source)
                     .withDestination(destination)
                     .withPayload(payload)
+                    .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                     .build();
             channel.channelPackage(packet);
             Packet receivedPacket = destination.dequeueInputBuffer();
