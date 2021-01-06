@@ -91,7 +91,11 @@ public class Packet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Packet packet = (Packet) o;
-        return sequenceNumber == packet.sequenceNumber && acknowledgmentNumber == packet.acknowledgmentNumber && destination.equals(packet.destination) && origin.equals(packet.origin) /*&& flags.equals(packet.flags)*/;
+        return sequenceNumber == packet.sequenceNumber
+                && acknowledgmentNumber == packet.acknowledgmentNumber
+                && destination.equals(packet.destination)
+                && origin.equals(packet.origin)
+                && packet.hasAllFlags((Flag[])this.flags.stream().toArray());
     }
 }
 
