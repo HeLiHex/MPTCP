@@ -4,6 +4,7 @@ import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.Router;
 
+import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.BasicTCP;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,6 +30,14 @@ public class RoutableTest {
             return receivedPacket.getPayload();
         }
         return null;
+    }
+
+
+    @Test
+    public void routablesWithRandomAddressAreNotEqualTest(){
+        NetworkNode node1 = new Router(100, RANDOM_GENERATOR);
+        NetworkNode node2 = new Router(100, RANDOM_GENERATOR);
+        Assert.assertNotEquals(node1, node2);
     }
 
 
