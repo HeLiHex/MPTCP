@@ -245,7 +245,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         if (!this.inSendingWindow(this.outputBuffer.peek())){
-            System.out.println(this.outputBuffer.peek());
             logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
             return;
         }
