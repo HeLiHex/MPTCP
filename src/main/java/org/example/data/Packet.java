@@ -67,6 +67,10 @@ public class Packet {
         return payload.size();
     }
 
+    protected List<Flag> getFlags() {
+        return flags;
+    }
+
     @Override
     public String toString() {
         String returnString;

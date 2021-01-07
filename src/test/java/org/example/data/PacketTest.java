@@ -5,6 +5,7 @@ import org.example.protocol.BasicTCP;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Random;
 
 public class PacketTest {
@@ -79,11 +80,30 @@ public class PacketTest {
     }
 
     @Test
-    public void packetSizeIsCorrectTest(){
+    public void buildPacketWithDuplicateFlagsBuildsPacketThatHasOneOfThatFlagTest(){
+        Flag ack = Flag.ACK;
+        Flag syn = Flag.SYN;
+        Flag fin = Flag.FIN;
+        Packet packet = new PacketBuilder().withFlags(ack, syn, syn, fin, fin).build();
+        List<Flag> flags = packet.getFlags();
+        Assert.assertEquals(3, flags.size());
+        Assert.assertTrue(packet.hasAllFlags(syn, fin, ack));
+    }
+
+    @Test
+    public void buildPacketWithPayloadHasCorrectSizeTest(){
         Message message = new Message("test");
         Packet packet = new PacketBuilder()
                 .withPayload(message)
                 .build();
         Assert.assertEquals(message.size(), packet.size());
     }
+
+    @Test
+    public void buildPacketWithoutPayloadHasZeroSizeTest(){
+        Packet packet = new PacketBuilder()
+                .build();
+        Assert.assertEquals(0, packet.size());
+    }
+
 }
