@@ -64,12 +64,20 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Override
     @Deprecated
     public int drainTo(Collection<? super T> collection) {
+        /**
+         * @Deprecated because it may violate the bound constraint of this class.
+         * New implementation that follows the capacity constraint is needed
+         */
         return this.pbq.drainTo(collection);
     }
 
     @Override
     @Deprecated
     public int drainTo(Collection<? super T> collection, int i) {
+        /**
+         * @Deprecated because it may violate the bound constraint of this class.
+         * New implementation that follows the capacity constraint is needed
+         */
         return this.pbq.drainTo(collection, i);
     }
 
