@@ -59,23 +59,23 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
         return this.bound - this.pbq.size();
     }
 
+    /**
+     * @deprecated because it may violate the bound constraint of this class.
+     * New implementation that follows the capacity constraint is needed
+     */
     @Override
     @Deprecated
     public int drainTo(Collection<? super T> collection) {
-        /**
-         * @deprecated because it may violate the bound constraint of this class.
-         * New implementation that follows the capacity constraint is needed
-         */
         return this.pbq.drainTo(collection);
     }
 
+    /**
+     * @deprecated because it may violate the bound constraint of this class.
+     * New implementation that follows the capacity constraint is needed
+     */
     @Override
     @Deprecated
     public int drainTo(Collection<? super T> collection, int i) {
-        /**
-         * @deprecated because it may violate the bound constraint of this class.
-         * New implementation that follows the capacity constraint is needed
-         */
         return this.pbq.drainTo(collection, i);
     }
 
@@ -140,13 +140,13 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
         return this.pbq.containsAll(collection);
     }
 
+    /**
+     * @deprecated because it may violate the bound constraint of this class.
+     * New implementation that follows the capacity constraint is needed
+     */
     @Override
     @Deprecated
     public boolean addAll(Collection<? extends T> collection) {
-        /**
-         * @deprecated because it may violate the bound constraint of this class.
-         * New implementation that follows the capacity constraint is needed
-         */
         return this.pbq.addAll(collection);
     }
 
@@ -155,13 +155,13 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
         return this.pbq.removeAll(collection);
     }
 
+    /**
+     * @deprecated because it may violate the bound constraint of this class.
+     * New implementation that follows the capacity constraint is needed
+     */
     @Override
     @Deprecated
     public boolean retainAll(Collection<?> collection) {
-        /**
-         * @deprecated because it may violate the bound constraint of this class.
-         * New implementation that follows the capacity constraint is needed
-         */
         return this.pbq.retainAll(collection);
     }
 
