@@ -99,11 +99,6 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     @Override
-    public int inputBufferRemainingCapacity() {
-        return this.inputBuffer.remainingCapacity();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof NetworkNode) {
             NetworkNode node = (NetworkNode) obj;
