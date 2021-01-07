@@ -11,12 +11,12 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     private int bound;
 
     public BoundedPriorityBlockingQueue(int bound, Comparator<T> comparator) {
-        this.pbq = new PriorityBlockingQueue<T>(bound, comparator);
+        this.pbq = new PriorityBlockingQueue<>(bound, comparator);
         this.bound = bound;
     }
 
     public BoundedPriorityBlockingQueue(int bound) {
-        this.pbq = new PriorityBlockingQueue<T>(bound);
+        this.pbq = new PriorityBlockingQueue<>(bound);
         this.bound = bound;
     }
 
