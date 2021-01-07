@@ -2,7 +2,9 @@ package org.example.network;
 
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
+import org.example.network.interfaces.NetworkNode;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
@@ -38,6 +40,16 @@ public abstract class RoutableEndpoint extends Routable implements Endpoint {
     @Override
     public String toString() {
         return "Endpoint: " + super.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     @Override
