@@ -41,6 +41,21 @@ public class BasicTCP extends AbstractTCP {
 
     }
 
+    private void addToReceived(Packet packet){
+        boolean added = this.received.offer(packet);
+        if (!added) logger.log(Level.WARNING, "Packet was not added to the received queue");
+    }
+
+    private void addToWaitingPackets(WaitingPacket waitingPacket){
+        boolean added = this.waitingPackets.offer(waitingPacket);
+        if (!added) logger.log(Level.WARNING, "Packet was not added to the waitingPackets queue");
+    }
+
+    private void addToReceivedAck(Packet packet){
+        boolean added = this.receivedAck.offer(packet);
+        if (!added) logger.log(Level.WARNING, "Packet was not added to the receivedAck queue");
+    }
+
 
     @Override
     public Packet receive() {
@@ -74,7 +89,8 @@ public class BasicTCP extends AbstractTCP {
             this.updateConnection(received);
             if (!this.received.contains(received)){
                 this.ack(received);
-                this.received.offer(received);
+                this.addToReceived(received);
+                //this.received.offer(received);
             }
 
             if (this.inputBuffer.isEmpty()) return;
@@ -85,7 +101,8 @@ public class BasicTCP extends AbstractTCP {
         for (Packet packet : this.inputBuffer) {
             if (inReceivingWindow(packet) /*&& receivingPacketIndex(packet) != 0*/){
                 if (this.received.contains(packet)) continue;
-                this.received.offer(packet);
+                this.addToReceived(packet);
+                //this.received.offer(packet);
                 this.ack(packet);
             }else{
                 this.inputBuffer.remove(packet);
@@ -103,7 +120,8 @@ public class BasicTCP extends AbstractTCP {
             //System.out.println("waiting packet: " + wp);
             if (wp.timeoutFinished() && !this.receivedAck.contains(wp.getPacket())){
                 if (!this.receivedAck.stream().anyMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()))){
-                    retransmit.offer(wp.getPacket());
+                    boolean added = retransmit.offer(wp.getPacket());
+                    if (!added) throw new IllegalStateException("a packet was not added to the retransmit queue");
                     wp.restart();
                 }
             }
@@ -119,7 +137,8 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected void addToWaitingPacketWindow(Packet packet){
         WaitingPacket waitingPacket = new WaitingPacket(packet, TIMEOUT_DURATION);
-        this.waitingPackets.offer(waitingPacket);
+        this.addToWaitingPackets(waitingPacket);
+        //this.waitingPackets.offer(waitingPacket);
     }
 
     @Override
@@ -142,7 +161,8 @@ public class BasicTCP extends AbstractTCP {
             return;
         }
 
-        this.receivedAck.offer(ack);
+        this.addToReceivedAck(ack);
+        //this.receivedAck.offer(ack);
 
         while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getPacket().getSequenceNumber()){
             this.waitingPackets.poll();
