@@ -228,7 +228,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private void retransmit(){
         Packet[] packets = packetsToRetransmit();
-        //System.out.println("number of packets to retransmit: " + packets.length);
         for (Packet packet : packets) {
             logger.log(Level.INFO, () -> "retransmiting packet " + packet);
             this.route(packet);
