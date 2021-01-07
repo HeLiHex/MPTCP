@@ -152,7 +152,7 @@ public class BasicTCP extends AbstractTCP {
             return;
         }
 
-        if (!this.waitingPackets.stream().anyMatch(
+        if (this.waitingPackets.stream().noneMatch(
                 (waitingPacket -> waitingPacket.getPacket().getSequenceNumber() == ack.getAcknowledgmentNumber()-1))){
             logger.log(Level.INFO, "ACK received but no packet to be acknowledge was found");
             return;
@@ -163,7 +163,6 @@ public class BasicTCP extends AbstractTCP {
         while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getPacket().getSequenceNumber()){
             this.waitingPackets.poll();
             Packet firstAck = this.receivedAck.poll();
-            System.out.println("acknowledged packet");
             this.updateConnection(firstAck);
 
             if (receivedAck.isEmpty()){
