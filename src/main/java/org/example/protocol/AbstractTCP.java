@@ -16,7 +16,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     private Connection connection;
 
 
-    public AbstractTCP(BlockingQueue<Packet> inputBuffer,
+    protected AbstractTCP(BlockingQueue<Packet> inputBuffer,
                        BlockingQueue<Packet> outputBuffer,
                        Random randomGenerator,
                        double noiseTolerance) {
