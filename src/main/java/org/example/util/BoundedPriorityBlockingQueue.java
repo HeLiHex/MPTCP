@@ -63,7 +63,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Deprecated
     public int drainTo(Collection<? super T> collection) {
         /**
-         * @Deprecated because it may violate the bound constraint of this class.
+         * @deprecated because it may violate the bound constraint of this class.
          * New implementation that follows the capacity constraint is needed
          */
         return this.pbq.drainTo(collection);
@@ -73,7 +73,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Deprecated
     public int drainTo(Collection<? super T> collection, int i) {
         /**
-         * @Deprecated because it may violate the bound constraint of this class.
+         * @deprecated because it may violate the bound constraint of this class.
          * New implementation that follows the capacity constraint is needed
          */
         return this.pbq.drainTo(collection, i);
@@ -144,7 +144,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Deprecated
     public boolean addAll(Collection<? extends T> collection) {
         /**
-         * @Deprecated because it may violate the bound constraint of this class.
+         * @deprecated because it may violate the bound constraint of this class.
          * New implementation that follows the capacity constraint is needed
          */
         return this.pbq.addAll(collection);
@@ -159,7 +159,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Deprecated
     public boolean retainAll(Collection<?> collection) {
         /**
-         * @Deprecated because it may violate the bound constraint of this class.
+         * @deprecated because it may violate the bound constraint of this class.
          * New implementation that follows the capacity constraint is needed
          */
         return this.pbq.retainAll(collection);
