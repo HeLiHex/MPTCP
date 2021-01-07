@@ -243,7 +243,7 @@ public class BasicTCPTest {
 
         client.connect(server);
         try {
-            sleep(5000);
+            sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -271,14 +271,12 @@ public class BasicTCPTest {
                     .build()
             );
 
-            //todo - the delay is here because lost packets are not retransmitted
             try {
                 sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
 
         for (int i = 0; i < server.getWindowSize(); i++) {
             Packet received = getPacket(server);
