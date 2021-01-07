@@ -7,7 +7,6 @@ import org.example.util.WaitingPacket;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,8 +78,6 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected synchronized void setReceived() {
         boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
-        //System.out.println("should receive? " + shouldAddToReceived);
-        //System.out.println(this.inputBuffer.size());
         while (shouldAddToReceived){
 
             Packet received = this.dequeueInputBuffer();
@@ -90,7 +87,6 @@ public class BasicTCP extends AbstractTCP {
             if (!this.received.contains(received)){
                 this.ack(received);
                 this.addToReceived(received);
-                //this.received.offer(received);
             }
 
             if (this.inputBuffer.isEmpty()) return;
@@ -99,10 +95,9 @@ public class BasicTCP extends AbstractTCP {
         }
 
         for (Packet packet : this.inputBuffer) {
-            if (inReceivingWindow(packet) /*&& receivingPacketIndex(packet) != 0*/){
+            if (inReceivingWindow(packet)){
                 if (this.received.contains(packet)) continue;
                 this.addToReceived(packet);
-                //this.received.offer(packet);
                 this.ack(packet);
             }else{
                 boolean removed = this.inputBuffer.remove(packet);
@@ -120,7 +115,6 @@ public class BasicTCP extends AbstractTCP {
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
         for (WaitingPacket wp : this.waitingPackets) {
             wp.update();
-            //System.out.println("waiting packet: " + wp);
             if (wp.timeoutFinished() && !this.receivedAck.contains(wp.getPacket())){
                 if (!this.receivedAck.stream().anyMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()))){
                     boolean added = retransmit.offer(wp.getPacket());
@@ -141,7 +135,6 @@ public class BasicTCP extends AbstractTCP {
     protected void addToWaitingPacketWindow(Packet packet){
         WaitingPacket waitingPacket = new WaitingPacket(packet, TIMEOUT_DURATION);
         this.addToWaitingPackets(waitingPacket);
-        //this.waitingPackets.offer(waitingPacket);
     }
 
     @Override
@@ -165,7 +158,6 @@ public class BasicTCP extends AbstractTCP {
         }
 
         this.addToReceivedAck(ack);
-        //this.receivedAck.offer(ack);
 
         while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getPacket().getSequenceNumber()){
             this.waitingPackets.poll();
