@@ -41,6 +41,4 @@ public class MessageTest {
         Message message2 = new Message(s);
         Assert.assertEquals(message1, message2);
     }
-
-
 }

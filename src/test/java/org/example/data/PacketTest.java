@@ -77,4 +77,13 @@ public class PacketTest {
         Assert.assertFalse(packet.hasAllFlags(syn, ack));
         Assert.assertTrue(packet.hasAllFlags(syn, fin));
     }
+
+    @Test
+    public void packetSizeIsCorrectTest(){
+        Message message = new Message("test");
+        Packet packet = new PacketBuilder()
+                .withPayload(message)
+                .build();
+        Assert.assertEquals(message.size(), packet.size());
+    }
 }
