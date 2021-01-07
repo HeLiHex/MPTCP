@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
-    private volatile Connection connection;
+    private Connection connection;
 
 
     public AbstractTCP(BlockingQueue<Packet> inputBuffer,

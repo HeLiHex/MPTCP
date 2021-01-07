@@ -18,7 +18,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     private Logger logger;
     private RoutingTable routingTable;
     private List<Channel> channels;
-    protected volatile BlockingQueue<Packet> inputBuffer;
+    protected BlockingQueue<Packet> inputBuffer;
     private Address address;
     private Random randomGenerator;
     private double noiseTolerance;

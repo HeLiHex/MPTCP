@@ -9,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 
 public abstract class RoutableEndpoint extends Routable implements Endpoint {
 
-    protected volatile BlockingQueue<Packet> outputBuffer;
+    protected BlockingQueue<Packet> outputBuffer;
 
     public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
