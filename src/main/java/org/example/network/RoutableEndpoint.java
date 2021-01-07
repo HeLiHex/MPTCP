@@ -3,7 +3,6 @@ package org.example.network;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
-import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
