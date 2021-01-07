@@ -105,7 +105,10 @@ public class BasicTCP extends AbstractTCP {
                 //this.received.offer(packet);
                 this.ack(packet);
             }else{
-                this.inputBuffer.remove(packet);
+                boolean removed = this.inputBuffer.remove(packet);
+                if (!removed){
+                    throw new IllegalStateException("packet that is already acknowledged has fails to be removed from the input buffer");
+                }
                 this.ack(packet);
             }
         }
