@@ -109,9 +109,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         send(packet);
     }
 
-    @Override
-    public abstract Packet receive();
-
     protected abstract void setReceived();
 
     @Override
