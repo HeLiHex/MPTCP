@@ -43,17 +43,17 @@ public class BasicTCP extends AbstractTCP {
 
     private void addToReceived(Packet packet){
         boolean added = this.received.offer(packet);
-        if (!added) logger.log(Level.WARNING, "Packet was not added to the received queue");
+        if (!added) throw new IllegalStateException("Packet was not added to the received queue");
     }
 
     private void addToWaitingPackets(WaitingPacket waitingPacket){
         boolean added = this.waitingPackets.offer(waitingPacket);
-        if (!added) logger.log(Level.WARNING, "Packet was not added to the waitingPackets queue");
+        if (!added) throw new IllegalStateException("Packet was not added to the waitingPackets queue");
     }
 
     private void addToReceivedAck(Packet packet){
         boolean added = this.receivedAck.offer(packet);
-        if (!added) logger.log(Level.WARNING, "Packet was not added to the receivedAck queue");
+        if (!added) throw new IllegalStateException(" Packet was not added to the receivedAck queue");
     }
 
 
