@@ -2,9 +2,7 @@ package org.example.network;
 
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
-import org.example.network.interfaces.NetworkNode;
 
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
