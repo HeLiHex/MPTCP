@@ -37,7 +37,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Override
     public void put(T t) throws InterruptedException {
         if (isEmpty()) return;
-        this.pbq.offer(t);
+        this.pbq.put(t);
     }
 
     @Override
