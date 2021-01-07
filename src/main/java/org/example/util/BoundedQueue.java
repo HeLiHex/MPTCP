@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
-public interface BoundedQueue<T> extends Serializable, Iterable<T>, Collection<T>, BlockingQueue<T>, Queue<T> {
+public interface BoundedQueue<T> extends Iterable<T>, Collection<T>, BlockingQueue<T>, Queue<T> {
 
     boolean isFull();
 }
