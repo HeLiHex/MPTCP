@@ -64,7 +64,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
      * New implementation that follows the capacity constraint is needed
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.5", forRemoval = true)
     public int drainTo(Collection<? super T> collection) {
         return this.pbq.drainTo(collection);
     }
@@ -74,7 +74,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
      * New implementation that follows the capacity constraint is needed
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.5", forRemoval = true)
     public int drainTo(Collection<? super T> collection, int i) {
         return this.pbq.drainTo(collection, i);
     }
@@ -145,7 +145,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
      * New implementation that follows the capacity constraint is needed
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.5", forRemoval = true)
     public boolean addAll(Collection<? extends T> collection) {
         return this.pbq.addAll(collection);
     }
@@ -160,7 +160,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
      * New implementation that follows the capacity constraint is needed
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.5", forRemoval = true)
     public boolean retainAll(Collection<?> collection) {
         return this.pbq.retainAll(collection);
     }
