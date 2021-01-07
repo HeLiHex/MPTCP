@@ -80,13 +80,13 @@ public class BasicTCP extends AbstractTCP {
         boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         while (shouldAddToReceived){
 
-            Packet received = this.dequeueInputBuffer();
-            System.out.println("packet: " + received + " received");
+            Packet packetReceived = this.dequeueInputBuffer();
+            System.out.println("packet: " + packetReceived + " received");
 
-            this.updateConnection(received);
-            if (!this.received.contains(received)){
-                this.ack(received);
-                this.addToReceived(received);
+            this.updateConnection(packetReceived);
+            if (!this.received.contains(packetReceived)){
+                this.ack(packetReceived);
+                this.addToReceived(packetReceived);
             }
 
             if (this.inputBuffer.isEmpty()) return;
