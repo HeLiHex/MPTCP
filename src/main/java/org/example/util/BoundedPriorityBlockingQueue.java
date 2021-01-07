@@ -145,6 +145,10 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Override
     @Deprecated
     public boolean addAll(Collection<? extends T> collection) {
+        /**
+         * @Deprecated because it may violate the bound constraint of this class.
+         * New implementation that follows the capacity constraint is needed
+         */
         return this.pbq.addAll(collection);
     }
 
@@ -156,6 +160,10 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Override
     @Deprecated
     public boolean retainAll(Collection<?> collection) {
+        /**
+         * @Deprecated because it may violate the bound constraint of this class.
+         * New implementation that follows the capacity constraint is needed
+         */
         return this.pbq.retainAll(collection);
     }
 
