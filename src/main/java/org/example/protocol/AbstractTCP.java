@@ -138,11 +138,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     protected synchronized Connection getConnection() {
         while (this.connection == null){
             logger.log(Level.WARNING, "no connection established!");
-            try {
-                sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
         return this.connection;
     }

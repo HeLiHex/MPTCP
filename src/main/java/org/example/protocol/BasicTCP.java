@@ -44,7 +44,6 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     public Packet receive() {
-        System.out.println("pool this: " + this.received.peek());
         if (received.isEmpty()) return null;
 
         if (this.lastReceivedPacket == null){
