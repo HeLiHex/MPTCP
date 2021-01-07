@@ -115,12 +115,13 @@ public class BasicTCP extends AbstractTCP {
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
         for (WaitingPacket wp : this.waitingPackets) {
             wp.update();
-            if (wp.timeoutFinished() && !this.receivedAck.contains(wp.getPacket())){
-                if (!this.receivedAck.stream().anyMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()))){
-                    boolean added = retransmit.offer(wp.getPacket());
-                    if (!added) throw new IllegalStateException("a packet was not added to the retransmit queue");
-                    wp.restart();
-                }
+            boolean timeoutFinished = wp.timeoutFinished();
+            boolean ackNotReceivedOnPacket = !this.receivedAck.contains(wp.getPacket());
+            boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()));
+            if (timeoutFinished && ackNotReceivedOnPacket && noMatchingWaitingPacketOnAck){
+                boolean added = retransmit.offer(wp.getPacket());
+                if (!added) throw new IllegalStateException("a packet was not added to the retransmit queue");
+                wp.restart();
             }
         }
         return retransmit.toArray(new Packet[retransmit.size()]);
