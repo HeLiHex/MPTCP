@@ -81,7 +81,7 @@ public class BasicTCP extends AbstractTCP {
         while (shouldAddToReceived){
 
             Packet packetReceived = this.dequeueInputBuffer();
-            this.logger.log(Level.INFO, "packet: " + packetReceived + " received");
+            this.logger.log(Level.INFO, () -> "packet: " + packetReceived + " received");
 
             this.updateConnection(packetReceived);
             if (!this.received.contains(packetReceived)){
