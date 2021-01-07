@@ -33,11 +33,6 @@ public abstract class RoutableEndpoint extends Routable implements Endpoint {
     }
 
     @Override
-    public int outputBufferRemainingCapacity() {
-        return this.outputBuffer.remainingCapacity();
-    }
-
-    @Override
     public String toString() {
         return "Endpoint: " + super.toString();
     }
