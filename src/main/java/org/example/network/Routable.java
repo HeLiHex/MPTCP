@@ -23,7 +23,7 @@ public abstract class Routable extends Thread implements NetworkNode {
     private Random randomGenerator;
     private double noiseTolerance;
 
-    public Routable(BlockingQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
+    protected Routable(BlockingQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
         this.logger = Logger.getLogger(getClass().getName());
 
         this.inputBuffer = inputBuffer;
