@@ -118,10 +118,5 @@ public abstract class Routable extends Thread implements NetworkNode {
     }
 
     @Override
-    public synchronized void start() {
-        super.start();
-    }
-
-    @Override
     public abstract void run();
 }
