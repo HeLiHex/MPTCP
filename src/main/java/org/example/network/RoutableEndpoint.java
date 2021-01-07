@@ -11,7 +11,7 @@ public abstract class RoutableEndpoint extends Routable implements Endpoint {
 
     protected BlockingQueue<Packet> outputBuffer;
 
-    public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
+    protected RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
         this.outputBuffer = outputBuffer;
     }
