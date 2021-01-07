@@ -223,7 +223,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         this.setReceived();
-        return;
 
     }
 
