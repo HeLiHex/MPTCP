@@ -46,7 +46,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         Packet synAck = this.dequeueInputBuffer();
         if (synAck.hasAllFlags(Flag.SYN, Flag.ACK)){
             if (synAck.getAcknowledgmentNumber() != initSeqNum + 1){
-                System.err.println("wrong ack number");
+                this.logger.log(Level.INFO, "Wrong ack number");
                 return;
             }
             System.out.println(synAck);
@@ -178,8 +178,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         Connection conn = this.getConnection();
         if (conn == null) return false;
         if (packet.hasAllFlags(Flag.ACK)) return true;
-        return //this.inReceivingWindow(packet)
-                packet.getOrigin().equals(conn.getConnectedNode())
+        return packet.getOrigin().equals(conn.getConnectedNode())
                 && packet.getDestination().equals(conn.getConnectionSource()
         );
     }
@@ -244,21 +243,15 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private void trySend(){
         if (this.outputBufferIsEmpty()){
-            //logger.log(Level.INFO, "outputbuffer is empty");
-            //this.sleep();
             return;
         }
         if (this.isWaitingForACK()){
-            //logger.log(Level.INFO, "waiting for ack");
-            //this.sleep();
             return;
         }
 
         if (!this.inSendingWindow(this.outputBuffer.peek())){
-            //this.dequeueOutputBuffer();
             System.out.println(this.outputBuffer.peek());
             logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
-            //this.sleep();
             return;
         }
 

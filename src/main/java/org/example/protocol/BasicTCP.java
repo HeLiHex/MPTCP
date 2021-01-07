@@ -149,7 +149,7 @@ public class BasicTCP extends AbstractTCP {
         Packet ack = this.dequeueInputBuffer();
 
         if (this.waitingPackets.isEmpty()){
-            logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or passably uncaught invalid connection ");
+            logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or possibly uncaught invalid connection ");
             return;
         }
 
