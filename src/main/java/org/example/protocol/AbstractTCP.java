@@ -146,7 +146,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.connection.update(packet);
     }
 
-    protected void setConnection(Connection connection) {
+    protected synchronized void setConnection(Connection connection) {
         this.connection = connection;
     }
 
