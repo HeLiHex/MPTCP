@@ -1,6 +1,5 @@
 package org.example.util;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;

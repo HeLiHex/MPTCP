@@ -7,6 +7,16 @@ import org.junit.Test;
 
 public class BoundedPriorityBlockingQueueTest {
 
+
+    @Test
+    public void bothConstructorsWorkTest(){
+        BoundedQueue bq1 = new BoundedPriorityBlockingQueue(10);
+        BoundedQueue<Packet> bq2 = new BoundedPriorityBlockingQueue<>(10, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
+        Assert.assertTrue(bq1 instanceof BoundedPriorityBlockingQueue);
+        Assert.assertTrue(bq2 instanceof BoundedPriorityBlockingQueue);
+    }
+
+
     @Test
     public void offerInsertsOrdered(){
         BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
