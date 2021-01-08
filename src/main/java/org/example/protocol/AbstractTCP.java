@@ -273,5 +273,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 
 }
