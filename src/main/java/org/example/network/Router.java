@@ -5,12 +5,36 @@ import java.util.Random;
 
 public class Router extends Routable {
 
-    public Router(int bufferSize, Random randomGenerator, double noiseTolerance) {
-        super(new BufferQueue<>(bufferSize), randomGenerator, noiseTolerance);
+    public static class RouterBuilder{
+
+        private int bufferSize = 10;
+        private Random random = new Random();
+        private double noiseTolerance = 100.0;
+
+        public RouterBuilder withBufferSize(int bufferSize){
+            this.bufferSize = bufferSize;
+            return this;
+        }
+
+        public RouterBuilder withRandomGenerator(Random randomGenerator){
+            this.random = randomGenerator;
+            return this;
+        }
+
+        public RouterBuilder withNoiseTolerance(double noiseTolerance){
+            this.noiseTolerance = noiseTolerance;
+            return this;
+        }
+
+        public Router build(){
+            return new Router(this.bufferSize, this.random, this.noiseTolerance);
+        }
+
+
     }
 
-    public Router(int bufferSize, Random randomGenerator) {
-        super(new BufferQueue<>(bufferSize), randomGenerator, 100.0);
+    private Router(int bufferSize, Random randomGenerator, double noiseTolerance) {
+        super(new BufferQueue<>(bufferSize), randomGenerator, noiseTolerance);
     }
 
     @Override

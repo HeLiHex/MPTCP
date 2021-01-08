@@ -18,7 +18,7 @@ public class Packet {
     private int acknowledgmentNumber;
 
 
-    public Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
+    protected Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
         this.logger = Logger.getLogger(this.getClass().getName());
 
         this.destination = destination;

@@ -89,10 +89,10 @@ public class BasicTCPTest {
     public synchronized void connectThenSendMsgOverMultipleNodesLineWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -220,10 +220,10 @@ public class BasicTCPTest {
     public synchronized void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -590,7 +590,7 @@ public class BasicTCPTest {
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR, 2);
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(2).build();
 
         client.addChannel(r1);
         r1.addChannel(server);

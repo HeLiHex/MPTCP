@@ -35,8 +35,8 @@ public class RoutableTest {
 
     @Test
     public void routablesWithRandomAddressAreNotEqualTest(){
-        NetworkNode node1 = new Router(100, RANDOM_GENERATOR);
-        NetworkNode node2 = new Router(100, RANDOM_GENERATOR);
+        NetworkNode node1 = new Router.RouterBuilder().build();
+        NetworkNode node2 = new Router.RouterBuilder().build();
         Assert.assertNotEquals(node1, node2);
     }
 
@@ -44,10 +44,10 @@ public class RoutableTest {
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationStraitLine(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -89,10 +89,10 @@ public class RoutableTest {
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationCircleGraph(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -135,9 +135,9 @@ public class RoutableTest {
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationWithCycle(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -175,10 +175,10 @@ public class RoutableTest {
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationWithDeadEnd(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -220,10 +220,10 @@ public class RoutableTest {
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationForrest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         //tree one
@@ -267,10 +267,10 @@ public class RoutableTest {
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -311,18 +311,18 @@ public class RoutableTest {
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationCrazyGraph(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
-        Router r5 = new Router(100, RANDOM_GENERATOR);
-        Router r6 = new Router(100, RANDOM_GENERATOR);
-        Router r7 = new Router(100, RANDOM_GENERATOR);
-        Router r8 = new Router(100, RANDOM_GENERATOR);
-        Router r9 = new Router(100, RANDOM_GENERATOR);
-        Router r10 = new Router(100, RANDOM_GENERATOR);
-        Router r11 = new Router(100, RANDOM_GENERATOR);
-        Router r12 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
+        Router r5 = new Router.RouterBuilder().build();
+        Router r6 = new Router.RouterBuilder().build();
+        Router r7 = new Router.RouterBuilder().build();
+        Router r8 = new Router.RouterBuilder().build();
+        Router r9 = new Router.RouterBuilder().build();
+        Router r10 = new Router.RouterBuilder().build();
+        Router r11 = new Router.RouterBuilder().build();
+        Router r12 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -400,9 +400,9 @@ public class RoutableTest {
     @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedClientCantRoutPacketToDestination(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();;
+        Router r3 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         r1.addChannel(r2);
@@ -432,10 +432,10 @@ public class RoutableTest {
     @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedTreesCantRoutPacket(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().build();
+        Router r4 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -468,10 +468,10 @@ public class RoutableTest {
     @Test
     public synchronized void faultyChannelsDropPacket(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router(100, RANDOM_GENERATOR);
-        Router r2 = new Router(100, RANDOM_GENERATOR);
-        Router r3 = new Router(100, RANDOM_GENERATOR, 0);
-        Router r4 = new Router(100, RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().build();
+        Router r2 = new Router.RouterBuilder().build();
+        Router r3 = new Router.RouterBuilder().withNoiseTolerance(0).build();
+        Router r4 = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
@@ -508,10 +508,10 @@ public class RoutableTest {
     public synchronized void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         double noiseTolerance = 2.5;
-        Router r1 = new Router(100, RANDOM_GENERATOR, noiseTolerance);
-        Router r2 = new Router(100, RANDOM_GENERATOR, noiseTolerance);
-        Router r3 = new Router(100, RANDOM_GENERATOR, noiseTolerance);
-        Router r4 = new Router(100, RANDOM_GENERATOR,noiseTolerance);
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
+        Router r2 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
+        Router r3 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
+        Router r4 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(r1);
