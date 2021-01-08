@@ -43,6 +43,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         server.start();
+        client.connect(server);
 
         try {
             sleep(1000);
