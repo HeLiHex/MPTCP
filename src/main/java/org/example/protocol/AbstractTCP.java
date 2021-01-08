@@ -269,4 +269,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return super.equals(o);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
