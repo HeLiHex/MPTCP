@@ -47,7 +47,7 @@ public class ChannelTest {
     public void channelWithConstructor2CostIsZeroTest(){
         for (int i = 0; i < 10000; i++) {
             Channel channel = new Channel(source);
-            Assert.assertTrue(channel.getCost() == 0);
+            Assert.assertEquals(0, channel.getCost());
         }
     }
 
