@@ -1,5 +1,6 @@
 package org.example.protocol;
 
+import org.awaitility.Duration;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
@@ -8,8 +9,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
+import static org.awaitility.Awaitility.await;
 
 public class BasicTCPTest {
 
@@ -40,7 +43,6 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         server.start();
-        client.connect(server);
 
         try {
             sleep(1000);
