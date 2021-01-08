@@ -1,13 +1,13 @@
 package org.example.data;
 
 import org.example.network.interfaces.Endpoint;
-import org.example.network.interfaces.NetworkNode;
-import org.example.protocol.Connection;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Packet {
+
+    private final Logger logger;
 
     private Endpoint destination;
     private Endpoint origin;
@@ -19,6 +19,8 @@ public class Packet {
 
 
     public Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
+        this.logger = Logger.getLogger(this.getClass().getName());
+
         this.destination = destination;
         this.origin = origin;
         this.flags = flags;
@@ -41,7 +43,7 @@ public class Packet {
     }
 
     public Endpoint getDestination() {
-        if (this.destination == null) System.out.println("This packet has no destination");
+        if (this.destination == null) logger.log(Level.WARNING, "This packet has no destination");
         return this.destination;
     }
 
