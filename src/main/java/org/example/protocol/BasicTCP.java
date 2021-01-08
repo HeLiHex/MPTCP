@@ -202,4 +202,8 @@ public class BasicTCP extends AbstractTCP {
         return !this.waitingPackets.isEmpty();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }
