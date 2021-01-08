@@ -8,7 +8,7 @@ public class Router extends Routable {
     public static class RouterBuilder{
 
         private int bufferSize = 10;
-        private Random random = new Random();
+        private Random random = new Random(1337);
         private double noiseTolerance = 100.0;
 
         public RouterBuilder withBufferSize(int bufferSize){
