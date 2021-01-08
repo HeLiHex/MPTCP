@@ -110,7 +110,7 @@ public class RoutingTableTest {
             r1.route(new PacketBuilder().withOrigin(r1).withDestination(r4).build());
 
             Assert.assertTrue(!usedChannel.getDestination().inputBufferIsEmpty());
-            Assert.assertTrue(notUsedChannel.getDestination().dequeueInputBuffer() == null);
+            Assert.assertNull(notUsedChannel.getDestination().dequeueInputBuffer());
         }
     }
 
