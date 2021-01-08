@@ -9,7 +9,7 @@ public class RoutingTable {
     private Map<NetworkNode, Map.Entry<Channel, Integer>> table;
 
 
-    public RoutingTable(NetworkNode node) {
+    public RoutingTable() {
         this.table = new HashMap<>();
     }
 
@@ -77,6 +77,25 @@ public class RoutingTable {
 
     @Override
     public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<NetworkNode, Map.Entry<Channel, Integer>> entry : this.table.entrySet()) {
+            NetworkNode networkNode = entry.getKey();
+            Map.Entry<Channel, Integer> value = entry.getValue();
+            Channel channel = value.getKey();
+            int cost = value.getValue();
+
+            builder.append("Node: ");
+            builder.append(networkNode);
+            builder.append(" | Channel: ");
+            builder.append(channel);
+            builder.append(" | Cost: ");
+            builder.append(cost);
+            builder.append("\n");
+        }
+        return builder.toString();
+        
+        
+        /*
         String result = "";
         for (NetworkNode name: this.table.keySet()){
             String node = name.toString();
@@ -86,6 +105,7 @@ public class RoutingTable {
             result += "Node: " + node + "| Channel: " + channel + "| cost: " + cost +"\n";
         }
         return result;
+         */
     }
 
 
