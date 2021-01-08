@@ -114,4 +114,20 @@ public class RoutingTableTest {
         }
     }
 
+
+    @Test
+    public void toStringTest(){
+        RoutingTable routingTable = new RoutingTable();
+        routingTable.update(new Router.RouterBuilder().build());
+        routingTable.toString();
+        Assert.assertTrue(routingTable.toString() instanceof String);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getPathWhenNoPathIsThereTest(){
+        RoutingTable routingTable = new RoutingTable();
+        routingTable.update(new Router.RouterBuilder().build());
+        routingTable.getPath(new Router.RouterBuilder().build(), new Router.RouterBuilder().build());
+    }
+
 }
