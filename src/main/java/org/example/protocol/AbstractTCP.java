@@ -49,7 +49,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 this.logger.log(Level.INFO, "Wrong ack number");
                 return;
             }
-            System.out.println(synAck);
             int finalSeqNum = synAck.getAcknowledgmentNumber();
             int ackNum = synAck.getSequenceNumber() + 1;
             Packet ack = new PacketBuilder()
