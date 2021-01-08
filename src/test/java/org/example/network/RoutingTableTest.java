@@ -1,9 +1,6 @@
 package org.example.network;
 
-import org.example.data.Packet;
 import org.example.data.PacketBuilder;
-import org.example.network.Channel;
-import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.BasicTCP;
