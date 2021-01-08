@@ -28,7 +28,7 @@ public abstract class Routable extends Thread implements NetworkNode {
         this.address = new Address();
         this.randomGenerator = randomGenerator;
         this.noiseTolerance = noiseTolerance;
-        this.routingTable = new RoutingTable(this);
+        this.routingTable = new RoutingTable();
     }
 
     @Override
