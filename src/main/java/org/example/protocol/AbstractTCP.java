@@ -95,7 +95,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
             logger.log(Level.WARNING, "Packet was not added to the output queue");
-            return;
         }
     }
 
