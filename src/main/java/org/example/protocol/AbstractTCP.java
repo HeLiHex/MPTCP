@@ -5,6 +5,7 @@ import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
 
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -189,13 +190,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     protected void ack(Packet packet, Flag... flags){
-        //add ack to flags
-        Flag[] flagsWithAck = new Flag[flags.length + 1];
-        for (int i = 0; i < flags.length; i++) {
-            flagsWithAck[i] = flags[i];
-        }
-        flagsWithAck[flagsWithAck.length-1] = Flag.ACK;
-
         Packet ack = new PacketBuilder().ackBuild(packet);
         this.route(ack);
     }
