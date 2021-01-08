@@ -93,19 +93,6 @@ public class RoutingTable {
             builder.append("\n");
         }
         return builder.toString();
-        
-        
-        /*
-        String result = "";
-        for (NetworkNode name: this.table.keySet()){
-            String node = name.toString();
-            Map.Entry<Channel, Integer> value = this.table.get(name);
-            String channel = value.getKey().toString();
-            String cost = value.getValue().toString();
-            result += "Node: " + node + "| Channel: " + channel + "| cost: " + cost +"\n";
-        }
-        return result;
-         */
     }
 
 
