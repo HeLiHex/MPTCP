@@ -80,7 +80,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .build();
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
-        this.logger.log(Level.INFO, "connection established with: " + this.getConnection());
+        this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
         this.addToWaitingPacketWindow(synAck);
 
         this.route(synAck);
