@@ -1,8 +1,6 @@
 package org.example.network;
 
 import org.example.data.BufferQueue;
-import org.example.data.Packet;
-
 import java.util.Random;
 
 public class Router extends Routable {
