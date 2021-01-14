@@ -5,30 +5,23 @@ import java.util.Queue;
 
 public abstract class Event implements Comparable<Event> {
 
-    private final double time;
+    private final Instant instant;
 
-    public Event(double time){
-        this.time = time;
+    public Event(Instant instant){
+        this.instant = instant;
     }
 
     public abstract void run();
 
     public abstract void generateNextEvent(Queue<Event> events);
 
-    public double getInitTime(){
-        return this.time;
-    }
-
-    public static long getCurTime(){
-        return Instant.now().getNano();
-
+    public Instant getInitInstant(){
+        return this.instant;
     }
 
     @Override
     public int compareTo(Event o) {
-        if (o.getInitTime() > this.getInitTime()) return -1;
-        if (o.getInitTime() < this.getInitTime()) return 1;
-        return 0;
+        return this.instant.compareTo(o.getInitInstant());
     }
 
 }
