@@ -5,16 +5,16 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
 
+import java.time.Instant;
 import java.util.Queue;
 
 public class SendEvent extends Event{
 
-    private TCP tcp;
-    private Payload payload;
-    private boolean notConnected = false;
+    private final TCP tcp;
+    private final Payload payload;
 
-    public SendEvent(double time, TCP tcp, Payload payload) {
-        super(time);
+    public SendEvent(Instant instant, TCP tcp, Payload payload) {
+        super(instant);
         this.tcp = tcp;
         this.payload = payload;
     }
