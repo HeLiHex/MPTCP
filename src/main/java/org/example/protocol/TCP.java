@@ -3,6 +3,7 @@ package org.example.protocol;
 import org.example.data.Packet;
 import org.example.data.Payload;
 import org.example.network.interfaces.Endpoint;
+import org.example.network.interfaces.NetworkNode;
 
 public interface TCP{
 
@@ -62,6 +63,8 @@ public interface TCP{
      * @return true if TCP has an active connection
      */
     boolean isConnected();
+
+    Endpoint getConnectedEndpoint();
 
 
 

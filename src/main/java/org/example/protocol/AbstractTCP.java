@@ -14,6 +14,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
     private Connection connection;
+    private int initialSequenceNumber;
 
 
     protected AbstractTCP(BlockingQueue<Packet> inputBuffer,
@@ -30,22 +31,26 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void connect(Endpoint host) {
         this.updateRoutingTable();
-        int initSeqNum = random(100);
+        this.initialSequenceNumber = this.random(100);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
                 .withFlags(Flag.SYN)
-                .withSequenceNumber(initSeqNum)
+                .withSequenceNumber(this.initialSequenceNumber)
                 .build();
         this.route(syn);
 
-        while (this.inputBufferIsEmpty()){
+        /*while (this.inputBufferIsEmpty()){
             this.sleep();
-        }
+        }*/
 
+    }
+
+    public void continueConnect(){
         Packet synAck = this.dequeueInputBuffer();
+        Endpoint host = synAck.getOrigin();
         if (synAck.hasAllFlags(Flag.SYN, Flag.ACK)){
-            if (synAck.getAcknowledgmentNumber() != initSeqNum + 1){
+            if (synAck.getAcknowledgmentNumber() != this.initialSequenceNumber + 1){
                 this.logger.log(Level.INFO, "Wrong ack number");
                 return;
             }
@@ -64,6 +69,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
             this.start();
         }
+
     }
 
     @Override
@@ -135,8 +141,13 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return this.connection != null;
     }
 
-    protected synchronized Connection getConnection() {
-        while (this.connection == null){
+    @Override
+    public Endpoint getConnectedEndpoint() {
+        return getConnection().getConnectedNode();
+    }
+
+    public synchronized Connection getConnection() {
+        if (this.connection == null){
             logger.log(Level.WARNING, "no connection established!");
         }
         return this.connection;
@@ -199,13 +210,17 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
 
-    private void handleIncoming(){
+    public void handleIncoming(){
         if (this.inputBufferIsEmpty()){
-            sleep();
+            //sleep();
             return;
         }
 
         Packet packet = this.inputBuffer.peek();
+
+        if (packet.hasAllFlags(Flag.SYN, Flag.ACK)){
+            this.continueConnect();
+        }
 
         if (packet.hasAllFlags(Flag.ACK)){
             this.ackReceived();
@@ -262,11 +277,11 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void run() {
-        while (true){
+        //while (true){
             this.handleIncoming();
             this.retransmit();
             this.trySend();
-        }
+        //}
     }
 
     @Override

@@ -27,7 +27,7 @@ public class EventHandler {
             Event event = this.events.poll();
             if (event == null){
                 if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events are nonempty!");
-                System.out.println(STATISTICS.toString());
+                //System.out.println(STATISTICS.toString());
                 return;
             }
             event.run();

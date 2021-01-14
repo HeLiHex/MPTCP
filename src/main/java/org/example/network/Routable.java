@@ -45,6 +45,11 @@ public abstract class Routable extends Thread implements NetworkNode {
         nextChannelOnPath.channelPackage(packet);
     }
 
+    @Override
+    public Channel getPath(NetworkNode destination){
+        return this.routingTable.getPath(this, destination);
+    }
+
     protected int random(int bound){
         return this.randomGenerator.nextInt(bound);
     }
@@ -83,6 +88,11 @@ public abstract class Routable extends Thread implements NetworkNode {
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
         return this.inputBuffer.offer(packet);
+    }
+
+    @Override
+    public Packet peekInputBuffer() {
+        return this.inputBuffer.peek();
     }
 
     @Override

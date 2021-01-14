@@ -39,11 +39,11 @@ public class Router extends Routable {
 
     @Override
     public void run() {
-        while (true){
+        //while (true){
             if (!this.inputBufferIsEmpty()){
                 this.route(this.dequeueInputBuffer());
             }
-        }
+        //}
     }
 
 

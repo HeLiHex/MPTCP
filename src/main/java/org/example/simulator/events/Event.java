@@ -11,6 +11,10 @@ public abstract class Event implements Comparable<Event> {
         this.instant = instant;
     }
 
+    public Event(){
+        this.instant = Instant.now();
+    }
+
     public abstract void run();
 
     public abstract void generateNextEvent(Queue<Event> events);

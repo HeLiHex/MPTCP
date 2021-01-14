@@ -51,6 +51,14 @@ public interface NetworkNode {
 
 
     /**
+     * A method that returns the first Packet form the inputBuffer without removing it from the buffer
+     *
+     * @return the dequeued Packet
+     */
+    Packet peekInputBuffer();
+
+
+    /**
      * A method that returns and dequeues a Packet form the inputBuffer
      *
      * @return the dequeued Packet
@@ -71,6 +79,11 @@ public interface NetworkNode {
      * @return True if the inputBuffer is empty
      */
     boolean inputBufferIsEmpty();
+
+
+    Channel getPath(NetworkNode destination);
+
+    void run();
 
 
 

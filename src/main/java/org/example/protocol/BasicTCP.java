@@ -177,7 +177,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected int getWindowSize() {
+    public int getWindowSize() {
         return WINDOW_SIZE;
     }
 

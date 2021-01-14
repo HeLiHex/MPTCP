@@ -19,6 +19,12 @@ public class SendEvent extends Event{
         this.payload = payload;
     }
 
+    public SendEvent(TCP tcp, Payload payload) {
+        super();
+        this.tcp = tcp;
+        this.payload = payload;
+    }
+
     @Override
     public void run() {
         this.tcp.send(payload);
@@ -26,7 +32,7 @@ public class SendEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        //todo - add next event
+        events.add(new RunNetworkNodeEvent((NetworkNode)this.tcp));
 
     }
 }
