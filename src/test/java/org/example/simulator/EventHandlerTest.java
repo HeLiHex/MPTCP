@@ -24,7 +24,29 @@ public class EventHandlerTest {
     @Test
     public void runRunsWithoutErrorTest(){
         EventHandler eventHandler = new EventHandler();
-        Event testEvent = new Event(Instant.now()) {
+        Event eventOne = new Event(Instant.now()) {
+            @Override
+            public void run() {
+                System.out.println(this.getInitInstant());
+            }
+
+            @Override
+            public void generateNextEvent(Queue<Event> events) {
+                events.add(new Event(Instant.now()) {
+                    @Override
+                    public void run() {
+                        System.out.println(this.getInitInstant());
+                    }
+
+                    @Override
+                    public void generateNextEvent(Queue<Event> events) {
+
+                    }
+                });
+            }
+        };
+
+        Event eventTwo = new Event(Instant.now()) {
             @Override
             public void run() {
                 System.out.println(this.getInitInstant());
@@ -47,8 +69,8 @@ public class EventHandlerTest {
         };
 
         //start condition
-        eventHandler.addEvent(testEvent);
-        eventHandler.addEvent(testEvent);
+        eventHandler.addEvent(eventOne);
+        eventHandler.addEvent(eventTwo);
 
         Awaitility.await().atLeast(Duration.FIVE_SECONDS);
         eventHandler.run();

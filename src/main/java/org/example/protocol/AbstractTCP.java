@@ -130,6 +130,11 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract void ackReceived();
 
+    @Override
+    public boolean isConnected() {
+        return this.connection != null;
+    }
+
     protected synchronized Connection getConnection() {
         while (this.connection == null){
             logger.log(Level.WARNING, "no connection established!");

@@ -39,8 +39,10 @@ public interface TCP{
     void send(Payload payload);
 
     /**
-     * Dequeues the Packet from the input-buffer
-     * @return Packet
+     * Dequeues the Packet from the received queue
+     * All packets in the received queue are acknowledged and in correct order
+     *
+     * @return next Packet
      */
     Packet receive();
 
@@ -53,6 +55,13 @@ public interface TCP{
      */
     void close();
 
+
+    /**
+     * A method that to determine if TCP has an open connection
+     *
+     * @return true if TCP has an active connection
+     */
+    boolean isConnected();
 
 
 
