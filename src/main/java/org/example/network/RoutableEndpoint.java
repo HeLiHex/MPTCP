@@ -12,12 +12,12 @@ import java.util.logging.Logger;
 public class RoutableEndpoint extends Routable implements Endpoint {
 
     protected BlockingQueue<Packet> outputBuffer;
-    private BlockingQueue<Packet> receivedPackets;
+    private final BlockingQueue<Packet> receivedPackets;
 
     protected RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
         this.outputBuffer = outputBuffer;
-        this.receivedPackets = new BufferQueue<>(100);
+        this.receivedPackets = new BufferQueue<>(10000);
     }
 
     @Override
