@@ -5,9 +5,6 @@ import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.WaitingPacket;
 
 import java.time.Duration;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -22,11 +19,11 @@ public class BasicTCP extends AbstractTCP {
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Duration TIMEOUT_DURATION = Duration.ofMillis(100);
-    private static final Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
+    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
-    private BlockingQueue<Packet> received;
-    private BoundedPriorityBlockingQueue<WaitingPacket> waitingPackets;
-    private BlockingQueue<Packet> receivedAck;
+    private final BlockingQueue<Packet> received;
+    private final BoundedPriorityBlockingQueue<WaitingPacket> waitingPackets;
+    private final BlockingQueue<Packet> receivedAck;
 
     private Packet lastReceivedPacket = null;
 
@@ -39,7 +36,7 @@ public class BasicTCP extends AbstractTCP {
         this.logger = Logger.getLogger(this.getName());
 
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, (wp, t1) -> wp.getPacket().getSequenceNumber() - t1.getPacket().getSequenceNumber());
+        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, Comparator.comparingInt(wp -> wp.getPacket().getSequenceNumber()));
         this.receivedAck = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
 
     }

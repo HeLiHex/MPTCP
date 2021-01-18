@@ -1,7 +1,11 @@
 package org.example.network;
 
 import org.example.data.BufferQueue;
+import org.example.data.Packet;
+
+import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
 public class Router extends Routable {
 
@@ -35,6 +39,10 @@ public class Router extends Routable {
 
     private Router(int bufferSize, Random randomGenerator, double noiseTolerance) {
         super(new BufferQueue<>(bufferSize), randomGenerator, noiseTolerance);
+    }
+
+    protected Router(BlockingQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
+        super(inputBuffer, randomGenerator, noiseTolerance);
     }
 
     @Override

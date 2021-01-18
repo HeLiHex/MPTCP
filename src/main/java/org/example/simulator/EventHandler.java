@@ -2,16 +2,13 @@ package org.example.simulator;
 
 import org.example.simulator.events.Event;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class EventHandler {
 
     private final Queue<Event> events;
-    private static final Statistics STATISTICS = new Statistics();
+    //private static final Statistics STATISTICS = new Statistics();
 
     public EventHandler(){
         this.events = new PriorityQueue<>();

@@ -6,6 +6,8 @@ import org.example.network.Router;
 
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.BasicTCP;
+import org.example.simulator.EventHandler;
+import org.example.simulator.events.RouteEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,13 +44,13 @@ public class RoutableTest {
 
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationStraitLine(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public void routingPacketRoutsItToItsDestinationStraitLine(){
+        Endpoint client = new RoutableEndpoint(new BufferQueue<>(100), new BufferQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new BufferQueue<>(100), new BufferQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -63,26 +65,21 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                //.withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
-        r4.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
-        Assert.assertEquals(receivedPayload,msg);
+        Assert.assertEquals(receivedPayload, msg);
     }
 
 
