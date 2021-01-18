@@ -2,30 +2,32 @@ package org.example.util;
 
 import org.example.data.Packet;
 
-public class WaitingPacket {
+import java.time.Duration;
+import java.time.Instant;
+
+public class WaitingPacket implements Comparable<WaitingPacket>{
 
     private Packet packet;
-    private int timeout;
-    private final int timeoutDuration;
+    private Duration timeoutDuration;
+    private Instant timeoutInstant;
 
-    public WaitingPacket(Packet packet, int timeout) {
+    public WaitingPacket(Packet packet, Duration duration) {
         this.packet = packet;
-        this.timeoutDuration = timeout;
-        this.timeout = timeout;
+        this.timeoutDuration = duration;
+        this.timeoutInstant = Instant.now().plus(duration);
     }
 
     public void restart(){
         if (!timeoutFinished()) throw new IllegalStateException("can't restart unfinished timer");
-        this.timeout = timeoutDuration;
+        this.timeoutInstant.plus(timeoutDuration);
     }
 
     public boolean timeoutFinished(){
-        return timeout <= 0;
+        return this.timeoutInstant.isBefore(Instant.now());
     }
 
-    public void update(){
-        if (timeoutFinished()) return;
-        this.timeout--;
+    public Instant getTimeoutInstant() {
+        return timeoutInstant;
     }
 
     public Packet getPacket() {
@@ -33,7 +35,12 @@ public class WaitingPacket {
     }
 
     @Override
+    public int compareTo(WaitingPacket o) {
+        return this.getTimeoutInstant().compareTo(o.getTimeoutInstant());
+    }
+
+    @Override
     public String toString() {
-        return packet.toString() + "[timeout: " + this.timeout + "]";
+        return packet.toString() + "[timeout: " + this.timeoutInstant + "]";
     }
 }

@@ -23,7 +23,7 @@ public class EventHandler {
 
     public void run(){
         while(true){
-            //System.out.println(this.events.size());
+            System.out.println(this.events.size());
             Event event = this.events.poll();
             if (event == null){
                 if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");

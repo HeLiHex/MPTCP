@@ -4,6 +4,10 @@ import org.example.data.Packet;
 import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.WaitingPacket;
 
+import java.time.Duration;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -17,7 +21,7 @@ public class BasicTCP extends AbstractTCP {
     private static final int WINDOW_SIZE = 4;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
-    private static final int TIMEOUT_DURATION = 10;
+    private static final Duration TIMEOUT_DURATION = Duration.ofMillis(100);
     private static final Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
 
     private BlockingQueue<Packet> received;
@@ -114,7 +118,7 @@ public class BasicTCP extends AbstractTCP {
     protected Packet[] packetsToRetransmit() {
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
         for (WaitingPacket wp : this.waitingPackets) {
-            wp.update();
+            //wp.update();
             boolean timeoutFinished = wp.timeoutFinished();
             boolean ackNotReceivedOnPacket = !this.receivedAck.contains(wp.getPacket());
             boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()));

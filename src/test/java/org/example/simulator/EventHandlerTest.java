@@ -112,7 +112,7 @@ public class EventHandlerTest {
 
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
         r1.addChannel(server);
@@ -141,6 +141,5 @@ public class EventHandlerTest {
             Assert.assertEquals(received.getPayload(), msg);
         }
     }
-
 
 }
