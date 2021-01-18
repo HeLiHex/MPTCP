@@ -2,6 +2,7 @@ package org.example.simulator.events;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
 
@@ -42,6 +43,5 @@ public class RunNetworkNodeEvent extends Event{
         if (this.path == null) return;
         NetworkNode nextNode = this.path.getDestination();
         events.add(new RunNetworkNodeEvent(nextNode));
-
     }
 }

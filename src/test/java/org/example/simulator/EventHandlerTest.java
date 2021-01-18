@@ -17,27 +17,10 @@ import java.time.Instant;
 import java.util.Queue;
 import java.util.Random;
 
-import static java.lang.Thread.holdsLock;
-import static java.lang.Thread.sleep;
 
 public class EventHandlerTest {
 
-
     private static final Random RANDOM_GENERATOR = new Random(69);
-
-    private synchronized Packet getPacket(TCP endpoint){
-        for (int i = 0; i < 1000; i++) {
-            Packet packet = endpoint.receive();
-            if (packet != null) return packet;
-            try {
-                sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
 
     @Test
     public void runRunsWithoutErrorTest(){
@@ -105,7 +88,7 @@ public class EventHandlerTest {
 
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
         r1.addChannel(server);
@@ -121,10 +104,42 @@ public class EventHandlerTest {
         eventHandler.addEvent(new SendEvent(client, new Message("test")));
         eventHandler.run();
 
+    }
+
+    @Test
+    public void runFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
+        EventHandler eventHandler = new EventHandler();
+
+        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(2).build();
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
         int multiplier = 100;
         int numPacketsToSend = server.getWindowSize() * multiplier;
 
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            eventHandler.addEvent(new SendEvent(client, msg));
+        }
+
+        eventHandler.run();
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            Packet received = server.receive();
+            Assert.assertNotNull(received);
+            Assert.assertEquals(received.getPayload(), msg);
+        }
     }
 
 
