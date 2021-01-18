@@ -9,13 +9,13 @@ public class Packet {
 
     private final Logger logger;
 
-    private Endpoint destination;
-    private Endpoint origin;
-    private List<Flag> flags;
-    private Payload payload;
+    private final Endpoint destination;
+    private final Endpoint origin;
+    private final List<Flag> flags;
+    private final Payload payload;
 
     private int sequenceNumber;
-    private int acknowledgmentNumber;
+    private final int acknowledgmentNumber;
 
 
     protected Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
@@ -31,6 +31,20 @@ public class Packet {
     }
 
     public boolean hasAllFlags(Flag... flags){
+        if (flags == null || this.flags == null){
+            throw new NullPointerException("flags can't be null");
+        }
+
+        if (this.flags.isEmpty()){
+            // flags given are not in the list
+            return false;
+        }
+
+        if (flags.length == 0){
+            // no flags given implies that all flags given are in list
+            return true;
+        }
+
         boolean hasFlag = this.flags.contains(flags[0]);
         for (int i = 1; i < flags.length; i++) {
             hasFlag &= this.flags.contains(flags[i]);
@@ -101,7 +115,7 @@ public class Packet {
                 && acknowledgmentNumber == packet.acknowledgmentNumber
                 && destination.equals(packet.destination)
                 && origin.equals(packet.origin)
-                && packet.hasAllFlags((Flag[])this.flags.stream().toArray());
+                && packet.hasAllFlags((Flag[])this.flags.toArray());
     }
 }
 

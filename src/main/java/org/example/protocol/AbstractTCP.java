@@ -40,10 +40,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .build();
         this.route(syn);
 
-        /*while (this.inputBufferIsEmpty()){
-            this.sleep();
-        }*/
-
     }
 
     public void continueConnect(){
@@ -240,7 +236,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     private void retransmit(){
         Packet[] packets = packetsToRetransmit();
         for (Packet packet : packets) {
-            logger.log(Level.INFO, () -> "retransmiting packet " + packet);
+            logger.log(Level.INFO, () -> "retransmitting packet " + packet);
             this.route(packet);
         }
     }
@@ -264,15 +260,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.addToWaitingPacketWindow(packet);
         this.route(packet);
         logger.log(Level.INFO, () -> "packet: " + packet + " sent");
-    }
-
-    private void sleep(){
-        try {
-            sleep(100);
-        } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "Thread Interrupted!");
-            Thread.currentThread().interrupt();
-        }
     }
 
     @Override
