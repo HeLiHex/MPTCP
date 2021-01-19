@@ -29,7 +29,7 @@ public class ConnectEvent extends Event{
 
     @Override
     public void run() {
-        this.path = ((Routable)this.client).getPath(host);
+        this.path = ((Routable)this.client).getPath(this.host);
         this.client.connect(this.host);
     }
 

@@ -1,18 +1,21 @@
 package org.example.protocol;
 
-import org.awaitility.Duration;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
+import org.example.network.Routable;
 import org.example.network.Router;
+import org.example.simulator.EventHandler;
+import org.example.simulator.events.ConnectEvent;
+import org.example.simulator.events.RouteEvent;
+import org.example.simulator.events.SendEvent;
+import org.example.simulator.events.SendPacketEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
-import static org.awaitility.Awaitility.await;
 
 public class BasicTCPTest {
 
@@ -35,21 +38,19 @@ public class BasicTCPTest {
     @Test
     public void connectToEndpointTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
-
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
         Assert.assertEquals(client, server.getConnection().getConnectedNode());
@@ -60,33 +61,32 @@ public class BasicTCPTest {
     @Test
     public void connectThenSendMsgWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-
-        client.connect(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
         Message msg = new Message( "hello på do!");
-        Packet packet = new PacketBuilder()
-                .withConnection(client.getConnection())
-                .withPayload(msg)
-                .build();
 
-        client.send(packet);
+        eventHandler.addEvent(new SendEvent(client, msg));
+        eventHandler.run();
 
-
-        Assert.assertEquals(getPacket(server), packet);
+        Assert.assertEquals(msg, server.receive().getPayload());
 
     }
 
 
     @Test
-    public synchronized void connectThenSendMsgOverMultipleNodesLineWorksTest(){
+    public void connectThenSendMsgOverMultipleNodesLineWorksTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router.RouterBuilder().build();
@@ -107,35 +107,16 @@ public class BasicTCPTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-        server.start();
-
-        client.connect(server);
-
-        try {
-            sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
         Message msg = new Message( "hello på do!");
-        Packet packet = new PacketBuilder()
-                .withConnection(client.getConnection())
-                .withPayload(msg)
-                .build();
 
-        client.send(packet);
+        eventHandler.addEvent(new SendEvent(client, msg));
+        eventHandler.run();
 
-        try {
-            sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Assert.assertEquals(packet, getPacket(server));
+        Assert.assertEquals(msg, server.receive().getPayload());
 
     }
 
@@ -143,75 +124,64 @@ public class BasicTCPTest {
     @Test
     public void packetsAreOrderedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
         for (int i = 0; i <= server.getWindowSize() * 2; i++) {
             Message msg = new Message( "test " + i);
-            client.send(msg);
-
-            //todo - the delay is here because lost packets are not retransmitted
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
+            eventHandler.addEvent(new SendEvent(client, msg));
+            eventHandler.run();
             Assert.assertEquals(getPacket(server).getPayload(), msg);
         }
     }
 
     @Test
-    public synchronized void unorderedPacketsAreNotReceivedTest(){
+    public void unorderedPacketsAreNotReceivedTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         Message msg = new Message( "test1");
+        eventHandler.addEvent(new SendEvent(client, msg));
+
+        Message msg2 = new Message( "test2");
         Packet packet = new PacketBuilder()
-                .withPayload(msg)
-                .withOrigin(client)
-                .withDestination(server)
-                .withSequenceNumber(client.getConnection().getNextSequenceNumber())
-                .build();
-        client.send(packet);
-
-        try {
-            sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        msg = new Message( "test2");
-        packet = new PacketBuilder()
-                .withPayload(msg)
+                .withPayload(msg2)
                 .withOrigin(client)
                 .withDestination(server)
                 .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100)
                 .build();
-        client.route(packet);
 
-        try {
-            sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        eventHandler.addEvent(new RouteEvent(client, packet));
 
-        Assert.assertNotEquals(getPacket(server).getPayload(), msg);
+        eventHandler.run();
+
+        Assert.assertEquals(msg, server.receive().getPayload());
+        Assert.assertNull(server.receive());
     }
 
 

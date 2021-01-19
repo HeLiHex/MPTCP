@@ -39,7 +39,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withSequenceNumber(this.initialSequenceNumber)
                 .build();
         this.route(syn);
-
     }
 
     public void continueConnect(){
@@ -63,7 +62,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
-            this.start();
         }
 
     }
@@ -208,7 +206,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     public void handleIncoming(){
         if (this.inputBufferIsEmpty()){
-            //sleep();
+            logger.log(Level.INFO, "Input buffer is empty");
             return;
         }
 
