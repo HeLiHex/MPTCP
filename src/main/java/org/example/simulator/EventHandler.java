@@ -27,7 +27,7 @@ public class EventHandler {
                 //System.out.println(STATISTICS.toString());
                 return;
             }
-            System.out.println(event.getClass().getSimpleName());
+            //System.out.println(event.getClass().getSimpleName());
             event.run();
             event.generateNextEvent(this.events);
         }

@@ -3,6 +3,7 @@ package org.example.simulator.events;
 import org.example.data.Packet;
 import org.example.data.Payload;
 import org.example.network.interfaces.NetworkNode;
+import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
 
 import java.time.Instant;
@@ -31,6 +32,6 @@ public class SendPacketEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        events.add(new RunNetworkNodeEvent((NetworkNode)this.tcp));
+        events.add(new RunTCPEvent((AbstractTCP)this.tcp));
     }
 }

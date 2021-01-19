@@ -13,6 +13,8 @@ import org.example.simulator.events.SendPacketEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Random;
 
 import static java.lang.Thread.sleep;
@@ -296,71 +298,66 @@ public class BasicTCPTest {
     @Test
     public void routeToManyMessagesUnorderedReceiveOrderedAndDropCorrectTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
 
-        client.connect(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
-
         for (int i = client.getWindowSize()*2; i >= 0 ; i--) {
-            client.route(new PacketBuilder()
+            eventHandler.addEvent(new RouteEvent(client, new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i)
                     .withAcknowledgmentNumber(ackNum + i)
                     .withPayload(new Message(i + ""))
                     .build()
-            );
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            ));
+            eventHandler.run();
         }
-
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         for (int i = 0; i < client.getWindowSize(); i++) {
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Packet received = getPacket(server);
+            Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals(i + "", received.getPayload().toString());
         }
-
-        Packet received = getPacket(server);
+        Packet received = server.receive();
         Assert.assertNull(received);
     }
 
     @Test
     public void packetIndexShouldUpdateAfterReceivingPacketInOrderTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         Packet packet = new PacketBuilder()
                 .withConnection(client.getConnection())
@@ -370,8 +367,9 @@ public class BasicTCPTest {
         int indexBeforeSending = server.receivingPacketIndex(packet);
         Assert.assertEquals(0, indexBeforeSending);
 
-        client.send(packet);
-        getPacket(server);
+        eventHandler.addEvent(new SendPacketEvent(client, packet));
+        eventHandler.run();
+        Assert.assertNotNull(server.receive());
 
         int indexAfterReceived = server.receivingPacketIndex(packet);
         Assert.assertEquals(-1, indexAfterReceived);
@@ -380,15 +378,22 @@ public class BasicTCPTest {
     @Test
     public void packetIndexShouldNotUpdateAfterReceivingPacketOutOfOrderButInWindowTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         //this test does not make sens for window size = 1
         if (client.getWindowSize() <= 1) return;
@@ -406,8 +411,9 @@ public class BasicTCPTest {
         int indexBeforeSending = server.receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexBeforeSending);
 
-        client.route(packet);
-        getPacket(server);
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
+        Assert.assertNotNull(server.receive());
 
         int indexAfterReceived = server.receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexAfterReceived);
@@ -416,21 +422,21 @@ public class BasicTCPTest {
     @Test
     public void inWindowShouldWorkOnPacketsThatShouldBeInWindowTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        System.out.println("connected");
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
@@ -449,15 +455,22 @@ public class BasicTCPTest {
     @Test
     public void inWindowShouldNotWorkOnPacketsThatShouldNotBeInWindowTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
@@ -476,25 +489,35 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderShouldWorkTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         int numPacketsToSend = server.getWindowSize() * 100;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            client.send(msg);
+            eventHandler.addEvent(new SendEvent(client, msg));
         }
+
+        eventHandler.run();
+
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
-            Packet received = getPacket(server);
+            Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals(received.getPayload(), msg);
         }
@@ -504,29 +527,36 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderThenWaitTilAllPacketsHasArrivedShouldWorkTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
-        client.connect(server);
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         int numPacketsToSend = server.getWindowSize() * 100;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            client.send(msg);
+            eventHandler.addEvent(new SendEvent(client, msg));
         }
 
-        while (!client.outputBufferIsEmpty() || client.hasWaitingPackets()){}
+        eventHandler.run();
 
         System.out.println("should be last print");
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
-            Packet received = getPacket(server);
+            Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals(received.getPayload(), msg);
         }
@@ -537,37 +567,40 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(3).build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(2).build();
 
-        client.addChannel(r1);
-        r1.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
-        r1.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        server.start();
 
-        client.connect(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
+
+        System.out.println("connected");
 
         int multiplier = 100;
         int numPacketsToSend = server.getWindowSize() * multiplier;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            client.send(msg);
+            eventHandler.addEvent(new SendEvent(client, msg));
         }
 
-        while (!client.outputBufferIsEmpty() || client.hasWaitingPackets()){}
+        eventHandler.run();
+
         System.out.println("should be last print");
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
-            Packet received = getPacket(server);
+            Packet received = server.receive();
             Assert.assertNotNull(received);
-            Assert.assertEquals(received.getPayload(), msg);
+            Assert.assertEquals(msg, received.getPayload());
         }
     }
 

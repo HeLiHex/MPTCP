@@ -1,5 +1,6 @@
 package org.example.simulator.events;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 
@@ -25,6 +26,7 @@ public abstract class Event implements Comparable<Event> {
 
     @Override
     public int compareTo(Event o) {
+        //return o.getInitInstant().compareTo(this.getInitInstant());
         return this.instant.compareTo(o.getInitInstant());
     }
 

@@ -48,7 +48,6 @@ public class RunNetworkNodeEvent extends Event{
     @Override
     public void generateNextEvent(Queue<Event> events) {
         if (this.packet == null){
-            System.out.println("packet is null");
             return;
         }
 

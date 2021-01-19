@@ -206,7 +206,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     public void handleIncoming(){
         if (this.inputBufferIsEmpty()){
-            logger.log(Level.INFO, "Input buffer is empty");
+            //logger.log(Level.INFO, "Input buffer is empty");
             return;
         }
 
