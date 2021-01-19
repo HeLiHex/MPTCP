@@ -50,6 +50,16 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         return super.hashCode();
     }
 
+    @Override
+    public boolean isConnected(){
+        return false;
+    }
+
+    @Override
+    public Endpoint getConnectedEndpoint() {
+        return null;
+    }
+
     public Packet getReceivedPacket(){
         return this.receivedPackets.poll();
     }

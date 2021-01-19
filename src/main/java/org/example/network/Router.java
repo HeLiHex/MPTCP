@@ -41,16 +41,12 @@ public class Router extends Routable {
         super(new BufferQueue<>(bufferSize), randomGenerator, noiseTolerance);
     }
 
-    protected Router(BlockingQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
-        super(inputBuffer, randomGenerator, noiseTolerance);
-    }
-
     @Override
     public void run() {
         //while (true){
-            if (!this.inputBufferIsEmpty()){
-                this.route(this.dequeueInputBuffer());
-            }
+        if (!this.inputBufferIsEmpty()){
+            this.route(this.dequeueInputBuffer());
+        }
         //}
     }
 

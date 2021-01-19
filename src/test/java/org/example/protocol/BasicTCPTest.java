@@ -142,7 +142,7 @@ public class BasicTCPTest {
             Message msg = new Message( "test " + i);
             eventHandler.addEvent(new SendEvent(client, msg));
             eventHandler.run();
-            Assert.assertEquals(getPacket(server).getPayload(), msg);
+            Assert.assertEquals(msg, server.receive().getPayload());
         }
     }
 
@@ -187,7 +187,7 @@ public class BasicTCPTest {
 
 
     @Test
-    public synchronized void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
+    public void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
         Router r1 = new Router.RouterBuilder().build();
@@ -208,56 +208,43 @@ public class BasicTCPTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-        server.start();
-
-        client.connect(server);
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
 
         for (int i = 0; i < server.getWindowSize(); i++) {
-            Message msg = new Message( "test " + i);
-            client.route(new PacketBuilder()
+            Packet packet1 = new PacketBuilder()
                     .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 5000 + i)
                     .withAcknowledgmentNumber(client.getConnection().getNextAcknowledgementNumber() + 20000 + i)
                     .withOrigin(client)
                     .withDestination(server)
                     .withPayload(new Message("should not be received 1"))
-                    .build()
-            );
+                    .build();
+            eventHandler.addEvent(new RouteEvent(client, packet1));
 
-            client.send(msg);
+            Message msg = new Message( "test " + i);
+            eventHandler.addEvent(new SendEvent(client, msg));
 
-            client.route(new PacketBuilder()
+            Packet packet2 = new PacketBuilder()
                     .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100 + i)
                     .withAcknowledgmentNumber(client.getConnection().getNextAcknowledgementNumber() + 20 + i)
                     .withOrigin(client)
                     .withDestination(server)
                     .withPayload(new Message("should not be received 2"))
-                    .build()
-            );
+                    .build();
+            eventHandler.addEvent(new RouteEvent(client, packet2));
 
-            try {
-                sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            eventHandler.run();
         }
 
         for (int i = 0; i < server.getWindowSize(); i++) {
-            Packet received = getPacket(server);
+            Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals("test " + i, received.getPayload().toString());
         }
 
-        Packet received = getPacket(server);
+        Packet received = server.receive();
         Assert.assertNull(received);
     }
 
@@ -265,53 +252,44 @@ public class BasicTCPTest {
     @Test
     public void routedMessagesUnorderedReceiveOrderedTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
-        client.addChannel(server);
+        client.addChannel(router);
+        router.addChannel(server);
 
         client.updateRoutingTable();
+        router.updateRoutingTable();
         server.updateRoutingTable();
 
-        server.start();
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.run();
 
-        client.connect(server);
-        try {
-            sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        System.out.println("connected");
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
-
         for (int i = client.getWindowSize() - 1; i >= 0 ; i--) {
-            client.route(new PacketBuilder()
+            Packet packet = new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
                     .withSequenceNumber(seqNum + i)
                     .withAcknowledgmentNumber(ackNum + i)
                     .withPayload(new Message(i + ""))
-                    .build()
-            );
+                    .build();
+            eventHandler.addEvent(new RouteEvent(client, packet));
+            eventHandler.run();
         }
-
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         for (int i = 0; i < client.getWindowSize(); i++) {
-            Packet received = getPacket(server);
+            Packet received = server.receive();
             Assert.assertNotNull("iteration: " + i, received);
             Assert.assertEquals(i + "", received.getPayload().toString());
         }
-
-        Packet received = getPacket(server);
+        Packet received = server.receive();
         Assert.assertNull(received);
-
     }
 
 

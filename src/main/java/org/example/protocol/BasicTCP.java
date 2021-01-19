@@ -143,6 +143,11 @@ public class BasicTCP extends AbstractTCP {
     protected synchronized void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
 
+        if (!this.isConnected()){
+            logger.log(Level.INFO, "ack received with no connection established");
+            return;
+        }
+
         if (this.waitingPackets.isEmpty()){
             logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or possibly uncaught invalid connection ");
             return;

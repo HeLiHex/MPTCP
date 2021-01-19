@@ -32,6 +32,6 @@ public class SendEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        events.add(new RunNetworkNodeEvent((NetworkNode)this.tcp));
+        events.add(new RunTCPEvent((AbstractTCP) this.tcp));
     }
 }
