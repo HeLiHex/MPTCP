@@ -1,7 +1,6 @@
 package org.example.simulator;
 
 import org.example.simulator.events.Event;
-
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -12,6 +11,7 @@ public class EventHandler {
 
     public EventHandler(){
         this.events = new PriorityQueue<>();
+
     }
 
     public void addEvent(Event event){
