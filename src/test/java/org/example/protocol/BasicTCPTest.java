@@ -14,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Random;
 
 import static java.lang.Thread.sleep;
@@ -505,6 +507,12 @@ public class BasicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             eventHandler.addEvent(new SendEvent(client, msg));
+            //sleep because events are incorrectly ordered in time when things happen fast
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         eventHandler.run();
@@ -542,6 +550,12 @@ public class BasicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             eventHandler.addEvent(new SendEvent(client, msg));
+            //sleep because events are incorrectly ordered in time when things happen fast
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         eventHandler.run();
@@ -552,14 +566,13 @@ public class BasicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
-
     }
 
 
     @Test
-    public synchronized void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
+    public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2.5).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(3).build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(router);
@@ -582,6 +595,13 @@ public class BasicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             eventHandler.addEvent(new SendEvent(client, msg));
+
+            //sleep because events are incorrectly ordered in time when things happen fast
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         eventHandler.run();

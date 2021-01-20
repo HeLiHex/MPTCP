@@ -17,6 +17,8 @@ import java.time.Instant;
 import java.util.Queue;
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 
 public class EventHandlerTest {
 
@@ -130,6 +132,12 @@ public class EventHandlerTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             eventHandler.addEvent(new SendEvent(client, msg));
+            //sleep because events are incorrectly ordered in time when things happen fast
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         eventHandler.run();

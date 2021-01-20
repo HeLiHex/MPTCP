@@ -70,6 +70,8 @@ public class BasicTCP extends AbstractTCP {
 
         if (this.lastReceivedPacket.getSequenceNumber() + 1 == this.received.peek().getSequenceNumber()){
             Packet receivedPacket = this.received.poll();
+            System.out.println(receivedPacket.getSequenceNumber());
+            System.out.println(receivedPacket.getPayload());
             this.lastReceivedPacket = receivedPacket;
             return receivedPacket;
         }
