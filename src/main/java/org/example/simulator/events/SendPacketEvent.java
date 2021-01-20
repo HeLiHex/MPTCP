@@ -1,10 +1,9 @@
 package org.example.simulator.events;
 
 import org.example.data.Packet;
-import org.example.data.Payload;
-import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
+import org.example.simulator.events.run.RunTCPEvent;
 
 import java.time.Instant;
 import java.util.Queue;

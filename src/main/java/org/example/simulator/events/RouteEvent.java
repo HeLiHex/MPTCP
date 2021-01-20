@@ -4,6 +4,7 @@ import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
+import org.example.simulator.events.run.RunNetworkNodeEvent;
 
 import java.time.Instant;
 import java.util.Queue;
