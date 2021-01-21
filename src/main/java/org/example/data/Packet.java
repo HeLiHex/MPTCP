@@ -31,7 +31,6 @@ public class Packet {
     }
 
     public boolean hasAllFlags(Flag... flags){
-        /*
         if (flags == null || this.flags == null){
             throw new NullPointerException("flags can't be null");
         }
@@ -45,8 +44,6 @@ public class Packet {
             // no flags given implies that all flags given are in list
             return true;
         }
-
-         */
 
         boolean hasFlag = this.flags.contains(flags[0]);
         for (int i = 1; i < flags.length; i++) {
