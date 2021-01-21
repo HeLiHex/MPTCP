@@ -27,8 +27,9 @@ public class InputEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
+        events.add(new RetransmitEvent(this.tcp));
         //todo this creates a loop
-        if (this.tcp.inputBufferIsEmpty()) events.add(new RetransmitEvent(this.tcp));
-        else events.add(new InputEvent(this.tcp));
+        //if (this.tcp.inputBufferIsEmpty()) events.add(new RetransmitEvent(this.tcp));
+        //else events.add(new InputEvent(this.tcp));
     }
 }

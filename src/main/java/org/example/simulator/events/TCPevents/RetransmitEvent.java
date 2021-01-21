@@ -30,7 +30,7 @@ public class RetransmitEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
        Packet[] packets = this.tcp.packetsToRetransmit();
         for (Packet packet : packets){
-            events.add(new RouteEvent(this.tcp, packet));
+            events.add(new ResendEvent(this.tcp, packet));
         }
         events.add(new TrySendEvent(this.tcp));
     }

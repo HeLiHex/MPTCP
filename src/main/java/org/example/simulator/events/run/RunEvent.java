@@ -5,6 +5,7 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.TCPevents.InputEvent;
 
 import java.time.Instant;
 import java.util.Queue;
@@ -44,7 +45,7 @@ public abstract class RunEvent extends Event {
         if (this.nextNode == null) return;
 
         if (this.nextNode instanceof TCP){
-            events.add(new RunTCPEvent((AbstractTCP) this.nextNode));
+            events.add(new InputEvent((AbstractTCP) this.nextNode));
             return;
         }
         if (this.nextNode instanceof Endpoint){
