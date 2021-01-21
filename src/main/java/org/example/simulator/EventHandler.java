@@ -7,7 +7,7 @@ import java.util.Queue;
 public class EventHandler {
 
     private final Queue<Event> events;
-    //private static final Statistics STATISTICS = new Statistics();
+    private static final Statistics STATISTICS = new Statistics();
 
     public EventHandler(){
         this.events = new PriorityQueue<>();
@@ -23,14 +23,12 @@ public class EventHandler {
 
     public void run(){
         while(true){
-            //System.out.println(this.events.size());
             Event event = this.events.poll();
             if (event == null){
                 if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
-                //System.out.println(STATISTICS.toString());
+                System.out.println(STATISTICS.toString());
                 return;
             }
-            //System.out.println(event.getClass().getSimpleName());
             event.run();
             event.generateNextEvent(this.events);
         }
