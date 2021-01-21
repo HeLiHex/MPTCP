@@ -4,7 +4,6 @@ import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
 
-
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -205,7 +204,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     public void handleIncoming(){
         if (this.inputBufferIsEmpty()){
-            //logger.log(Level.INFO, "Input buffer is empty");
             return;
         }
 
@@ -262,11 +260,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void run() {
-        //while (true){
-            this.handleIncoming();
-            this.retransmit();
-            this.trySend();
-        //}
+        this.handleIncoming();
+        this.retransmit();
+        this.trySend();
     }
 
     @Override
