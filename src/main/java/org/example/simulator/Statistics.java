@@ -13,47 +13,28 @@ public class Statistics {
     private static final HashMap<Packet, Instant> packetsInReceivingQueue = new HashMap<>();
     private static final HashMap<Packet, Instant> packetsInSystem = new HashMap<>();
 
-    private static long timeInSendingQueue; //calculate average using numberOfPackets
-    private static long timeInReceivingQueue; //calculate average using numberOfPacketsReceived (I think)
-    private static long timeInTransmission; //calculate average using numberOfPackets.
-    private static long timeInSystem; //calculate average using numberOfPacketsReceived
-    private static long totalTimeInSendingQueue;
-    private static long totalTimeInReceivingQueue;
-    private static long totalTimeInTransmission;
-    private static long totalTimeInSystem;
+    private static long timeInSendingQueue = 0; //calculate average using numberOfPackets
+    private static long timeInReceivingQueue = 0; //calculate average using numberOfPacketsReceived (I think)
+    private static long timeInTransmission = 0; //calculate average using numberOfPackets.
+    private static long timeInSystem = 0; //calculate average using numberOfPacketsReceived
+    private static long totalTimeInSendingQueue = 0;
+    private static long totalTimeInReceivingQueue = 0;
+    private static long totalTimeInTransmission = 0;
+    private static long totalTimeInSystem = 0;
 
-    private static int numberOfPackets; //total number of packets to be served. not counting retransmissions
-    private static int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
-    private static int numberOfPacketsRetransmitted; //total number of packets retransmitted
-    private static int numberOfPacketsLost; //total number of packets lost
-    private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
+    private static int numberOfPackets = 0; //total number of packets to be served. not counting retransmissions
+    private static int numberOfPacketsSent = 0; //total number of packets sent (both normal and retransmissions)
+    private static int numberOfPacketsRetransmitted = 0; //total number of packets retransmitted
+    private static int numberOfPacketsLost = 0; //total number of packets lost
+    private static int numberOfPacketsReceived = 0; //total number of packets received. Should be the same as numberOfPackets(!?)
 
 
     public Statistics() {
-        timeInSendingQueue = 0;
-        timeInReceivingQueue = 0;
-        timeInTransmission = 0;
-        timeInSystem = 0;
-
-        totalTimeInSendingQueue = 0;
-        totalTimeInReceivingQueue = 0;
-        totalTimeInTransmission = 0;
-        totalTimeInSystem = 0;
-
-        numberOfPackets = 0;
-        numberOfPacketsSent = 0;
-        numberOfPacketsRetransmitted = 0;
-        numberOfPacketsLost = 0;
-        numberOfPacketsReceived = 0;
     }
 
     private static Instant getCurrentTime(){
         return Instant.now();
     }
-
-
-
-
 
     public static void packetSent(Packet packetSent){
         Instant instant = getCurrentTime();
