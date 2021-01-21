@@ -1,6 +1,7 @@
 package org.example.simulator.events.TCPevents;
 
 import org.example.protocol.AbstractTCP;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 
 import java.time.Instant;
@@ -31,5 +32,10 @@ public class InputEvent extends Event {
         //todo this creates a loop
         //if (this.tcp.inputBufferIsEmpty()) events.add(new RetransmitEvent(this.tcp));
         //else events.add(new InputEvent(this.tcp));
+    }
+
+    @Override
+    public void updateStatistics(Statistics statistics) {
+
     }
 }

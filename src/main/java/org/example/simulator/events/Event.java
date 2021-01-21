@@ -1,5 +1,7 @@
 package org.example.simulator.events;
 
+import org.example.simulator.Statistics;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
@@ -29,4 +31,5 @@ public abstract class Event implements Comparable<Event> {
         return this.instant.compareTo(o.getInitInstant());
     }
 
+    public abstract void updateStatistics(Statistics statistics);
 }

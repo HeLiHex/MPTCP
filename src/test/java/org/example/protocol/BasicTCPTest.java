@@ -6,6 +6,7 @@ import org.example.data.PacketBuilder;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.simulator.EventHandler;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.ConnectEvent;
 import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.SendEvent;
@@ -605,8 +606,6 @@ public class BasicTCPTest {
         }
 
         eventHandler.run();
-
-        System.out.println("should be last print");
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);

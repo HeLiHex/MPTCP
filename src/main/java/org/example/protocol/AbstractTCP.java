@@ -3,6 +3,7 @@ package org.example.protocol;
 import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
+import org.example.simulator.Statistics;
 
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;

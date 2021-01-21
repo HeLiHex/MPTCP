@@ -2,6 +2,7 @@ package org.example.simulator.events.run;
 
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 
 import java.time.Duration;
@@ -38,5 +39,10 @@ public class RunEndpointEvent extends RunEvent {
             Channel channel = this.node.getChannels().get(0);
             this.nextNode = channel.getDestination();
         }
+    }
+
+    @Override
+    public void updateStatistics(Statistics statistics) {
+
     }
 }

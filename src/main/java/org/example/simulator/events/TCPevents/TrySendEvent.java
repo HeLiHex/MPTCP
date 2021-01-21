@@ -4,6 +4,7 @@ import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
 
@@ -13,7 +14,7 @@ import java.util.Queue;
 public class TrySendEvent extends Event {
 
     private final AbstractTCP tcp;
-    private boolean trySendAgain;
+    private boolean packetSent;
 
     public TrySendEvent(Instant instant, AbstractTCP tcp) {
         super(instant);
@@ -27,12 +28,12 @@ public class TrySendEvent extends Event {
 
     @Override
     public void run() {
-        this.trySendAgain = this.tcp.trySend();
+        this.packetSent = this.tcp.trySend();
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.trySendAgain){
+        if (this.packetSent){
             events.add(new TrySendEvent(this.tcp));
             return;
         }
@@ -40,5 +41,10 @@ public class TrySendEvent extends Event {
         Channel channel = this.tcp.getPath(destination);
         NetworkNode nextNode = channel.getDestination();
         events.add(new RunNetworkNodeEvent(nextNode));
+    }
+
+    @Override
+    public void updateStatistics(Statistics statistics) {
+         if (this.packetSent) statistics.packetSent();
     }
 }

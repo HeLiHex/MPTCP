@@ -44,7 +44,7 @@ public abstract class RunEvent extends Event {
         this.generateSelf(events);
         if (this.nextNode == null) return;
 
-        if (this.nextNode instanceof TCP){
+        if (this.nextNode instanceof AbstractTCP){
             events.add(new InputEvent((AbstractTCP) this.nextNode));
             return;
         }

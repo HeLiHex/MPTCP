@@ -4,6 +4,7 @@ import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
 
 import java.time.Instant;
@@ -36,5 +37,10 @@ public class RouteEvent extends Event{
         Channel channel = endpoint.getPath(packet.getDestination());
         NetworkNode nextNode = channel.getDestination();
         events.add(new RunNetworkNodeEvent(nextNode));
+    }
+
+    @Override
+    public void updateStatistics(Statistics statistics) {
+
     }
 }

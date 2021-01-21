@@ -39,4 +39,9 @@ public class ResendEvent extends Event {
         NetworkNode nextNode = channel.getDestination();
         events.add(new RunNetworkNodeEvent(nextNode));
     }
+
+    @Override
+    public void updateStatistics(Statistics statistics) {
+
+    }
 }

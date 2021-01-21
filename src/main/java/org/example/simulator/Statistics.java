@@ -2,156 +2,65 @@ package org.example.simulator;
 
 import org.example.data.Packet;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.HashMap;
-
 public class Statistics {
 
-    private static final HashMap<Packet, Instant> packetsInSendingQueue = new HashMap<>();
-    private static final HashMap<Packet, Instant> packetsInTransmission = new HashMap<>();
-    private static final HashMap<Packet, Instant> packetsInReceivingQueue = new HashMap<>();
-    private static final HashMap<Packet, Instant> packetsInSystem = new HashMap<>();
-
-    private static long timeInSendingQueue = 0; //calculate average using numberOfPackets
-    private static long timeInReceivingQueue = 0; //calculate average using numberOfPacketsReceived (I think)
-    private static long timeInTransmission = 0; //calculate average using numberOfPackets.
-    private static long timeInSystem = 0; //calculate average using numberOfPacketsReceived
-    private static long totalTimeInSendingQueue = 0;
-    private static long totalTimeInReceivingQueue = 0;
-    private static long totalTimeInTransmission = 0;
-    private static long totalTimeInSystem = 0;
-
-    private static int numberOfPackets = 0; //total number of packets to be served. not counting retransmissions
-    private static int numberOfPacketsSent = 0; //total number of packets sent (both normal and retransmissions)
-    private static int numberOfPacketsRetransmitted = 0; //total number of packets retransmitted
-    private static int numberOfPacketsLost = 0; //total number of packets lost
-    private static int numberOfPacketsReceived = 0; //total number of packets received. Should be the same as numberOfPackets(!?)
+    private int numberOfPackets; //total number of packets to be served. not counting retransmissions
+    private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
+    private int numberOfPacketsRetransmitted; //total number of packets retransmitted
+    private int numberOfPacketsLost; //total number of packets lost
+    private int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
 
-    private static Instant getCurrentTime(){
-        return Instant.now();
+    public Statistics() {
+        this.numberOfPackets = 0;
+        this.numberOfPacketsSent = 0;
+        this.numberOfPacketsRetransmitted = 0;
+        this.numberOfPacketsLost = 0;
+        this.numberOfPacketsReceived = 0;
     }
 
-    public static void packetSent(Packet packetSent){
-        Instant instant = getCurrentTime();
-
-        packetsInSendingQueue.put(packetSent, instant);
-        packetsInSystem.put(packetSent, instant);
-
-        numberOfPackets++;
-        numberOfPacketsSent++;
+    public void packetSent(){
+        this.numberOfPackets++;
+        this.numberOfPacketsSent++;
     }
 
-    public static void packetOutOfSendingQueue(Packet packet){
-        totalTimeInSendingQueue += Duration.between(packetsInSendingQueue.get(packet), getCurrentTime()).getSeconds();
-        packetsInTransmission.put(packet, getCurrentTime());
-    }
-
-    public static void packetRetransmit(){
+    public void packetRetransmit(){
         numberOfPacketsSent++;
         numberOfPacketsRetransmitted++;
     }
 
-    public static void packetLost(){
+    public void packetLost(){
         numberOfPacketsLost++;
     }
 
-    public static void packetReceived(Packet packetReceived){
-        Instant instant = getCurrentTime();
-        try{
-            Duration between = Duration.between(packetsInTransmission.get(packetReceived), instant);
-            totalTimeInTransmission += between.getSeconds();
-        }catch (NullPointerException e){}
-        packetsInReceivingQueue.put(packetReceived, instant);
-        totalTimeInSystem = Duration.between(packetsInSystem.get(packetReceived), instant).getSeconds();
+    public void packetReceived(Packet packetReceived){
         numberOfPacketsReceived++;
     }
 
-    public static int getNumberOfPackets() {
+    public int getNumberOfPackets() {
         return numberOfPackets;
     }
 
-    public static int getNumberOfPacketsSent() {
+    public int getNumberOfPacketsSent() {
         return numberOfPacketsSent;
     }
 
-    public static int getNumberOfPacketsRetransmitted() {
+    public int getNumberOfPacketsRetransmitted() {
         return numberOfPacketsRetransmitted;
     }
 
-    public static int getNumberOfPacketsLost() {
+    public int getNumberOfPacketsLost() {
         return numberOfPacketsLost;
     }
 
-    public static int getNumberOfPacketsReceived() {
+    public int getNumberOfPacketsReceived() {
         return numberOfPacketsReceived;
     }
 
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Statistics{");
         sb.append("\n");
-
-        //Time
-        sb.append("    ");
-        sb.append("Average time: ");
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Average time in sending queue: ");
-        sb.append(timeInSendingQueue);
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Average time in receiving queue: ");
-        sb.append(timeInReceivingQueue);
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Average time in transmission: ");
-        sb.append(timeInTransmission);
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Average time in system: ");
-        sb.append(timeInSystem);
-        sb.append("\n");
-
-
-
-        //Total time
-        sb.append("    ");
-        sb.append("Total time: ");
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Total time in sending queue: ");
-        sb.append(totalTimeInSendingQueue);
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Total time in receiving queue: ");
-        sb.append(totalTimeInReceivingQueue);
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Total time in transmission: ");
-        sb.append(totalTimeInTransmission);
-        sb.append("\n");
-
-        sb.append("    ");
-        sb.append("    ");
-        sb.append("Total time in system: ");
-        sb.append(totalTimeInSystem);
-        sb.append("\n");
-
 
         //Number
         sb.append("    ");

@@ -5,6 +5,7 @@ import org.example.network.Routable;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
 
 import java.time.Instant;
@@ -38,5 +39,10 @@ public class ConnectEvent extends Event{
     public void generateNextEvent(Queue<Event> events) {
         NetworkNode nextNode = path.getDestination();
         events.add(new RunNetworkNodeEvent(Instant.now(), nextNode));
+    }
+
+    @Override
+    public void updateStatistics(Statistics statistics) {
+
     }
 }
