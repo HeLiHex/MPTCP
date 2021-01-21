@@ -25,15 +25,13 @@ public class BasicTCP extends AbstractTCP {
     private final BoundedPriorityBlockingQueue<WaitingPacket> waitingPackets;
     private final BlockingQueue<Packet> receivedAck;
 
-    private Packet lastReceivedPacket = null;
-
     public BasicTCP(Random randomGenerator) {
         super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
                 new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 randomGenerator,
                 NOISE_TOLERANCE
         );
-        this.logger = Logger.getLogger(this.getName());
+        this.logger = Logger.getLogger(this.getClass().getSimpleName());
 
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
         this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, Comparator.comparingInt(wp -> wp.getPacket().getSequenceNumber()));
@@ -84,6 +82,7 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     protected void setReceived() {
+        if (this.inputBuffer.peek() == null) throw new IllegalStateException("null packet received");
         boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         while (shouldAddToReceived){
 
