@@ -83,7 +83,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected synchronized void setReceived() {
+    protected void setReceived() {
         boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         while (shouldAddToReceived){
 
@@ -145,7 +145,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected synchronized void ackReceived() {
+    protected void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
 
         if (!this.isConnected()){
