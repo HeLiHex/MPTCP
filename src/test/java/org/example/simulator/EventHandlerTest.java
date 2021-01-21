@@ -6,7 +6,6 @@ import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
 import org.example.protocol.BasicTCP;
-import org.example.protocol.TCP;
 import org.example.simulator.events.ConnectEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.SendEvent;
@@ -77,9 +76,8 @@ public class EventHandlerTest {
 
         Awaitility.await().atLeast(Duration.FIVE_SECONDS);
         eventHandler.run();
-        eventHandler.run();
-        eventHandler.run();
-        eventHandler.run();
+
+        Assert.assertEquals(0, eventHandler.getNumberOfEvents());
     }
 
 

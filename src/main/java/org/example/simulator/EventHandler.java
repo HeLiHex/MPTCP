@@ -11,11 +11,14 @@ public class EventHandler {
 
     public EventHandler(){
         this.events = new PriorityQueue<>();
-
     }
 
     public void addEvent(Event event){
         this.events.add(event);
+    }
+
+    public int getNumberOfEvents(){
+        return this.events.size();
     }
 
     public void run(){
