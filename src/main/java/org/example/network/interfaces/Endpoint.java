@@ -28,4 +28,9 @@ public interface Endpoint extends NetworkNode {
      */
     boolean outputBufferIsEmpty();
 
+
+    boolean isConnected();
+
+    Endpoint getConnectedEndpoint();
+
 }

@@ -2,39 +2,23 @@ package org.example.network;
 
 import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
-import org.example.network.Router;
 
 import org.example.network.interfaces.NetworkNode;
-import org.example.protocol.BasicTCP;
+import org.example.simulator.EventHandler;
+import org.example.simulator.events.RouteEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class RoutableTest {
 
     private static final Random RANDOM_GENERATOR = new Random();
 
 
-    public synchronized Payload getMsg(Endpoint server){
-        for (int i = 0; i < 1000; i++) {
-            Packet receivedPacket = server.dequeueInputBuffer();
-            if (receivedPacket == null){
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                continue;
-            }
-            return receivedPacket.getPayload();
-        }
-        return null;
-    }
-
-
     @Test
-    public void routablesWithRandomAddressAreNotEqualTest(){
+    public void routableWithRandomAddressAreNotEqualTest(){
         NetworkNode node1 = new Router.RouterBuilder().build();
         NetworkNode node2 = new Router.RouterBuilder().build();
         Assert.assertNotEquals(node1, node2);
@@ -42,13 +26,13 @@ public class RoutableTest {
 
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationStraitLine(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public void routingPacketRoutsItToItsDestinationStraitLine(){
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -63,37 +47,31 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
-        r4.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
-        Assert.assertEquals(receivedPayload,msg);
+        Assert.assertEquals(receivedPayload, msg);
     }
 
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationCircleGraph(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public  void routingPacketRoutsItToItsDestinationCircleGraph(){
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         client.addChannel(r2);
@@ -109,36 +87,32 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
                 .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
-        r4.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
-        Assert.assertEquals(receivedPayload,msg);
+        Assert.assertEquals(receivedPayload, msg);
     }
 
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationWithCycle(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public void routingPacketRoutsItToItsDestinationWithCycle(){
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -152,34 +126,31 @@ public class RoutableTest {
         r2.updateRoutingTable();
         r3.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(receivedPayload,msg);
     }
 
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationWithDeadEnd(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -194,37 +165,32 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
                 .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
-        r4.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
     }
 
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationForrest(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public void routingPacketRoutsItToItsDestinationForrest(){
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         //tree one
         client.addChannel(r1);
@@ -241,37 +207,32 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
-        r4.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
     }
 
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -285,24 +246,18 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
-        r4.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
     }
@@ -310,7 +265,7 @@ public class RoutableTest {
 
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationCrazyGraph(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
@@ -323,7 +278,7 @@ public class RoutableTest {
         Router r10 = new Router.RouterBuilder().build();
         Router r11 = new Router.RouterBuilder().build();
         Router r12 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         client.addChannel(r2);
@@ -357,40 +312,18 @@ public class RoutableTest {
         r12.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-        r5.start();
-        r6.start();
-        r7.start();
-        r8.start();
-        r9.start();
-        r10.start();
-        r11.start();
-        r12.start();
-
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
 
-        r1.interrupt();
-        r2.interrupt();
-        r3.interrupt();
-        r4.interrupt();
-        r5.interrupt();
-        r6.interrupt();
-        r7.interrupt();
-        r8.interrupt();
-        r9.interrupt();
-        r10.interrupt();
-        r11.interrupt();
-        r12.interrupt();
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
     }
@@ -399,11 +332,11 @@ public class RoutableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedClientCantRoutPacketToDestination(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
-        Router r2 = new Router.RouterBuilder().build();;
+        Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         r1.addChannel(r2);
         r2.addChannel(r3);
@@ -415,15 +348,10 @@ public class RoutableTest {
         r3.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-
         Message msg = new Message( "hello på do!");
         client.route(new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                 .build());
     }
 
@@ -431,12 +359,12 @@ public class RoutableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedTreesCantRoutPacket(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -450,29 +378,23 @@ public class RoutableTest {
         r3.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
-
         Message msg = new Message( "hello på do!");
         client.route(new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                 .build());
     }
 
 
 
     @Test
-    public synchronized void faultyChannelsDropPacket(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public void faultyChannelsDropPacket(){
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().withNoiseTolerance(0).build();
         Router r4 = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -487,38 +409,38 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
 
         Message msg = new Message( "hello på do!");
-        client.route(new PacketBuilder()
+        Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
-                .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                .build());
+                .build();
 
-        Payload receivedPayload = this.getMsg(server);
-        Assert.assertEquals(null, receivedPayload);
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.run();
+
+        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+
+        Assert.assertNull(null, receivedPacket);
     }
 
 
     @Test
-    public synchronized void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
+    public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
         double noiseTolerance = 2.5;
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        Router r2 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        Router r3 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        Router r4 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), RANDOM_GENERATOR, 100);
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
+        Router r2 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
+        Router r3 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
+        Router r4 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), RANDOM_GENERATOR, 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
-        server.addChannel(r4);
+        r4.addChannel(server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -527,26 +449,28 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        r1.start();
-        r2.start();
-        r3.start();
-        r4.start();
+
+        EventHandler eventHandler = new EventHandler();
 
         for (int i = 0; i < 1000; i++) {
-            Message msg = new Message( "hello på do!");
-            client.route(new PacketBuilder()
+            Message msg = new Message( i + "");
+            Packet packet = new PacketBuilder()
                     .withPayload(msg)
                     .withDestination(server)
-                    .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
-                    .build());
+                    .build();
+            eventHandler.addEvent(new RouteEvent(client, packet));
+        }
 
-            Payload receivedPayload = this.getMsg(server);
-            if (receivedPayload == null){
-                Assert.assertTrue(true);
+        eventHandler.run();
+
+        for (int i = 0; i < 1000; i++) {
+            Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+            if (receivedPacket == null){
                 return;
             }
         }
-        Assert.assertFalse(true);
+        Assert.fail();
+
     }
 
 

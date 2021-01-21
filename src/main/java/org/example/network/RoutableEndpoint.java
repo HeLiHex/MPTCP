@@ -4,15 +4,20 @@ import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public abstract class RoutableEndpoint extends Routable implements Endpoint {
+public class RoutableEndpoint extends Routable implements Endpoint {
 
     protected BlockingQueue<Packet> outputBuffer;
+    private final BlockingQueue<Packet> receivedPackets;
 
     protected RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
         this.outputBuffer = outputBuffer;
+        this.receivedPackets = new ArrayBlockingQueue<>(10000);
     }
 
     @Override
@@ -46,5 +51,24 @@ public abstract class RoutableEndpoint extends Routable implements Endpoint {
     }
 
     @Override
-    public abstract void run();
+    public boolean isConnected(){
+        return false;
+    }
+
+    @Override
+    public Endpoint getConnectedEndpoint() {
+        return null;
+    }
+
+    public Packet getReceivedPacket(){
+        return this.receivedPackets.poll();
+    }
+
+    @Override
+    public void run(){
+        if (this.inputBufferIsEmpty()) return;
+        Packet received = this.dequeueInputBuffer();
+        this.receivedPackets.add(received);
+        Logger.getLogger(this.getName()).log(Level.INFO, () -> "Packet: " + received + " received");
+    }
 }

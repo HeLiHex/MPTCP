@@ -14,6 +14,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
     private Connection connection;
+    private int initialSequenceNumber;
 
 
     protected AbstractTCP(BlockingQueue<Packet> inputBuffer,
@@ -30,22 +31,21 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void connect(Endpoint host) {
         this.updateRoutingTable();
-        int initSeqNum = random(100);
+        this.initialSequenceNumber = this.random(100);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
                 .withFlags(Flag.SYN)
-                .withSequenceNumber(initSeqNum)
+                .withSequenceNumber(this.initialSequenceNumber)
                 .build();
         this.route(syn);
+    }
 
-        while (this.inputBufferIsEmpty()){
-            this.sleep();
-        }
-
+    public void continueConnect(){
         Packet synAck = this.dequeueInputBuffer();
+        Endpoint host = synAck.getOrigin();
         if (synAck.hasAllFlags(Flag.SYN, Flag.ACK)){
-            if (synAck.getAcknowledgmentNumber() != initSeqNum + 1){
+            if (synAck.getAcknowledgmentNumber() != this.initialSequenceNumber + 1){
                 this.logger.log(Level.INFO, "Wrong ack number");
                 return;
             }
@@ -62,8 +62,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
-            this.start();
         }
+
     }
 
     @Override
@@ -84,7 +84,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.addToWaitingPacketWindow(synAck);
 
         this.route(synAck);
-
     }
 
     @Override
@@ -120,7 +119,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract int getWindowSize();
 
-    protected abstract boolean isWaitingForACK();
+    public abstract boolean isWaitingForACK();
 
     protected abstract void addToWaitingPacketWindow(Packet packet);
 
@@ -130,9 +129,20 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract void ackReceived();
 
-    protected synchronized Connection getConnection() {
-        while (this.connection == null){
-            logger.log(Level.WARNING, "no connection established!");
+    @Override
+    public boolean isConnected() {
+        return this.connection != null;
+    }
+
+    @Override
+    public Endpoint getConnectedEndpoint() {
+        return getConnection().getConnectedNode();
+    }
+
+    public synchronized Connection getConnection() {
+        if (this.connection == null){
+            throw new IllegalStateException("connection is null");
+            //logger.log(Level.WARNING, "no connection established!");
         }
         return this.connection;
     }
@@ -194,13 +204,17 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
 
-    private void handleIncoming(){
+    public void handleIncoming(){
         if (this.inputBufferIsEmpty()){
-            sleep();
+            //logger.log(Level.INFO, "Input buffer is empty");
             return;
         }
 
         Packet packet = this.inputBuffer.peek();
+
+        if (packet.hasAllFlags(Flag.SYN, Flag.ACK)){
+            this.continueConnect();
+        }
 
         if (packet.hasAllFlags(Flag.ACK)){
             this.ackReceived();
@@ -217,51 +231,43 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     }
 
-    private void retransmit(){
+    public void retransmit(){
         Packet[] packets = packetsToRetransmit();
         for (Packet packet : packets) {
-            logger.log(Level.INFO, () -> "retransmiting packet " + packet);
+            logger.log(Level.INFO, () -> "retransmitting packet " + packet + "-----------------------------------");
             this.route(packet);
         }
     }
 
-    protected abstract Packet[] packetsToRetransmit();
+    public abstract Packet[] packetsToRetransmit();
 
-    private void trySend(){
+    public boolean trySend(){
         if (this.outputBufferIsEmpty()){
-            return;
+            return false;
         }
         if (this.isWaitingForACK()){
-            return;
+            return false;
         }
 
         if (!this.inSendingWindow(this.outputBuffer.peek())){
             logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
-            return;
+            return false;
         }
 
         Packet packet = this.dequeueOutputBuffer();
         this.addToWaitingPacketWindow(packet);
         this.route(packet);
         logger.log(Level.INFO, () -> "packet: " + packet + " sent");
-    }
-
-    private void sleep(){
-        try {
-            sleep(100);
-        } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "Thread Interrupted!");
-            Thread.currentThread().interrupt();
-        }
+        return true;
     }
 
     @Override
     public void run() {
-        while (true){
+        //while (true){
             this.handleIncoming();
             this.retransmit();
             this.trySend();
-        }
+        //}
     }
 
     @Override

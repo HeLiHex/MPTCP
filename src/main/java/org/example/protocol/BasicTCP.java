@@ -4,6 +4,7 @@ import org.example.data.Packet;
 import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.WaitingPacket;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -17,12 +18,12 @@ public class BasicTCP extends AbstractTCP {
     private static final int WINDOW_SIZE = 4;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
-    private static final int TIMEOUT_DURATION = 10;
-    private static final Comparator<Packet> PACKET_COMPARATOR = (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber();
+    private static final Duration TIMEOUT_DURATION = Duration.ofMillis(1000);
+    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
-    private BlockingQueue<Packet> received;
-    private BoundedPriorityBlockingQueue<WaitingPacket> waitingPackets;
-    private BlockingQueue<Packet> receivedAck;
+    private final BlockingQueue<Packet> received;
+    private final BoundedPriorityBlockingQueue<WaitingPacket> waitingPackets;
+    private final BlockingQueue<Packet> receivedAck;
 
     private Packet lastReceivedPacket = null;
 
@@ -35,9 +36,8 @@ public class BasicTCP extends AbstractTCP {
         this.logger = Logger.getLogger(this.getName());
 
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, (wp, t1) -> wp.getPacket().getSequenceNumber() - t1.getPacket().getSequenceNumber());
+        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, Comparator.comparingInt(wp -> wp.getPacket().getSequenceNumber()));
         this.receivedAck = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-
     }
 
     private void addToReceived(Packet packet){
@@ -58,7 +58,8 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     public Packet receive() {
-        if (received.isEmpty()) return null;
+        return this.received.poll();
+        /*if (received.isEmpty()) return null;
 
         if (this.lastReceivedPacket == null){
             Packet receivedPacket = this.received.poll();
@@ -68,15 +69,21 @@ public class BasicTCP extends AbstractTCP {
 
         if (this.lastReceivedPacket.getSequenceNumber() + 1 == this.received.peek().getSequenceNumber()){
             Packet receivedPacket = this.received.poll();
+            System.out.println(receivedPacket.getSequenceNumber());
+            System.out.println(receivedPacket.getPayload());
             this.lastReceivedPacket = receivedPacket;
             return receivedPacket;
         }
 
         return null;
+
+         */
+
+
     }
 
     @Override
-    protected synchronized void setReceived() {
+    protected void setReceived() {
         boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         while (shouldAddToReceived){
 
@@ -111,10 +118,9 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected Packet[] packetsToRetransmit() {
+    public Packet[] packetsToRetransmit() {
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
         for (WaitingPacket wp : this.waitingPackets) {
-            wp.update();
             boolean timeoutFinished = wp.timeoutFinished();
             boolean ackNotReceivedOnPacket = !this.receivedAck.contains(wp.getPacket());
             boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()));
@@ -128,7 +134,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected boolean isWaitingForACK() {
+    public boolean isWaitingForACK() {
         return this.waitingPackets.isFull();
     }
 
@@ -139,8 +145,13 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected synchronized void ackReceived() {
+    protected void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
+
+        if (!this.isConnected()){
+            logger.log(Level.INFO, "ack received with no connection established");
+            return;
+        }
 
         if (this.waitingPackets.isEmpty()){
             logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or possibly uncaught invalid connection ");
@@ -177,7 +188,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected int getWindowSize() {
+    public int getWindowSize() {
         return WINDOW_SIZE;
     }
 

@@ -1,7 +1,7 @@
 package org.example.network;
 
-import org.example.data.BufferQueue;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class Router extends Routable {
 
@@ -34,18 +34,15 @@ public class Router extends Routable {
     }
 
     private Router(int bufferSize, Random randomGenerator, double noiseTolerance) {
-        super(new BufferQueue<>(bufferSize), randomGenerator, noiseTolerance);
+        super(new ArrayBlockingQueue<>(bufferSize), randomGenerator, noiseTolerance);
     }
 
     @Override
     public void run() {
-        while (true){
-            if (!this.inputBufferIsEmpty()){
-                this.route(this.dequeueInputBuffer());
-            }
+        if (!this.inputBufferIsEmpty()){
+            this.route(this.dequeueInputBuffer());
         }
     }
-
 
 
 }
