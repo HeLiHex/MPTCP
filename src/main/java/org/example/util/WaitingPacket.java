@@ -19,7 +19,7 @@ public class WaitingPacket implements Comparable<WaitingPacket>{
 
     public void restart(){
         if (!timeoutFinished()) throw new IllegalStateException("can't restart unfinished timer");
-        this.timeoutInstant.plus(timeoutDuration);
+        this.timeoutInstant = this.timeoutInstant.plus(timeoutDuration);
     }
 
     public boolean timeoutFinished(){
