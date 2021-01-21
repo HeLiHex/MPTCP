@@ -29,9 +29,6 @@ public class Statistics {
     private static int numberOfPacketsReceived = 0; //total number of packets received. Should be the same as numberOfPackets(!?)
 
 
-    public Statistics() {
-    }
-
     private static Instant getCurrentTime(){
         return Instant.now();
     }
@@ -91,7 +88,6 @@ public class Statistics {
         return numberOfPacketsReceived;
     }
 
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Statistics{");
         sb.append("\n");
