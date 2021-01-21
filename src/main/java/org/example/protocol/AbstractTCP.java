@@ -142,7 +142,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     public synchronized Connection getConnection() {
         if (this.connection == null){
             throw new IllegalStateException("connection is null");
-            //logger.log(Level.WARNING, "no connection established!");
         }
         return this.connection;
     }
