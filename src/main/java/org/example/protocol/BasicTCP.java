@@ -57,27 +57,6 @@ public class BasicTCP extends AbstractTCP {
     @Override
     public Packet receive() {
         return this.received.poll();
-        /*if (received.isEmpty()) return null;
-
-        if (this.lastReceivedPacket == null){
-            Packet receivedPacket = this.received.poll();
-            this.lastReceivedPacket = receivedPacket;
-            return receivedPacket;
-        }
-
-        if (this.lastReceivedPacket.getSequenceNumber() + 1 == this.received.peek().getSequenceNumber()){
-            Packet receivedPacket = this.received.poll();
-            System.out.println(receivedPacket.getSequenceNumber());
-            System.out.println(receivedPacket.getPayload());
-            this.lastReceivedPacket = receivedPacket;
-            return receivedPacket;
-        }
-
-        return null;
-
-         */
-
-
     }
 
     @Override
