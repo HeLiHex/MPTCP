@@ -38,7 +38,6 @@ public class BasicTCP extends AbstractTCP {
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
         this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, Comparator.comparingInt(wp -> wp.getPacket().getSequenceNumber()));
         this.receivedAck = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-
     }
 
     private void addToReceived(Packet packet){
@@ -59,8 +58,8 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     public Packet receive() {
-        //return this.received.poll();
-        if (received.isEmpty()) return null;
+        return this.received.poll();
+        /*if (received.isEmpty()) return null;
 
         if (this.lastReceivedPacket == null){
             Packet receivedPacket = this.received.poll();
@@ -77,6 +76,8 @@ public class BasicTCP extends AbstractTCP {
         }
 
         return null;
+
+         */
 
 
     }
