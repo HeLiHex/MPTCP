@@ -117,7 +117,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected Packet[] packetsToRetransmit() {
+    public Packet[] packetsToRetransmit() {
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
         for (WaitingPacket wp : this.waitingPackets) {
             boolean timeoutFinished = wp.timeoutFinished();

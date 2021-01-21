@@ -38,6 +38,5 @@ public class ConnectEvent extends Event{
     public void generateNextEvent(Queue<Event> events) {
         NetworkNode nextNode = path.getDestination();
         events.add(new RunNetworkNodeEvent(Instant.now(), nextNode));
-
     }
 }

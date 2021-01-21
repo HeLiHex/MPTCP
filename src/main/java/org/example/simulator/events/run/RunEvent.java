@@ -21,6 +21,7 @@ public abstract class RunEvent extends Event {
     }
 
     public RunEvent(NetworkNode node) {
+        super();
         this.node = node;
     }
 

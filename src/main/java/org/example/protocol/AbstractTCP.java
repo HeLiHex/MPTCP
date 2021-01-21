@@ -231,7 +231,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     }
 
-    private void retransmit(){
+    public void retransmit(){
         Packet[] packets = packetsToRetransmit();
         for (Packet packet : packets) {
             logger.log(Level.INFO, () -> "retransmitting packet " + packet + "-----------------------------------");
@@ -239,25 +239,26 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
     }
 
-    protected abstract Packet[] packetsToRetransmit();
+    public abstract Packet[] packetsToRetransmit();
 
-    private void trySend(){
+    public boolean trySend(){
         if (this.outputBufferIsEmpty()){
-            return;
+            return false;
         }
         if (this.isWaitingForACK()){
-            return;
+            return false;
         }
 
         if (!this.inSendingWindow(this.outputBuffer.peek())){
             logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
-            return;
+            return false;
         }
 
         Packet packet = this.dequeueOutputBuffer();
         this.addToWaitingPacketWindow(packet);
         this.route(packet);
         logger.log(Level.INFO, () -> "packet: " + packet + " sent");
+        return true;
     }
 
     @Override
