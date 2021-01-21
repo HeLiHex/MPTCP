@@ -104,6 +104,7 @@ public class EventHandlerTest {
         eventHandler.addEvent(new SendEvent(client, new Message("test")));
         eventHandler.run();
 
+        Assert.assertEquals(0, eventHandler.getNumberOfEvents());
     }
 
     @Test
