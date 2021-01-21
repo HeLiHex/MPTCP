@@ -7,22 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public abstract class Routable extends Thread implements NetworkNode {
+public abstract class Routable implements NetworkNode {
 
-    private Logger logger;
-    private RoutingTable routingTable;
-    private List<Channel> channels;
+    private final RoutingTable routingTable;
+    private final List<Channel> channels;
     protected BlockingQueue<Packet> inputBuffer;
-    private Address address;
-    private Random randomGenerator;
-    private double noiseTolerance;
+    private final Address address;
+    private final Random randomGenerator;
+    private final double noiseTolerance;
 
     protected Routable(BlockingQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
-        this.logger = Logger.getLogger(getClass().getName());
-
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
         this.address = new Address();
@@ -38,7 +33,6 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     @Override
     public void route(Packet packet) {
-        //processingDelay();
         //System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
@@ -56,14 +50,7 @@ public abstract class Routable extends Thread implements NetworkNode {
 
     @Override
     public void processingDelay(){
-        /*
-        try {
-            sleep(Math.round(Math.abs(randomGenerator.nextGaussian()) * this.channels.size()));
-        } catch (InterruptedException e) {
-            this.logger.log(Level.WARNING, "Interrupted!");
-            Thread.currentThread().interrupt();
-        }
-         */
+       //todo
     }
 
     @Override
