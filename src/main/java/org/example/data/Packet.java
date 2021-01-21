@@ -118,7 +118,7 @@ public class Packet {
                 && acknowledgmentNumber == packet.acknowledgmentNumber
                 && destination.equals(packet.destination)
                 && origin.equals(packet.origin)
-                && packet.hasAllFlags((Flag[])this.flags.toArray());
+                && packet.hasAllFlags(this.flags.toArray(Flag[]::new));
     }
 }
 
