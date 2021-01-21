@@ -33,6 +33,12 @@ public class EventTest {
 
     }
 
+    public void connect(TCP linkedClient, Endpoint linkedServer){
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new ConnectEvent(linkedClient, linkedServer));
+        eventHandler.run();
+    }
+
     @Test
     public void inputEventGeneratesRetransmitEventTest(){
         Event event = new InputEvent(this.tcp);
@@ -63,9 +69,7 @@ public class EventTest {
         router.updateRoutingTable();
         server.updateRoutingTable();
 
-        EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(this.tcp, server));
-        eventHandler.run();
+        this.connect(this.tcp, server);
 
         Event event = new TrySendEvent(this.tcp);
         event.run();
