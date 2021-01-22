@@ -5,6 +5,8 @@ import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.TCPevents.InputEvent;
+import org.example.simulator.events.TCPevents.TrySendEvent;
+import org.example.simulator.events.run.RunTCPEvent;
 
 
 import java.time.Instant;
@@ -34,7 +36,8 @@ public class SendEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        events.add(new InputEvent((AbstractTCP) this.tcp));
+        //events.add(new InputEvent((AbstractTCP) this.tcp));
+        events.add(new RunTCPEvent((AbstractTCP) this.tcp));
     }
 
 

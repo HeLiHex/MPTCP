@@ -38,7 +38,7 @@ public class ConnectEvent extends Event{
     @Override
     public void generateNextEvent(Queue<Event> events) {
         NetworkNode nextNode = path.getDestination();
-        events.add(new RunNetworkNodeEvent(Instant.now(), nextNode));
+        events.add(new RunNetworkNodeEvent(nextNode));
     }
 
     @Override

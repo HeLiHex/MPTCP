@@ -45,7 +45,7 @@ public abstract class RunEvent extends Event {
         if (this.nextNode == null) return;
 
         if (this.nextNode instanceof AbstractTCP){
-            events.add(new InputEvent((AbstractTCP) this.nextNode));
+            events.add(new RunTCPEvent((AbstractTCP) this.nextNode));
             return;
         }
         if (this.nextNode instanceof Endpoint){

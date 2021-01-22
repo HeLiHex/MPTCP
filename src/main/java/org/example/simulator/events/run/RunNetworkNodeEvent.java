@@ -2,12 +2,10 @@ package org.example.simulator.events.run;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
-import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 
@@ -25,7 +23,7 @@ public class RunNetworkNodeEvent extends RunEvent {
     @Override
     public void generateSelf(Queue<Event> events) {
         if (this.node.peekInputBuffer() != null){
-            events.add(new RunNetworkNodeEvent(Instant.now().plus(Duration.ofMillis(10)), this.node));
+            events.add(new RunNetworkNodeEvent(this.node));
         }
     }
 

@@ -4,6 +4,7 @@ import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
+import org.example.protocol.BasicTCP;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
@@ -35,7 +36,7 @@ public class TrySendEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
         if (this.packetSent){
             events.add(new TrySendEvent(this.tcp));
-            return;
+            //return;
         }
         Endpoint destination = this.tcp.getConnectedEndpoint();
         Channel channel = this.tcp.getPath(destination);

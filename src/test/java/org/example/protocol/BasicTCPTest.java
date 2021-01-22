@@ -583,7 +583,6 @@ public class BasicTCPTest {
         router.updateRoutingTable();
         server.updateRoutingTable();
 
-
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new ConnectEvent(client, server));
         eventHandler.run();
@@ -606,6 +605,7 @@ public class BasicTCPTest {
         }
 
         eventHandler.run();
+        Assert.assertEquals(0, eventHandler.getNumberOfEvents());
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);

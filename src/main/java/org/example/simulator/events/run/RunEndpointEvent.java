@@ -24,7 +24,7 @@ public class RunEndpointEvent extends RunEvent {
     @Override
     public void generateSelf(Queue<Event> events) {
         if (this.node.peekInputBuffer() != null){
-            events.add(new RunEndpointEvent(Instant.now().plus(Duration.ofMillis(10)), (Endpoint) this.node));
+            events.add(new RunEndpointEvent((Endpoint) this.node));
         }
     }
 
