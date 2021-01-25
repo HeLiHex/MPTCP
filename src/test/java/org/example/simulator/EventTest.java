@@ -45,19 +45,10 @@ public class EventTest {
         Assert.assertNull(this.events.poll());
     }
 
-/*
-    @Test
-    public void retransmitEventGeneratesTrySendEventTest(){
-        Event event = new RetransmitEvent(this.tcp);
-        event.run();
-        event.generateNextEvent(this.events);
-        Assert.assertEquals(TrySendEvent.class, this.events.poll().getClass());
-        Assert.assertNull(this.events.poll());
-    }
 
 
     @Test
-    public void trySendEventGeneratesRunNetworkNodeEventTest(){
+    public void nextEventIsRunNetworkNodeEventWhenRouterIsNextNode(){
         Endpoint server = new BasicTCP(new Random());
         Router router = new Router.RouterBuilder().build();
 
@@ -70,14 +61,12 @@ public class EventTest {
 
         this.connect(this.tcp, server);
 
-        Event event = new TrySendEvent(this.tcp);
+        Event event = new RunTCPEvent(this.tcp);
         event.run();
         event.generateNextEvent(this.events);
         Assert.assertEquals(RunNetworkNodeEvent.class, this.events.poll().getClass());
         Assert.assertNull(this.events.poll());
     }
-
- */
 
 
 
