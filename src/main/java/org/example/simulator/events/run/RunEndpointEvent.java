@@ -1,11 +1,8 @@
 package org.example.simulator.events.run;
 
-import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
-import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 

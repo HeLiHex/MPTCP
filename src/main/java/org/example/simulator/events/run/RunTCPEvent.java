@@ -4,13 +4,10 @@ import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
-import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
-import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 
@@ -73,9 +70,6 @@ public class RunTCPEvent extends Event {
 
             boolean shouldRunAgain = hasPacketToSend || hasWaitingPackets;
             if (shouldRunAgain){
-                //System.out.println("hasWaitingPackets: " + hasWaitingPackets);
-                //System.out.println("hasPacketToSend: " + hasPacketToSend);
-                //System.out.println("hasPacketToProcess: " + hasPacketsToProcess);
                 events.add(new RunTCPEvent(this.tcp));
             }
         }

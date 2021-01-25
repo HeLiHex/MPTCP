@@ -1,8 +1,5 @@
 package org.example.simulator.events;
 
-import org.example.simulator.Statistics;
-
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 

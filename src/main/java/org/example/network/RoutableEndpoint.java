@@ -14,7 +14,7 @@ public class RoutableEndpoint extends Routable implements Endpoint {
     protected BlockingQueue<Packet> outputBuffer;
     private final BlockingQueue<Packet> receivedPackets;
 
-    protected RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
+    public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
         super(inputBuffer, randomGenerator, noiseTolerance);
         this.outputBuffer = outputBuffer;
         this.receivedPackets = new ArrayBlockingQueue<>(10000);

@@ -1,9 +1,7 @@
 package org.example.simulator.events;
 
 import org.example.data.Packet;
-import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
-import org.example.simulator.Statistics;
 import org.example.simulator.events.run.RunTCPEvent;
 
 import java.time.Instant;

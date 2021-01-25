@@ -22,6 +22,10 @@ public class EventHandler {
         return this.events.size();
     }
 
+    public void printStatistics(){
+        System.out.println(STATISTICS.toString());
+    }
+
     public void run(){
         while(true){
             Event event = this.events.poll();
@@ -32,6 +36,5 @@ public class EventHandler {
             event.run();
             event.generateNextEvent(this.events);
         }
-        System.out.println(STATISTICS.toString());
     }
 }
