@@ -9,6 +9,7 @@ import org.example.protocol.TCP;
 import org.example.simulator.events.ConnectEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
+import org.example.simulator.events.run.RunTCPEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,17 +36,16 @@ public class EventTest {
         eventHandler.addEvent(new ConnectEvent(linkedClient, linkedServer));
         eventHandler.run();
     }
-/*
+
     @Test
-    public void inputEventGeneratesRetransmitEventTest(){
-        Event event = new InputEvent(this.tcp);
+    public void nextEventIsNullIsTCPIsNotConnected(){
+        Event event = new RunTCPEvent(this.tcp);
         event.run();
         event.generateNextEvent(this.events);
-        Assert.assertEquals(RetransmitEvent.class, this.events.poll().getClass());
         Assert.assertNull(this.events.poll());
     }
 
-
+/*
     @Test
     public void retransmitEventGeneratesTrySendEventTest(){
         Event event = new RetransmitEvent(this.tcp);
