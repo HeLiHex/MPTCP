@@ -4,8 +4,6 @@ import org.example.data.Payload;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.Statistics;
-import org.example.simulator.events.TCPevents.InputEvent;
-import org.example.simulator.events.TCPevents.TrySendEvent;
 import org.example.simulator.events.run.RunTCPEvent;
 
 
@@ -36,13 +34,7 @@ public class SendEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        //events.add(new InputEvent((AbstractTCP) this.tcp));
-        events.add(new RunTCPEvent((AbstractTCP) this.tcp));
+        events.add(new RunTCPEvent(this.tcp));
     }
 
-
-    @Override
-    public void updateStatistics(Statistics statistics) {
-
-    }
 }

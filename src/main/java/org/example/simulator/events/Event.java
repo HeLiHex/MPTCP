@@ -31,5 +31,4 @@ public abstract class Event implements Comparable<Event> {
         return this.instant.compareTo(o.getInitInstant());
     }
 
-    public abstract void updateStatistics(Statistics statistics);
 }

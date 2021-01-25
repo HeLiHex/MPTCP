@@ -41,8 +41,4 @@ public class ConnectEvent extends Event{
         events.add(new RunNetworkNodeEvent(nextNode));
     }
 
-    @Override
-    public void updateStatistics(Statistics statistics) {
-
-    }
 }

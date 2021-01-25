@@ -4,56 +4,55 @@ import org.example.data.Packet;
 
 public class Statistics {
 
-    private int numberOfPackets; //total number of packets to be served. not counting retransmissions
-    private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
-    private int numberOfPacketsRetransmitted; //total number of packets retransmitted
-    private int numberOfPacketsLost; //total number of packets lost
-    private int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
+    private static int numberOfPackets; //total number of packets to be served. not counting retransmissions
+    private static int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
+    private static int numberOfPacketsRetransmitted; //total number of packets retransmitted
+    private static int numberOfPacketsLost; //total number of packets lost
+    private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
-
-    public Statistics() {
-        this.numberOfPackets = 0;
-        this.numberOfPacketsSent = 0;
-        this.numberOfPacketsRetransmitted = 0;
-        this.numberOfPacketsLost = 0;
-        this.numberOfPacketsReceived = 0;
+    public void reset(){
+        numberOfPackets = 0;
+        numberOfPacketsSent = 0;
+        numberOfPacketsRetransmitted = 0;
+        numberOfPacketsLost = 0;
+        numberOfPacketsReceived = 0;
     }
 
-    public void packetSent(){
-        this.numberOfPackets++;
-        this.numberOfPacketsSent++;
+    public static void packetSent(){
+        numberOfPackets++;
+        numberOfPacketsSent++;
     }
 
-    public void packetRetransmit(){
+    public static void packetRetransmit(){
         numberOfPacketsSent++;
         numberOfPacketsRetransmitted++;
     }
 
-    public void packetLost(){
+    public static void packetLost(){
         numberOfPacketsLost++;
     }
 
-    public void packetReceived(Packet packetReceived){
+    public static void packetReceived(){
         numberOfPacketsReceived++;
     }
 
-    public int getNumberOfPackets() {
+    public static int getNumberOfPackets() {
         return numberOfPackets;
     }
 
-    public int getNumberOfPacketsSent() {
+    public static int getNumberOfPacketsSent() {
         return numberOfPacketsSent;
     }
 
-    public int getNumberOfPacketsRetransmitted() {
+    public static int getNumberOfPacketsRetransmitted() {
         return numberOfPacketsRetransmitted;
     }
 
-    public int getNumberOfPacketsLost() {
+    public static int getNumberOfPacketsLost() {
         return numberOfPacketsLost;
     }
 
-    public int getNumberOfPacketsReceived() {
+    public static int getNumberOfPacketsReceived() {
         return numberOfPacketsReceived;
     }
 

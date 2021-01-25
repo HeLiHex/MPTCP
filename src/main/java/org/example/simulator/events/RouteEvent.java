@@ -39,8 +39,4 @@ public class RouteEvent extends Event{
         events.add(new RunNetworkNodeEvent(nextNode));
     }
 
-    @Override
-    public void updateStatistics(Statistics statistics) {
-
-    }
 }

@@ -2,6 +2,7 @@ package org.example.network;
 
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
+import org.example.simulator.Statistics;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -46,6 +47,7 @@ public class Channel implements Comparable<Channel>{
 
     public synchronized void channelPackage(Packet packet) {
         if (lossy()){
+            Statistics.packetLost();
             this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " lost due to noise");
             return;
         }

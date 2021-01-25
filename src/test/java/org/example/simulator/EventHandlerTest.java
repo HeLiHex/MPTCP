@@ -44,17 +44,7 @@ public class EventHandlerTest {
                     public void generateNextEvent(Queue<Event> events) {
 
                     }
-
-                    @Override
-                    public void updateStatistics(Statistics statistics) {
-
-                    }
                 });
-            }
-
-            @Override
-            public void updateStatistics(Statistics statistics) {
-
             }
         };
 
@@ -76,17 +66,7 @@ public class EventHandlerTest {
                     public void generateNextEvent(Queue<Event> events) {
 
                     }
-
-                    @Override
-                    public void updateStatistics(Statistics statistics) {
-
-                    }
                 });
-            }
-
-            @Override
-            public void updateStatistics(Statistics statistics) {
-
             }
         };
 

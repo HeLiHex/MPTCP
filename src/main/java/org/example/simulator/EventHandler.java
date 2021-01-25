@@ -11,6 +11,7 @@ public class EventHandler {
 
     public EventHandler(){
         this.events = new PriorityQueue<>();
+        STATISTICS.reset();
     }
 
     public void addEvent(Event event){
@@ -19,10 +20,6 @@ public class EventHandler {
 
     public int getNumberOfEvents(){
         return this.events.size();
-    }
-
-    public Statistics getSTATISTICS() {
-        return STATISTICS;
     }
 
     public void run(){
@@ -34,7 +31,6 @@ public class EventHandler {
             }
             event.run();
             event.generateNextEvent(this.events);
-            event.updateStatistics(STATISTICS);
         }
         System.out.println(STATISTICS.toString());
     }

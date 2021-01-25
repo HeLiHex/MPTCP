@@ -6,17 +6,15 @@ import org.example.data.PacketBuilder;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.simulator.EventHandler;
-import org.example.simulator.Statistics;
 import org.example.simulator.events.ConnectEvent;
 import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.SendEvent;
 import org.example.simulator.events.SendPacketEvent;
+import org.example.simulator.events.run.RunTCPEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Random;
 
 import static java.lang.Thread.sleep;
@@ -550,15 +548,10 @@ public class BasicTCPTest {
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            eventHandler.addEvent(new SendEvent(client, msg));
-            //sleep because events are incorrectly ordered in time when things happen fast
-            try {
-                sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            client.send(msg);
         }
 
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -589,23 +582,15 @@ public class BasicTCPTest {
 
         System.out.println("connected");
 
-        int multiplier = 100;
-        int numPacketsToSend = server.getWindowSize() * multiplier;
+        int numPacketsToSend = server.getWindowSize() * 100;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            eventHandler.addEvent(new SendEvent(client, msg));
-
-            //sleep because events are incorrectly ordered in time when things happen fast
-            try {
-                sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            client.send(msg);
         }
 
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
-        Assert.assertEquals(0, eventHandler.getNumberOfEvents());
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);

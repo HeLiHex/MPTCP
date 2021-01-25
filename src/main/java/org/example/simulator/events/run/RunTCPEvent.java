@@ -1,31 +1,72 @@
 package org.example.simulator.events.run;
 
+import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 
-public class RunTCPEvent extends RunEndpointEvent {
+public class RunTCPEvent extends Event {
 
 
-    public RunTCPEvent(Instant instant, Endpoint node) {
-        super(instant, node);
+    private final TCP tcp;
+    private NetworkNode nextNode;
+
+    public RunTCPEvent(Instant instant, TCP tcp) {
+        super(instant);
+        this.tcp = tcp;
     }
 
-    public RunTCPEvent(Endpoint client) {
-        super(client);
+    public RunTCPEvent(TCP tcp) {
+        this.tcp = tcp;
     }
 
     @Override
-    public void generateSelf(Queue<Event> events) {
-        BasicTCP tcp = (BasicTCP) this.node;
+    public void run() {
+        this.setNextNode();
+        ((Endpoint)this.tcp).run();
+    }
+
+    @Override
+    public void generateNextEvent(Queue<Event> events) {
+        this.generateSelf(events);
+        if (this.nextNode == null) return;
+
+        if (this.nextNode instanceof TCP){
+            events.add(new RunTCPEvent((TCP) this.nextNode));
+            return;
+        }
+        if (this.nextNode instanceof Endpoint){
+            events.add(new RunEndpointEvent((Endpoint) this.nextNode));
+            return;
+        }
+        events.add(new RunNetworkNodeEvent(this.nextNode));
+    }
+
+    private void setNextNode(){
+        if (tcp.isConnected()){
+            Channel channelOnPath = ((Endpoint)this.tcp).getPath(this.tcp.getConnectedEndpoint());
+            this.nextNode = channelOnPath.getDestination();
+            return;
+        }
+
+        Packet packet = ((Endpoint)this.tcp).peekInputBuffer();
+        if (packet == null) return;
+
+        Channel channelOnPath = ((Endpoint)this.tcp).getPath(packet.getDestination());
+        this.nextNode = channelOnPath.getDestination();
+    }
+
+    private void generateSelf(Queue<Event> events) {
+        BasicTCP tcp = (BasicTCP) this.tcp;
         if (tcp.isConnected()){
             boolean hasWaitingPackets = tcp.hasWaitingPackets();
             boolean hasPacketToSend = !tcp.outputBufferIsEmpty() && tcp.isWaitingForACK();
@@ -35,7 +76,7 @@ public class RunTCPEvent extends RunEndpointEvent {
                 //System.out.println("hasWaitingPackets: " + hasWaitingPackets);
                 //System.out.println("hasPacketToSend: " + hasPacketToSend);
                 //System.out.println("hasPacketToProcess: " + hasPacketsToProcess);
-                events.add(new RunTCPEvent((Endpoint) this.node));
+                events.add(new RunTCPEvent(this.tcp));
             }
         }
 

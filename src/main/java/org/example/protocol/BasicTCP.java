@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Packet;
+import org.example.simulator.Statistics;
 import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.WaitingPacket;
 
@@ -41,6 +42,7 @@ public class BasicTCP extends AbstractTCP {
     private void addToReceived(Packet packet){
         boolean added = this.received.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
+        Statistics.packetReceived();
     }
 
     private void addToWaitingPackets(WaitingPacket waitingPacket){
