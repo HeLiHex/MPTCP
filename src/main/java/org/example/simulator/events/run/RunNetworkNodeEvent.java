@@ -49,7 +49,10 @@ public class RunNetworkNodeEvent extends Event {
             events.add(new RunNetworkNodeEvent(this.node));
             return;
         }
-        if (this.nextNode == null) return;
+
+        if (this.nextNode == null){
+            return;
+        }
 
         if (this.nextNode instanceof TCP) {
             events.add(new RunTCPEvent((TCP) this.nextNode));

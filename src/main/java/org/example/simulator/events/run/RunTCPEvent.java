@@ -8,6 +8,7 @@ import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 
@@ -70,7 +71,7 @@ public class RunTCPEvent extends Event {
 
             boolean shouldRunAgain = hasPacketToSend || hasWaitingPackets;
             if (shouldRunAgain){
-                events.add(new RunTCPEvent(this.tcp));
+                events.add(new RunTCPEvent(Instant.now().plus(Duration.ofMillis(10)), this.tcp));
             }
         }
 

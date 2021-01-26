@@ -6,7 +6,7 @@ import org.example.simulator.events.Event;
 
 import java.time.Instant;
 import java.util.Queue;
-
+/*
 public class TCPInputEvent extends Event {
 
     private final TCP tcp;
@@ -30,6 +30,9 @@ public class TCPInputEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        events.add(new TCPRetransmitEvent(this.tcp));
+        events.add(new TCPSendEvent(this.tcp));
     }
+
 }
+
+ */

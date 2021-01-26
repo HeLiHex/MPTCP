@@ -10,6 +10,7 @@ import org.example.simulator.events.ConnectEvent;
 import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.SendEvent;
 import org.example.simulator.events.SendPacketEvent;
+
 import org.example.simulator.events.run.RunTCPEvent;
 import org.junit.Assert;
 import org.junit.Before;
@@ -595,6 +596,7 @@ public class BasicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
+            System.out.println(received);
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }

@@ -3,7 +3,6 @@ package org.example.simulator.events;
 import org.example.data.Payload;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
-import org.example.simulator.Statistics;
 import org.example.simulator.events.run.RunTCPEvent;
 
 
