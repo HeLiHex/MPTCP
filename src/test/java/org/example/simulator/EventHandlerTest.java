@@ -5,16 +5,10 @@ import org.awaitility.Duration;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
-import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.BasicTCP;
-import org.example.simulator.events.ConnectEvent;
+import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.SendEvent;
-import org.example.simulator.events.TCPEvents.TCPInputEvent;
-import org.example.simulator.events.TCPEvents.TCPSendEvent;
-import org.example.simulator.events.run.RetransmitEvent;
-import org.example.simulator.events.run.RunNetworkNodeEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,7 +16,6 @@ import java.time.Instant;
 import java.util.Queue;
 import java.util.Random;
 
-import static java.lang.Thread.activeCount;
 import static java.lang.Thread.sleep;
 
 
@@ -104,7 +97,7 @@ public class EventHandlerTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
 
@@ -129,7 +122,7 @@ public class EventHandlerTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         int multiplier = 100;

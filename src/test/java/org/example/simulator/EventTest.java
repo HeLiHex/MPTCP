@@ -1,17 +1,13 @@
 package org.example.simulator;
 
-import org.example.network.RoutableEndpoint;
-import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
-import org.example.simulator.events.ConnectEvent;
+import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.Event;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -32,7 +28,7 @@ public class EventTest {
 
     public void connect(TCP linkedClient, Endpoint linkedServer){
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(linkedClient, linkedServer));
+        eventHandler.addEvent(new TCPConnectEvent(linkedClient, linkedServer));
         eventHandler.run();
     }
 /*

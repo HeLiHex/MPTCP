@@ -11,8 +11,6 @@ import java.util.Random;
 
 public class RoutingTableTest {
 
-
-
     @Test(expected = IllegalStateException.class)
     public void routingTableTrowsIllegalStateExceptionIfNotUpdated(){
         Endpoint r1 = new BasicTCP(new Random());

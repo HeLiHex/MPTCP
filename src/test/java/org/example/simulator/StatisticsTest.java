@@ -1,6 +1,5 @@
 package org.example.simulator;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class StatisticsTest {

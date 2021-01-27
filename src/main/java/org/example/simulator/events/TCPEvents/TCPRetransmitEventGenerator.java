@@ -1,4 +1,4 @@
-package org.example.simulator.events.run;
+package org.example.simulator.events.TCPEvents;
 
 import org.example.data.Packet;
 import org.example.protocol.BasicTCP;
@@ -9,12 +9,12 @@ import org.example.simulator.events.RouteEvent;
 import java.time.Instant;
 import java.util.Queue;
 
-public class RetransmitEvent extends EventGenerator {
+public class TCPRetransmitEventGenerator extends EventGenerator {
 
     private final BasicTCP tcp;
     private final Packet packet;
 
-    public RetransmitEvent(BasicTCP tcp, Packet packet) {
+    public TCPRetransmitEventGenerator(BasicTCP tcp, Packet packet) {
         super(Instant.now().plus(tcp.getTimeoutDuration()));
         this.tcp = tcp;
         this.packet = packet;
@@ -26,7 +26,7 @@ public class RetransmitEvent extends EventGenerator {
 
         if (this.tcp.inSendingWindow(this.packet)){
             events.add(new RouteEvent(this.tcp, packet));
-            events.add(new RetransmitEvent(this.tcp, packet));
+            events.add(new TCPRetransmitEventGenerator(this.tcp, packet));
         }
     }
 

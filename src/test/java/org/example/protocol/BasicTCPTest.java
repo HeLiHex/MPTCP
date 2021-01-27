@@ -6,7 +6,7 @@ import org.example.data.PacketBuilder;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.simulator.EventHandler;
-import org.example.simulator.events.ConnectEvent;
+import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.SendEvent;
 import org.example.simulator.events.SendPacketEvent;
@@ -47,7 +47,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
@@ -70,7 +70,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         Message msg = new Message( "hello på do!");
@@ -106,7 +106,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         Message msg = new Message( "hello på do!");
@@ -133,7 +133,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         for (int i = 0; i <= server.getWindowSize() * 2; i++) {
@@ -158,7 +158,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -207,7 +207,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
 
@@ -261,7 +261,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -306,7 +306,7 @@ public class BasicTCPTest {
 
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -350,7 +350,7 @@ public class BasicTCPTest {
 
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -386,7 +386,7 @@ public class BasicTCPTest {
 
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -429,7 +429,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -463,7 +463,7 @@ public class BasicTCPTest {
 
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -499,7 +499,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         int numPacketsToSend = server.getWindowSize() * 100;
@@ -540,7 +540,7 @@ public class BasicTCPTest {
 
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         System.out.println("connected");
@@ -578,7 +578,7 @@ public class BasicTCPTest {
         server.updateRoutingTable();
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         Assert.assertTrue(server.isConnected());

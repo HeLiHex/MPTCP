@@ -8,7 +8,6 @@ import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.run.RetransmitEvent;
 import org.example.simulator.events.run.RunEndpointEvent;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
 
@@ -40,7 +39,7 @@ public class TCPSendEvent extends Event {
         if (tcp.isConnected()){
             if (this.packetSent != null){
                 events.add(new TCPSendEvent(this.tcp));
-                events.add(new RetransmitEvent((BasicTCP)this.tcp, this.packetSent));
+                events.add(new TCPRetransmitEventGenerator((BasicTCP)this.tcp, this.packetSent));
             }
         }
 

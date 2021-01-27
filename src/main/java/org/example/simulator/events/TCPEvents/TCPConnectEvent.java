@@ -1,4 +1,4 @@
-package org.example.simulator.events;
+package org.example.simulator.events.TCPEvents;
 
 import org.example.network.Channel;
 import org.example.network.Routable;
@@ -6,25 +6,26 @@ import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
 
+import org.example.simulator.events.Event;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 
-public class ConnectEvent extends Event{
+public class TCPConnectEvent extends Event {
 
     private final TCP client;
     private final Endpoint host;
     private Channel path;
 
-    public ConnectEvent(Instant instant, TCP client, Endpoint host) {
+    public TCPConnectEvent(Instant instant, TCP client, Endpoint host) {
         super(instant);
         this.client = client;
         this.host = host;
     }
 
-    public ConnectEvent(TCP client, Endpoint host){
+    public TCPConnectEvent(TCP client, Endpoint host){
         super();
         this.client = client;
         this.host = host;
@@ -44,7 +45,7 @@ public class ConnectEvent extends Event{
 
         NetworkNode nextNode = this.path.getDestination();
         events.add(new RunNetworkNodeEvent(nextNode));
-        events.add(new ConnectEvent(Instant.now().plus(Duration.ofMillis(1000)),this.client, this.host));
+        events.add(new TCPConnectEvent(Instant.now().plus(Duration.ofMillis(1000)),this.client, this.host));
     }
 
 }
