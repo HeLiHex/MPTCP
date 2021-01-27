@@ -6,12 +6,12 @@ import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.TCPEvents.TCPInputEvent;
 
 import java.time.Instant;
 import java.util.Queue;
 
 public class RunNetworkNodeEvent extends Event {
-
 
     private final NetworkNode node;
     private NetworkNode nextNode;
@@ -34,7 +34,6 @@ public class RunNetworkNodeEvent extends Event {
         this.node.run();
     }
 
-
     private void setNextNode() {
         Packet packet = this.node.peekInputBuffer();
         if (packet == null) return;
@@ -55,7 +54,7 @@ public class RunNetworkNodeEvent extends Event {
         }
 
         if (this.nextNode instanceof TCP) {
-            events.add(new RunTCPEvent((TCP) this.nextNode));
+            events.add(new TCPInputEvent((TCP) this.nextNode));
             return;
         }
         if (this.nextNode instanceof Endpoint) {

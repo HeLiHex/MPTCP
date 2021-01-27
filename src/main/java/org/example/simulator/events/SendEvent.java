@@ -3,7 +3,7 @@ package org.example.simulator.events;
 import org.example.data.Payload;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
-import org.example.simulator.events.run.RunTCPEvent;
+import org.example.simulator.events.TCPEvents.TCPSendEvent;
 
 
 import java.time.Instant;
@@ -33,7 +33,7 @@ public class SendEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        events.add(new RunTCPEvent(this.tcp));
+        events.add(new TCPSendEvent(this.tcp));
     }
 
 }

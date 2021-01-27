@@ -26,6 +26,20 @@ public class EventHandler {
         System.out.println(STATISTICS.toString());
     }
 
+    public Event peekEvent(){
+        return this.events.peek();
+    }
+
+    public void singleRun(){
+        Event event = this.events.poll();
+        if (event == null){
+            if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
+            return;
+        }
+        event.run();
+        event.generateNextEvent(this.events);
+    }
+
     public void run(){
         while(true){
             Event event = this.events.poll();

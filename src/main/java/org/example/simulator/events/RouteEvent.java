@@ -4,6 +4,9 @@ import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
+import org.example.protocol.TCP;
+import org.example.simulator.events.TCPEvents.TCPInputEvent;
+import org.example.simulator.events.run.RunEndpointEvent;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
 
 import java.time.Instant;
@@ -35,6 +38,20 @@ public class RouteEvent extends Event{
     public void generateNextEvent(Queue<Event> events) {
         Channel channel = endpoint.getPath(packet.getDestination());
         NetworkNode nextNode = channel.getDestination();
+
+
+        if (nextNode == null){
+            return;
+        }
+
+        if (nextNode instanceof TCP) {
+            events.add(new TCPInputEvent((TCP)nextNode));
+            return;
+        }
+        if (nextNode instanceof Endpoint) {
+            events.add(new RunEndpointEvent((Endpoint)nextNode));
+            return;
+        }
         events.add(new RunNetworkNodeEvent(nextNode));
     }
 

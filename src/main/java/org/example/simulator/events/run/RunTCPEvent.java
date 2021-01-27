@@ -7,11 +7,14 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.RouteEvent;
+import org.example.simulator.events.TCPEvents.TCPInputEvent;
+import org.example.simulator.events.TCPEvents.TCPSendEvent;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
-
+/*
 public class RunTCPEvent extends Event {
 
 
@@ -30,7 +33,7 @@ public class RunTCPEvent extends Event {
     @Override
     public void run() {
         this.setNextNode();
-        ((Endpoint)this.tcp).run();
+        //((Endpoint)this.tcp).run();
     }
 
     @Override
@@ -71,11 +74,14 @@ public class RunTCPEvent extends Event {
 
             boolean shouldRunAgain = hasPacketToSend || hasWaitingPackets;
             if (shouldRunAgain){
-                events.add(new RunTCPEvent(Instant.now().plus(Duration.ofMillis(10)), this.tcp));
+                events.add(new RunTCPEvent(Instant.now().plus(Duration.ofMillis(1000)), this.tcp));
             }
         }
-
     }
 
 
+
+
 }
+
+ */

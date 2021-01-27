@@ -11,7 +11,7 @@ import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.SendEvent;
 import org.example.simulator.events.SendPacketEvent;
 
-import org.example.simulator.events.run.RunTCPEvent;
+import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -552,7 +552,7 @@ public class BasicTCPTest {
             client.send(msg);
         }
 
-        eventHandler.addEvent(new RunTCPEvent(client));
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -590,7 +590,7 @@ public class BasicTCPTest {
             client.send(msg);
         }
 
-        eventHandler.addEvent(new RunTCPEvent(client));
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {

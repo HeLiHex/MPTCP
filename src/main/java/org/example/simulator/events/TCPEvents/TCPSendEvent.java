@@ -5,18 +5,20 @@ import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
+import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.run.RetransmitEvent;
 import org.example.simulator.events.run.RunEndpointEvent;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
 
 import java.time.Instant;
 import java.util.Queue;
-/*
+
 public class TCPSendEvent extends Event {
 
     private final TCP tcp;
-    private boolean sendSuccess;
+    private Packet packetSent;
 
 
     public TCPSendEvent(Instant instant, TCP tcp) {
@@ -30,16 +32,20 @@ public class TCPSendEvent extends Event {
 
     @Override
     public void run() {
-        this.sendSuccess = ((AbstractTCP)this.tcp).trySend();
+        this.packetSent = ((AbstractTCP)this.tcp).trySend();
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.sendSuccess){
-            events.add(new TCPSendEvent(this.tcp));
-            return;
+        if (tcp.isConnected()){
+            if (this.packetSent != null){
+                events.add(new TCPSendEvent(this.tcp));
+                events.add(new RetransmitEvent((BasicTCP)this.tcp, this.packetSent));
+            }
         }
 
+
+        //add event on another node
         NetworkNode nextNode = this.findNextNode();
         if (nextNode == null) return;
 
@@ -70,4 +76,3 @@ public class TCPSendEvent extends Event {
     }
 }
 
- */

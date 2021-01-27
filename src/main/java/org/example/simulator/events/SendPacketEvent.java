@@ -2,7 +2,7 @@ package org.example.simulator.events;
 
 import org.example.data.Packet;
 import org.example.protocol.TCP;
-import org.example.simulator.events.run.RunTCPEvent;
+import org.example.simulator.events.TCPEvents.TCPSendEvent;
 
 import java.time.Instant;
 import java.util.Queue;
@@ -30,7 +30,7 @@ public class SendPacketEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        events.add(new RunTCPEvent(this.tcp));
+        events.add(new TCPSendEvent(this.tcp));
     }
 
 }
