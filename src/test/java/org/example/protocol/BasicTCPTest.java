@@ -18,20 +18,14 @@ import org.junit.Test;
 
 import java.util.Random;
 
-import static java.lang.Thread.sleep;
-
-
 public class BasicTCPTest {
 
-
     private Random RANDOM_GENERATOR;
-
 
     @Before
     public void setup(){
         RANDOM_GENERATOR = new Random(69);
     }
-
 
     @Test
     public void connectToEndpointTest(){
@@ -304,7 +298,6 @@ public class BasicTCPTest {
         router.updateRoutingTable();
         server.updateRoutingTable();
 
-
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
@@ -347,7 +340,6 @@ public class BasicTCPTest {
         client.updateRoutingTable();
         router.updateRoutingTable();
         server.updateRoutingTable();
-
 
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(client, server));
@@ -506,52 +498,8 @@ public class BasicTCPTest {
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            eventHandler.addEvent(new SendEvent(client, msg));
-            //sleep because events are incorrectly ordered in time when things happen fast
-            try {
-                sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        eventHandler.run();
-
-        for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message( "test " + i);
-            Packet received = server.receive();
-            Assert.assertNotNull(received);
-            Assert.assertEquals(received.getPayload(), msg);
-        }
-    }
-
-    @Test
-    public void floodWithPacketsInOrderThenWaitTilAllPacketsHasArrivedShouldWorkTest(){
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Routable router = new Router.RouterBuilder().build();
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
-
-        client.addChannel(router);
-        router.addChannel(server);
-
-        client.updateRoutingTable();
-        router.updateRoutingTable();
-        server.updateRoutingTable();
-
-
-        EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new TCPConnectEvent(client, server));
-        eventHandler.run();
-
-        System.out.println("connected");
-
-        int numPacketsToSend = server.getWindowSize() * 100;
-
-        for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message("test " + i);
             client.send(msg);
         }
-
         eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
@@ -559,7 +507,7 @@ public class BasicTCPTest {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
             Assert.assertNotNull(received);
-            Assert.assertEquals(msg, received.getPayload());
+            Assert.assertEquals(received.getPayload(), msg);
         }
     }
 
@@ -606,8 +554,5 @@ public class BasicTCPTest {
 
         eventHandler.printStatistics();
     }
-
-
-
 
 }

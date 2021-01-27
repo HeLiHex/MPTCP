@@ -9,6 +9,7 @@ import org.example.protocol.BasicTCP;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.SendEvent;
+import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -130,15 +131,9 @@ public class EventHandlerTest {
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            eventHandler.addEvent(new SendEvent(client, msg));
-            //sleep because events are incorrectly ordered in time when things happen fast
-            try {
-                sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            client.send(msg);
         }
-
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
