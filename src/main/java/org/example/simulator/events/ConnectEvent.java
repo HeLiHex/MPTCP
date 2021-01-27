@@ -14,8 +14,8 @@ import java.util.Queue;
 
 public class ConnectEvent extends Event{
 
-    private TCP client;
-    private Endpoint host;
+    private final TCP client;
+    private final Endpoint host;
     private Channel path;
 
     public ConnectEvent(Instant instant, TCP client, Endpoint host) {
@@ -32,14 +32,19 @@ public class ConnectEvent extends Event{
 
     @Override
     public void run() {
+        if (this.client.isConnected()) return;
+
         this.path = ((Routable)this.client).getPath(this.host);
         this.client.connect(this.host);
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        NetworkNode nextNode = path.getDestination();
+        if (this.client.isConnected()) return;
+
+        NetworkNode nextNode = this.path.getDestination();
         events.add(new RunNetworkNodeEvent(nextNode));
+        events.add(new ConnectEvent(Instant.now().plus(Duration.ofMillis(1000)),this.client, this.host));
     }
 
 }

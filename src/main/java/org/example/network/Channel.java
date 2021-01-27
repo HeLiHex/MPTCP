@@ -18,7 +18,7 @@ public class Channel implements Comparable<Channel>{
     private double noiseTolerance;
 
     public Channel(NetworkNode source, NetworkNode destination, Random randomGenerator, double noiseTolerance) {
-        this.logger = Logger.getLogger(getClass().getName());
+        this.logger = Logger.getLogger(getClass().getSimpleName());
 
         this.source = source;
         this.destination = destination;
@@ -29,7 +29,7 @@ public class Channel implements Comparable<Channel>{
 
     public Channel(NetworkNode source){
         //loopback
-        this.logger = Logger.getLogger(getClass().getName());
+        this.logger = Logger.getLogger(getClass().getSimpleName());
         this.source = source;
         this.destination = source;
         this.cost = 0;

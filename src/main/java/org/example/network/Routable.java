@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class Routable implements NetworkNode {
 
     private final RoutingTable routingTable;
     private final List<Channel> channels;
-    protected BlockingQueue<Packet> inputBuffer;
+    protected final BlockingQueue<Packet> inputBuffer;
     private final Address address;
     private final Random randomGenerator;
     private final double noiseTolerance;
@@ -75,7 +77,13 @@ public abstract class Routable implements NetworkNode {
     }
 
     @Override
-    public synchronized boolean enqueueInputBuffer(Packet packet) {
+    public boolean enqueueInputBuffer(Packet packet) {
+        //because of the events some packets may be added twice.
+        // this if prohibits multiple packets with the same sequence number!
+        if (this.inputBuffer.stream().anyMatch(
+                p -> p.getSequenceNumber() == packet.getSequenceNumber())){
+            return false;
+        }
         return this.inputBuffer.offer(packet);
     }
 

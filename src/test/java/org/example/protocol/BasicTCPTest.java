@@ -29,7 +29,7 @@ public class BasicTCPTest {
 
     @Before
     public void setup(){
-        RANDOM_GENERATOR = new Random();
+        RANDOM_GENERATOR = new Random(69);
     }
 
 
@@ -567,7 +567,7 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2.5).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(router);
@@ -580,6 +580,9 @@ public class BasicTCPTest {
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new ConnectEvent(client, server));
         eventHandler.run();
+
+        Assert.assertTrue(server.isConnected());
+        Assert.assertTrue(client.isConnected());
 
         System.out.println("connected");
 
@@ -600,6 +603,8 @@ public class BasicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
+
+        eventHandler.printStatistics();
     }
 
 

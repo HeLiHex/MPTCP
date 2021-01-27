@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
-    private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
+    private final Logger logger = Logger.getLogger(AbstractTCP.class.getSimpleName());
     private Connection connection;
     private int initialSequenceNumber;
 
@@ -189,7 +189,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
-        boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK) || packet.hasAllFlags(Flag.SYN) || packetIsFromValidConnection(packet);
+        boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK)
+                || packet.hasAllFlags(Flag.SYN)
+                || packetIsFromValidConnection(packet);
         if (shouldEnqueue){
             return super.enqueueInputBuffer(packet);
         }
@@ -212,6 +214,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)){
             this.continueConnect();
+            return;
         }
 
         if (packet.hasAllFlags(Flag.ACK)){
