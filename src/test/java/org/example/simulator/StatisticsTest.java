@@ -24,6 +24,51 @@ public class StatisticsTest {
 
 
     @Test
+    public void statisticsAreConsistent() {
+        EventHandler eventHandler = new EventHandler();
+
+        BasicTCP client = new BasicTCP(new Random(69));
+        BasicTCP server = new BasicTCP(new Random(69));
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        int numPacketsToSend = 400;
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.run();
+
+        eventHandler.printStatistics();
+
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(r1.inputBufferIsEmpty());
+
+        Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPackets());
+        Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPacketsReceived());
+        Assert.assertEquals(numPacketsToSend + Statistics.getNumberOfPacketsRetransmitted(), Statistics.getNumberOfPacketsSent());
+        Assert.assertEquals(690, Statistics.getNumberOfPacketsLost());
+        Assert.assertEquals(87, Statistics.getNumberOfPacketsDropped());
+        Assert.assertEquals(152, Statistics.getNumberOfPacketsAckedMoreThanOnce());
+        Assert.assertEquals(929, Statistics.getNumberOfPacketsRetransmitted());
+    }
+
+
+    @Test
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
         EventHandler eventHandler = new EventHandler();
 
@@ -66,13 +111,12 @@ public class StatisticsTest {
 
         int packetsLost = Statistics.getNumberOfPacketsLost();
         int packetsDropped = Statistics.getNumberOfPacketsDropped();
-        int packetsAckedMoreThanTwice = Statistics.getNumberOfPacketsAckedMoreThanTwice();
+        int packetsAckedMoreThanTwice = Statistics.getNumberOfPacketsAckedMoreThanOnce();
 
         Assert.assertEquals(numPacketsToSend + Statistics.getNumberOfPacketsRetransmitted(), Statistics.getNumberOfPacketsSent());
         Assert.assertEquals(0, Statistics.getNumberOfPacketsRetransmitted() - (packetsLost + packetsDropped + packetsAckedMoreThanTwice));
 
     }
-
 
 
     @Test
@@ -81,7 +125,7 @@ public class StatisticsTest {
 
         BasicTCP client = new BasicTCP(new Random(69));
         BasicTCP server = new BasicTCP(new Random(69));
-        Router r1 = new Router.RouterBuilder().build();
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
         r1.addChannel(server);

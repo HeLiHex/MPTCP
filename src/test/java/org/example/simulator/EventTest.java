@@ -1,5 +1,8 @@
 package org.example.simulator;
 
+import org.example.data.PacketBuilder;
+import org.example.network.RoutableEndpoint;
+import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
@@ -7,11 +10,18 @@ import org.example.protocol.TCP;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.Event;
 
+import org.example.simulator.events.TCPEvents.TCPInputEvent;
+import org.example.simulator.events.TCPEvents.TCPSendEvent;
+import org.example.simulator.events.run.RunEndpointEvent;
+import org.example.simulator.events.run.RunNetworkNodeEvent;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class EventTest {
 
@@ -31,7 +41,9 @@ public class EventTest {
         eventHandler.addEvent(new TCPConnectEvent(linkedClient, linkedServer));
         eventHandler.run();
     }
-/*
+
+
+    /*
     @Test
     public void nextEventIsNullIsTCPIsNotConnected(){
         Event event = new TCPInputEvent(this.tcp);

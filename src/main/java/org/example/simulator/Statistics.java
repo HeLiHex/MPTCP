@@ -9,7 +9,7 @@ public class Statistics {
     private static int numberOfPacketsRetransmitted; //total number of packets retransmitted
     private static int numberOfPacketsLost; //total number of packets lost
     private static int numberOfPacketsDropped; // total number of packets dropped
-    private static int numberOfPacketsAckedMoreThanTwice; // total number of packets dropped
+    private static int numberOfPacketsAckedMoreThanOnce; // total number of packets dropped
     private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
     public void reset(){
@@ -18,7 +18,7 @@ public class Statistics {
         numberOfPacketsRetransmitted = 0;
         numberOfPacketsLost = 0;
         numberOfPacketsDropped = 0;
-        numberOfPacketsAckedMoreThanTwice = 0;
+        numberOfPacketsAckedMoreThanOnce = 0;
         numberOfPacketsReceived = 0;
     }
 
@@ -40,8 +40,8 @@ public class Statistics {
         numberOfPacketsDropped++;
     }
 
-    public static void packetAckedMoreThenTwice(){
-        numberOfPacketsAckedMoreThanTwice++;
+    public static void packetAckedMoreThenOnce(){
+        numberOfPacketsAckedMoreThanOnce++;
     }
 
     public static void packetReceived(){
@@ -68,8 +68,8 @@ public class Statistics {
         return numberOfPacketsDropped;
     }
 
-    public static int getNumberOfPacketsAckedMoreThanTwice() {
-        return numberOfPacketsAckedMoreThanTwice;
+    public static int getNumberOfPacketsAckedMoreThanOnce() {
+        return numberOfPacketsAckedMoreThanOnce;
     }
 
     public static int getNumberOfPacketsReceived() {
@@ -112,8 +112,8 @@ public class Statistics {
 
         sb.append("    ");
         sb.append("    ");
-        sb.append("Number of packets acked more than twice: ");
-        sb.append(numberOfPacketsAckedMoreThanTwice);
+        sb.append("Number of packets acked more than once: ");
+        sb.append(numberOfPacketsAckedMoreThanOnce);
         sb.append("\n");
 
         sb.append("    ");

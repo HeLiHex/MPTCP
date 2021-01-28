@@ -259,7 +259,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.addToWaitingPacketWindow(packet);
         this.route(packet);
         Statistics.packetSent();
-        logger.log(Level.INFO, () -> "packet: " + packet + " sent");
+        //logger.log(Level.INFO, () -> "packet: " + packet + " sent");
         return packet;
     }
 

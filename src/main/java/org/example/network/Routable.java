@@ -102,6 +102,10 @@ public abstract class Routable implements NetworkNode {
         return this.inputBuffer.isEmpty();
     }
 
+    public int inputBufferSize(){
+        return this.inputBuffer.size();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NetworkNode) {

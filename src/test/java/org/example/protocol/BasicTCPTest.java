@@ -453,7 +453,6 @@ public class BasicTCPTest {
         router.updateRoutingTable();
         server.updateRoutingTable();
 
-
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
@@ -503,6 +502,12 @@ public class BasicTCPTest {
         eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(r1.inputBufferIsEmpty());
+
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
@@ -515,7 +520,7 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
         BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
 
         client.addChannel(router);
@@ -553,7 +558,7 @@ public class BasicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
-            System.out.println(received);
+            //System.out.println(received);
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
