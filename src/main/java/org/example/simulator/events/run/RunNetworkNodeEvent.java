@@ -44,10 +44,10 @@ public class RunNetworkNodeEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (!this.node.inputBufferIsEmpty()){
+        /*if (!this.node.inputBufferIsEmpty()){
             events.add(new RunNetworkNodeEvent(this.node));
             return;
-        }
+        }*/
 
         if (this.nextNode == null){
             return;

@@ -235,7 +235,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         Packet[] packets = packetsToRetransmit();
         for (Packet packet : packets) {
             logger.log(Level.INFO, () -> "retransmitting packet " + packet + "-----------------------------------");
-            Statistics.packetRetransmit();
+            //Statistics.packetRetransmit();
             this.route(packet);
         }
     }
@@ -266,7 +266,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void run() {
         this.handleIncoming();
-        this.retransmit();
         this.trySend();
     }
 

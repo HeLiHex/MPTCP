@@ -2,6 +2,7 @@ package org.example.simulator.events.TCPEvents;
 
 import org.example.data.Packet;
 import org.example.protocol.BasicTCP;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.EventGenerator;
 import org.example.simulator.events.RouteEvent;
@@ -24,7 +25,9 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
     public void generateNextEvent(Queue<Event> events) {
         if (!this.tcp.isConnected()) return;
 
+
         if (this.tcp.inSendingWindow(this.packet)){
+            Statistics.packetRetransmit();
             events.add(new RouteEvent(this.tcp, packet));
             events.add(new TCPRetransmitEventGenerator(this.tcp, packet));
         }

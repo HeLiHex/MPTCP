@@ -52,6 +52,7 @@ public class Channel implements Comparable<Channel>{
             return;
         }
         if (!this.destination.enqueueInputBuffer(packet)) {
+            Statistics.packetDropped();
             this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " was not delivered to " + this.destination);
         }
         //System.out.println("Channel " + this);w

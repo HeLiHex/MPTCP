@@ -18,6 +18,14 @@ public class EventHandler {
         this.events.add(event);
     }
 
+    public Event peekEvent(){
+        return this.events.peek();
+    }
+
+    public Queue<Event> getEvents() {
+        return events;
+    }
+
     public int getNumberOfEvents(){
         return this.events.size();
     }
@@ -26,8 +34,8 @@ public class EventHandler {
         System.out.println(STATISTICS.toString());
     }
 
-    public Event peekEvent(){
-        return this.events.peek();
+    public Statistics getSTATISTICS() {
+        return STATISTICS;
     }
 
     public void singleRun(){

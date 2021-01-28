@@ -544,6 +544,12 @@ public class BasicTCPTest {
         eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(router.inputBufferIsEmpty());
+
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();

@@ -8,6 +8,8 @@ public class Statistics {
     private static int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private static int numberOfPacketsRetransmitted; //total number of packets retransmitted
     private static int numberOfPacketsLost; //total number of packets lost
+    private static int numberOfPacketsDropped; // total number of packets dropped
+    private static int numberOfPacketsAckedMoreThanTwice; // total number of packets dropped
     private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
     public void reset(){
@@ -15,6 +17,8 @@ public class Statistics {
         numberOfPacketsSent = 0;
         numberOfPacketsRetransmitted = 0;
         numberOfPacketsLost = 0;
+        numberOfPacketsDropped = 0;
+        numberOfPacketsAckedMoreThanTwice = 0;
         numberOfPacketsReceived = 0;
     }
 
@@ -30,6 +34,14 @@ public class Statistics {
 
     public static void packetLost(){
         numberOfPacketsLost++;
+    }
+
+    public static void packetDropped(){
+        numberOfPacketsDropped++;
+    }
+
+    public static void packetAckedMoreThenTwice(){
+        numberOfPacketsAckedMoreThanTwice++;
     }
 
     public static void packetReceived(){
@@ -50,6 +62,14 @@ public class Statistics {
 
     public static int getNumberOfPacketsLost() {
         return numberOfPacketsLost;
+    }
+
+    public static int getNumberOfPacketsDropped() {
+        return numberOfPacketsDropped;
+    }
+
+    public static int getNumberOfPacketsAckedMoreThanTwice() {
+        return numberOfPacketsAckedMoreThanTwice;
     }
 
     public static int getNumberOfPacketsReceived() {
@@ -80,8 +100,20 @@ public class Statistics {
 
         sb.append("    ");
         sb.append("    ");
-        sb.append("Number og packets lost: ");
+        sb.append("Number of packets lost: ");
         sb.append(numberOfPacketsLost);
+        sb.append("\n");
+
+        sb.append("    ");
+        sb.append("    ");
+        sb.append("Number of packets dropped: ");
+        sb.append(numberOfPacketsDropped);
+        sb.append("\n");
+
+        sb.append("    ");
+        sb.append("    ");
+        sb.append("Number of packets acked more than twice: ");
+        sb.append(numberOfPacketsAckedMoreThanTwice);
         sb.append("\n");
 
         sb.append("    ");
