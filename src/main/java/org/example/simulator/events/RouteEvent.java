@@ -39,22 +39,9 @@ public class RouteEvent extends Event{
     @Override
     public void generateNextEvent(Queue<Event> events) {
         Channel channel = endpoint.getPath(packet.getDestination());
-        NetworkNode nextNode = channel.getDestination();
+        if (channel == null) return;
+        events.add(new ChannelEvent(channel));
 
-
-        if (nextNode == null){
-            return;
-        }
-
-        if (nextNode instanceof TCP) {
-            events.add(new TCPInputEvent((TCP)nextNode));
-            return;
-        }
-        if (nextNode instanceof Endpoint) {
-            events.add(new RunEndpointEvent((Endpoint)nextNode));
-            return;
-        }
-        events.add(new RunNetworkNodeEvent(nextNode));
     }
 
 }

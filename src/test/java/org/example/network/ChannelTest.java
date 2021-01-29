@@ -62,6 +62,7 @@ public class ChannelTest {
                 .withFlags(Flag.SYN) // hack to overcome connection check in the endpoints
                 .build();
         channel.channelPackage(packet);
+        Assert.assertTrue(channel.channel());
         Packet receivedPacket = destination.dequeueInputBuffer();
         Assert.assertEquals(packet, receivedPacket);
     }

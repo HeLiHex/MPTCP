@@ -104,6 +104,9 @@ public class RoutingTableTest {
 
             r1.route(new PacketBuilder().withOrigin(r1).withDestination(r4).build());
 
+            Assert.assertTrue(usedChannel.channel());
+            Assert.assertFalse(notUsedChannel.channel());
+
             Assert.assertTrue(!usedChannel.getDestination().inputBufferIsEmpty());
             Assert.assertNull(notUsedChannel.getDestination().dequeueInputBuffer());
         }

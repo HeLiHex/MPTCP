@@ -4,22 +4,27 @@ import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.Statistics;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Queue;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Channel implements Comparable<Channel>{
 
-    private Logger logger;
-    private NetworkNode source;
-    private NetworkNode destination;
-    private int cost;
-    private Random randomGenerator;
-    private double noiseTolerance;
+    private final Logger logger;
+
+    private final Queue<Packet> line;
+    private final NetworkNode source;
+    private final NetworkNode destination;
+    private final int cost;
+    private final Random randomGenerator;
+    private final double noiseTolerance;
 
     public Channel(NetworkNode source, NetworkNode destination, Random randomGenerator, double noiseTolerance) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
-
+        this.line = new ArrayDeque<>();
         this.source = source;
         this.destination = destination;
         this.cost = randomGenerator.nextInt(100);
@@ -30,6 +35,7 @@ public class Channel implements Comparable<Channel>{
     public Channel(NetworkNode source){
         //loopback
         this.logger = Logger.getLogger(getClass().getSimpleName());
+        this.line = new ArrayDeque<>();
         this.source = source;
         this.destination = source;
         this.cost = 0;
@@ -45,17 +51,8 @@ public class Channel implements Comparable<Channel>{
     }
 
 
-    public synchronized void channelPackage(Packet packet) {
-        if (lossy()){
-            Statistics.packetLost();
-            this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " lost due to noise");
-            return;
-        }
-        if (!this.destination.enqueueInputBuffer(packet)) {
-            Statistics.packetDropped();
-            this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " was not delivered to " + this.destination);
-        }
-        //System.out.println("Channel " + this);w
+    public void channelPackage(Packet packet) {
+        this.line.add(packet);
     }
 
     public NetworkNode getSource() {
@@ -68,6 +65,28 @@ public class Channel implements Comparable<Channel>{
 
     public int getCost() {
         return cost;
+    }
+
+    public boolean channel(){
+        Packet packet = this.line.poll();
+        if (packet == null){
+            System.out.println("wtf");
+            return false;
+        }
+        if (lossy()){
+            Statistics.packetLost();
+            this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " lost due to noise");
+            return false;
+        }
+
+        boolean sendSuccess = this.destination.enqueueInputBuffer(packet);
+        if (!sendSuccess) {
+            Statistics.packetDropped();
+            this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " was not delivered to " + this.destination);
+            return false;
+        }
+        return true;
+        //System.out.println("Channel " + this);w
     }
 
     @Override

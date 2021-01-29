@@ -7,6 +7,7 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
+import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.run.RunEndpointEvent;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
@@ -41,22 +42,12 @@ public class TCPSendEvent extends Event {
                 events.add(new TCPSendEvent(this.tcp));
                 events.add(new TCPRetransmitEventGenerator((BasicTCP)this.tcp, this.packetSent));
             }
-        }
-
-
-        //add event on another node
-        NetworkNode nextNode = this.findNextNode();
-        if (nextNode == null) return;
-
-        if (nextNode instanceof TCP){
-            events.add(new TCPInputEvent((TCP) nextNode));
+            Channel channel = ((Endpoint)this.tcp).getPath(this.tcp.getConnectedEndpoint());
+            events.add(new ChannelEvent(channel));
             return;
         }
-        if (nextNode instanceof Endpoint){
-            events.add(new RunEndpointEvent((Endpoint) nextNode));
-            return;
-        }
-        events.add(new RunNetworkNodeEvent(nextNode));
+        Channel channel = ((Endpoint)this.tcp).getChannels().get(0); //todo - what happens here if we have MPTCP
+        events.add(new ChannelEvent(channel));
     }
 
     private NetworkNode findNextNode(){
