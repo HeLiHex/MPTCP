@@ -9,19 +9,11 @@ import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.Event;
-
-import org.example.simulator.events.TCPEvents.TCPInputEvent;
-import org.example.simulator.events.TCPEvents.TCPSendEvent;
-import org.example.simulator.events.run.RunEndpointEvent;
-import org.example.simulator.events.run.RunNetworkNodeEvent;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class EventTest {
 
@@ -42,42 +34,6 @@ public class EventTest {
         eventHandler.run();
     }
 
-
-    /*
-    @Test
-    public void nextEventIsNullIsTCPIsNotConnected(){
-        Event event = new TCPInputEvent(this.tcp);
-        event.run();
-        event.generateNextEvent(this.events);
-        Assert.assertNull(this.events.poll());
-    }
-
-
-
-    @Test
-    public void nextEventIsRunNetworkNodeEventWhenRouterIsNextNode(){
-        Endpoint server = new BasicTCP(new Random());
-        Router router = new Router.RouterBuilder().build();
-
-        this.tcp.addChannel(router);
-        router.addChannel(server);
-
-        this.tcp.updateRoutingTable();
-        router.updateRoutingTable();
-        server.updateRoutingTable();
-
-        this.connect(this.tcp, server);
-
-        Event event = new TCPInputEvent(this.tcp);
-        event.run();
-        event.generateNextEvent(this.events);
-        Assert.assertEquals(RunNetworkNodeEvent.class, this.events.poll().getClass());
-        Assert.assertNull(this.events.poll());
-    }
-
-
-
- */
 
 
 

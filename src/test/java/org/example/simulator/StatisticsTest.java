@@ -22,49 +22,51 @@ public class StatisticsTest {
         System.out.println(statistics.toString());
     }
 
-
     @Test
     public void statisticsAreConsistent() {
-        EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(new Random(69));
-        BasicTCP server = new BasicTCP(new Random(69));
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
+        for (int j = 0; j < 10; j++) {
+            EventHandler eventHandler = new EventHandler();
 
-        client.addChannel(r1);
-        r1.addChannel(server);
+            BasicTCP client = new BasicTCP(new Random(69));
+            BasicTCP server = new BasicTCP(new Random(69));
+            Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
-        client.updateRoutingTable();
-        r1.updateRoutingTable();
-        server.updateRoutingTable();
+            client.addChannel(r1);
+            r1.addChannel(server);
 
-        eventHandler.addEvent(new TCPConnectEvent(client, server));
-        eventHandler.run();
+            client.updateRoutingTable();
+            r1.updateRoutingTable();
+            server.updateRoutingTable();
 
-        int numPacketsToSend = 400;
+            eventHandler.addEvent(new TCPConnectEvent(client, server));
+            eventHandler.run();
 
-        for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message("test " + i);
-            client.send(msg);
+            int numPacketsToSend = 400;
+
+            for (int i = 1; i <= numPacketsToSend; i++) {
+                Message msg = new Message("test " + i);
+                client.send(msg);
+            }
+            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.run();
+
+            eventHandler.printStatistics();
+
+            Assert.assertTrue(client.inputBufferIsEmpty());
+            Assert.assertTrue(server.inputBufferIsEmpty());
+            Assert.assertTrue(client.outputBufferIsEmpty());
+            Assert.assertTrue(server.outputBufferIsEmpty());
+            Assert.assertTrue(r1.inputBufferIsEmpty());
+
+            Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPackets());
+            Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPacketsReceived());
+            Assert.assertEquals(numPacketsToSend + Statistics.getNumberOfPacketsRetransmitted(), Statistics.getNumberOfPacketsSent());
+            Assert.assertEquals(690, Statistics.getNumberOfPacketsLost());
+            Assert.assertEquals(87, Statistics.getNumberOfPacketsDropped());
+            Assert.assertEquals(152, Statistics.getNumberOfPacketsAckedMoreThanOnce());
+            Assert.assertEquals(929, Statistics.getNumberOfPacketsRetransmitted());
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
-        eventHandler.run();
-
-        eventHandler.printStatistics();
-
-        Assert.assertTrue(client.inputBufferIsEmpty());
-        Assert.assertTrue(server.inputBufferIsEmpty());
-        Assert.assertTrue(client.outputBufferIsEmpty());
-        Assert.assertTrue(server.outputBufferIsEmpty());
-        Assert.assertTrue(r1.inputBufferIsEmpty());
-
-        Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPackets());
-        Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPacketsReceived());
-        Assert.assertEquals(numPacketsToSend + Statistics.getNumberOfPacketsRetransmitted(), Statistics.getNumberOfPacketsSent());
-        Assert.assertEquals(690, Statistics.getNumberOfPacketsLost());
-        Assert.assertEquals(87, Statistics.getNumberOfPacketsDropped());
-        Assert.assertEquals(152, Statistics.getNumberOfPacketsAckedMoreThanOnce());
-        Assert.assertEquals(929, Statistics.getNumberOfPacketsRetransmitted());
     }
 
 
@@ -189,6 +191,46 @@ public class StatisticsTest {
 
         Queue<Event> events = eventHandler.getEvents();
         Assert.assertEquals(Statistics.getNumberOfPackets(), events.size());
+    }
+
+
+
+
+    @Test
+    public void trackNetWorkNodeInputBufferTest() {
+        EventHandler eventHandler = new EventHandler();
+
+        BasicTCP client = new BasicTCP(new Random(69));
+        BasicTCP server = new BasicTCP(new Random(69));
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        int numPacketsToSend = 1000;
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new TCPInputEvent(client));
+
+        while (eventHandler.peekEvent() != null){
+            System.out.println(eventHandler.peekEvent().getClass().getSimpleName());
+            eventHandler.singleRun();
+            System.out.println(r1.peekInputBuffer());
+            System.out.println(r1.inputBufferSize());
+            System.out.println();
+
+        }
+
     }
 
 
