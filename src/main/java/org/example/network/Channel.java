@@ -1,9 +1,11 @@
 package org.example.network;
 
+import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.Statistics;
 
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -43,13 +45,17 @@ public class Channel implements Comparable<Channel>{
         this.noiseTolerance = 0;
     }
 
-    private synchronized boolean lossy(){
+    public Duration propogationDelay(){
+        int rand = this.randomGenerator.nextInt(10);
+        return Duration.ofMillis(rand + this.cost);
+    }
+
+    private boolean lossy(){
         if (randomGenerator == null) return false;
         double gaussianNoise = this.randomGenerator.nextGaussian();
         double noise = Math.abs(gaussianNoise);
         return noise > this.noiseTolerance;
     }
-
 
     public void channelPackage(Packet packet) {
         this.line.add(packet);
@@ -68,11 +74,12 @@ public class Channel implements Comparable<Channel>{
     }
 
     public boolean channel(){
-        Packet packet = this.line.poll();
-        if (packet == null){
-            System.out.println("wtf");
+        //this if is here because NetworkNodes can initiate run on channels even though no packet was routed
+        if (this.line.isEmpty()){
             return false;
         }
+
+        Packet packet = this.line.poll();
         if (lossy()){
             Statistics.packetLost();
             this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " lost due to noise");
@@ -86,7 +93,6 @@ public class Channel implements Comparable<Channel>{
             return false;
         }
         return true;
-        //System.out.println("Channel " + this);w
     }
 
     @Override

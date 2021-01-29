@@ -28,7 +28,7 @@ public class Address implements Comparable<Address>{
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Address) return this.identifier.hashCode() == ((Address)obj).hashCode();
+        if(obj instanceof Address) return this.identifier.hashCode() == obj.hashCode();
         return false;
     }
 

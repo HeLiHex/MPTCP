@@ -221,7 +221,7 @@ public class StatisticsTest {
             client.send(msg);
         }
         eventHandler.addEvent(new TCPInputEvent(client));
-
+/*
         while (eventHandler.peekEvent() != null){
             System.out.println(eventHandler.peekEvent().getClass().getSimpleName());
             eventHandler.singleRun();
@@ -230,6 +230,8 @@ public class StatisticsTest {
             System.out.println();
 
         }
+
+ */
 
     }
 

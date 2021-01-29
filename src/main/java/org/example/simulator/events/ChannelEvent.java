@@ -24,6 +24,7 @@ public class ChannelEvent extends Event{
     }
 
     public ChannelEvent(Channel channel) {
+        //super(Instant.now().plus(channel.propogationDelay()));
         this.channel = channel;
         this.channelSuccess = false;
     }
@@ -36,7 +37,6 @@ public class ChannelEvent extends Event{
     @Override
     public void generateNextEvent(Queue<Event> events) {
         if (this.channelSuccess){
-
             NetworkNode nextNode = this.channel.getDestination();
             if (nextNode instanceof TCP) {
                 events.add(new TCPInputEvent((TCP) nextNode));

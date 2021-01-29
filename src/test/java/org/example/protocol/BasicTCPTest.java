@@ -9,9 +9,9 @@ import org.example.simulator.EventHandler;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.SendEvent;
-import org.example.simulator.events.SendPacketEvent;
 
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
+import org.example.simulator.events.TCPEvents.TCPSendEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -355,7 +355,8 @@ public class BasicTCPTest {
         int indexBeforeSending = server.receivingPacketIndex(packet);
         Assert.assertEquals(0, indexBeforeSending);
 
-        eventHandler.addEvent(new SendPacketEvent(client, packet));
+        client.send(packet);
+        eventHandler.addEvent(new TCPSendEvent(client));
         eventHandler.run();
         Assert.assertNotNull(server.receive());
 

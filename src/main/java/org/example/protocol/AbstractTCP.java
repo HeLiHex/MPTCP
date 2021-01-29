@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.*;
+import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
 import org.example.simulator.Statistics;
@@ -88,6 +89,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Packet packet) {
+        if (!this.isConnected()) return;
         int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.outputBuffer.size();
         packet.setSequenceNumber(nextPacketSeqNum);
 
@@ -99,11 +101,13 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Payload payload) {
+        if (!this.isConnected()) return;
         Packet packet = new PacketBuilder()
                 .withConnection(this.getConnection())
                 .withPayload(payload)
                 .build();
-        send(packet);
+        this.send(packet);
+        return;
     }
 
     protected abstract void setReceived();
@@ -114,7 +118,20 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withConnection(this.getConnection())
                 .withFlags(Flag.FIN)
                 .build();
-        send(fin);
+        this.send(fin);
+    }
+
+    @Override
+    public Channel getChannel() {
+        if (this.isConnected()){
+            return this.getPath(this.getConnection().getConnectedNode());
+        }
+        //todo - what happens with MPTCP
+        return this.getChannel(0);
+    }
+
+    private Channel getChannel(int channelIndex){
+        return this.getChannels().get(channelIndex);
     }
 
     protected abstract int getWindowSize();

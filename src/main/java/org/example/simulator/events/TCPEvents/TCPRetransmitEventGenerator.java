@@ -25,7 +25,6 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
     public void generateNextEvent(Queue<Event> events) {
         if (!this.tcp.isConnected()) return;
 
-
         if (this.tcp.inSendingWindow(this.packet)){
             Statistics.packetRetransmit();
             events.add(new RouteEvent(this.tcp, packet));
