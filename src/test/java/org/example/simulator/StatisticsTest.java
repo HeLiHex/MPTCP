@@ -8,7 +8,6 @@ import org.example.simulator.events.Event;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.example.simulator.events.TCPEvents.TCPRetransmitEventGenerator;
-import org.example.simulator.events.run.RunNetworkNodeEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
