@@ -2,6 +2,8 @@ package org.example.network;
 
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Router extends Routable {
 
@@ -41,7 +43,9 @@ public class Router extends Routable {
     public void run() {
         if (!this.inputBufferIsEmpty()){
             this.route(this.dequeueInputBuffer());
+            return;
         }
+        Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "this router has an empty buffer");
     }
 
 

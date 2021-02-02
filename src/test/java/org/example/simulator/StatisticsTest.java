@@ -3,10 +3,12 @@ package org.example.simulator;
 import org.example.data.Message;
 import org.example.network.Router;
 import org.example.protocol.BasicTCP;
+import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.example.simulator.events.TCPEvents.TCPRetransmitEventGenerator;
+import org.example.simulator.events.run.RunNetworkNodeEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -197,12 +199,14 @@ public class StatisticsTest {
 
 
     @Test
-    public void trackNetWorkNodeInputBufferTest() {
+    public void trackNetworkNodeInputBufferTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(new Random(69));
-        BasicTCP server = new BasicTCP(new Random(69));
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
+        BasicTCP client = new BasicTCP(new Random(1337));
+        BasicTCP server = new BasicTCP(new Random(1337));
+
+        //no loss
+        Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
         r1.addChannel(server);
@@ -221,17 +225,18 @@ public class StatisticsTest {
             client.send(msg);
         }
         eventHandler.addEvent(new TCPInputEvent(client));
-/*
+
+        int channelEventCount = 0;
         while (eventHandler.peekEvent() != null){
-            System.out.println(eventHandler.peekEvent().getClass().getSimpleName());
+            if (eventHandler.peekEvent() instanceof ChannelEvent){
+                channelEventCount++;
+            }
             eventHandler.singleRun();
-            System.out.println(r1.peekInputBuffer());
-            System.out.println(r1.inputBufferSize());
-            System.out.println();
-
         }
+        int numberOfChannels = 4;
+        Assert.assertEquals(numPacketsToSend * numberOfChannels, channelEventCount);
 
- */
+
 
     }
 

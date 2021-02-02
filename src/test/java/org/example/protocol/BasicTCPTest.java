@@ -8,7 +8,6 @@ import org.example.network.Router;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.RouteEvent;
-import org.example.simulator.events.SendEvent;
 
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.example.simulator.events.TCPEvents.TCPSendEvent;
@@ -69,7 +68,8 @@ public class BasicTCPTest {
 
         Message msg = new Message( "hello på do!");
 
-        eventHandler.addEvent(new SendEvent(client, msg));
+        client.send(msg);
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(msg, server.receive().getPayload());
@@ -105,7 +105,8 @@ public class BasicTCPTest {
 
         Message msg = new Message( "hello på do!");
 
-        eventHandler.addEvent(new SendEvent(client, msg));
+        client.send(msg);
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(msg, server.receive().getPayload());
@@ -132,7 +133,8 @@ public class BasicTCPTest {
 
         for (int i = 0; i <= server.getWindowSize() * 2; i++) {
             Message msg = new Message( "test " + i);
-            eventHandler.addEvent(new SendEvent(client, msg));
+            client.send(msg);
+            eventHandler.addEvent(new TCPInputEvent(client));
             eventHandler.run();
             Assert.assertEquals(msg, server.receive().getPayload());
         }
@@ -158,7 +160,8 @@ public class BasicTCPTest {
         System.out.println("connected");
 
         Message msg = new Message( "test1");
-        eventHandler.addEvent(new SendEvent(client, msg));
+        client.send(msg);
+        eventHandler.addEvent(new TCPInputEvent(client));
 
         Message msg2 = new Message( "test2");
         Packet packet = new PacketBuilder()
@@ -216,7 +219,8 @@ public class BasicTCPTest {
             eventHandler.addEvent(new RouteEvent(client, packet1));
 
             Message msg = new Message( "test " + i);
-            eventHandler.addEvent(new SendEvent(client, msg));
+            client.send(msg);
+            eventHandler.addEvent(new TCPInputEvent(client));
 
             Packet packet2 = new PacketBuilder()
                     .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100 + i)
@@ -272,8 +276,8 @@ public class BasicTCPTest {
                     .withPayload(new Message(i + ""))
                     .build();
             eventHandler.addEvent(new RouteEvent(client, packet));
-            eventHandler.run();
         }
+        eventHandler.run();
 
         for (int i = 0; i < client.getWindowSize(); i++) {
             Packet received = server.receive();
@@ -399,6 +403,7 @@ public class BasicTCPTest {
 
         int indexBeforeSending = server.receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexBeforeSending);
+
 
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();

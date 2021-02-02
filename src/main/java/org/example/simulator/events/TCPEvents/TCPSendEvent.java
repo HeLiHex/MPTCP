@@ -33,14 +33,14 @@ public class TCPSendEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (tcp.isConnected()){
-            if (this.packetSent != null){
+        if (this.packetSent != null) {
+            if (tcp.isConnected()) {
                 events.add(new TCPSendEvent(this.tcp));
-                events.add(new TCPRetransmitEventGenerator((BasicTCP)this.tcp, this.packetSent));
+                events.add(new TCPRetransmitEventGenerator((BasicTCP) this.tcp, this.packetSent));
             }
+            Channel channel = this.tcp.getChannel();
+            events.add(new ChannelEvent(channel));
         }
-        Channel channel = this.tcp.getChannel();
-        events.add(new ChannelEvent(channel));
     }
 
 }

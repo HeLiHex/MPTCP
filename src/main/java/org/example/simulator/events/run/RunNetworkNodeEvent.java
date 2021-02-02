@@ -1,13 +1,10 @@
 package org.example.simulator.events.run;
 
-import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
-import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.TCPEvents.TCPInputEvent;
 
 import java.time.Instant;
 import java.util.Queue;

@@ -55,14 +55,15 @@ public class BasicTCP extends AbstractTCP {
         if (!added) throw new IllegalStateException(" Packet was not added to the receivedAck queue");
     }
 
-
     @Override
     public Packet receive() {
         return this.received.poll();
     }
 
     @Override
-    protected void setReceived() {
+    protected int setReceived() {
+        int numPacketsSent = 0;
+
         if (this.inputBuffer.peek() == null) throw new IllegalStateException("null packet received");
         boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         while (shouldAddToReceived){
@@ -73,10 +74,11 @@ public class BasicTCP extends AbstractTCP {
             this.updateConnection(packetReceived);
             if (!this.received.contains(packetReceived)){
                 this.ack(packetReceived);
+                numPacketsSent++;
                 this.addToReceived(packetReceived);
             }
 
-            if (this.inputBuffer.isEmpty()) return;
+            if (this.inputBuffer.isEmpty()) return numPacketsSent;
 
             shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
         }
@@ -86,15 +88,17 @@ public class BasicTCP extends AbstractTCP {
                 if (this.received.contains(packet)) continue;
                 this.addToReceived(packet);
                 this.ack(packet);
+                numPacketsSent++;
             }else{
                 boolean removed = this.inputBuffer.remove(packet);
                 if (!removed){
                     throw new IllegalStateException("packet that is already acknowledged has fails to be removed from the input buffer");
                 }
                 this.ack(packet);
+                numPacketsSent++;
             }
         }
-
+        return numPacketsSent;
     }
 
     public boolean hasPacketsToRetransmit(){

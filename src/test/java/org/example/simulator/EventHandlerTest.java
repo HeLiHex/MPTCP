@@ -8,7 +8,6 @@ import org.example.network.Router;
 import org.example.protocol.BasicTCP;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.SendEvent;
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.junit.Assert;
 import org.junit.Test;
@@ -102,7 +101,8 @@ public class EventHandlerTest {
         eventHandler.run();
 
 
-        eventHandler.addEvent(new SendEvent(client, new Message("test")));
+        client.send(new Message("test"));
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(0, eventHandler.getNumberOfEvents());
