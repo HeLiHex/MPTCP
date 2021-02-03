@@ -1,17 +1,20 @@
 package org.example.simulator;
 
 import org.example.simulator.events.Event;
+import org.example.util.Util;
+
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class EventHandler {
 
     private final Queue<Event> events;
-    private final Statistics STATISTICS = new Statistics();
+    private static final Statistics STATISTICS = new Statistics();
 
     public EventHandler(){
         this.events = new PriorityQueue<>();
-        STATISTICS.reset();
+        Util.setSeed(1337);
+        Statistics.reset();
     }
 
     public void addEvent(Event event){
@@ -32,10 +35,6 @@ public class EventHandler {
 
     public void printStatistics(){
         System.out.println(STATISTICS.toString());
-    }
-
-    public Statistics getSTATISTICS() {
-        return STATISTICS;
     }
 
     public void singleRun(){

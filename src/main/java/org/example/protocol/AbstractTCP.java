@@ -5,8 +5,8 @@ import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
 import org.example.simulator.Statistics;
+import org.example.util.Util;
 
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,11 +20,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected AbstractTCP(BlockingQueue<Packet> inputBuffer,
                        BlockingQueue<Packet> outputBuffer,
-                       Random randomGenerator,
                        double noiseTolerance) {
         super(inputBuffer,
                 outputBuffer,
-                randomGenerator,
                 noiseTolerance);
     }
 
@@ -32,7 +30,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void connect(Endpoint host) {
         this.updateRoutingTable();
-        this.initialSequenceNumber = this.random(100);
+        this.initialSequenceNumber = Util.getNextRandomInt(100);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
@@ -70,7 +68,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void connect(Packet syn){
         Endpoint node = syn.getOrigin();
-        int seqNum = random(100);
+        int seqNum = Util.getNextRandomInt(100);
         int ackNum = syn.getSequenceNumber() + 1;
         Packet synAck = new PacketBuilder()
                 .withDestination(node)
@@ -275,7 +273,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         Packet packet = this.dequeueOutputBuffer();
         this.addToWaitingPacketWindow(packet);
         this.route(packet);
-        Statistics.packetSent();
         //logger.log(Level.INFO, () -> "packet: " + packet + " sent");
         return packet;
     }

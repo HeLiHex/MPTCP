@@ -14,14 +14,12 @@ public abstract class Routable implements NetworkNode {
     private final List<Channel> channels;
     protected final BlockingQueue<Packet> inputBuffer;
     private final Address address;
-    private final Random randomGenerator;
     private final double noiseTolerance;
 
-    protected Routable(BlockingQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
+    protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
         this.address = new Address();
-        this.randomGenerator = randomGenerator;
         this.noiseTolerance = noiseTolerance;
         this.routingTable = new RoutingTable();
     }
@@ -45,10 +43,6 @@ public abstract class Routable implements NetworkNode {
         return this.routingTable.getPath(this, destination);
     }
 
-    protected int random(int bound){
-        return this.randomGenerator.nextInt(bound);
-    }
-
     @Override
     public void processingDelay(){
        //todo
@@ -65,7 +59,7 @@ public abstract class Routable implements NetworkNode {
             boolean thisContainsNode = channel.getDestination().equals(node);
             if (thisContainsNode) return;
         }
-        Channel channel = new Channel(this, node, this.randomGenerator, this.noiseTolerance);
+        Channel channel = new Channel(this, node, this.noiseTolerance);
         this.channels.add(channel);
         node.addChannel(this);
     }

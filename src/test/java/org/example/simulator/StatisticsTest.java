@@ -2,17 +2,19 @@ package org.example.simulator;
 
 import org.example.data.Message;
 import org.example.network.Router;
+import org.example.network.interfaces.Endpoint;
 import org.example.protocol.BasicTCP;
+import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.example.simulator.events.TCPEvents.TCPRetransmitEventGenerator;
+import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Queue;
-import java.util.Random;
 
 public class StatisticsTest {
 
@@ -23,14 +25,20 @@ public class StatisticsTest {
         System.out.println(statistics.toString());
     }
 
+    private void connect(EventHandler eventHandler, TCP client, Endpoint endpoint){
+        eventHandler.addEvent(new TCPConnectEvent(client, endpoint));
+        eventHandler.run();
+        Statistics.reset();
+    }
+
     @Test
     public void statisticsAreConsistentNoLoss() {
 
         for (int j = 0; j < 10; j++) {
             EventHandler eventHandler = new EventHandler();
 
-            BasicTCP client = new BasicTCP(new Random(69));
-            BasicTCP server = new BasicTCP(new Random(69));
+            BasicTCP client = new BasicTCP();
+            BasicTCP server = new BasicTCP();
             Router r1 = new Router.RouterBuilder().build();
 
             client.addChannel(r1);
@@ -40,8 +48,7 @@ public class StatisticsTest {
             r1.updateRoutingTable();
             server.updateRoutingTable();
 
-            eventHandler.addEvent(new TCPConnectEvent(client, server));
-            eventHandler.run();
+            connect(eventHandler, client, server);
 
             int numPacketsToSend = 400;
 
@@ -72,14 +79,13 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreConsistentWithLoss() {
-        Random random = new Random(1337);
         EventHandler eventHandler = new EventHandler();
+        Util.setSeed(1337);
 
-        BasicTCP client = new BasicTCP(random);
-        BasicTCP server = new BasicTCP(random);
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder()
-                .withRandomGenerator(random)
-                .withNoiseTolerance(1)
+                .withNoiseTolerance(2)
                 .build();
 
         client.addChannel(r1);
@@ -89,8 +95,7 @@ public class StatisticsTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new TCPConnectEvent(client, server));
-        eventHandler.run();
+        connect(eventHandler, client, server);
 
         int numPacketsToSend = 400;
 
@@ -112,10 +117,10 @@ public class StatisticsTest {
         Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPackets());
         Assert.assertEquals(numPacketsToSend, Statistics.getNumberOfPacketsReceived());
         Assert.assertEquals(numPacketsToSend + Statistics.getNumberOfPacketsRetransmitted(), Statistics.getNumberOfPacketsSent());
-        Assert.assertEquals(630, Statistics.getNumberOfPacketsLost());
-        Assert.assertEquals(56, Statistics.getNumberOfPacketsDropped());
-        Assert.assertEquals(125, Statistics.getNumberOfPacketsAckedMoreThanOnce());
-        Assert.assertEquals(836, Statistics.getNumberOfPacketsRetransmitted());
+        Assert.assertEquals(38, Statistics.getNumberOfPacketsLost());
+        Assert.assertEquals(3, Statistics.getNumberOfPacketsDropped());
+        Assert.assertEquals(9, Statistics.getNumberOfPacketsAckedMoreThanOnce());
+        Assert.assertEquals(56, Statistics.getNumberOfPacketsRetransmitted());
     }
 
 
@@ -123,8 +128,8 @@ public class StatisticsTest {
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(new Random(69));
-        BasicTCP server = new BasicTCP(new Random(69));
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
@@ -134,8 +139,7 @@ public class StatisticsTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new TCPConnectEvent(client, server));
-        eventHandler.run();
+        connect(eventHandler, client, server);
 
         int multiplier = 100;
         int numPacketsToSend = server.getWindowSize() * multiplier;
@@ -171,11 +175,12 @@ public class StatisticsTest {
 
 
     @Test
-    public void TCPRetransmitEventGeneratorIsLastInEventQueueTest() {
+    public void connectStatistics() {
         EventHandler eventHandler = new EventHandler();
+        Util.setSeed(1337);
 
-        BasicTCP client = new BasicTCP(new Random(69));
-        BasicTCP server = new BasicTCP(new Random(69));
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
@@ -187,6 +192,27 @@ public class StatisticsTest {
 
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
+
+        Assert.assertEquals(1, Statistics.getNumberOfPacketsLost());
+    }
+
+
+    @Test
+    public void TCPRetransmitEventGeneratorIsLastInEventQueueTest() {
+        EventHandler eventHandler = new EventHandler();
+
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        connect(eventHandler, client, server);
 
         int multiplier = 100;
         int numPacketsToSend = server.getWindowSize() * multiplier;
@@ -211,8 +237,8 @@ public class StatisticsTest {
     public void TCPRetransmitEventGeneratorIsGeneratedPerPacketSentTest(){
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(new Random(69));
-        BasicTCP server = new BasicTCP(new Random(69));
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
@@ -222,8 +248,7 @@ public class StatisticsTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new TCPConnectEvent(client, server));
-        eventHandler.run();
+        connect(eventHandler, client, server);
 
         int multiplier = 100;
         int numPacketsToSend = server.getWindowSize() * multiplier;
@@ -249,8 +274,8 @@ public class StatisticsTest {
     public void trackNetworkNodeInputBufferTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(new Random(1337));
-        BasicTCP server = new BasicTCP(new Random(1337));
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
 
         //no loss
         Router r1 = new Router.RouterBuilder().build();
@@ -262,8 +287,7 @@ public class StatisticsTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new TCPConnectEvent(client, server));
-        eventHandler.run();
+        connect(eventHandler, client, server);
 
         int numPacketsToSend = 1000;
 

@@ -7,16 +7,14 @@ import org.example.protocol.BasicTCP;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Random;
-
 public class RoutingTableTest {
 
     @Test(expected = IllegalStateException.class)
     public void routingTableTrowsIllegalStateExceptionIfNotUpdated(){
-        Endpoint r1 = new BasicTCP(new Random());
+        Endpoint r1 = new BasicTCP();
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
-        Endpoint r4 = new BasicTCP( new Random());
+        Endpoint r4 = new BasicTCP();
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
@@ -45,10 +43,10 @@ public class RoutingTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void routingTableTrowsIllegalArgumentExceptionIfDestinationIsUnconnected(){
-        Endpoint r1 = new BasicTCP( new Random());
+        Endpoint r1 = new BasicTCP();
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
-        Endpoint r4 = new BasicTCP(new Random());
+        Endpoint r4 = new BasicTCP();
 
         r1.addChannel(r2);
         r2.addChannel(r3);
@@ -74,10 +72,10 @@ public class RoutingTableTest {
     @Test
     public void getPathChoosesShortestPathTest(){
         for (int i = 0; i < 100; i++) {
-            Endpoint r1 = new BasicTCP(new Random());
+            Endpoint r1 = new BasicTCP();
             NetworkNode r2 = new Router.RouterBuilder().build();
             NetworkNode r3 = new Router.RouterBuilder().build();
-            Endpoint r4 = new BasicTCP(new Random());
+            Endpoint r4 = new BasicTCP();
 
             r1.addChannel(r2);
             r1.addChannel(r3);

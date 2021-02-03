@@ -5,6 +5,7 @@ import org.example.network.Channel;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
@@ -29,6 +30,7 @@ public class TCPSendEvent extends Event {
     @Override
     public void run() {
         this.packetSent = ((AbstractTCP)this.tcp).trySend();
+        if (this.packetSent != null) Statistics.packetSent();
     }
 
     @Override

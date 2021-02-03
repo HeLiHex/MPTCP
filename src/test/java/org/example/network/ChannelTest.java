@@ -1,10 +1,7 @@
 package org.example.network;
 
 import org.example.data.*;
-import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
-import org.example.network.interfaces.NetworkNode;
-import org.example.network.Router;
 import org.example.protocol.BasicTCP;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,12 +12,12 @@ import java.util.Random;
 public class ChannelTest {
 
     private Random rand = new Random();
-    private Endpoint source = new BasicTCP(rand);
-    private Endpoint destination = new BasicTCP(rand);
+    private Endpoint source = new BasicTCP();
+    private Endpoint destination = new BasicTCP();
 
     @Test
     public void channelConstructor1Test(){
-        Channel channel = new Channel(source, destination, rand, 100);
+        Channel channel = new Channel(source, destination, 100);
         Assert.assertTrue(channel instanceof Channel);
         Assert.assertEquals(source, channel.getSource());
         Assert.assertEquals(destination, channel.getDestination());
@@ -38,7 +35,7 @@ public class ChannelTest {
     @Test
     public void channelWithConstructor1CostIsPositiveTest(){
         for (int i = 0; i < 10000; i++) {
-            Channel channel = new Channel(source, destination, rand, 100);
+            Channel channel = new Channel(source, destination, 100);
             Assert.assertTrue(channel.getCost() >= 0);
         }
     }
@@ -53,7 +50,7 @@ public class ChannelTest {
 
     @Test
     public void channelPacketDeliversPacketToDestinationNodeTest(){
-        Channel channel = new Channel(source, destination, rand, 100);
+        Channel channel = new Channel(source, destination, 100);
         Payload payload = new Message( "Test");
         Packet packet = new PacketBuilder()
                 .withOrigin(source)
@@ -70,7 +67,7 @@ public class ChannelTest {
 
     @Test
     public void lossyChannelDropPacketTest(){
-        Channel channel = new Channel(source, destination, rand, 0);
+        Channel channel = new Channel(source, destination, 0);
         Payload payload = new Message( "Test");
         Packet packet = new PacketBuilder()
                 .withOrigin(source)
@@ -87,7 +84,7 @@ public class ChannelTest {
     @Test
     public void aLittleLossyChannelWillDropPacketAfterAWhileTest(){
         for (int i = 0; i < 10000; i++) {
-            Channel channel = new Channel(source, destination, rand, 3);
+            Channel channel = new Channel(source, destination, 3);
             Payload payload = new Message( "Test");
             Packet packet = new PacketBuilder()
                     .withOrigin(source)
@@ -110,7 +107,7 @@ public class ChannelTest {
         int size = 1000;
         PriorityQueue<Channel> pq = new PriorityQueue<>(size);
         for (int i = 0; i < size; i++) {
-            Channel c = new Channel(source, destination, rand, 0);
+            Channel c = new Channel(source, destination, 0);
             pq.add(c);
         }
         while (pq.size() > 1){

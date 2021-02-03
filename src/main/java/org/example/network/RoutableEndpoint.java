@@ -3,7 +3,6 @@ package org.example.network;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
-import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -14,8 +13,8 @@ public class RoutableEndpoint extends Routable implements Endpoint {
     protected BlockingQueue<Packet> outputBuffer;
     private final BlockingQueue<Packet> receivedPackets;
 
-    public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, Random randomGenerator, double noiseTolerance) {
-        super(inputBuffer, randomGenerator, noiseTolerance);
+    public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, double noiseTolerance) {
+        super(inputBuffer, noiseTolerance);
         this.outputBuffer = outputBuffer;
         this.receivedPackets = new ArrayBlockingQueue<>(10000);
     }

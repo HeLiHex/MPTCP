@@ -1,6 +1,6 @@
 package org.example.network;
 
-import java.util.Random;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,16 +10,10 @@ public class Router extends Routable {
     public static class RouterBuilder{
 
         private int bufferSize = 10;
-        private Random random = new Random(1337);
         private double noiseTolerance = 100.0;
 
         public RouterBuilder withBufferSize(int bufferSize){
             this.bufferSize = bufferSize;
-            return this;
-        }
-
-        public RouterBuilder withRandomGenerator(Random randomGenerator){
-            this.random = randomGenerator;
             return this;
         }
 
@@ -29,14 +23,14 @@ public class Router extends Routable {
         }
 
         public Router build(){
-            return new Router(this.bufferSize, this.random, this.noiseTolerance);
+            return new Router(this.bufferSize, this.noiseTolerance);
         }
 
 
     }
 
-    private Router(int bufferSize, Random randomGenerator, double noiseTolerance) {
-        super(new ArrayBlockingQueue<>(bufferSize), randomGenerator, noiseTolerance);
+    private Router(int bufferSize, double noiseTolerance) {
+        super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance);
     }
 
     @Override

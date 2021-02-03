@@ -6,22 +6,19 @@ import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
 import org.example.protocol.BasicTCP;
-import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.Instant;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Queue;
-import java.util.Random;
-
-import static java.lang.Thread.sleep;
 
 
 public class EventHandlerTest {
-
-    private static final Random RANDOM_GENERATOR = new Random(69);
 
     @Test
     public void runRunsWithoutErrorTest(){
@@ -86,8 +83,8 @@ public class EventHandlerTest {
     public void runTest(){
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -112,8 +109,8 @@ public class EventHandlerTest {
     public void runFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -147,16 +144,13 @@ public class EventHandlerTest {
 
 
     @Test
-    public void eventsArrangementAreConsistentWhenRandomSeedIsEqual(){
-        int seed = 1337;
-        Random random = new Random(seed);
+    public void eventsArrangementAreConsistent(){
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(random);
-        BasicTCP server = new BasicTCP(random);
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(1)
-                .withRandomGenerator(random)
                 .build();
 
         client.addChannel(r1);
@@ -176,7 +170,24 @@ public class EventHandlerTest {
             client.send(msg);
         }
         eventHandler.addEvent(new TCPInputEvent(client));
-        eventHandler.run();
+
+        ArrayDeque eventList = new ArrayDeque();
+
+        while (eventHandler.peekEvent() != null){
+            eventList.add(eventHandler.peekEvent());
+            eventHandler.singleRun();
+        }
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new TCPInputEvent(client));
+
+        while (eventHandler.peekEvent() != null){
+            Assert.assertEquals(eventList.poll().getClass(), eventHandler.peekEvent().getClass());
+            eventHandler.singleRun();
+        }
 
 
     }

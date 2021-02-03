@@ -1,8 +1,5 @@
 package org.example.simulator;
 
-import org.example.data.PacketBuilder;
-import org.example.network.RoutableEndpoint;
-import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
@@ -13,7 +10,6 @@ import org.junit.Before;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Random;
 
 public class EventTest {
 
@@ -24,7 +20,7 @@ public class EventTest {
     @Before
     public void setup(){
         this.events = new PriorityQueue<>();
-        this.tcp = new BasicTCP(new Random());
+        this.tcp = new BasicTCP();
 
     }
 

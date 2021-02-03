@@ -27,12 +27,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationStraitLine(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -66,12 +66,12 @@ public class RoutableTest {
 
     @Test
     public  void routingPacketRoutsItToItsDestinationCircleGraph(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         client.addChannel(r2);
@@ -108,11 +108,11 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationWithCycle(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -145,12 +145,12 @@ public class RoutableTest {
 
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationWithDeadEnd(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -185,12 +185,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationForrest(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         //tree one
         client.addChannel(r1);
@@ -227,12 +227,12 @@ public class RoutableTest {
 
     @Test
     public void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -265,7 +265,7 @@ public class RoutableTest {
 
     @Test
     public synchronized void routingPacketRoutsItToItsDestinationCrazyGraph(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
@@ -278,7 +278,7 @@ public class RoutableTest {
         Router r10 = new Router.RouterBuilder().build();
         Router r11 = new Router.RouterBuilder().build();
         Router r12 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         client.addChannel(r2);
@@ -332,11 +332,11 @@ public class RoutableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedClientCantRoutPacketToDestination(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         r1.addChannel(r2);
         r2.addChannel(r3);
@@ -359,12 +359,12 @@ public class RoutableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public synchronized void unconnectedTreesCantRoutPacket(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -389,12 +389,12 @@ public class RoutableTest {
 
     @Test
     public void faultyChannelsDropPacket(){
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().withNoiseTolerance(0).build();
         Router r4 = new Router.RouterBuilder().build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -429,12 +429,12 @@ public class RoutableTest {
     @Test
     public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
         double noiseTolerance = 2.5;
-        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), RANDOM_GENERATOR, 100);
+        Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), 100);
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
         Router r2 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
         Router r3 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
         Router r4 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
-        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), RANDOM_GENERATOR, 100);
+        Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), 100);
 
         client.addChannel(r1);
         r1.addChannel(r2);

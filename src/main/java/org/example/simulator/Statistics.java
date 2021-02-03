@@ -1,7 +1,5 @@
 package org.example.simulator;
 
-import org.example.data.Packet;
-
 public class Statistics {
 
     private static int numberOfPackets; //total number of packets to be served. not counting retransmissions
@@ -12,7 +10,7 @@ public class Statistics {
     private static int numberOfPacketsAckedMoreThanOnce; // total number of packets dropped
     private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
-    public void reset(){
+    public static void reset(){
         numberOfPackets = 0;
         numberOfPacketsSent = 0;
         numberOfPacketsRetransmitted = 0;

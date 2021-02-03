@@ -25,7 +25,9 @@ public abstract class Event implements Comparable<Event> {
 
     @Override
     public int compareTo(Event o) {
-        return this.instant.compareTo(o.getInitInstant());
+        if (this.getInitInstant().isBefore(o.getInitInstant())) return -1;
+        if (this.getInitInstant().isAfter(o.getInitInstant())) return 1;
+        return 0;
     }
 
 }
