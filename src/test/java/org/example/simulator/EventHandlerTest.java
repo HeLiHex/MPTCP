@@ -9,6 +9,7 @@ import org.example.protocol.BasicTCP;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.TCPEvents.TCPConnectEvent;
 import org.example.simulator.events.TCPEvents.TCPInputEvent;
+import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -163,6 +164,10 @@ public class EventHandlerTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
+        Assert.assertNull(eventHandler.peekEvent());
+
+        Util.setSeed(1337);
+
         int numPacketsToSend = 1000;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -178,6 +183,10 @@ public class EventHandlerTest {
             eventHandler.singleRun();
         }
 
+        Assert.assertNull(eventHandler.peekEvent());
+
+        Util.setSeed(1337);
+
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
@@ -185,6 +194,7 @@ public class EventHandlerTest {
         eventHandler.addEvent(new TCPInputEvent(client));
 
         while (eventHandler.peekEvent() != null){
+            System.out.println(eventList.peek().getClass().equals(eventHandler.peekEvent().getClass()));
             Assert.assertEquals(eventList.poll().getClass(), eventHandler.peekEvent().getClass());
             eventHandler.singleRun();
         }
