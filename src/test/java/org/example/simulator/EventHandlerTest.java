@@ -144,4 +144,41 @@ public class EventHandlerTest {
         }
     }
 
+
+
+    @Test
+    public void eventsArrangementAreConsistentWhenRandomSeedIsEqual(){
+        int seed = 1337;
+        Random random = new Random(seed);
+        EventHandler eventHandler = new EventHandler();
+
+        BasicTCP client = new BasicTCP(random);
+        BasicTCP server = new BasicTCP(random);
+        Router r1 = new Router.RouterBuilder()
+                .withNoiseTolerance(1)
+                .withRandomGenerator(random)
+                .build();
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        int numPacketsToSend = 1000;
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.run();
+
+
+    }
+
 }
