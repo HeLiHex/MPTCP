@@ -1,11 +1,9 @@
 package org.example.simulator.events;
 
-import java.time.Instant;
-
 public abstract class EventGenerator extends Event{
 
-    public EventGenerator(Instant instant) {
-        super(instant);
+    public EventGenerator(int delay) {
+        super(delay);
     }
 
     public EventGenerator() {

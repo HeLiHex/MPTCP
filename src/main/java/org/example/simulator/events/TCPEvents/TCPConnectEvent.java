@@ -7,8 +7,6 @@ import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Queue;
 
 public class TCPConnectEvent extends Event {
@@ -16,8 +14,8 @@ public class TCPConnectEvent extends Event {
     private final TCP client;
     private final Endpoint host;
 
-    public TCPConnectEvent(Instant instant, TCP client, Endpoint host) {
-        super(instant);
+    public TCPConnectEvent(int delay, TCP client, Endpoint host) {
+        super(delay);
         this.client = client;
         this.host = host;
     }
@@ -40,7 +38,7 @@ public class TCPConnectEvent extends Event {
 
         Channel channel = ((Routable)this.client).getPath(this.host);
         events.add(new ChannelEvent(channel));
-        events.add(new TCPConnectEvent(Instant.now().plus(Duration.ofMillis(10000)),this.client, this.host));
+        events.add(new TCPConnectEvent(100, this.client, this.host));
     }
 
 }

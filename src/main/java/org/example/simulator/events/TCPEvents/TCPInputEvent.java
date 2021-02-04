@@ -14,12 +14,6 @@ public class TCPInputEvent extends Event {
     private final TCP tcp;
     private int numberOfPacketsAcked;
 
-    public TCPInputEvent(Instant instant, TCP tcp) {
-        super(instant);
-        if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");
-        this.tcp = tcp;
-    }
-
     public TCPInputEvent(TCP tcp) {
         super();
         if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");

@@ -16,13 +16,6 @@ public class ChannelEvent extends Event{
     private final Channel channel;
     private boolean channelSuccess;
 
-    public ChannelEvent(Instant instant, Channel channel) {
-        //todo - the delay should probably be decided by the channel in some sort of random generator
-        super(instant);
-        this.channel = channel;
-        this.channelSuccess = false;
-    }
-
     public ChannelEvent(Channel channel) {
         //super(Instant.now().plus(channel.propogationDelay()));
         this.channel = channel;

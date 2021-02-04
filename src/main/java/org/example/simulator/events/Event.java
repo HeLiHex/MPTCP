@@ -1,32 +1,34 @@
 package org.example.simulator.events;
 
-import java.time.Instant;
+import org.example.util.Util;
+
 import java.util.Queue;
 
 public abstract class Event implements Comparable<Event> {
 
-    private final Instant instant;
+    private static final int defaultDelay = 1;
+    private final int instant;
 
-    public Event(Instant instant){
-        this.instant = instant;
+    public Event(int delay){
+        this.instant = Util.getTime() + delay;
     }
 
     public Event(){
-        this.instant = Instant.now();
+        this(defaultDelay);
     }
 
     public abstract void run();
 
     public abstract void generateNextEvent(Queue<Event> events);
 
-    public Instant getInitInstant(){
+    public int getInitInstant(){
         return this.instant;
     }
 
     @Override
     public int compareTo(Event o) {
-        if (this.getInitInstant().isBefore(o.getInitInstant())) return -1;
-        if (this.getInitInstant().isAfter(o.getInitInstant())) return 1;
+        if (this.getInitInstant() < o.getInitInstant()) return -1;
+        if (this.getInitInstant() > o.getInitInstant()) return 1;
         return 0;
     }
 

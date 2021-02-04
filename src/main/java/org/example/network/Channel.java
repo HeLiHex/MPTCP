@@ -1,5 +1,6 @@
 package org.example.network;
 
+import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.Statistics;
@@ -69,7 +70,8 @@ public class Channel implements Comparable<Channel>{
     }
 
     public boolean channel(){
-        //this if is here because NetworkNodes can initiate run on channels even though no packet was routed
+        //somewhat redundant test, but handy to avoid NullPointerException.
+        //in other words, the line should never be empty when channel() is called
         if (this.line.isEmpty()){
             return false;
         }

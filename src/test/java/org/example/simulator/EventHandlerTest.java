@@ -24,7 +24,7 @@ public class EventHandlerTest {
     @Test
     public void runRunsWithoutErrorTest(){
         EventHandler eventHandler = new EventHandler();
-        Event eventOne = new Event(Instant.now()) {
+        Event eventOne = new Event(Util.getTime()) {
             @Override
             public void run() {
                 System.out.println(this.getInitInstant());
@@ -32,7 +32,7 @@ public class EventHandlerTest {
 
             @Override
             public void generateNextEvent(Queue<Event> events) {
-                events.add(new Event(Instant.now()) {
+                events.add(new Event(Util.getTime()) {
                     @Override
                     public void run() {
                         System.out.println(this.getInitInstant());
@@ -46,7 +46,7 @@ public class EventHandlerTest {
             }
         };
 
-        Event eventTwo = new Event(Instant.now()) {
+        Event eventTwo = new Event(Util.getTime()) {
             @Override
             public void run() {
                 System.out.println(this.getInitInstant());
@@ -54,7 +54,7 @@ public class EventHandlerTest {
 
             @Override
             public void generateNextEvent(Queue<Event> events) {
-                events.add(new Event(Instant.now()) {
+                events.add(new Event(Util.getTime()) {
                     @Override
                     public void run() {
                         System.out.println(this.getInitInstant());
@@ -72,7 +72,7 @@ public class EventHandlerTest {
         eventHandler.addEvent(eventOne);
         eventHandler.addEvent(eventTwo);
 
-        Awaitility.await().atLeast(Duration.FIVE_SECONDS);
+        //Awaitility.await().atLeast(Duration.FIVE_SECONDS);
         eventHandler.run();
 
         Assert.assertEquals(0, eventHandler.getNumberOfEvents());
@@ -143,7 +143,6 @@ public class EventHandlerTest {
     }
 
 
-
     @Test
     public void eventsArrangementAreConsistent(){
         EventHandler eventHandler = new EventHandler();
@@ -186,6 +185,7 @@ public class EventHandlerTest {
         Assert.assertNull(eventHandler.peekEvent());
 
         Util.setSeed(1337);
+        Util.resetTime();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
@@ -201,5 +201,4 @@ public class EventHandlerTest {
 
 
     }
-
 }

@@ -19,7 +19,7 @@ public class BasicTCP extends AbstractTCP {
     private static final int WINDOW_SIZE = 4;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
-    private final Duration TIMEOUT_DURATION = Duration.ofMillis(100);
+    private final Duration TIMEOUT_DURATION = Duration.ofMillis(10000000);
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
     private final BlockingQueue<Packet> received;

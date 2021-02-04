@@ -14,6 +14,7 @@ public class EventHandler {
     public EventHandler(){
         this.events = new PriorityQueue<>();
         Util.setSeed(1337);
+        Util.resetTime();
         Statistics.reset();
     }
 
@@ -45,6 +46,7 @@ public class EventHandler {
         }
         event.run();
         event.generateNextEvent(this.events);
+        Util.tickTime(event);
     }
 
     public void run(){
@@ -56,6 +58,7 @@ public class EventHandler {
             }
             event.run();
             event.generateNextEvent(this.events);
+            Util.tickTime(event);
         }
     }
 }

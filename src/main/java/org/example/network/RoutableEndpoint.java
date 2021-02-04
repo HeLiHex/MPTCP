@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class RoutableEndpoint extends Routable implements Endpoint {
 
-    protected BlockingQueue<Packet> outputBuffer;
+    protected final BlockingQueue<Packet> outputBuffer;
     private final BlockingQueue<Packet> receivedPackets;
 
     public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, double noiseTolerance) {

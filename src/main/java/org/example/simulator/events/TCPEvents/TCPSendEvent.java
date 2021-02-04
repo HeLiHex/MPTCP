@@ -9,7 +9,6 @@ import org.example.simulator.Statistics;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
-import java.time.Instant;
 import java.util.Queue;
 
 public class TCPSendEvent extends Event {
@@ -17,11 +16,6 @@ public class TCPSendEvent extends Event {
     private final TCP tcp;
     private Packet packetSent;
 
-
-    public TCPSendEvent(Instant instant, TCP tcp) {
-        super(instant);
-        this.tcp = tcp;
-    }
 
     public TCPSendEvent(TCP tcp) {
         this.tcp = tcp;
