@@ -1,7 +1,5 @@
 package org.example.simulator;
 
-import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
@@ -13,9 +11,8 @@ import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.time.Instant;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Queue;
 
 
@@ -72,7 +69,6 @@ public class EventHandlerTest {
         eventHandler.addEvent(eventOne);
         eventHandler.addEvent(eventTwo);
 
-        //Awaitility.await().atLeast(Duration.FIVE_SECONDS);
         eventHandler.run();
 
         Assert.assertEquals(0, eventHandler.getNumberOfEvents());
@@ -144,7 +140,7 @@ public class EventHandlerTest {
 
 
     @Test
-    public void eventsArrangementAreConsistent(){
+    public void eventArrangementsAreConsistent(){
         EventHandler eventHandler = new EventHandler();
 
         BasicTCP client = new BasicTCP();
@@ -175,13 +171,16 @@ public class EventHandlerTest {
         }
         eventHandler.addEvent(new TCPInputEvent(client));
 
-        ArrayDeque eventList = new ArrayDeque();
+        Deque<Event> eventList = new ArrayDeque<>();
 
         while (eventHandler.peekEvent() != null){
             eventList.add(eventHandler.peekEvent());
             eventHandler.singleRun();
         }
 
+        Assert.assertNull(server.dequeueInputBuffer());
+        Assert.assertNull(client.dequeueInputBuffer());
+        Assert.assertNull(r1.dequeueInputBuffer());
         Assert.assertNull(eventHandler.peekEvent());
 
         Util.setSeed(1337);
@@ -194,8 +193,10 @@ public class EventHandlerTest {
         eventHandler.addEvent(new TCPInputEvent(client));
 
         while (eventHandler.peekEvent() != null){
-            System.out.println(eventList.peek().getClass().equals(eventHandler.peekEvent().getClass()));
-            Assert.assertEquals(eventList.poll().getClass(), eventHandler.peekEvent().getClass());
+            //System.out.println(eventList.peek().getClass().equals(eventHandler.peekEvent().getClass()));
+            Event event = eventList.poll();
+            if (event == null) Assert.fail();
+            Assert.assertEquals(event.getClass(), eventHandler.peekEvent().getClass());
             eventHandler.singleRun();
         }
 
