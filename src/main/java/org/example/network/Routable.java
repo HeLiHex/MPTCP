@@ -116,6 +116,5 @@ public abstract class Routable implements NetworkNode {
         return this.address.toString();
     }
 
-    @Override
-    public abstract void run();
+
 }
