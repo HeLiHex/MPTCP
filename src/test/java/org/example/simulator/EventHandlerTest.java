@@ -1,32 +1,27 @@
 package org.example.simulator;
 
-import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
 import org.example.protocol.BasicTCP;
-import org.example.simulator.events.ConnectEvent;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.SendEvent;
+import org.example.simulator.events.TCPEvents.TCPConnectEvent;
+import org.example.simulator.events.TCPEvents.TCPInputEvent;
+import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.time.Instant;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Queue;
-import java.util.Random;
-
-import static java.lang.Thread.sleep;
 
 
 public class EventHandlerTest {
 
-    private static final Random RANDOM_GENERATOR = new Random(69);
-
     @Test
     public void runRunsWithoutErrorTest(){
         EventHandler eventHandler = new EventHandler();
-        Event eventOne = new Event(Instant.now()) {
+        Event eventOne = new Event(Util.getTime()) {
             @Override
             public void run() {
                 System.out.println(this.getInitInstant());
@@ -34,7 +29,7 @@ public class EventHandlerTest {
 
             @Override
             public void generateNextEvent(Queue<Event> events) {
-                events.add(new Event(Instant.now()) {
+                events.add(new Event(Util.getTime()) {
                     @Override
                     public void run() {
                         System.out.println(this.getInitInstant());
@@ -44,21 +39,11 @@ public class EventHandlerTest {
                     public void generateNextEvent(Queue<Event> events) {
 
                     }
-
-                    @Override
-                    public void updateStatistics(Statistics statistics) {
-
-                    }
                 });
-            }
-
-            @Override
-            public void updateStatistics(Statistics statistics) {
-
             }
         };
 
-        Event eventTwo = new Event(Instant.now()) {
+        Event eventTwo = new Event(Util.getTime()) {
             @Override
             public void run() {
                 System.out.println(this.getInitInstant());
@@ -66,7 +51,7 @@ public class EventHandlerTest {
 
             @Override
             public void generateNextEvent(Queue<Event> events) {
-                events.add(new Event(Instant.now()) {
+                events.add(new Event(Util.getTime()) {
                     @Override
                     public void run() {
                         System.out.println(this.getInitInstant());
@@ -76,17 +61,7 @@ public class EventHandlerTest {
                     public void generateNextEvent(Queue<Event> events) {
 
                     }
-
-                    @Override
-                    public void updateStatistics(Statistics statistics) {
-
-                    }
                 });
-            }
-
-            @Override
-            public void updateStatistics(Statistics statistics) {
-
             }
         };
 
@@ -94,7 +69,6 @@ public class EventHandlerTest {
         eventHandler.addEvent(eventOne);
         eventHandler.addEvent(eventTwo);
 
-        Awaitility.await().atLeast(Duration.FIVE_SECONDS);
         eventHandler.run();
 
         Assert.assertEquals(0, eventHandler.getNumberOfEvents());
@@ -106,8 +80,8 @@ public class EventHandlerTest {
     public void runTest(){
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -117,11 +91,12 @@ public class EventHandlerTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
 
-        eventHandler.addEvent(new SendEvent(client, new Message("test")));
+        client.send(new Message("test"));
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(0, eventHandler.getNumberOfEvents());
@@ -131,8 +106,8 @@ public class EventHandlerTest {
     public void runFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP(RANDOM_GENERATOR);
-        BasicTCP server = new BasicTCP(RANDOM_GENERATOR);
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -142,7 +117,7 @@ public class EventHandlerTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        eventHandler.addEvent(new ConnectEvent(client, server));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
         int multiplier = 100;
@@ -150,15 +125,9 @@ public class EventHandlerTest {
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
-            eventHandler.addEvent(new SendEvent(client, msg));
-            //sleep because events are incorrectly ordered in time when things happen fast
-            try {
-                sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            client.send(msg);
         }
-
+        eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -169,4 +138,68 @@ public class EventHandlerTest {
         }
     }
 
+
+    @Test
+    public void eventArrangementsAreConsistent(){
+        EventHandler eventHandler = new EventHandler();
+
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
+        Router r1 = new Router.RouterBuilder()
+                .withNoiseTolerance(1)
+                .build();
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        Assert.assertNull(eventHandler.peekEvent());
+
+        Util.setSeed(1337);
+
+        int numPacketsToSend = 1000;
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new TCPInputEvent(client));
+
+        Deque<Event> eventList = new ArrayDeque<>();
+
+        while (eventHandler.peekEvent() != null){
+            eventList.add(eventHandler.peekEvent());
+            eventHandler.singleRun();
+        }
+
+        Assert.assertNull(server.dequeueInputBuffer());
+        Assert.assertNull(client.dequeueInputBuffer());
+        Assert.assertNull(r1.dequeueInputBuffer());
+        Assert.assertNull(eventHandler.peekEvent());
+
+        Util.setSeed(1337);
+        Util.resetTime();
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new TCPInputEvent(client));
+
+        while (eventHandler.peekEvent() != null){
+            //System.out.println(eventList.peek().getClass().equals(eventHandler.peekEvent().getClass()));
+            Event event = eventList.poll();
+            if (event == null) Assert.fail();
+            Assert.assertEquals(event.getClass(), eventHandler.peekEvent().getClass());
+            eventHandler.singleRun();
+        }
+
+
+    }
 }

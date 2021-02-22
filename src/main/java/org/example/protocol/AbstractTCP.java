@@ -1,29 +1,28 @@
 package org.example.protocol;
 
 import org.example.data.*;
+import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
 import org.example.simulator.Statistics;
+import org.example.util.Util;
 
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
-    private final Logger logger = Logger.getLogger(AbstractTCP.class.getName());
+    private final Logger logger = Logger.getLogger(AbstractTCP.class.getSimpleName());
     private Connection connection;
     private int initialSequenceNumber;
 
 
     protected AbstractTCP(BlockingQueue<Packet> inputBuffer,
                        BlockingQueue<Packet> outputBuffer,
-                       Random randomGenerator,
                        double noiseTolerance) {
         super(inputBuffer,
                 outputBuffer,
-                randomGenerator,
                 noiseTolerance);
     }
 
@@ -31,7 +30,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void connect(Endpoint host) {
         this.updateRoutingTable();
-        this.initialSequenceNumber = this.random(100);
+        this.initialSequenceNumber = Util.getNextRandomInt(100);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
@@ -69,7 +68,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     @Override
     public void connect(Packet syn){
         Endpoint node = syn.getOrigin();
-        int seqNum = random(100);
+        int seqNum = Util.getNextRandomInt(100);
         int ackNum = syn.getSequenceNumber() + 1;
         Packet synAck = new PacketBuilder()
                 .withDestination(node)
@@ -88,6 +87,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Packet packet) {
+        if (!this.isConnected()) return;
         int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.outputBuffer.size();
         packet.setSequenceNumber(nextPacketSeqNum);
 
@@ -99,14 +99,16 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void send(Payload payload) {
+        if (!this.isConnected()) return;
         Packet packet = new PacketBuilder()
                 .withConnection(this.getConnection())
                 .withPayload(payload)
                 .build();
-        send(packet);
+        this.send(packet);
+        return;
     }
 
-    protected abstract void setReceived();
+    protected abstract int setReceived();
 
     @Override
     public void close() {
@@ -114,7 +116,20 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withConnection(this.getConnection())
                 .withFlags(Flag.FIN)
                 .build();
-        send(fin);
+        this.send(fin);
+    }
+
+    @Override
+    public Channel getChannel() {
+        if (this.isConnected()){
+            return this.getPath(this.getConnection().getConnectedNode());
+        }
+        //todo - what happens with MPTCP
+        return this.getChannel(0);
+    }
+
+    private Channel getChannel(int channelIndex){
+        return this.getChannels().get(channelIndex);
     }
 
     protected abstract int getWindowSize();
@@ -189,7 +204,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
-        boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK) || packet.hasAllFlags(Flag.SYN) || packetIsFromValidConnection(packet);
+        boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK)
+                || packet.hasAllFlags(Flag.SYN)
+                || packetIsFromValidConnection(packet);
         if (shouldEnqueue){
             return super.enqueueInputBuffer(packet);
         }
@@ -202,67 +219,67 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.route(ack);
     }
 
-
-    public void handleIncoming(){
+    public int handleIncoming(){
+        //this method returns the number of acknowledgments sent
         if (this.inputBufferIsEmpty()){
-            return;
+            return 0;
         }
 
         Packet packet = this.inputBuffer.peek();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)){
             this.continueConnect();
+            return 1;
         }
 
         if (packet.hasAllFlags(Flag.ACK)){
             this.ackReceived();
-            return;
+            return 0;
         }
 
         if (packet.hasAllFlags(Flag.SYN)){
             this.connect(packet);
             this.dequeueInputBuffer();
-            return;
+            return 1;
         }
 
-        this.setReceived();
-
+        return this.setReceived();
     }
 
     public void retransmit(){
         Packet[] packets = packetsToRetransmit();
         for (Packet packet : packets) {
             logger.log(Level.INFO, () -> "retransmitting packet " + packet + "-----------------------------------");
+            //Statistics.packetRetransmit();
             this.route(packet);
         }
     }
 
     public abstract Packet[] packetsToRetransmit();
 
-    public boolean trySend(){
+    public Packet trySend(){
         if (this.outputBufferIsEmpty()){
-            return false;
+            return null;
         }
         if (this.isWaitingForACK()){
-            return false;
+            return null;
         }
 
         if (!this.inSendingWindow(this.outputBuffer.peek())){
             logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
-            return false;
+            return null;
         }
 
         Packet packet = this.dequeueOutputBuffer();
         this.addToWaitingPacketWindow(packet);
         this.route(packet);
-        logger.log(Level.INFO, () -> "packet: " + packet + " sent");
-        return true;
+        //logger.log(Level.INFO, () -> "packet: " + packet + " sent");
+        return packet;
     }
 
     @Override
     public void run() {
         this.handleIncoming();
-        this.retransmit();
         this.trySend();
     }
 

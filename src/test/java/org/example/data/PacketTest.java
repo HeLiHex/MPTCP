@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Random;
 
 public class PacketTest {
 
@@ -17,14 +16,14 @@ public class PacketTest {
 
     @Test
     public void buildPacketWithDestinationBuildsPacketWithDestinationTest(){
-        Endpoint endpoint = new BasicTCP(new Random());
+        Endpoint endpoint = new BasicTCP();
         Packet packet = new PacketBuilder().withDestination(endpoint).build();
         Assert.assertEquals(endpoint, packet.getDestination());
     }
 
     @Test
     public void buildPacketWithOriginBuildsPacketWithOriginTest(){
-        Endpoint endpoint = new BasicTCP(new Random());
+        Endpoint endpoint = new BasicTCP();
         Packet packet = new PacketBuilder().withOrigin(endpoint).build();
         Assert.assertEquals(endpoint, packet.getOrigin());
     }

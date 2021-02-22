@@ -5,23 +5,20 @@ import org.example.network.interfaces.NetworkNode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
 public abstract class Routable implements NetworkNode {
 
     private final RoutingTable routingTable;
     private final List<Channel> channels;
-    protected BlockingQueue<Packet> inputBuffer;
+    protected final BlockingQueue<Packet> inputBuffer;
     private final Address address;
-    private final Random randomGenerator;
     private final double noiseTolerance;
 
-    protected Routable(BlockingQueue<Packet> inputBuffer, Random randomGenerator, double noiseTolerance) {
+    protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
         this.address = new Address();
-        this.randomGenerator = randomGenerator;
         this.noiseTolerance = noiseTolerance;
         this.routingTable = new RoutingTable();
     }
@@ -33,6 +30,7 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public void route(Packet packet) {
+        if (packet == null) throw new IllegalStateException("Null packet can't be routed");
         //System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
@@ -42,10 +40,6 @@ public abstract class Routable implements NetworkNode {
     @Override
     public Channel getPath(NetworkNode destination){
         return this.routingTable.getPath(this, destination);
-    }
-
-    protected int random(int bound){
-        return this.randomGenerator.nextInt(bound);
     }
 
     @Override
@@ -64,7 +58,7 @@ public abstract class Routable implements NetworkNode {
             boolean thisContainsNode = channel.getDestination().equals(node);
             if (thisContainsNode) return;
         }
-        Channel channel = new Channel(this, node, this.randomGenerator, this.noiseTolerance);
+        Channel channel = new Channel(this, node, this.noiseTolerance);
         this.channels.add(channel);
         node.addChannel(this);
     }
@@ -75,7 +69,12 @@ public abstract class Routable implements NetworkNode {
     }
 
     @Override
-    public synchronized boolean enqueueInputBuffer(Packet packet) {
+    public boolean enqueueInputBuffer(Packet packet) {
+        // this if prohibits multiple packets with the same sequence number!
+        if (this.inputBuffer.stream().anyMatch(
+                p -> p.getSequenceNumber() == packet.getSequenceNumber())){
+            return false;
+        }
         return this.inputBuffer.offer(packet);
     }
 
@@ -92,6 +91,10 @@ public abstract class Routable implements NetworkNode {
     @Override
     public boolean inputBufferIsEmpty() {
         return this.inputBuffer.isEmpty();
+    }
+
+    public int inputBufferSize(){
+        return this.inputBuffer.size();
     }
 
     @Override

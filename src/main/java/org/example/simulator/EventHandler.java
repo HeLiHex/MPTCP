@@ -1,28 +1,52 @@
 package org.example.simulator;
 
 import org.example.simulator.events.Event;
+import org.example.util.Util;
+
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class EventHandler {
 
     private final Queue<Event> events;
-    private final Statistics STATISTICS = new Statistics();
+    private static final Statistics STATISTICS = new Statistics();
 
     public EventHandler(){
         this.events = new PriorityQueue<>();
+        Util.setSeed(1337);
+        Util.resetTime();
+        Statistics.reset();
     }
 
     public void addEvent(Event event){
         this.events.add(event);
     }
 
+    public Event peekEvent(){
+        return this.events.peek();
+    }
+
+    public Queue<Event> getEvents() {
+        return events;
+    }
+
     public int getNumberOfEvents(){
         return this.events.size();
     }
 
-    public Statistics getSTATISTICS() {
-        return STATISTICS;
+    public void printStatistics(){
+        System.out.println(STATISTICS.toString());
+    }
+
+    public void singleRun(){
+        Event event = this.events.poll();
+        if (event == null){
+            if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
+            return;
+        }
+        event.run();
+        event.generateNextEvent(this.events);
+        Util.tickTime(event);
     }
 
     public void run(){
@@ -34,8 +58,7 @@ public class EventHandler {
             }
             event.run();
             event.generateNextEvent(this.events);
-            event.updateStatistics(STATISTICS);
+            Util.tickTime(event);
         }
-        System.out.println(STATISTICS.toString());
     }
 }

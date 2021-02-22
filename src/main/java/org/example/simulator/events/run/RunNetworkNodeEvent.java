@@ -1,44 +1,35 @@
 package org.example.simulator.events.run;
 
-import org.example.data.Packet;
 import org.example.network.Channel;
+import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
-import org.example.simulator.Statistics;
+import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
 import java.time.Instant;
 import java.util.Queue;
 
-public class RunNetworkNodeEvent extends RunEvent {
+public class RunNetworkNodeEvent extends Event {
 
-
-    public RunNetworkNodeEvent(Instant instant, NetworkNode node) {
-        super(instant, node);
-    }
+    private final NetworkNode node;
+    private Endpoint packetDestination;
 
     public RunNetworkNodeEvent(NetworkNode node) {
-        super(node);
+        super();
+        this.node = node;
+        if (this.node == null) throw new IllegalStateException("Node is null");
     }
 
     @Override
-    public void generateSelf(Queue<Event> events) {
-        if (this.node.peekInputBuffer() != null){
-            events.add(new RunNetworkNodeEvent(this.node));
-        }
+    public void run() {
+        this.packetDestination = this.node.peekInputBuffer().getDestination();
+        this.node.run();
     }
 
     @Override
-    public void setNextNode() {
-        Packet packet = this.node.peekInputBuffer();
-        if (packet == null) return;
-
-        NetworkNode destination = packet.getDestination();
-        Channel channel = this.node.getPath(destination);
-        this.nextNode = channel.getDestination();
+    public void generateNextEvent(Queue<Event> events) {
+        Channel channel = this.node.getPath(this.packetDestination);
+        events.add(new ChannelEvent(channel));
     }
 
-    @Override
-    public void updateStatistics(Statistics statistics) {
-
-    }
 }

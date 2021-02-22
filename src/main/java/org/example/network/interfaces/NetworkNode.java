@@ -80,7 +80,6 @@ public interface NetworkNode {
      */
     boolean inputBufferIsEmpty();
 
-
     Channel getPath(NetworkNode destination);
 
     void run();
