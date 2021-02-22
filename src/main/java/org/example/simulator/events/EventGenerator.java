@@ -2,12 +2,8 @@ package org.example.simulator.events;
 
 public abstract class EventGenerator extends Event{
 
-    public EventGenerator(int delay) {
+    protected EventGenerator(int delay) {
         super(delay);
-    }
-
-    public EventGenerator() {
-        super();
     }
 
     @Override
