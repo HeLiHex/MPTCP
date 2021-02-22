@@ -1,6 +1,5 @@
 package org.example.network;
 
-import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.Statistics;
