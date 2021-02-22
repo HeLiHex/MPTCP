@@ -42,7 +42,7 @@ public class Channel implements Comparable<Channel>{
     }
 
     public Duration propogationDelay(){
-        int rand = Util.getNextRandomInt(10);
+        long rand = Util.getNextRandomInt(10);
         return Duration.ofMillis(rand + this.cost);
     }
 
