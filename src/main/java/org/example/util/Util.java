@@ -6,6 +6,10 @@ import java.util.Random;
 
 public class Util {
 
+    private Util() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final Random random = new Random(1337);
     private static int time = 0;
 
