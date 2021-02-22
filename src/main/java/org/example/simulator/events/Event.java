@@ -9,11 +9,11 @@ public abstract class Event implements Comparable<Event> {
     private static final int DEFAULT_DELAY = 1;
     private final int instant;
 
-    public Event(int delay){
+    protected Event(int delay){
         this.instant = Util.getTime() + delay;
     }
 
-    public Event(){
+    protected Event(){
         this(DEFAULT_DELAY);
     }
 
