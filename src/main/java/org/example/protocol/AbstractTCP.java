@@ -201,6 +201,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         );
     }
 
+    public abstract Packet[] packetsToRetransmit();
+
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
         boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK)
