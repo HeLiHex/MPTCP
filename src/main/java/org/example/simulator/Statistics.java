@@ -38,10 +38,6 @@ public class Statistics {
         numberOfPacketsDropped++;
     }
 
-    public static void packetAckedMoreThenOnce(){
-        numberOfPacketsAckedMoreThanOnce++;
-    }
-
     public static void packetReceived(){
         numberOfPacketsReceived++;
     }

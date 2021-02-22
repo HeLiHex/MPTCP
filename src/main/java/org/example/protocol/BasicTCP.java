@@ -161,7 +161,6 @@ public class BasicTCP extends AbstractTCP {
         }
 
         if (this.receivedAck.contains(ack)){
-            Statistics.packetAckedMoreThenOnce();
             logger.log(Level.INFO, "ACK is already received");
             return;
         }
