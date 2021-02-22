@@ -6,7 +6,7 @@ import java.util.Queue;
 
 public abstract class Event implements Comparable<Event> {
 
-    private static final int defaultDelay = 1;
+    private static final int DEFAULT_DELAY = 1;
     private final int instant;
 
     public Event(int delay){
@@ -14,7 +14,7 @@ public abstract class Event implements Comparable<Event> {
     }
 
     public Event(){
-        this(defaultDelay);
+        this(DEFAULT_DELAY);
     }
 
     public abstract void run();
