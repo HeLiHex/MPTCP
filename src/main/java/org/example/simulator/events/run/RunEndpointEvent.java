@@ -23,7 +23,7 @@ public class RunEndpointEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-
+        // do nothing because and an endpoint without tcp functionality is not doing anything
     }
 
 }
