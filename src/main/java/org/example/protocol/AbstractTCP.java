@@ -105,7 +105,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withPayload(payload)
                 .build();
         this.send(packet);
-        return;
     }
 
     protected abstract int setReceived();

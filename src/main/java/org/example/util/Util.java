@@ -1,7 +1,6 @@
 package org.example.util;
 
 import org.example.simulator.events.Event;
-
 import java.util.Random;
 
 public class Util {
