@@ -4,7 +4,6 @@ import org.example.data.Packet;
 import org.example.simulator.Statistics;
 import org.example.util.BoundedPriorityBlockingQueue;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
