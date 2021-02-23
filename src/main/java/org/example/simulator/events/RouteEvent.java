@@ -3,7 +3,6 @@ package org.example.simulator.events;
 import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
-import org.example.simulator.Statistics;
 
 import java.util.Queue;
 

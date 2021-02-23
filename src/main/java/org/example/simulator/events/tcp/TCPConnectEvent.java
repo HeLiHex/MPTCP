@@ -1,4 +1,4 @@
-package org.example.simulator.events.TCPEvents;
+package org.example.simulator.events.tcp;
 
 import org.example.network.Channel;
 import org.example.network.Routable;

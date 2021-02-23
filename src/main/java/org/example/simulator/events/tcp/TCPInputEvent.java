@@ -1,4 +1,4 @@
-package org.example.simulator.events.TCPEvents;
+package org.example.simulator.events.tcp;
 
 import org.example.network.Channel;
 import org.example.protocol.AbstractTCP;
@@ -6,7 +6,6 @@ import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
-import java.time.Instant;
 import java.util.Queue;
 
 public class TCPInputEvent extends Event {

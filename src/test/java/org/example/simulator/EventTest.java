@@ -2,28 +2,23 @@ package org.example.simulator;
 
 import org.example.data.Message;
 import org.example.data.Packet;
-import org.example.network.Channel;
-import org.example.network.RoutableEndpoint;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
-import org.example.simulator.events.TCPEvents.TCPConnectEvent;
+import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.TCPEvents.TCPInputEvent;
-import org.example.simulator.events.TCPEvents.TCPRetransmitEventGenerator;
-import org.example.simulator.events.TCPEvents.TCPSendEvent;
-import org.example.util.BoundedPriorityBlockingQueue;
+import org.example.simulator.events.tcp.TCPInputEvent;
+import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
+import org.example.simulator.events.tcp.TCPSendEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.PriorityBlockingQueue;
 
 public class EventTest {
 

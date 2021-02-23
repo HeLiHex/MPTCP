@@ -6,11 +6,11 @@ import org.example.data.PacketBuilder;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.simulator.EventHandler;
-import org.example.simulator.events.TCPEvents.TCPConnectEvent;
+import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.RouteEvent;
 
-import org.example.simulator.events.TCPEvents.TCPInputEvent;
-import org.example.simulator.events.TCPEvents.TCPSendEvent;
+import org.example.simulator.events.tcp.TCPInputEvent;
+import org.example.simulator.events.tcp.TCPSendEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
