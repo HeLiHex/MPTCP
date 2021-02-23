@@ -6,7 +6,6 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
-import java.time.Instant;
 import java.util.Queue;
 
 public class RunNetworkNodeEvent extends Event {

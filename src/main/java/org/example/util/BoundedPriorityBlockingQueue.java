@@ -120,7 +120,7 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     }
 
     @Override
-    public <T> T[] toArray(T[] ts) {
+    public <E> E[] toArray(E[] ts) {
         return this.pbq.toArray(ts);
     }
 
