@@ -23,6 +23,7 @@ public class StatisticsTest {
     public void noExceptionCallingToStringTest(){
         Statistics statistics = new Statistics();
         System.out.println(statistics.toString());
+        Assert.assertTrue(statistics.toString().length() > 0);
     }
 
     private void connect(EventHandler eventHandler, TCP client, Endpoint endpoint){
