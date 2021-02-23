@@ -41,4 +41,13 @@ public class TCPConnectEvent extends Event {
         events.add(new TCPConnectEvent(100, this.client, this.host));
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
