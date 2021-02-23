@@ -31,4 +31,14 @@ public class RunNetworkNodeEvent extends Event {
         events.add(new ChannelEvent(channel));
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
 }

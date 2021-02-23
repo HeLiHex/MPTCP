@@ -26,4 +26,14 @@ public class RunEndpointEvent extends Event {
         // do nothing because and an endpoint without tcp functionality is not doing anything
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
 }
