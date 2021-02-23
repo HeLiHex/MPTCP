@@ -3,7 +3,6 @@ package org.example.protocol;
 import org.example.data.Packet;
 import org.example.simulator.Statistics;
 import org.example.util.BoundedPriorityBlockingQueue;
-import org.example.util.WaitingPacket;
 
 import java.time.Duration;
 import java.util.*;
@@ -23,7 +22,7 @@ public class BasicTCP extends AbstractTCP {
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
     private final BlockingQueue<Packet> received;
-    private final BoundedPriorityBlockingQueue<WaitingPacket> waitingPackets;
+    private final BoundedPriorityBlockingQueue<Packet> waitingPackets;
     private final BlockingQueue<Packet> receivedAck;
 
     public BasicTCP() {
@@ -34,7 +33,7 @@ public class BasicTCP extends AbstractTCP {
         this.logger = Logger.getLogger(this.getClass().getSimpleName());
 
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, Comparator.comparingInt(wp -> wp.getPacket().getSequenceNumber()));
+        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
         this.receivedAck = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
     }
 
@@ -42,11 +41,6 @@ public class BasicTCP extends AbstractTCP {
         boolean added = this.received.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
         Statistics.packetReceived();
-    }
-
-    private void addToWaitingPackets(WaitingPacket waitingPacket){
-        boolean added = this.waitingPackets.offer(waitingPacket);
-        if (!added) throw new IllegalStateException("Packet was not added to the waitingPackets queue");
     }
 
     private void addToReceivedAck(Packet packet){
@@ -101,12 +95,11 @@ public class BasicTCP extends AbstractTCP {
     }
 
     public boolean hasPacketsToRetransmit(){
-        for (WaitingPacket wp : this.waitingPackets){
-            boolean timeoutFinished = wp.timeoutFinished();
-            boolean ackNotReceivedOnPacket = !this.receivedAck.contains(wp.getPacket());
-            boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()));
+        for (Packet p : this.waitingPackets){
+            boolean ackNotReceivedOnPacket = !this.receivedAck.contains(p);
+            boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == p.getSequenceNumber()));
 
-            boolean packetShouldBeRetransmitted = timeoutFinished && ackNotReceivedOnPacket && noMatchingWaitingPacketOnAck;
+            boolean packetShouldBeRetransmitted = ackNotReceivedOnPacket && noMatchingWaitingPacketOnAck;
             if (packetShouldBeRetransmitted) return true;
         }
         return false;
@@ -123,14 +116,13 @@ public class BasicTCP extends AbstractTCP {
     @Override
     public Packet[] packetsToRetransmit() {
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
-        for (WaitingPacket wp : this.waitingPackets) {
+        for (Packet p : this.waitingPackets) {
             //boolean timeoutFinished = wp.timeoutFinished();
-            boolean ackNotReceivedOnPacket = !this.receivedAck.contains(wp.getPacket());
-            boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == wp.getPacket().getSequenceNumber()));
-            if (/*timeoutFinished &&*/ ackNotReceivedOnPacket && noMatchingWaitingPacketOnAck){
-                boolean added = retransmit.offer(wp.getPacket());
+            boolean ackNotReceivedOnPacket = !this.receivedAck.contains(p);
+            boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == p.getSequenceNumber()));
+            if (ackNotReceivedOnPacket && noMatchingWaitingPacketOnAck){
+                boolean added = retransmit.offer(p);
                 if (!added) throw new IllegalStateException("a packet was not added to the retransmit queue");
-                //wp.restart();
             }
         }
         return retransmit.toArray(new Packet[retransmit.size()]);
@@ -143,8 +135,8 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     protected void addToWaitingPacketWindow(Packet packet){
-        WaitingPacket waitingPacket = new WaitingPacket(packet, timeoutDuration);
-        this.addToWaitingPackets(waitingPacket);
+        boolean added = this.waitingPackets.offer(packet);
+        if (!added) throw new IllegalStateException("Packet was not added to the waitingPackets queue");
     }
 
     @Override
@@ -167,14 +159,14 @@ public class BasicTCP extends AbstractTCP {
         }
 
         if (this.waitingPackets.stream().noneMatch(
-                (waitingPacket -> waitingPacket.getPacket().getSequenceNumber() == ack.getAcknowledgmentNumber()-1))){
+                (waitingPacket -> waitingPacket.getSequenceNumber() == ack.getAcknowledgmentNumber()-1))){
             logger.log(Level.INFO, "ACK received but no packet to be acknowledge was found");
             return;
         }
 
         this.addToReceivedAck(ack);
 
-        while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getPacket().getSequenceNumber()){
+        while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getSequenceNumber()){
             this.waitingPackets.poll();
             Packet firstAck = this.receivedAck.poll();
             this.updateConnection(firstAck);
