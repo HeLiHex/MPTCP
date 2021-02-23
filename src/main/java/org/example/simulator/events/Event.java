@@ -32,4 +32,14 @@ public abstract class Event implements Comparable<Event> {
         return 0;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        //(Event.compareTo(e) == 0) != Event.Equals(e)
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
