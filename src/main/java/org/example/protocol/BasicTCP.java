@@ -18,7 +18,6 @@ public class BasicTCP extends AbstractTCP {
     private static final int WINDOW_SIZE = 4;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
-    private final Duration timeoutDuration = Duration.ofMillis(10000000);
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
     private final BlockingQueue<Packet> received;
@@ -117,7 +116,6 @@ public class BasicTCP extends AbstractTCP {
     public Packet[] packetsToRetransmit() {
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
         for (Packet p : this.waitingPackets) {
-            //boolean timeoutFinished = wp.timeoutFinished();
             boolean ackNotReceivedOnPacket = !this.receivedAck.contains(p);
             boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == p.getSequenceNumber()));
             if (ackNotReceivedOnPacket && noMatchingWaitingPacketOnAck){
