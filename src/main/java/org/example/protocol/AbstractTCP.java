@@ -4,7 +4,6 @@ import org.example.data.*;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
-import org.example.simulator.Statistics;
 import org.example.util.Util;
 
 import java.util.concurrent.BlockingQueue;

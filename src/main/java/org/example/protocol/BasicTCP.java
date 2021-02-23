@@ -19,7 +19,7 @@ public class BasicTCP extends AbstractTCP {
     private static final int WINDOW_SIZE = 4;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
-    private final Duration TIMEOUT_DURATION = Duration.ofMillis(10000000);
+    private final Duration timeoutDuration = Duration.ofMillis(10000000);
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
     private final BlockingQueue<Packet> received;
@@ -143,7 +143,7 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     protected void addToWaitingPacketWindow(Packet packet){
-        WaitingPacket waitingPacket = new WaitingPacket(packet, TIMEOUT_DURATION);
+        WaitingPacket waitingPacket = new WaitingPacket(packet, timeoutDuration);
         this.addToWaitingPackets(waitingPacket);
     }
 
@@ -190,10 +190,6 @@ public class BasicTCP extends AbstractTCP {
 
     }
 
-    public Duration getTimeoutDuration() {
-        return TIMEOUT_DURATION;
-    }
-
     @Override
     public int getWindowSize() {
         return WINDOW_SIZE;
@@ -214,10 +210,6 @@ public class BasicTCP extends AbstractTCP {
     private boolean inWindow(int packetIndex){
         int windowSize = this.getWindowSize();
         return packetIndex < windowSize && packetIndex >= 0;
-    }
-
-    public boolean hasWaitingPackets() {
-        return !this.waitingPackets.isEmpty();
     }
 
     @Override
