@@ -6,7 +6,7 @@ import org.example.network.interfaces.Endpoint;
 
 import java.util.Queue;
 
-public class RouteEvent extends Event{
+public class RouteEvent extends Event {
 
     private final Packet packet;
     private final Endpoint endpoint;

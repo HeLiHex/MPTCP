@@ -1,6 +1,6 @@
 package org.example.data;
 
-public class Message implements Payload{
+public class Message implements Payload {
 
     private String msg;
 

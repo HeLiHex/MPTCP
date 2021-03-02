@@ -50,7 +50,7 @@ public class RoutableEndpoint extends Routable implements Endpoint {
     }
 
     @Override
-    public boolean isConnected(){
+    public boolean isConnected() {
         return false;
     }
 
@@ -59,12 +59,12 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         return null;
     }
 
-    public Packet getReceivedPacket(){
+    public Packet getReceivedPacket() {
         return this.receivedPackets.poll();
     }
 
     @Override
-    public void run(){
+    public void run() {
         if (this.inputBufferIsEmpty()) return;
         Packet received = this.dequeueInputBuffer();
         this.receivedPackets.add(received);

@@ -37,7 +37,7 @@ public class BasicTCP extends AbstractTCP {
         this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
     }
 
-    private void addToReceived(Packet packet){
+    private void addToReceived(Packet packet) {
         if (this.received.contains(packet)) return;
         boolean added = this.received.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
@@ -49,14 +49,14 @@ public class BasicTCP extends AbstractTCP {
         return this.received.poll();
     }
 
-    private void ack(Packet packet){
+    private void ack(Packet packet) {
         this.lastAcknowledged = packet;
         Packet ack = new PacketBuilder().ackBuild(packet);
         this.route(ack);
     }
 
-    private boolean dupAck(){
-        if (this.lastAcknowledged == null){
+    private boolean dupAck() {
+        if (this.lastAcknowledged == null) {
             return false;
         }
         this.ack(this.lastAcknowledged);
@@ -66,8 +66,8 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected boolean setReceived(Packet packet) {
         if (packet == null) throw new IllegalStateException("null packet received");
-        if (this.inReceivingWindow(packet)){
-            if (receivingPacketIndex(packet) == 0){
+        if (this.inReceivingWindow(packet)) {
+            if (receivingPacketIndex(packet) == 0) {
                 this.updateConnection(packet);
                 this.ack(packet);
                 this.addToReceived(packet);
@@ -75,11 +75,10 @@ public class BasicTCP extends AbstractTCP {
             }
             this.addToReceived(packet);
         }
-        boolean dupAckSent = this.dupAck();
-        return dupAckSent;
+        return this.dupAck(); //if a dupACK was sent or not
     }
 
-    public boolean packetIsWaiting(Packet packetToMatch){
+    public boolean packetIsWaiting(Packet packetToMatch) {
         return waitingPackets.contains(packetToMatch);
     }
 
@@ -89,14 +88,14 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected void addToWaitingPacketWindow(Packet packet){
+    protected void addToWaitingPacketWindow(Packet packet) {
         boolean added = this.waitingPackets.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the waitingPackets queue");
     }
 
     @Override
     protected void ackReceived(Packet ack) {
-        if (!this.isConnected()){
+        if (!this.isConnected()) {
             logger.log(Level.INFO, "ack received with no connection established");
             return;
         }
@@ -114,18 +113,18 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    public boolean inSendingWindow(Packet packet){
+    public boolean inSendingWindow(Packet packet) {
         int packetIndex = sendingPacketIndex(packet);
         return inWindow(packetIndex);
     }
 
     @Override
-    protected boolean inReceivingWindow(Packet packet){
+    protected boolean inReceivingWindow(Packet packet) {
         int packetIndex = receivingPacketIndex(packet);
         return inWindow(packetIndex);
     }
 
-    private boolean inWindow(int packetIndex){
+    private boolean inWindow(int packetIndex) {
         int windowSize = this.getWindowSize();
         return packetIndex < windowSize && packetIndex >= 0;
     }

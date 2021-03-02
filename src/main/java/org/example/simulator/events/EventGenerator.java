@@ -1,6 +1,6 @@
 package org.example.simulator.events;
 
-public abstract class EventGenerator extends Event{
+public abstract class EventGenerator extends Event {
 
     protected EventGenerator(long delay) {
         super(delay);

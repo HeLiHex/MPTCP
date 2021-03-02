@@ -23,21 +23,21 @@ public class RoutingTable {
     }
 
     private void addEntry(NetworkNode node, Channel channel) {
-        if (channel == null){
+        if (channel == null) {
             this.table.put(node, Map.entry(new Channel(node), 0));
             return;
         }
 
         boolean prevNodeInTable = table.containsKey(channel.getSource());
-        int newCost = prevNodeInTable ? table.get(channel.getSource()).getValue() +  channel.getCost(): channel.getCost();
+        int newCost = prevNodeInTable ? table.get(channel.getSource()).getValue() + channel.getCost() : channel.getCost();
 
         table.put(node, Map.entry(channel, newCost));
     }
 
     private void updateEntry(NetworkNode node, Channel channel) {
         boolean prevNodeInTable = table.containsKey(channel.getSource());
-        int newCost = prevNodeInTable ? table.get(channel.getSource()).getValue() + channel.getCost(): 0;
-        if (newCost < this.table.get(node).getValue()){
+        int newCost = prevNodeInTable ? table.get(channel.getSource()).getValue() + channel.getCost() : 0;
+        if (newCost < this.table.get(node).getValue()) {
             table.replace(node, Map.entry(channel, newCost));
         }
     }
@@ -48,7 +48,7 @@ public class RoutingTable {
         update(startingNode, new ArrayList<>(), new PriorityQueue<>());
     }
 
-    private void update(NetworkNode curNode, List<NetworkNode> visited, Queue<Channel> priorityQueue){
+    private void update(NetworkNode curNode, List<NetworkNode> visited, Queue<Channel> priorityQueue) {
         visited.add(curNode);
 
         for (Channel channel : curNode.getChannels()) {
@@ -56,7 +56,7 @@ public class RoutingTable {
             this.updateTable(channel.getDestination(), channel);
         }
 
-        while (!priorityQueue.isEmpty()){
+        while (!priorityQueue.isEmpty()) {
             Channel bestChannel = priorityQueue.poll();
             if (visited.contains(bestChannel.getDestination())) continue;
             update(bestChannel.getDestination(), visited, priorityQueue);
@@ -67,7 +67,8 @@ public class RoutingTable {
     public Channel getPath(NetworkNode source, NetworkNode destination) {
         if (this.table.isEmpty()) throw new IllegalStateException("The routing table is empty");
         if (destination == null) throw new IllegalArgumentException("The destination can't be null");
-        if (!this.table.containsKey(destination)) throw new IllegalArgumentException("Destination " + destination + " does not exist in this routing table");
+        if (!this.table.containsKey(destination))
+            throw new IllegalArgumentException("Destination " + destination + " does not exist in this routing table");
 
         Channel curChannel = this.table.get(destination).getKey();
         NetworkNode prevNode = curChannel.getSource();

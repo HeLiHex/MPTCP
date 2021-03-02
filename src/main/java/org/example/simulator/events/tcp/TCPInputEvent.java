@@ -17,20 +17,20 @@ public class TCPInputEvent extends Event {
     private boolean ackSent;
 
     public TCPInputEvent(TCP tcp) {
-        super(((AbstractTCP)tcp).processingDelay());
+        super(((AbstractTCP) tcp).processingDelay());
         if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");
         this.tcp = tcp;
     }
 
     @Override
     public void run() {
-        this.ackSent = ((AbstractTCP)this.tcp).handleIncoming();
+        this.ackSent = ((AbstractTCP) this.tcp).handleIncoming();
 
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.ackSent){
+        if (this.ackSent) {
             Channel channelUsed = this.tcp.getChannel();
             events.add(new ChannelEvent(channelUsed));
         }

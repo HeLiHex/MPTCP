@@ -11,18 +11,18 @@ public class EventHandler {
     private final Queue<Event> events;
     private static final Statistics STATISTICS = new Statistics();
 
-    public EventHandler(){
+    public EventHandler() {
         this.events = new PriorityQueue<>();
         Util.setSeed(1337);
         Util.resetTime();
         Statistics.reset();
     }
 
-    public void addEvent(Event event){
+    public void addEvent(Event event) {
         this.events.add(event);
     }
 
-    public Event peekEvent(){
+    public Event peekEvent() {
         return this.events.peek();
     }
 
@@ -30,19 +30,20 @@ public class EventHandler {
         return events;
     }
 
-    public int getNumberOfEvents(){
+    public int getNumberOfEvents() {
         return this.events.size();
     }
 
-    public void printStatistics(){
+    public void printStatistics() {
         System.out.println(STATISTICS.toString());
     }
 
-    public boolean singleRun(){
+    public boolean singleRun() {
         //System.out.println(Util.seeTime());
         Event event = this.events.poll();
-        if (event == null){
-            if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
+        if (event == null) {
+            if (!this.events.isEmpty())
+                throw new IllegalStateException("get null event when events queue are nonempty!");
             return false;
         }
         Util.tickTime(event);
@@ -51,8 +52,8 @@ public class EventHandler {
         return true;
     }
 
-    public void run(){
-        while(singleRun());
+    public void run() {
+        while (singleRun()) ;
         System.out.println(Util.seeTime());
     }
 }

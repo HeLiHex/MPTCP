@@ -18,13 +18,13 @@ public class TCPSendEvent extends Event {
 
 
     public TCPSendEvent(TCP tcp) {
-        super(((AbstractTCP)tcp).processingDelay());
+        super(((AbstractTCP) tcp).processingDelay());
         this.tcp = tcp;
     }
 
     @Override
     public void run() {
-        this.packetSent = ((AbstractTCP)this.tcp).trySend();
+        this.packetSent = ((AbstractTCP) this.tcp).trySend();
         if (this.packetSent != null) Statistics.packetSent();
     }
 

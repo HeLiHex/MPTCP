@@ -7,22 +7,22 @@ import java.util.logging.Logger;
 
 public class Router extends Routable {
 
-    public static class RouterBuilder{
+    public static class RouterBuilder {
 
         private int bufferSize = 10;
         private double noiseTolerance = 100.0;
 
-        public RouterBuilder withBufferSize(int bufferSize){
+        public RouterBuilder withBufferSize(int bufferSize) {
             this.bufferSize = bufferSize;
             return this;
         }
 
-        public RouterBuilder withNoiseTolerance(double noiseTolerance){
+        public RouterBuilder withNoiseTolerance(double noiseTolerance) {
             this.noiseTolerance = noiseTolerance;
             return this;
         }
 
-        public Router build(){
+        public Router build() {
             return new Router(this.bufferSize, this.noiseTolerance);
         }
 
@@ -35,7 +35,7 @@ public class Router extends Routable {
 
     @Override
     public void run() {
-        if (!this.inputBufferIsEmpty()){
+        if (!this.inputBufferIsEmpty()) {
             this.route(this.dequeueInputBuffer());
             return;
         }

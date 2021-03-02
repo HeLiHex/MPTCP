@@ -1,6 +1,7 @@
 package org.example.data;
 
 import org.example.network.interfaces.Endpoint;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,17 +31,17 @@ public class Packet {
         this.acknowledgmentNumber = acknowledgmentNumber;
     }
 
-    public boolean hasAllFlags(Flag... flags){
-        if (flags == null || this.flags == null){
+    public boolean hasAllFlags(Flag... flags) {
+        if (flags == null || this.flags == null) {
             throw new NullPointerException("flags can't be null");
         }
 
-        if (this.flags.isEmpty()){
+        if (this.flags.isEmpty()) {
             // flags given are not in the list
             return false;
         }
 
-        if (flags.length == 0){
+        if (flags.length == 0) {
             // no flags given implies that all flags given are in list
             return true;
         }
@@ -78,7 +79,7 @@ public class Packet {
         return acknowledgmentNumber;
     }
 
-    public int size(){
+    public int size() {
         if (this.payload == null) return 0;
         return payload.size();
     }
@@ -90,10 +91,9 @@ public class Packet {
     @Override
     public String toString() {
         String returnString;
-        if (this.payload == null){
+        if (this.payload == null) {
             returnString = this.flags.toString();
-        }
-        else{
+        } else {
             returnString = "[" + this.payload.toString() + "]";
         }
         returnString += "[seq: " + this.getSequenceNumber() + "]";

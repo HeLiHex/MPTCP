@@ -8,11 +8,11 @@ public abstract class Event implements Comparable<Event> {
 
     private final long instant;
 
-    protected Event(long delay){
+    protected Event(long delay) {
         this.instant = Util.getTime() + delay;
     }
 
-    protected Event(){
+    protected Event() {
         this(0);
     }
 
@@ -20,15 +20,13 @@ public abstract class Event implements Comparable<Event> {
 
     public abstract void generateNextEvent(Queue<Event> events);
 
-    public long getInstant(){
+    public long getInstant() {
         return this.instant;
     }
 
     @Override
     public int compareTo(Event o) {
-        if (this.getInstant() < o.getInstant()) return -1;
-        if (this.getInstant() > o.getInstant()) return 1;
-        return 0;
+        return Long.compare(this.getInstant(), o.getInstant());
     }
 
     @Override

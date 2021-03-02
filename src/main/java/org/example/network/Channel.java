@@ -10,7 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Channel implements Comparable<Channel>{
+public class Channel implements Comparable<Channel> {
 
     private final Logger logger;
 
@@ -21,7 +21,7 @@ public class Channel implements Comparable<Channel>{
     private final double noiseTolerance;
     private final int capacity = 10;
 
-    private Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost){
+    private Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
         this.line = new ArrayBlockingQueue<>(capacity);
 
@@ -36,15 +36,15 @@ public class Channel implements Comparable<Channel>{
     }
 
     //loopback
-    public Channel(NetworkNode source){
+    public Channel(NetworkNode source) {
         this(source, source, 0, 0);
     }
 
-    public long propogationDelay(){
+    public long propogationDelay() {
         return Util.getNextRandomInt((this.capacity + this.cost));
     }
 
-    private boolean lossy(){
+    private boolean lossy() {
         if (this.source.equals(this.destination)) return false;
         double gaussianNoise = Util.getNextGaussian();
         double noise = StrictMath.abs(gaussianNoise);
@@ -67,15 +67,15 @@ public class Channel implements Comparable<Channel>{
         return cost;
     }
 
-    public boolean channel(){
+    public boolean channel() {
         //channel is in same cases called without the packet making it's way to the line
         //this prevents NullPointerException
-        if (this.line.isEmpty()){
+        if (this.line.isEmpty()) {
             return false;
         }
 
         Packet packet = this.line.poll();
-        if (lossy()){
+        if (lossy()) {
             Statistics.packetLost();
             this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " lost due to noise");
             return false;
@@ -92,7 +92,7 @@ public class Channel implements Comparable<Channel>{
 
     @Override
     public String toString() {
-        return this.source.toString() + " -> [" + this.cost + "] -> " +  this.destination.toString();
+        return this.source.toString() + " -> [" + this.cost + "] -> " + this.destination.toString();
     }
 
     @Override

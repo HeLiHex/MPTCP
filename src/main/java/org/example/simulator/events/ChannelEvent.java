@@ -10,7 +10,7 @@ import org.example.simulator.events.run.RunNetworkNodeEvent;
 
 import java.util.Queue;
 
-public class ChannelEvent extends Event{
+public class ChannelEvent extends Event {
 
     private final Channel channel;
     private boolean channelSuccess;
@@ -28,7 +28,7 @@ public class ChannelEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.channelSuccess){
+        if (this.channelSuccess) {
             NetworkNode nextNode = this.channel.getDestination();
             if (nextNode instanceof TCP) {
                 events.add(new TCPInputEvent((TCP) nextNode));

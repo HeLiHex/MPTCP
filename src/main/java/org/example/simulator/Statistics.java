@@ -10,7 +10,7 @@ public class Statistics {
     private static int numberOfPacketsAckedMoreThanOnce; // total number of packets dropped
     private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
-    public static void reset(){
+    public static void reset() {
         numberOfPackets = 0;
         numberOfPacketsSent = 0;
         numberOfPacketsRetransmitted = 0;
@@ -20,25 +20,25 @@ public class Statistics {
         numberOfPacketsReceived = 0;
     }
 
-    public static void packetSent(){
+    public static void packetSent() {
         numberOfPackets++;
         numberOfPacketsSent++;
     }
 
-    public static void packetRetransmit(){
+    public static void packetRetransmit() {
         numberOfPacketsSent++;
         numberOfPacketsRetransmitted++;
     }
 
-    public static void packetLost(){
+    public static void packetLost() {
         numberOfPacketsLost++;
     }
 
-    public static void packetDropped(){
+    public static void packetDropped() {
         numberOfPacketsDropped++;
     }
 
-    public static void packetReceived(){
+    public static void packetReceived() {
         numberOfPacketsReceived++;
     }
 
@@ -121,7 +121,6 @@ public class Statistics {
         sb.append("number of packets received: ");
         sb.append(numberOfPacketsReceived);
         sb.append("\n");
-
 
 
         sb.append('}');

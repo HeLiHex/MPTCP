@@ -38,23 +38,23 @@ public abstract class Routable implements NetworkNode {
     }
 
     @Override
-    public Channel getPath(NetworkNode destination){
+    public Channel getPath(NetworkNode destination) {
         return this.routingTable.getPath(this, destination);
     }
 
     @Override
-    public long processingDelay(){
+    public long processingDelay() {
         return 2;
     }
 
     @Override
-    public List<Channel> getChannels(){
+    public List<Channel> getChannels() {
         return this.channels;
     }
 
     @Override
     public void addChannel(NetworkNode node) {
-        for (Channel channel : this.getChannels()){
+        for (Channel channel : this.getChannels()) {
             boolean thisContainsNode = channel.getDestination().equals(node);
             if (thisContainsNode) return;
         }
@@ -72,7 +72,7 @@ public abstract class Routable implements NetworkNode {
     public boolean enqueueInputBuffer(Packet packet) {
         // this if prohibits multiple packets with the same sequence number!
         if (this.inputBuffer.stream().anyMatch(
-                p -> p.getSequenceNumber() == packet.getSequenceNumber())){
+                p -> p.getSequenceNumber() == packet.getSequenceNumber())) {
             return false;
         }
         return this.inputBuffer.offer(packet);
@@ -93,7 +93,7 @@ public abstract class Routable implements NetworkNode {
         return this.inputBuffer.isEmpty();
     }
 
-    public int inputBufferSize(){
+    public int inputBufferSize() {
         return this.inputBuffer.size();
     }
 
