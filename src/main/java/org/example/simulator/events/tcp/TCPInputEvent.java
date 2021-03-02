@@ -14,7 +14,7 @@ import java.util.Queue;
 public class TCPInputEvent extends Event {
 
     private final TCP tcp;
-    private int numberOfPacketsAcked;
+    private boolean ackSent;
 
     public TCPInputEvent(TCP tcp) {
         super();
@@ -24,13 +24,15 @@ public class TCPInputEvent extends Event {
 
     @Override
     public void run() {
-        this.numberOfPacketsAcked = ((AbstractTCP)this.tcp).handleIncoming();
+        this.ackSent = ((AbstractTCP)this.tcp).handleIncoming();
+
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
         events.add(new TCPSendEvent(this.tcp));
-        for (int i = 0; i < this.numberOfPacketsAcked; i++) {
+
+        if (this.ackSent){
             Channel channelUsed = this.tcp.getChannel();
             events.add(new ChannelEvent(channelUsed));
         }

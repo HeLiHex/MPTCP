@@ -61,7 +61,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected int setReceived() {
+    protected boolean setReceived() {
         Packet packet = this.dequeueInputBuffer();
         if (packet == null) throw new IllegalStateException("null packet received");
         if (this.inReceivingWindow(packet)){
@@ -69,7 +69,7 @@ public class BasicTCP extends AbstractTCP {
                 this.updateConnection(packet);
                 this.ack(packet);
                 this.addToReceived(packet);
-                return 1;
+                return true;
             }
             //todo - packet should be received
             //to implement DupACK this packet should be received if it's not already received.
@@ -78,15 +78,14 @@ public class BasicTCP extends AbstractTCP {
                 this.dupAck();
                 this.addToReceived(packet);
             }
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
     public boolean packetIsWaiting(Packet packetToMatch){
         return waitingPackets.contains(packetToMatch);
     }
-
 
     @Override
     public boolean isWaitingForACK() {

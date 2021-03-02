@@ -106,7 +106,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.send(packet);
     }
 
-    protected abstract int setReceived();
+    protected abstract boolean setReceived();
 
     @Override
     public void close() {
@@ -203,28 +203,28 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
-    public int handleIncoming(){
+    public boolean handleIncoming(){
         //this method returns the number of acknowledgments sent
         if (this.inputBufferIsEmpty()){
-            return 0;
+            return false;
         }
 
         Packet packet = this.inputBuffer.peek();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)){
             this.continueConnect();
-            return 1;
+            return true;
         }
 
         if (packet.hasAllFlags(Flag.ACK)){
             this.ackReceived();
-            return 0;
+            return false;
         }
 
         if (packet.hasAllFlags(Flag.SYN)){
             this.connect(packet);
             this.dequeueInputBuffer();
-            return 1;
+            return true;
         }
 
         return this.setReceived();

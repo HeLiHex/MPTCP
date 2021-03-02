@@ -516,7 +516,7 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(1.4).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
         BasicTCP server = new BasicTCP();
 
         client.addChannel(router);
