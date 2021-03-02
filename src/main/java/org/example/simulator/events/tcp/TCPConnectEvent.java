@@ -38,7 +38,7 @@ public class TCPConnectEvent extends Event {
 
         Channel channel = ((Routable)this.client).getPath(this.host);
         events.add(new ChannelEvent(channel));
-        events.add(new TCPConnectEvent(100, this.client, this.host));
+        events.add(new TCPConnectEvent(1000, this.client, this.host));
     }
 
     @Override

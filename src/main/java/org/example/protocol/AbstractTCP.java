@@ -28,7 +28,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public void connect(Endpoint host) {
-        this.updateRoutingTable();
+        this.connection = null;
         this.initialSequenceNumber = Util.getNextRandomInt(100);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
@@ -76,7 +76,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withAcknowledgmentNumber(ackNum)
                 .build();
 
-        //this.addToWaitingPacketWindow(synAck);
+        this.setConnection(new Connection(this, node, seqNum, ackNum));
+        this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
+        this.addToWaitingPacketWindow(synAck);
         this.route(synAck);
     }
 
@@ -185,7 +187,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     @Override
-    public synchronized boolean enqueueInputBuffer(Packet packet) {
+    public boolean enqueueInputBuffer(Packet packet) {
         boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK)
                 || packet.hasAllFlags(Flag.SYN)
                 || packetIsFromValidConnection(packet);
@@ -212,10 +214,12 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         if (packet.hasAllFlags(Flag.ACK)){
             System.out.println("creating connection");
-            this.setConnection(new Connection(this,
+            /*this.setConnection(new Connection(
+                    this,
                     packet.getOrigin(),
                     packet.getAcknowledgmentNumber() - 1,
-                    packet.getSequenceNumber()));
+                    packet.getSequenceNumber())
+            );*/
             this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
             return false;
         }
@@ -224,14 +228,16 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
 
     public boolean handleIncoming(){
-        //this method returns the number of acknowledgments sent
-        if (this.inputBufferIsEmpty()){
-            return false;
-        }
+        if (this.inputBufferIsEmpty()) return false;
 
         if (!isConnected()) return unconnectedInputHandler();
 
         Packet packet = this.inputBuffer.peek();
+        if (packet.hasAllFlags(Flag.SYN)){
+            this.connection = null;
+            unconnectedInputHandler();
+        }
+
         if (packet.hasAllFlags(Flag.ACK)){
             this.ackReceived();
             return false;

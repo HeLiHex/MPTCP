@@ -18,7 +18,7 @@ public class BasicTCP extends AbstractTCP {
     private Packet lastAcknowledged;
 
 
-    private static final int WINDOW_SIZE = 4;
+    private static final int WINDOW_SIZE = 7;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
@@ -56,7 +56,9 @@ public class BasicTCP extends AbstractTCP {
     }
 
     private void dupAck(){
-        if (this.lastAcknowledged == null) return;
+        if (this.lastAcknowledged == null){
+            return;
+        }
         this.ack(this.lastAcknowledged);
     }
 
@@ -71,13 +73,11 @@ public class BasicTCP extends AbstractTCP {
                 this.addToReceived(packet);
                 return true;
             }
-            if (!received.contains(packet)){
-                this.dupAck();
-                this.addToReceived(packet);
-            }
-            return true;
+            this.addToReceived(packet);
         }
-        return false;
+        this.dupAck();
+
+        return true;
     }
 
     public boolean packetIsWaiting(Packet packetToMatch){
@@ -102,7 +102,6 @@ public class BasicTCP extends AbstractTCP {
             logger.log(Level.INFO, "ack received with no connection established");
             return;
         }
-
         int ackIndex = sendingPacketIndex(ack);
         for (int i = 0; i <= ackIndex; i++) {
             waitingPackets.poll();

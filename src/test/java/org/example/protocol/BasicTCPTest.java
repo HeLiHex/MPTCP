@@ -36,7 +36,7 @@ public class BasicTCPTest {
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
         Assert.assertEquals(client, server.getConnection().getConnectedNode());
 
-        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber() - 1);
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
     }
 
     @Test
@@ -519,7 +519,7 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
         BasicTCP server = new BasicTCP();
 
         client.addChannel(router);

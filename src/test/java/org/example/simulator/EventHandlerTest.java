@@ -142,7 +142,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventArrangementsAreConsistent(){
-        double noiseTolerance = 2;
+        double noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
         BasicTCP client = new BasicTCP();
@@ -206,7 +206,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventAreRunningInCorrectOrderWithRespectToTime() {
-        double noiseTolerance = 2;
+        double noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
         BasicTCP client = new BasicTCP();

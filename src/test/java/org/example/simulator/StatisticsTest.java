@@ -166,15 +166,13 @@ public class StatisticsTest {
             Assert.assertEquals(numberOfPacketsAckedMoreThanOnce, Statistics.getNumberOfPacketsAckedMoreThanOnce());
             Assert.assertEquals(numberOfPacketsRetransmitted, Statistics.getNumberOfPacketsRetransmitted());
 
-
-
         }
     }
 
 
     @Test
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
-        double noiseTolerance = 2.5;
+        double noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
         BasicTCP client = new BasicTCP();

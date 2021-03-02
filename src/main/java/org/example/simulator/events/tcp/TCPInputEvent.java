@@ -24,6 +24,7 @@ public class TCPInputEvent extends Event {
 
     @Override
     public void run() {
+        System.out.println(((AbstractTCP)this.tcp).peekInputBuffer());
         this.ackSent = ((AbstractTCP)this.tcp).handleIncoming();
 
     }
