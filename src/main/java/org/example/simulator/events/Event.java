@@ -6,16 +6,14 @@ import java.util.Queue;
 
 public abstract class Event implements Comparable<Event> {
 
-    private static final int DEFAULT_DELAY = 1;
     private final long instant;
 
     protected Event(long delay){
-        if (delay < DEFAULT_DELAY) delay = DEFAULT_DELAY;
         this.instant = Util.getTime() + delay;
     }
 
     protected Event(){
-        this(DEFAULT_DELAY);
+        this(0);
     }
 
     public abstract void run();

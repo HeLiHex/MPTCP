@@ -43,6 +43,7 @@ public class EventTest {
     }
 
     @Test
+    @Ignore
     public void test(){
         this.tcp.addChannel(this.host);
         this.tcp.updateRoutingTable();

@@ -17,7 +17,7 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
     private final Packet packet;
 
     public TCPRetransmitEventGenerator(BasicTCP tcp, Packet packet) {
-        super(10000);
+        super(tcp.getRTO());
         this.tcp = tcp;
         this.packet = packet;
     }

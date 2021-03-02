@@ -2,7 +2,7 @@ package org.example.simulator.events;
 
 public abstract class EventGenerator extends Event{
 
-    protected EventGenerator(int delay) {
+    protected EventGenerator(long delay) {
         super(delay);
     }
 

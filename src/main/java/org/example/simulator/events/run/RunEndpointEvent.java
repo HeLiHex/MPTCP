@@ -8,7 +8,6 @@ import java.util.Queue;
 
 public class RunEndpointEvent extends Event {
 
-
     private final Endpoint endpoint;
 
     public RunEndpointEvent(Endpoint endpoint) {

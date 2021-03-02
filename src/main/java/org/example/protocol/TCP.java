@@ -68,6 +68,10 @@ public interface TCP{
 
     Endpoint getConnectedEndpoint();
 
+    long getRTT();
+
+    long getRTO();
+
 
 
 }
