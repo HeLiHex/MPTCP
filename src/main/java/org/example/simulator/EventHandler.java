@@ -38,27 +38,20 @@ public class EventHandler {
         System.out.println(STATISTICS.toString());
     }
 
-    public void singleRun(){
+    public boolean singleRun(){
+        System.out.println(Util.seeTime());
         Event event = this.events.poll();
         if (event == null){
             if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
-            return;
+            return false;
         }
+        Util.tickTime(event);
         event.run();
         event.generateNextEvent(this.events);
-        Util.tickTime(event);
+        return true;
     }
 
     public void run(){
-        while(true){
-            Event event = this.events.poll();
-            if (event == null){
-                if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
-                break;
-            }
-            event.run();
-            event.generateNextEvent(this.events);
-            Util.tickTime(event);
-        }
+        while(singleRun());
     }
 }

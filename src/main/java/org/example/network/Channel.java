@@ -21,10 +21,11 @@ public class Channel implements Comparable<Channel>{
     private final NetworkNode destination;
     private final int cost;
     private final double noiseTolerance;
+    private final int capacity = 100;
 
     public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
-        this.line = new ArrayBlockingQueue<>(1000);
+        this.line = new ArrayBlockingQueue<>(capacity);
         this.source = source;
         this.destination = destination;
         this.cost = Util.getNextRandomInt(100);
@@ -54,7 +55,7 @@ public class Channel implements Comparable<Channel>{
     }
 
     public void channelPackage(Packet packet) {
-        this.line.add(packet);
+        this.line.offer(packet);
     }
 
     public NetworkNode getSource() {

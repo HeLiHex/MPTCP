@@ -1,6 +1,7 @@
 package org.example.protocol;
 
 import org.example.data.Packet;
+import org.example.data.PacketBuilder;
 import org.example.simulator.Statistics;
 import org.example.util.BoundedPriorityBlockingQueue;
 
@@ -14,6 +15,9 @@ public class BasicTCP extends AbstractTCP {
 
     private final Logger logger;
 
+    private Packet lastAcknowledged;
+    private int dupAckCount;
+
     private static final int WINDOW_SIZE = 4;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
@@ -21,7 +25,7 @@ public class BasicTCP extends AbstractTCP {
 
     private final BlockingQueue<Packet> received;
     private final BoundedPriorityBlockingQueue<Packet> waitingPackets;
-    private final BlockingQueue<Packet> receivedAck;
+    //private final BlockingQueue<Packet> receivedAck;
 
     public BasicTCP() {
         super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
@@ -30,68 +34,67 @@ public class BasicTCP extends AbstractTCP {
         );
         this.logger = Logger.getLogger(this.getClass().getSimpleName());
 
+        this.dupAckCount = 0;
+
         this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
         this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
-        this.receivedAck = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
+        //this.receivedAck = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
     }
 
     private void addToReceived(Packet packet){
+        if (this.received.contains(packet)) return;
         boolean added = this.received.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
         Statistics.packetReceived();
     }
 
+    /*
     private void addToReceivedAck(Packet packet){
         boolean added = this.receivedAck.offer(packet);
         if (!added) throw new IllegalStateException(" Packet was not added to the receivedAck queue");
     }
+
+     */
 
     @Override
     public Packet receive() {
         return this.received.poll();
     }
 
-    @Override
-    protected int setReceived() {
-        int numPacketsSent = 0;
-
-        if (this.inputBuffer.peek() == null) throw new IllegalStateException("null packet received");
-        boolean shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
-        while (shouldAddToReceived){
-
-            Packet packetReceived = this.dequeueInputBuffer();
-            //this.logger.log(Level.INFO, () -> "packet: " + packetReceived + " received");
-
-            this.updateConnection(packetReceived);
-            if (!this.received.contains(packetReceived)){
-                this.ack(packetReceived);
-                numPacketsSent++;
-                this.addToReceived(packetReceived);
-            }
-
-            if (this.inputBuffer.isEmpty()) return numPacketsSent;
-
-            shouldAddToReceived = receivingPacketIndex(this.inputBuffer.peek()) == 0;
-        }
-
-        for (Packet packet : this.inputBuffer) {
-            if (inReceivingWindow(packet)){
-                if (this.received.contains(packet)) continue;
-                this.addToReceived(packet);
-                this.ack(packet);
-                numPacketsSent++;
-            }else{
-                boolean removed = this.inputBuffer.remove(packet);
-                if (!removed){
-                    throw new IllegalStateException("packet that is already acknowledged has fails to be removed from the input buffer");
-                }
-                this.ack(packet);
-                numPacketsSent++;
-            }
-        }
-        return numPacketsSent;
+    private void ack(Packet packet){
+        this.lastAcknowledged = packet;
+        Packet ack = new PacketBuilder().ackBuild(packet);
+        this.route(ack);
     }
 
+    private void dupAck(){
+        if (this.lastAcknowledged == null) return;
+        this.ack(this.lastAcknowledged);
+    }
+
+    @Override
+    protected int setReceived() {
+        Packet packet = this.dequeueInputBuffer();
+        if (packet == null) throw new IllegalStateException("null packet received");
+        if (this.inReceivingWindow(packet)){
+            if (receivingPacketIndex(packet) == 0){
+                this.updateConnection(packet);
+                this.ack(packet);
+                this.addToReceived(packet);
+                return 1;
+            }
+            //todo - packet should be received
+            //to implement DupACK this packet should be received if it's not already received.
+            //the problem is that just adding will result inn multiple packets
+            if (!received.contains(packet)){
+                this.dupAck();
+                this.addToReceived(packet);
+            }
+            return 1;
+        }
+        return 0;
+    }
+/*
     public boolean hasPacketsToRetransmit(){
         for (Packet p : this.waitingPackets){
             boolean ackNotReceivedOnPacket = !this.receivedAck.contains(p);
@@ -103,16 +106,22 @@ public class BasicTCP extends AbstractTCP {
         return false;
     }
 
+ */
+
 
     public boolean packetIsWaiting(Packet packetToMatch){
+        /*
         boolean ackNotReceivedOnPacket = !this.receivedAck.contains(packetToMatch);
         boolean noMatchingWaitingPacketOnAck = this.receivedAck.stream().noneMatch((packet -> packet.getAcknowledgmentNumber() - 1 == packetToMatch.getSequenceNumber()));
         return ackNotReceivedOnPacket && noMatchingWaitingPacketOnAck;
+         */
+        return waitingPackets.contains(packetToMatch);
     }
 
 
     @Override
     public Packet[] packetsToRetransmit() {
+        /*
         Queue<Packet> retransmit = new PriorityQueue<>(PACKET_COMPARATOR);
         for (Packet p : this.waitingPackets) {
             boolean ackNotReceivedOnPacket = !this.receivedAck.contains(p);
@@ -122,7 +131,11 @@ public class BasicTCP extends AbstractTCP {
                 if (!added) throw new IllegalStateException("a packet was not added to the retransmit queue");
             }
         }
+
         return retransmit.toArray(new Packet[retransmit.size()]);
+
+         */
+        return null;
     }
 
     @Override
@@ -139,45 +152,19 @@ public class BasicTCP extends AbstractTCP {
     @Override
     protected void ackReceived() {
         Packet ack = this.dequeueInputBuffer();
-
         if (!this.isConnected()){
             logger.log(Level.INFO, "ack received with no connection established");
             return;
         }
 
-        if (this.waitingPackets.isEmpty()){
-            logger.log(Level.WARNING, "received ack without any waiting packets. May be from routed (non TCP) packet or possibly uncaught invalid connection ");
-            return;
+        int ackIndex = sendingPacketIndex(ack);
+        for (int i = 0; i <= ackIndex; i++) {
+            waitingPackets.poll();
+            this.dupAckCount = 0;
         }
-
-        if (this.receivedAck.contains(ack)){
-            logger.log(Level.INFO, "ACK is already received");
-            return;
-        }
-
-        if (this.waitingPackets.stream().noneMatch(
-                (waitingPacket -> waitingPacket.getSequenceNumber() == ack.getAcknowledgmentNumber()-1))){
-            logger.log(Level.INFO, "ACK received but no packet to be acknowledge was found");
-            return;
-        }
-
-        this.addToReceivedAck(ack);
-
-        while (receivedAck.peek().getAcknowledgmentNumber() - 1 == waitingPackets.peek().getSequenceNumber()){
-            this.waitingPackets.poll();
-            Packet firstAck = this.receivedAck.poll();
-            this.updateConnection(firstAck);
-
-            if (receivedAck.isEmpty()){
-                return;
-            }
-
-            if(waitingPackets.isEmpty()){
-                return;
-            }
-        }
-
+        this.updateConnection(ack);
     }
+
 
     @Override
     public int getWindowSize() {

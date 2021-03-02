@@ -7,9 +7,10 @@ import java.util.Queue;
 public abstract class Event implements Comparable<Event> {
 
     private static final int DEFAULT_DELAY = 1;
-    private final int instant;
+    private final long instant;
 
-    protected Event(int delay){
+    protected Event(long delay){
+        if (delay < DEFAULT_DELAY) delay = DEFAULT_DELAY;
         this.instant = Util.getTime() + delay;
     }
 
@@ -21,7 +22,7 @@ public abstract class Event implements Comparable<Event> {
 
     public abstract void generateNextEvent(Queue<Event> events);
 
-    public int getInitInstant(){
+    public long getInitInstant(){
         return this.instant;
     }
 

@@ -79,7 +79,7 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreConsistentWithLoss() {
-        double noiseTolerance = 1;
+        double noiseTolerance = 2;
         int numPacketsToSend = 400;
         for (int j = 0; j < 100; j++) {
 
@@ -226,7 +226,11 @@ public class StatisticsTest {
         System.out.println();
         System.out.println(packetsDropped + packetsLost + packetsAckedMoreThanOnce);
         System.out.println(Statistics.getNumberOfPacketsRetransmitted());
-        Assert.assertEquals(0, Statistics.getNumberOfPacketsRetransmitted() - (packetsLost + packetsDropped + packetsAckedMoreThanOnce));
+
+        int losses = (packetsLost + packetsDropped + packetsAckedMoreThanOnce);
+        Assert.assertTrue(Statistics.getNumberOfPacketsRetransmitted() >= losses);
+        Assert.assertTrue(Statistics.getNumberOfPacketsRetransmitted() <= losses * client.getWindowSize());
+        //Assert.assertEquals(0, Statistics.getNumberOfPacketsRetransmitted() - (packetsLost + packetsDropped + packetsAckedMoreThanOnce));
 
     }
 

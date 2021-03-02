@@ -10,7 +10,7 @@ public class Util {
     }
 
     private static final Random random = new Random(1337);
-    private static int time = 0;
+    private static long time = 0;
 
     public static void setSeed(int seed){
         random.setSeed(seed);
@@ -29,10 +29,14 @@ public class Util {
     }
 
     public static void tickTime(Event event){
-        time = event.getInitInstant() + 1;
+        time = event.getInitInstant();
     }
 
-    public static int getTime(){
+    public static long getTime(){
+        return time++;
+    }
+
+    public static long seeTime(){
         return time;
     }
 

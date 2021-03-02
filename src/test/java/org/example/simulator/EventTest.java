@@ -14,6 +14,7 @@ import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
 import org.example.simulator.events.tcp.TCPSendEvent;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Comparator;
@@ -73,12 +74,12 @@ public class EventTest {
         curEvent.generateNextEvent(this.events);
 
         curEvent = this.events.poll();
-        Assert.assertEquals(ChannelEvent.class, curEvent.getClass());
+        Assert.assertEquals(TCPSendEvent.class, curEvent.getClass());
         curEvent.run();
         curEvent.generateNextEvent(this.events);
 
         curEvent = this.events.poll();
-        Assert.assertEquals(TCPSendEvent.class, curEvent.getClass());
+        Assert.assertEquals(ChannelEvent.class, curEvent.getClass());
         curEvent.run();
         curEvent.generateNextEvent(this.events);
 

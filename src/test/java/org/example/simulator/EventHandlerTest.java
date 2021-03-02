@@ -9,6 +9,7 @@ import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.util.Util;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayDeque;
@@ -141,7 +142,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventArrangementsAreConsistent(){
-        double noiseTolerance = 1;
+        double noiseTolerance = 2;
         EventHandler eventHandler = new EventHandler();
 
         BasicTCP client = new BasicTCP();
@@ -200,7 +201,55 @@ public class EventHandlerTest {
             Assert.assertEquals(event.getClass(), eventHandler.peekEvent().getClass());
             eventHandler.singleRun();
         }
+    }
 
 
+    @Test
+    public void eventAreRunningInCorrectOrderWithRespectToTime() {
+        double noiseTolerance = 2;
+        EventHandler eventHandler = new EventHandler();
+
+        BasicTCP client = new BasicTCP();
+        BasicTCP server = new BasicTCP();
+        Router r1 = new Router.RouterBuilder()
+                .withNoiseTolerance(noiseTolerance)
+                .build();
+
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        server.updateRoutingTable();
+
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        Assert.assertNull(eventHandler.peekEvent());
+
+        Util.setSeed(1337);
+
+        int numPacketsToSend = 1000;
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new TCPInputEvent(client));
+
+        Event prevEvent;
+        while (true) {
+            prevEvent = eventHandler.peekEvent();
+            eventHandler.singleRun();
+
+            if (eventHandler.peekEvent() == null) break;
+
+            Event curEvent = eventHandler.peekEvent();
+            Assert.assertTrue(prevEvent.getInitInstant() <= curEvent.getInitInstant());
+        }
+        Assert.assertNull(server.dequeueInputBuffer());
+        Assert.assertNull(client.dequeueInputBuffer());
+        Assert.assertNull(r1.dequeueInputBuffer());
+        Assert.assertNull(eventHandler.peekEvent());
     }
 }

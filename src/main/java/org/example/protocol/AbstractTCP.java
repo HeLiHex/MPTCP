@@ -214,11 +214,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
-    protected void ack(Packet packet){
-        Packet ack = new PacketBuilder().ackBuild(packet);
-        this.route(ack);
-    }
-
     public int handleIncoming(){
         //this method returns the number of acknowledgments sent
         if (this.inputBufferIsEmpty()){

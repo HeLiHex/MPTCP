@@ -1,10 +1,13 @@
 package org.example.simulator.events.tcp;
 
+import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.protocol.AbstractTCP;
+import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.RouteEvent;
 
 import java.util.Queue;
 
@@ -26,11 +29,11 @@ public class TCPInputEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
+        events.add(new TCPSendEvent(this.tcp));
         for (int i = 0; i < this.numberOfPacketsAcked; i++) {
             Channel channelUsed = this.tcp.getChannel();
             events.add(new ChannelEvent(channelUsed));
         }
-        events.add(new TCPSendEvent(this.tcp));
     }
 
     @Override
