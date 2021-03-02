@@ -9,7 +9,6 @@ import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.util.Util;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayDeque;
@@ -25,7 +24,7 @@ public class EventHandlerTest {
         Event eventOne = new Event(Util.getTime()) {
             @Override
             public void run() {
-                System.out.println(this.getInitInstant());
+                System.out.println(this.getInstant());
             }
 
             @Override
@@ -33,7 +32,7 @@ public class EventHandlerTest {
                 events.add(new Event(Util.getTime()) {
                     @Override
                     public void run() {
-                        System.out.println(this.getInitInstant());
+                        System.out.println(this.getInstant());
                     }
 
                     @Override
@@ -47,7 +46,7 @@ public class EventHandlerTest {
         Event eventTwo = new Event(Util.getTime()) {
             @Override
             public void run() {
-                System.out.println(this.getInitInstant());
+                System.out.println(this.getInstant());
             }
 
             @Override
@@ -55,7 +54,7 @@ public class EventHandlerTest {
                 events.add(new Event(Util.getTime()) {
                     @Override
                     public void run() {
-                        System.out.println(this.getInitInstant());
+                        System.out.println(this.getInstant());
                     }
 
                     @Override
@@ -245,7 +244,7 @@ public class EventHandlerTest {
             if (eventHandler.peekEvent() == null) break;
 
             Event curEvent = eventHandler.peekEvent();
-            Assert.assertTrue(prevEvent.getInitInstant() <= curEvent.getInitInstant());
+            Assert.assertTrue(prevEvent.getInstant() <= curEvent.getInstant());
         }
         Assert.assertNull(server.dequeueInputBuffer());
         Assert.assertNull(client.dequeueInputBuffer());
