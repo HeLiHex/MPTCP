@@ -12,19 +12,9 @@ import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPSendEvent;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Random;
-
 public class BasicTCPTest {
-
-    private Random RANDOM_GENERATOR;
-
-    @Before
-    public void setup(){
-        RANDOM_GENERATOR = new Random(69);
-    }
 
     @Test
     public void connectToEndpointTest(){
@@ -526,7 +516,7 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(1.4).build();
         BasicTCP server = new BasicTCP();
 
         client.addChannel(router);

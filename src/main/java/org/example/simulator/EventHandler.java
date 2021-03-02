@@ -39,7 +39,7 @@ public class EventHandler {
     }
 
     public boolean singleRun(){
-        System.out.println(Util.seeTime());
+        //System.out.println(Util.seeTime());
         Event event = this.events.poll();
         if (event == null){
             if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
