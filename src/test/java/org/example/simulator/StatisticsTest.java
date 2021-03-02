@@ -34,7 +34,6 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreConsistentNoLoss() {
-
         for (int j = 0; j < 10; j++) {
             EventHandler eventHandler = new EventHandler();
 
@@ -80,6 +79,7 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreConsistentWithLoss() {
+        double noiseTolerance = 1;
         int numPacketsToSend = 400;
         for (int j = 0; j < 100; j++) {
 
@@ -90,7 +90,7 @@ public class StatisticsTest {
             BasicTCP client = new BasicTCP();
             BasicTCP server = new BasicTCP();
             Router r1 = new Router.RouterBuilder()
-                    .withNoiseTolerance(1)
+                    .withNoiseTolerance(noiseTolerance)
                     .build();
 
             client.addChannel(r1);
@@ -130,7 +130,7 @@ public class StatisticsTest {
             client = new BasicTCP();
             server = new BasicTCP();
             r1 = new Router.RouterBuilder()
-                    .withNoiseTolerance(1)
+                    .withNoiseTolerance(noiseTolerance)
                     .build();
 
             client.addChannel(r1);
@@ -174,11 +174,12 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
+        double noiseTolerance = 2.5;
         EventHandler eventHandler = new EventHandler();
 
         BasicTCP client = new BasicTCP();
         BasicTCP server = new BasicTCP();
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(2.5).build();
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
 
         client.addChannel(r1);
         r1.addChannel(server);

@@ -141,12 +141,13 @@ public class EventHandlerTest {
 
     @Test
     public void eventArrangementsAreConsistent(){
+        double noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
         BasicTCP client = new BasicTCP();
         BasicTCP server = new BasicTCP();
         Router r1 = new Router.RouterBuilder()
-                .withNoiseTolerance(1)
+                .withNoiseTolerance(noiseTolerance)
                 .build();
 
         client.addChannel(r1);

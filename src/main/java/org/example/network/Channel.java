@@ -8,6 +8,7 @@ import org.example.util.Util;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +24,7 @@ public class Channel implements Comparable<Channel>{
 
     public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
-        this.line = new ArrayDeque<>();
+        this.line = new ArrayBlockingQueue<Packet>(1000);
         this.source = source;
         this.destination = destination;
         this.cost = Util.getNextRandomInt(100);
