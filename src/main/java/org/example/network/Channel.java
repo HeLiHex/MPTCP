@@ -24,7 +24,7 @@ public class Channel implements Comparable<Channel>{
 
     public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
-        this.line = new ArrayBlockingQueue<Packet>(1000);
+        this.line = new ArrayBlockingQueue<>(1000);
         this.source = source;
         this.destination = destination;
         this.cost = Util.getNextRandomInt(100);
