@@ -5,8 +5,6 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.Statistics;
 import org.example.util.Util;
 
-import java.time.Duration;
-import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
