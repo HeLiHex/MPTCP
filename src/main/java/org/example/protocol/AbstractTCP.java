@@ -163,17 +163,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.connection.update(packet);
     }
 
-    protected synchronized void setConnection(Connection connection) {
+    protected void setConnection(Connection connection) {
         this.connection = connection;
-    }
-
-    protected void closeConnection() {
-        if (this.connection == null){
-            logger.log(Level.WARNING, "There is noe connection to be closed");
-            return;
-        }
-        logger.log(Level.INFO, () -> "Connection to " + this.connection.getConnectedNode() + " is closed");
-        this.connection = null;
     }
 
     protected int sendingPacketIndex(Packet packet){
@@ -199,8 +190,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 && packet.getDestination().equals(conn.getConnectionSource()
         );
     }
-
-    public abstract Packet[] packetsToRetransmit();
 
     @Override
     public synchronized boolean enqueueInputBuffer(Packet packet) {
