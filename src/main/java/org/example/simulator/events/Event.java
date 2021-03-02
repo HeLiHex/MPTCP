@@ -35,7 +35,6 @@ public abstract class Event implements Comparable<Event> {
 
     @Override
     public boolean equals(Object obj) {
-        //(Event.compareTo(e) == 0) != Event.Equals(e)
         return super.equals(obj);
     }
 
