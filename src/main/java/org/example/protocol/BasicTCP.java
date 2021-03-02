@@ -71,9 +71,6 @@ public class BasicTCP extends AbstractTCP {
                 this.addToReceived(packet);
                 return true;
             }
-            //todo - packet should be received
-            //to implement DupACK this packet should be received if it's not already received.
-            //the problem is that just adding will result inn multiple packets
             if (!received.contains(packet)){
                 this.dupAck();
                 this.addToReceived(packet);

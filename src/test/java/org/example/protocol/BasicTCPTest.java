@@ -36,7 +36,7 @@ public class BasicTCPTest {
         Assert.assertEquals(server, client.getConnection().getConnectedNode());
         Assert.assertEquals(client, server.getConnection().getConnectedNode());
 
-        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber() - 1);
     }
 
     @Test
@@ -421,6 +421,9 @@ public class BasicTCPTest {
         eventHandler.run();
 
         System.out.println("connected");
+
+        Assert.assertNotNull(client.getConnection());
+        Assert.assertNotNull(server.getConnection());
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();

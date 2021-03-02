@@ -39,8 +39,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.route(syn);
     }
 
-    public void continueConnect(){
-        Packet synAck = this.dequeueInputBuffer();
+    public void continueConnect(Packet synAck){
         Endpoint host = synAck.getOrigin();
         if (synAck.hasAllFlags(Flag.SYN, Flag.ACK)){
             if (synAck.getAcknowledgmentNumber() != this.initialSequenceNumber + 1){
@@ -77,10 +76,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .withAcknowledgmentNumber(ackNum)
                 .build();
 
-        this.setConnection(new Connection(this, node, seqNum, ackNum));
-        this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
-        this.addToWaitingPacketWindow(synAck);
-
+        //this.addToWaitingPacketWindow(synAck);
         this.route(synAck);
     }
 
@@ -152,10 +148,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return getConnection().getConnectedNode();
     }
 
-    public synchronized Connection getConnection() {
-        if (this.connection == null){
-            throw new IllegalStateException("connection is null");
-        }
+    public Connection getConnection() {
         return this.connection;
     }
 
@@ -184,7 +177,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     private boolean packetIsFromValidConnection(Packet packet) {
         if (packet.hasAllFlags(Flag.SYN)) return true;
         Connection conn = this.getConnection();
-        if (conn == null) return false;
+        if (conn == null) return true;
         if (packet.hasAllFlags(Flag.ACK)) return true;
         return packet.getOrigin().equals(conn.getConnectedNode())
                 && packet.getDestination().equals(conn.getConnectionSource()
@@ -203,28 +196,45 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
+
+    public boolean unconnectedInputHandler(){
+        Packet packet = this.dequeueInputBuffer();
+
+        if (packet.hasAllFlags(Flag.SYN, Flag.ACK)){
+            this.continueConnect(packet);
+            return true;
+        }
+
+        if (packet.hasAllFlags(Flag.SYN)){
+            this.connect(packet);
+            return true;
+        }
+
+        if (packet.hasAllFlags(Flag.ACK)){
+            System.out.println("creating connection");
+            this.setConnection(new Connection(this,
+                    packet.getOrigin(),
+                    packet.getAcknowledgmentNumber() - 1,
+                    packet.getSequenceNumber()));
+            this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
+            return false;
+        }
+        return false;
+    }
+
+
     public boolean handleIncoming(){
         //this method returns the number of acknowledgments sent
         if (this.inputBufferIsEmpty()){
             return false;
         }
 
+        if (!isConnected()) return unconnectedInputHandler();
+
         Packet packet = this.inputBuffer.peek();
-
-        if (packet.hasAllFlags(Flag.SYN, Flag.ACK)){
-            this.continueConnect();
-            return true;
-        }
-
         if (packet.hasAllFlags(Flag.ACK)){
             this.ackReceived();
             return false;
-        }
-
-        if (packet.hasAllFlags(Flag.SYN)){
-            this.connect(packet);
-            this.dequeueInputBuffer();
-            return true;
         }
 
         return this.setReceived();
