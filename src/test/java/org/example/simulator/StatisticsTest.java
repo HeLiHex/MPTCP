@@ -235,6 +235,10 @@ public class StatisticsTest {
 
     @Test
     public void connectStatistics() {
+        /*
+        INFO
+        This test may fail if a new call to random is added
+         */
         EventHandler eventHandler = new EventHandler();
         Util.setSeed(1337);
 
@@ -252,7 +256,7 @@ public class StatisticsTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        Assert.assertEquals(1, Statistics.getNumberOfPacketsLost());
+        Assert.assertEquals(0, Statistics.getNumberOfPacketsLost());
     }
 
 

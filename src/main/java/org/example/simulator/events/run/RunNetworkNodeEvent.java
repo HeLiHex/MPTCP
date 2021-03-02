@@ -14,7 +14,7 @@ public class RunNetworkNodeEvent extends Event {
     private Endpoint packetDestination;
 
     public RunNetworkNodeEvent(NetworkNode node) {
-        super();
+        super(node.processingDelay());
         this.node = node;
         if (this.node == null) throw new IllegalStateException("Node is null");
     }

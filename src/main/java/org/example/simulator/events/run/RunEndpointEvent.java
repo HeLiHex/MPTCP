@@ -11,7 +11,7 @@ public class RunEndpointEvent extends Event {
     private final Endpoint endpoint;
 
     public RunEndpointEvent(Endpoint endpoint) {
-        super();
+        super(endpoint.processingDelay());
         this.endpoint = endpoint;
     }
 

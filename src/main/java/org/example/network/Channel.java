@@ -21,30 +21,29 @@ public class Channel implements Comparable<Channel>{
     private final NetworkNode destination;
     private final int cost;
     private final double noiseTolerance;
-    private final int capacity = 100;
+    private final int capacity = 10;
 
-    public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance) {
+    private Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost){
         this.logger = Logger.getLogger(getClass().getSimpleName());
         this.line = new ArrayBlockingQueue<>(capacity);
+
         this.source = source;
         this.destination = destination;
-        this.cost = Util.getNextRandomInt(100);
         this.noiseTolerance = noiseTolerance;
+        this.cost = cost;
     }
 
+    public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance) {
+        this(source, destination, noiseTolerance, Util.getNextRandomInt(100));
+    }
+
+    //loopback
     public Channel(NetworkNode source){
-        //loopback
-        this.logger = Logger.getLogger(getClass().getSimpleName());
-        this.line = new ArrayDeque<>();
-        this.source = source;
-        this.destination = source;
-        this.cost = 0;
-        this.noiseTolerance = 0;
+        this(source, source, 0, 0);
     }
 
-    public Duration propogationDelay(){
-        long rand = Util.getNextRandomInt(10);
-        return Duration.ofMillis(rand + this.cost);
+    public long propogationDelay(){
+        return Util.getNextRandomInt((this.capacity + this.cost));
     }
 
     private boolean lossy(){
@@ -73,6 +72,7 @@ public class Channel implements Comparable<Channel>{
     public boolean channel(){
         //somewhat redundant test, but handy to avoid NullPointerException.
         //in other words, the line should never be empty when channel() is called
+        //assert !this.line.isEmpty();
         if (this.line.isEmpty()){
             return false;
         }

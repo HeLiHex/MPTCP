@@ -43,8 +43,7 @@ public class EventTest {
     }
 
     @Test
-    @Ignore
-    public void test(){
+    public void EventsOccurInAPreMatchedSequence(){
         this.tcp.addChannel(this.host);
         this.tcp.updateRoutingTable();
         this.host.updateRoutingTable();

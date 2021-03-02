@@ -43,8 +43,8 @@ public abstract class Routable implements NetworkNode {
     }
 
     @Override
-    public void processingDelay(){
-       //todo
+    public long processingDelay(){
+        return 2;
     }
 
     @Override

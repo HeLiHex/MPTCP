@@ -16,7 +16,7 @@ public class ChannelEvent extends Event{
     private boolean channelSuccess;
 
     public ChannelEvent(Channel channel) {
-        //super(Instant.now().plus(channel.propogationDelay()));
+        super(channel.propogationDelay());
         this.channel = channel;
         this.channelSuccess = false;
     }
