@@ -55,16 +55,16 @@ public class BasicTCP extends AbstractTCP {
         this.route(ack);
     }
 
-    private void dupAck(){
+    private boolean dupAck(){
         if (this.lastAcknowledged == null){
-            return;
+            return false;
         }
         this.ack(this.lastAcknowledged);
+        return true;
     }
 
     @Override
-    protected boolean setReceived() {
-        Packet packet = this.dequeueInputBuffer();
+    protected boolean setReceived(Packet packet) {
         if (packet == null) throw new IllegalStateException("null packet received");
         if (this.inReceivingWindow(packet)){
             if (receivingPacketIndex(packet) == 0){
@@ -75,9 +75,8 @@ public class BasicTCP extends AbstractTCP {
             }
             this.addToReceived(packet);
         }
-        this.dupAck();
-
-        return true;
+        boolean dupAckSent = this.dupAck();
+        return dupAckSent;
     }
 
     public boolean packetIsWaiting(Packet packetToMatch){
@@ -96,8 +95,7 @@ public class BasicTCP extends AbstractTCP {
     }
 
     @Override
-    protected void ackReceived() {
-        Packet ack = this.dequeueInputBuffer();
+    protected void ackReceived(Packet ack) {
         if (!this.isConnected()){
             logger.log(Level.INFO, "ack received with no connection established");
             return;

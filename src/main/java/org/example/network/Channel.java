@@ -70,9 +70,8 @@ public class Channel implements Comparable<Channel>{
     }
 
     public boolean channel(){
-        //somewhat redundant test, but handy to avoid NullPointerException.
-        //in other words, the line should never be empty when channel() is called
-        //assert !this.line.isEmpty();
+        //channel is in same cases called without the packet making it's way to the line
+        //this prevents NullPointerException
         if (this.line.isEmpty()){
             return false;
         }

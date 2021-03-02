@@ -106,7 +106,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.send(packet);
     }
 
-    protected abstract boolean setReceived();
+    protected abstract boolean setReceived(Packet packet);
 
     @Override
     public void close() {
@@ -140,7 +140,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract boolean inSendingWindow(Packet packet);
 
-    protected abstract void ackReceived();
+    protected abstract void ackReceived(Packet ack);
 
     @Override
     public boolean isConnected() {
@@ -244,18 +244,13 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         if (!isConnected()) return unconnectedInputHandler();
 
-        Packet packet = this.inputBuffer.peek();
-        if (packet.hasAllFlags(Flag.SYN)) {
-            this.connection = null;
-            unconnectedInputHandler();
-        }
+        Packet packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.ACK)) {
-            this.ackReceived();
+            this.ackReceived(packet);
             return false;
         }
-
-        return this.setReceived();
+        return this.setReceived(packet);
     }
 
     public Packet trySend() {
@@ -272,6 +267,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         }
 
         Packet packet = this.dequeueOutputBuffer();
+        assert packet != null;
         this.addToWaitingPacketWindow(packet);
         this.route(packet);
         //logger.log(Level.INFO, () -> "packet: " + packet + " sent");
