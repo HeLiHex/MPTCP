@@ -4,6 +4,7 @@ import org.example.data.*;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
+import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
 import org.example.util.Util;
@@ -62,6 +63,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             this.rtt = Util.seeTime();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
             this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection);
+            this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection);
+
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
 
@@ -82,6 +85,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
         this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection);
+        this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection);
         this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
         //this.addToWaitingPacketWindow(synAck);
         this.rtt = Util.seeTime() * 2;
@@ -234,7 +238,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     public boolean handleIncoming() {
         if (this.inputBufferIsEmpty()) return false;
-
         if (!isConnected()) return unconnectedInputHandler();
 
         Packet packet = this.dequeueInputBuffer();
