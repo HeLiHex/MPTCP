@@ -8,7 +8,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class RoutableEndpoint extends Routable implements Endpoint {
 
-    protected final BlockingQueue<Packet> outputBuffer;
+    protected BlockingQueue<Packet> outputBuffer;
     private final BlockingQueue<Packet> receivedPackets;
 
     public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, double noiseTolerance) {

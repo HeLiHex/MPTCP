@@ -4,6 +4,8 @@ import org.example.data.*;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
+import org.example.protocol.window.sending.SendingWindow;
+import org.example.protocol.window.sending.SlidingWindow;
 import org.example.util.Util;
 
 import java.util.concurrent.BlockingQueue;
@@ -59,6 +61,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
             this.rtt = Util.seeTime();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
+            this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection);
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
 
@@ -78,8 +81,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                 .build();
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
+        this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection);
         this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
-        this.addToWaitingPacketWindow(synAck);
+        //this.addToWaitingPacketWindow(synAck);
         this.rtt = Util.seeTime() * 2;
         this.route(synAck);
     }
@@ -238,6 +242,10 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
+    public boolean canRetransmit(Packet packet) {
+        return ((SendingWindow)this.outputBuffer).canRetransmit(packet);
+    }
+
 
     public boolean handleIncoming() {
         if (this.inputBufferIsEmpty()) return false;
@@ -247,13 +255,33 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         Packet packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.ACK)) {
-            this.ackReceived(packet);
+            if (this.outputBuffer instanceof SendingWindow){
+                ((SendingWindow)this.outputBuffer).ackReceived(packet);
+                return false;
+            }
+            //this.ackReceived(packet);
+            System.out.println("no sending window");
             return false;
         }
         return this.setReceived(packet);
     }
 
     public Packet trySend() {
+        if (this.outputBuffer instanceof SendingWindow){
+            SendingWindow sendingWindow = (SendingWindow) this.outputBuffer;
+
+            if (sendingWindow.isEmpty()) return null;
+            if (sendingWindow.isWaitingForAck()){
+                System.out.println("waiting");
+                return null;
+            }
+
+            Packet packetToSend = sendingWindow.send();
+            assert packetToSend != null;
+            this.route(packetToSend);
+            return packetToSend;
+        }
+        /*
         if (this.outputBufferIsEmpty()) {
             return null;
         }
@@ -272,6 +300,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.route(packet);
         //logger.log(Level.INFO, () -> "packet: " + packet + " sent");
         return packet;
+
+         */
+        return null;
     }
 
     @Override

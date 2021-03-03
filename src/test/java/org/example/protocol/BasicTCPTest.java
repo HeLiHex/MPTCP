@@ -519,7 +519,7 @@ public class BasicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         BasicTCP client = new BasicTCP();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
         BasicTCP server = new BasicTCP();
 
         client.addChannel(router);
@@ -538,8 +538,13 @@ public class BasicTCPTest {
 
         System.out.println("connected");
 
-        int numPacketsToSend = server.getWindowSize() * 100;
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(router.inputBufferIsEmpty());
 
+        int numPacketsToSend = server.getWindowSize() * 100;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);

@@ -1,6 +1,7 @@
 package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
+import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
@@ -26,8 +27,8 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
     public void generateNextEvent(Queue<Event> events) {
         if (!this.tcp.isConnected()) return;
 
-        if (this.tcp.inSendingWindow(this.packet) && this.tcp.packetIsWaiting(this.packet)) {
-            //Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, () -> "Retransmit packet: " + this.packet);
+        if (this.tcp.canRetransmit(packet)) {
+            Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, () -> "Retransmit packet: " + this.packet);
             Statistics.packetRetransmit();
             events.add(new RouteEvent(this.tcp, packet));
             events.add(new TCPRetransmitEventGenerator(this.tcp, packet));

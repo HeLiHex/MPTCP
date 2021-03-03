@@ -79,22 +79,26 @@ public class BasicTCP extends AbstractTCP {
     }
 
     public boolean packetIsWaiting(Packet packetToMatch) {
-        return waitingPackets.contains(packetToMatch);
+        return false; //waitingPackets.contains(packetToMatch);
     }
 
     @Override
     public boolean isWaitingForACK() {
-        return this.waitingPackets.isFull();
+        return false;//this.waitingPackets.isFull();
     }
 
     @Override
     protected void addToWaitingPacketWindow(Packet packet) {
+        /*
         boolean added = this.waitingPackets.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the waitingPackets queue");
+
+         */
     }
 
     @Override
     protected void ackReceived(Packet ack) {
+        /*
         if (!this.isConnected()) {
             logger.log(Level.INFO, "ack received with no connection established");
             return;
@@ -104,6 +108,8 @@ public class BasicTCP extends AbstractTCP {
             waitingPackets.poll();
         }
         this.updateConnection(ack);
+
+         */
     }
 
 
