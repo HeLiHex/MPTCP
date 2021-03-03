@@ -6,7 +6,6 @@ import org.example.simulator.Statistics;
 import org.example.util.BoundedPriorityBlockingQueue;
 
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.logging.Logger;
 
@@ -16,14 +15,12 @@ public class BasicTCP extends AbstractTCP {
 
     private Packet lastAcknowledged;
 
-
     private static final int WINDOW_SIZE = 7;
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
-    private final BlockingQueue<Packet> received;
-    private final BoundedPriorityBlockingQueue<Packet> waitingPackets;
+    private final Queue<Packet> received;
 
     public BasicTCP() {
         super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
@@ -32,8 +29,7 @@ public class BasicTCP extends AbstractTCP {
         );
         this.logger = Logger.getLogger(this.getClass().getSimpleName());
 
-        this.received = new PriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR);
-        this.waitingPackets = new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR);
+        this.received = new PriorityQueue<>(PACKET_COMPARATOR);
     }
 
     private void addToReceived(Packet packet) {
@@ -54,27 +50,31 @@ public class BasicTCP extends AbstractTCP {
         this.route(ack);
     }
 
-    private boolean dupAck() {
+
+    private void dupAck() {
         if (this.lastAcknowledged == null) {
-            return false;
+            this.lastAcknowledged = new PacketBuilder()
+                    .withConnection(this.getConnection())
+                    .build();
         }
         this.ack(this.lastAcknowledged);
-        return true;
+        return;
     }
 
     @Override
-    protected boolean setReceived(Packet packet) {
+    protected void setReceived(Packet packet) {
         if (packet == null) throw new IllegalStateException("null packet received");
         if (this.inReceivingWindow(packet)) {
             if (receivingPacketIndex(packet) == 0) {
                 this.updateConnection(packet);
                 this.ack(packet);
                 this.addToReceived(packet);
-                return true;
+                return;
             }
             this.addToReceived(packet);
         }
-        return this.dupAck(); //if a dupACK was sent or not
+        this.dupAck();
+        //return this.dupAck(); //if a dupACK was sent or not
     }
 
 

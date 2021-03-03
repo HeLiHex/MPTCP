@@ -110,7 +110,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.send(packet);
     }
 
-    protected abstract boolean setReceived(Packet packet);
+    protected abstract void setReceived(Packet packet);
 
     @Override
     public void close() {
@@ -245,7 +245,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             }
             return false;
         }
-        return this.setReceived(packet);
+        this.setReceived(packet);
+        return true;
     }
 
     public Packet trySend() {
