@@ -2,6 +2,7 @@ package org.example.protocol;
 
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
+import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.simulator.Statistics;
 import org.example.util.BoundedPriorityBlockingQueue;
 
@@ -41,7 +42,7 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     public Packet receive() {
-        return this.received.poll();
+        return ((ReceivingWindow)this.inputBuffer).getReceivedPackets().poll();
     }
 
     private void ack(Packet packet) {
@@ -63,6 +64,11 @@ public class BasicTCP extends AbstractTCP {
 
     @Override
     protected void setReceived(Packet packet) {
+        ReceivingWindow receivingWindow = (ReceivingWindow) this.inputBuffer;
+        receivingWindow.receive();
+        this.ack(receivingWindow.ackThis());
+
+        /*
         if (packet == null) throw new IllegalStateException("null packet received");
         if (this.inReceivingWindow(packet)) {
             if (receivingPacketIndex(packet) == 0) {
@@ -75,6 +81,8 @@ public class BasicTCP extends AbstractTCP {
         }
         this.dupAck();
         //return this.dupAck(); //if a dupACK was sent or not
+
+         */
     }
 
 

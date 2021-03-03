@@ -563,7 +563,7 @@ public class BasicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
-            //System.out.println(received);
+            System.out.println(received);
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }

@@ -23,7 +23,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void ackReceived(Packet ack) {
-        int ackIndex = this.packetIndex(ack);
+        int ackIndex = this.sendingPacketIndex(ack);
         for (int i = 0; i <= ackIndex; i++) {
             System.out.println("poll");
             this.window.poll();

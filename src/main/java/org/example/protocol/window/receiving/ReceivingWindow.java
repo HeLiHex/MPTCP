@@ -8,7 +8,7 @@ import java.util.Queue;
 
 public interface ReceivingWindow extends BoundedQueue<Packet> {
 
-    boolean receive(SendingWindow sendingWindow);
+    boolean receive();
 
     Packet ackThis();
 

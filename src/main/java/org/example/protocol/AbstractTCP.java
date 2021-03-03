@@ -245,9 +245,10 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         if (this.inputBufferIsEmpty()) return false;
         if (!isConnected()) return unconnectedInputHandler();
 
-        Packet packet = this.dequeueInputBuffer();
+        Packet packet = this.peekInputBuffer();
 
         if (packet.hasAllFlags(Flag.ACK)) {
+            this.dequeueInputBuffer();
             if (this.outputBuffer instanceof SendingWindow){
                 ((SendingWindow)this.outputBuffer).ackReceived(packet);
             }

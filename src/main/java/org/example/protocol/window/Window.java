@@ -18,21 +18,33 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> {
         this.windowSize = windowSize;
     }
 
-    protected boolean inWindow(Packet packet){
-        int packetIndex = packetIndex(packet);
+    public boolean inSendingWindow(Packet packet){
+        int packetIndex = sendingPacketIndex(packet);
         return inWindow(packetIndex);
     }
 
-    private boolean inWindow(int packetIndex) {
+    protected boolean inReceivingWindow(Packet packet){
+        int packetIndex = receivingPacketIndex(packet);
+        return inWindow(packetIndex);
+    }
+
+    private boolean inWindow(int packetIndex){
         int windowSize = this.windowSize;
         return packetIndex < windowSize && packetIndex >= 0;
     }
 
-    protected int packetIndex(Packet packet) {
+    protected int sendingPacketIndex(Packet packet){
         Connection conn = this.connection;
         int packetSeqNum = packet.getSequenceNumber();
         int connSeqNum = conn.getNextSequenceNumber();
         return packetSeqNum - connSeqNum;
+    }
+
+    protected int receivingPacketIndex(Packet packet){
+        Connection conn = this.connection;
+        int seqNum = packet.getSequenceNumber();
+        int ackNum = conn.getNextAcknowledgementNumber();
+        return seqNum - ackNum;
     }
 
 }
