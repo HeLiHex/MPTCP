@@ -136,15 +136,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected abstract int getWindowSize();
 
-    public abstract boolean isWaitingForACK();
-
-    protected abstract void addToWaitingPacketWindow(Packet packet);
-
     protected abstract boolean inReceivingWindow(Packet packet);
-
-    protected abstract boolean inSendingWindow(Packet packet);
-
-    protected abstract void ackReceived(Packet ack);
 
     @Override
     public boolean isConnected() {
@@ -176,13 +168,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     protected void setConnection(Connection connection) {
         this.connection = connection;
-    }
-
-    protected int sendingPacketIndex(Packet packet) {
-        Connection conn = this.getConnection();
-        int packetSeqNum = packet.getSequenceNumber();
-        int connSeqNum = conn.getNextSequenceNumber();
-        return packetSeqNum - connSeqNum;
     }
 
     protected int receivingPacketIndex(Packet packet) {
@@ -257,10 +242,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         if (packet.hasAllFlags(Flag.ACK)) {
             if (this.outputBuffer instanceof SendingWindow){
                 ((SendingWindow)this.outputBuffer).ackReceived(packet);
-                return false;
             }
-            //this.ackReceived(packet);
-            System.out.println("no sending window");
             return false;
         }
         return this.setReceived(packet);
@@ -281,27 +263,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             this.route(packetToSend);
             return packetToSend;
         }
-        /*
-        if (this.outputBufferIsEmpty()) {
-            return null;
-        }
-        if (this.isWaitingForACK()) {
-            return null;
-        }
-
-        if (!this.inSendingWindow(this.outputBuffer.peek())) {
-            logger.log(Level.WARNING, "Trying to send Packet out of order. This should not happen");
-            return null;
-        }
-
-        Packet packet = this.dequeueOutputBuffer();
-        assert packet != null;
-        this.addToWaitingPacketWindow(packet);
-        this.route(packet);
-        //logger.log(Level.INFO, () -> "packet: " + packet + " sent");
-        return packet;
-
-         */
         return null;
     }
 

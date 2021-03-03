@@ -8,7 +8,6 @@ import org.example.util.BoundedPriorityBlockingQueue;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BasicTCP extends AbstractTCP {
@@ -78,50 +77,10 @@ public class BasicTCP extends AbstractTCP {
         return this.dupAck(); //if a dupACK was sent or not
     }
 
-    public boolean packetIsWaiting(Packet packetToMatch) {
-        return false; //waitingPackets.contains(packetToMatch);
-    }
-
-    @Override
-    public boolean isWaitingForACK() {
-        return false;//this.waitingPackets.isFull();
-    }
-
-    @Override
-    protected void addToWaitingPacketWindow(Packet packet) {
-        /*
-        boolean added = this.waitingPackets.offer(packet);
-        if (!added) throw new IllegalStateException("Packet was not added to the waitingPackets queue");
-
-         */
-    }
-
-    @Override
-    protected void ackReceived(Packet ack) {
-        /*
-        if (!this.isConnected()) {
-            logger.log(Level.INFO, "ack received with no connection established");
-            return;
-        }
-        int ackIndex = sendingPacketIndex(ack);
-        for (int i = 0; i <= ackIndex; i++) {
-            waitingPackets.poll();
-        }
-        this.updateConnection(ack);
-
-         */
-    }
-
 
     @Override
     public int getWindowSize() {
         return WINDOW_SIZE;
-    }
-
-    @Override
-    public boolean inSendingWindow(Packet packet) {
-        int packetIndex = sendingPacketIndex(packet);
-        return inWindow(packetIndex);
     }
 
     @Override
