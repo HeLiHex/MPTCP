@@ -11,7 +11,7 @@ public abstract class Routable implements NetworkNode {
 
     private final RoutingTable routingTable;
     private final List<Channel> channels;
-    protected final BlockingQueue<Packet> inputBuffer;
+    protected BlockingQueue<Packet> inputBuffer;
     private final Address address;
     private final double noiseTolerance;
 

@@ -18,7 +18,7 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> {
         this.windowSize = windowSize;
     }
 
-    protected boolean InWindow(Packet packet){
+    protected boolean inWindow(Packet packet){
         int packetIndex = packetIndex(packet);
         return inWindow(packetIndex);
     }
