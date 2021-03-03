@@ -5,16 +5,12 @@ import org.example.util.BoundedQueue;
 
 public interface SendingWindow extends BoundedQueue<Packet> {
 
-
     boolean isWaitingForAck();
 
-    @Override
-    boolean offer(Packet packet);
+    void ackReceived(Packet ack);
 
-    @Override
-    Packet poll();
+    Packet send();
 
-    @Override
-    boolean isEmpty();
+    boolean canRetransmit(Packet packet);
 
 }
