@@ -79,7 +79,7 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreConsistentWithLoss() {
-        double noiseTolerance = 2;
+        double noiseTolerance = 1;
         int numPacketsToSend = 400;
         for (int j = 0; j < 100; j++) {
 
