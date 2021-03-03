@@ -70,11 +70,6 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        // this if prohibits multiple packets with the same sequence number!
-        if (this.inputBuffer.stream().anyMatch(
-                p -> p.getSequenceNumber() == packet.getSequenceNumber())) {
-            return false;
-        }
         return this.inputBuffer.offer(packet);
     }
 
