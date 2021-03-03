@@ -5,8 +5,6 @@ import org.example.network.interfaces.Endpoint;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RoutableEndpoint extends Routable implements Endpoint {
 
@@ -55,7 +53,6 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         this.receivedPackets.add(received);
         //Logger.getLogger(this.getClass().getName()).log(Level.INFO, () -> "Packet: " + received + " received");
     }
-
 
 
     @Override
