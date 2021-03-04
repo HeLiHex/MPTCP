@@ -159,11 +159,6 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return this.connection != null;
     }
 
-    @Override
-    public Endpoint getConnectedEndpoint() {
-        return getConnection().getConnectedNode();
-    }
-
     public Connection getConnection() {
         return this.connection;
     }
@@ -178,28 +173,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return 4 * this.rtt;
     }
 
-    private void ack(Packet packet) {
-        assert packet != null : "Packet is null";
-        Packet ack = new PacketBuilder().ackBuild(packet);
-        this.route(ack);
-    }
-
-    protected void setReceived() {
-        /*
-        try {
-            ReceivingWindow receivingWindow = this.getReceivingWindow();
-            receivingWindow.receive();
-            if (receivingWindow.shouldAck()){
-                this.ack(receivingWindow.ackThis());
-            }
-        } catch (IllegalAccessException e) {
-            //Nothing should be acked or received
-        }
-
-         */
-    }
-
-    protected void setConnection(Connection connection) {
+    private void setConnection(Connection connection) {
         this.connection = connection;
     }
 
@@ -236,7 +210,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     }
 
 
-    public boolean unconnectedInputHandler() {
+    private boolean unconnectedInputHandler() {
         if (this.inputBuffer.isEmpty()) return false;
         Packet packet = this.dequeueInputBuffer();
 
@@ -275,6 +249,12 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         }
     }
 
+
+    private void ack(Packet packet) {
+        assert packet != null : "Packet is null";
+        Packet ack = new PacketBuilder().ackBuild(packet);
+        this.route(ack);
+    }
 
     public boolean handleIncoming() {
         if (!isConnected()) return unconnectedInputHandler();
