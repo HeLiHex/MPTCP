@@ -185,6 +185,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     }
 
     protected void setReceived() {
+        /*
         try {
             ReceivingWindow receivingWindow = this.getReceivingWindow();
             receivingWindow.receive();
@@ -194,6 +195,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         } catch (IllegalAccessException e) {
             //Nothing should be acked or received
         }
+
+         */
     }
 
     protected void setConnection(Connection connection) {
@@ -234,6 +237,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
 
     public boolean unconnectedInputHandler() {
+        if (this.inputBuffer.isEmpty()) return false;
         Packet packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)) {
@@ -273,20 +277,19 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
 
     public boolean handleIncoming() {
-        if (this.inputBufferIsEmpty()) return false;
         if (!isConnected()) return unconnectedInputHandler();
 
-        Packet packet = this.peekInputBuffer();
-
-        if (packet.hasAllFlags(Flag.ACK)) {
-            this.dequeueInputBuffer();
-            if (this.outputBuffer instanceof SendingWindow){
-                ((SendingWindow)this.outputBuffer).ackReceived(packet);
+        try {
+            ReceivingWindow receivingWindow = this.getReceivingWindow();
+            boolean packetReceived = receivingWindow.receive(this.getSendingWindow());
+            if (packetReceived && receivingWindow.shouldAck()){
+                this.ack(receivingWindow.ackThis());
+                return true;
             }
             return false;
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("TCP is connected but no ReceivingWindow or SendingWindow is established");
         }
-        this.setReceived();
-        return true;
     }
 
     public Packet trySend() {

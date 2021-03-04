@@ -1,9 +1,11 @@
 package org.example.protocol.window.receiving;
 
+import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
+import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.Statistics;
 
 import java.util.Comparator;
@@ -29,8 +31,16 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     }
 
     @Override
-    public boolean receive() {
+    public boolean receive(SendingWindow sendingWindow) {
+        if (this.isEmpty()) return false;
+
         Packet packet = this.poll();
+
+        if (packet.hasAllFlags(Flag.ACK)){
+            sendingWindow.ackReceived(packet);
+            return false;
+        }
+
         if (packet == null) throw new IllegalStateException("null packet received");
         if (this.inReceivingWindow(packet)) {
             if (receivingPacketIndex(packet) == 0) {
