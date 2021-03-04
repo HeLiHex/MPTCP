@@ -7,13 +7,11 @@ import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.simulator.EventHandler;
-import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.RouteEvent;
-
+import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPSendEvent;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class BasicTCPTest {
@@ -325,7 +323,7 @@ public class BasicTCPTest {
     }
 
     @Test
-    public void packetIndexShouldUpdateAfterReceivingPacketInOrderTest() {
+    public void packetIndexShouldUpdateAfterReceivingPacketInOrderTest() throws IllegalAccessException {
         BasicTCP client = new BasicTCP();
         Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP();
@@ -348,7 +346,8 @@ public class BasicTCPTest {
                 .withSequenceNumber(client.getConnection().getNextSequenceNumber())
                 .build();
 
-        int indexBeforeSending = server.receivingPacketIndex(packet);
+
+        int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet);
         Assert.assertEquals(0, indexBeforeSending);
 
         client.send(packet);
@@ -356,12 +355,13 @@ public class BasicTCPTest {
         eventHandler.run();
         Assert.assertNotNull(server.receive());
 
-        int indexAfterReceived = server.receivingPacketIndex(packet);
+        int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet);
         Assert.assertEquals(-1, indexAfterReceived);
+
     }
 
     @Test
-    public void packetIndexShouldNotUpdateAfterReceivingPacketOutOfOrderButInWindowTest() {
+    public void packetIndexShouldNotUpdateAfterReceivingPacketOutOfOrderButInWindowTest() throws IllegalAccessException {
         BasicTCP client = new BasicTCP();
         Routable router = new Router.RouterBuilder().build();
         BasicTCP server = new BasicTCP();
@@ -393,7 +393,7 @@ public class BasicTCPTest {
                 .withAcknowledgmentNumber(ackNum + client.getWindowSize()-1)
                 .build();
 
-        int indexBeforeSending = server.receivingPacketIndex(packet);
+        int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexBeforeSending);
 
 
@@ -401,7 +401,7 @@ public class BasicTCPTest {
         eventHandler.run();
         Assert.assertNotNull(server.receive());
 
-        int indexAfterReceived = server.receivingPacketIndex(packet);
+        int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet);
         Assert.assertEquals(client.getWindowSize()-1, indexAfterReceived);
     }
 
@@ -571,6 +571,7 @@ public class BasicTCPTest {
 
         Assert.assertTrue(client.inputBufferIsEmpty());
         Assert.assertTrue(server.inputBufferIsEmpty());
+        System.out.println(client.dequeueOutputBuffer());
         Assert.assertTrue(client.outputBufferIsEmpty());
         Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(router.inputBufferIsEmpty());

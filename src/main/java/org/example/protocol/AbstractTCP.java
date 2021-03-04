@@ -15,7 +15,6 @@ import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.Util;
 
 import java.util.Comparator;
-import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -102,7 +101,6 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
 
          */
-        //this.addToWaitingPacketWindow(synAck);
         this.rtt = Util.seeTime() * 2;
         this.route(synAck);
     }
@@ -211,20 +209,13 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {
-        if (this.outputBuffer instanceof ReceivingWindow) return (SendingWindow) this.outputBuffer;
+        if (this.outputBuffer instanceof SendingWindow) return (SendingWindow) this.outputBuffer;
         throw new IllegalAccessException("The outputBuffer is not of type SendingWindow");
     }
 
     public ReceivingWindow getReceivingWindow() throws IllegalAccessException {
         if (this.inputBuffer instanceof ReceivingWindow) return (ReceivingWindow) this.inputBuffer;
         throw new IllegalAccessException("The outputBuffer is not of type ReceivingWindow");
-    }
-
-    protected int receivingPacketIndex(Packet packet) {
-        Connection conn = this.getConnection();
-        int seqNum = packet.getSequenceNumber();
-        int ackNum = conn.getNextAcknowledgementNumber();
-        return seqNum - ackNum;
     }
 
     private boolean packetIsFromValidConnection(Packet packet) {
@@ -280,7 +271,12 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     public boolean canRetransmit(Packet packet) {
-        return ((SendingWindow)this.outputBuffer).canRetransmit(packet);
+        try {
+            return this.getSendingWindow().canRetransmit(packet);
+        } catch (IllegalAccessException e) {
+            //Retransmission should not happen if there is no SendingWindow
+            return false;
+        }
     }
 
 
