@@ -2,7 +2,6 @@ package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
-import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.Statistics;
@@ -18,13 +17,13 @@ public class TCPSendEvent extends Event {
 
 
     public TCPSendEvent(TCP tcp) {
-        super(((AbstractTCP) tcp).processingDelay());
+        super(((BasicTCP) tcp).processingDelay());
         this.tcp = tcp;
     }
 
     @Override
     public void run() {
-        this.packetSent = ((AbstractTCP) this.tcp).trySend();
+        this.packetSent = ((BasicTCP) this.tcp).trySend();
         if (this.packetSent != null) Statistics.packetSent();
     }
 

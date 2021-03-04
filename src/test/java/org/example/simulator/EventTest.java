@@ -2,7 +2,6 @@ package org.example.simulator;
 
 import org.example.data.Message;
 import org.example.network.interfaces.Endpoint;
-import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
@@ -22,8 +21,8 @@ import java.util.Queue;
 public class EventTest {
 
     private Queue<Event> events;
-    private AbstractTCP tcp;
-    private AbstractTCP host;
+    private BasicTCP tcp;
+    private BasicTCP host;
 
 
     @Before
