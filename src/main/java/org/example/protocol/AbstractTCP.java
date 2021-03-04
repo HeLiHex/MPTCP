@@ -181,6 +181,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     }
 
     private void ack(Packet packet) {
+        assert packet != null : "Packet is null";
         Packet ack = new PacketBuilder().ackBuild(packet);
         this.route(ack);
     }
@@ -189,7 +190,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         try {
             ReceivingWindow receivingWindow = this.getReceivingWindow();
             receivingWindow.receive();
-            this.ack(receivingWindow.ackThis());
+            if (receivingWindow.shouldAck()){
+                this.ack(receivingWindow.ackThis());
+            }
         } catch (IllegalAccessException e) {
             //Nothing should be acked or received
         }

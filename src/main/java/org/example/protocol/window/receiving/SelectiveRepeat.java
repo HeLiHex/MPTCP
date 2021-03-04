@@ -46,6 +46,11 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     }
 
     @Override
+    public boolean shouldAck() {
+        return true;
+    }
+
+    @Override
     public Packet ackThis() {
         return this.ackThis;
     }
