@@ -1,7 +1,6 @@
 package org.example.simulator;
 
 import org.example.data.Message;
-import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.AbstractTCP;
 import org.example.protocol.BasicTCP;
@@ -15,16 +14,13 @@ import org.example.simulator.events.tcp.TCPSendEvent;
 import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class EventTest {
 
-    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private Queue<Event> events;
     private AbstractTCP tcp;
     private AbstractTCP host;

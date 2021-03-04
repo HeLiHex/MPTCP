@@ -33,13 +33,6 @@ public class BasicTCP extends AbstractTCP {
         this.received = new PriorityQueue<>(PACKET_COMPARATOR);
     }
 
-    private void addToReceived(Packet packet) {
-        if (this.received.contains(packet)) return;
-        boolean added = this.received.offer(packet);
-        if (!added) throw new IllegalStateException("Packet was not added to the received queue");
-        Statistics.packetReceived();
-    }
-
     @Override
     public Packet receive() {
         return ((ReceivingWindow)this.inputBuffer).getReceivedPackets().poll();
@@ -51,38 +44,11 @@ public class BasicTCP extends AbstractTCP {
         this.route(ack);
     }
 
-
-    private void dupAck() {
-        if (this.lastAcknowledged == null) {
-            this.lastAcknowledged = new PacketBuilder()
-                    .withConnection(this.getConnection())
-                    .build();
-        }
-        this.ack(this.lastAcknowledged);
-        return;
-    }
-
     @Override
     protected void setReceived(Packet packet) {
         ReceivingWindow receivingWindow = (ReceivingWindow) this.inputBuffer;
         receivingWindow.receive();
         this.ack(receivingWindow.ackThis());
-
-        /*
-        if (packet == null) throw new IllegalStateException("null packet received");
-        if (this.inReceivingWindow(packet)) {
-            if (receivingPacketIndex(packet) == 0) {
-                this.updateConnection(packet);
-                this.ack(packet);
-                this.addToReceived(packet);
-                return;
-            }
-            this.addToReceived(packet);
-        }
-        this.dupAck();
-        //return this.dupAck(); //if a dupACK was sent or not
-
-         */
     }
 
 
