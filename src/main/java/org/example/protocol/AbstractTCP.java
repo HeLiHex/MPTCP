@@ -1,16 +1,20 @@
 package org.example.protocol;
 
-import org.example.data.*;
+import org.example.data.Flag;
+import org.example.data.Packet;
+import org.example.data.PacketBuilder;
+import org.example.data.Payload;
 import org.example.network.Channel;
-import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
-import org.example.protocol.window.Window;
+import org.example.network.interfaces.Endpoint;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
+import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.Util;
 
+import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,16 +24,20 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getSimpleName());
 
     protected static final int WINDOW_SIZE = 7;
+    protected static final int BUFFER_SIZE = 10000;
+    protected static final double NOISE_TOLERANCE = 100.0;
+    protected static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
+
     private Connection connection;
     private int initialSequenceNumber;
     private long rtt;
 
 
-    protected AbstractTCP(BlockingQueue<Packet> inputBuffer,
-                          BlockingQueue<Packet> outputBuffer,
-                          double noiseTolerance) {
-        super(inputBuffer, outputBuffer, noiseTolerance);
-
+    public AbstractTCP() {
+        super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
+                new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
+                NOISE_TOLERANCE
+        );
     }
 
 

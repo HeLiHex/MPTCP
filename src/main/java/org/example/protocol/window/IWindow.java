@@ -8,5 +8,7 @@ public interface IWindow {
 
     int receivingPacketIndex(Packet packet);
 
+    boolean inSendingWindow(Packet packet);
+
     boolean inReceivingWindow(Packet packet);
 }
