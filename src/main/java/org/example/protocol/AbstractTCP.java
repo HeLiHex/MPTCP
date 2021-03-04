@@ -4,6 +4,8 @@ import org.example.data.*;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.RoutableEndpoint;
+import org.example.protocol.window.Window;
+import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
@@ -16,6 +18,8 @@ import java.util.logging.Logger;
 public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(AbstractTCP.class.getSimpleName());
+
+    protected static final int WINDOW_SIZE = 7;
     private Connection connection;
     private int initialSequenceNumber;
     private long rtt;
@@ -141,9 +145,9 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return this.getChannels().get(channelIndex);
     }
 
-    protected abstract int getWindowSize();
-
-    protected abstract boolean inReceivingWindow(Packet packet);
+    public int getWindowSize(){
+        return WINDOW_SIZE;
+    }
 
     @Override
     public boolean isConnected() {
@@ -169,12 +173,19 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return 4 * this.rtt;
     }
 
-    protected void updateConnection(Packet packet) {
-        this.connection.update(packet);
-    }
 
     protected void setConnection(Connection connection) {
         this.connection = connection;
+    }
+
+    public SendingWindow getSendingWindow() throws IllegalAccessException {
+        if (this.outputBuffer instanceof ReceivingWindow) return (SendingWindow) this.outputBuffer;
+        throw new IllegalAccessException("The outputBuffer is not of type SendingWindow");
+    }
+
+    public ReceivingWindow getReceivingWindow() throws IllegalAccessException {
+        if (this.inputBuffer instanceof ReceivingWindow) return (ReceivingWindow) this.inputBuffer;
+        throw new IllegalAccessException("The outputBuffer is not of type ReceivingWindow");
     }
 
     protected int receivingPacketIndex(Packet packet) {

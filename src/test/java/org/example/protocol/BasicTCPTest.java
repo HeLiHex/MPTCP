@@ -5,6 +5,7 @@ import org.example.data.Packet;
 import org.example.data.PacketBuilder;
 import org.example.network.Routable;
 import org.example.network.Router;
+import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.RouteEvent;
@@ -436,7 +437,14 @@ public class BasicTCPTest {
                     .withSequenceNumber(seqNum + i)
                     .withAcknowledgmentNumber(ackNum + i)
                     .build();
-            Assert.assertTrue(server.inReceivingWindow(packet));
+
+
+            try{
+                ReceivingWindow receivingWindow = server.getReceivingWindow();
+                Assert.assertTrue(receivingWindow.inReceivingWindow(packet));
+            }catch (IllegalAccessException e){
+                Assert.fail();
+            }
         }
     }
 
@@ -469,7 +477,14 @@ public class BasicTCPTest {
                     .withSequenceNumber(seqNum + i + 1000)
                     .withAcknowledgmentNumber(ackNum + i + 1000)
                     .build();
-            Assert.assertFalse(server.inReceivingWindow(packet));
+
+            try{
+                ReceivingWindow receivingWindow = server.getReceivingWindow();
+                Assert.assertFalse(receivingWindow.inReceivingWindow(packet));
+            }catch (IllegalAccessException e){
+                Assert.fail();
+            }
+
         }
     }
 

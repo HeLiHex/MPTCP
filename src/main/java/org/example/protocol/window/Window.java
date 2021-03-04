@@ -6,7 +6,7 @@ import org.example.util.BoundedPriorityBlockingQueue;
 
 import java.util.Comparator;
 
-public abstract class Window extends BoundedPriorityBlockingQueue<Packet> {
+public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implements IWindow {
 
     protected static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     protected final Connection connection;
@@ -23,7 +23,8 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> {
         return inWindow(packetIndex);
     }
 
-    protected boolean inReceivingWindow(Packet packet){
+    @Override
+    public boolean inReceivingWindow(Packet packet){
         int packetIndex = receivingPacketIndex(packet);
         return inWindow(packetIndex);
     }
@@ -33,14 +34,16 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> {
         return packetIndex < windowSize && packetIndex >= 0;
     }
 
-    protected int sendingPacketIndex(Packet packet){
+    @Override
+    public int sendingPacketIndex(Packet packet){
         Connection conn = this.connection;
         int packetSeqNum = packet.getSequenceNumber();
         int connSeqNum = conn.getNextSequenceNumber();
         return packetSeqNum - connSeqNum;
     }
 
-    protected int receivingPacketIndex(Packet packet){
+
+    public int receivingPacketIndex(Packet packet){
         Connection conn = this.connection;
         int seqNum = packet.getSequenceNumber();
         int ackNum = conn.getNextAcknowledgementNumber();
