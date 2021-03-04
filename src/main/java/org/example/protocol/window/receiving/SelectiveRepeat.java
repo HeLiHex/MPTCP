@@ -1,11 +1,9 @@
 package org.example.protocol.window.receiving;
 
-import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
-import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.Statistics;
 
 import java.util.PriorityQueue;
@@ -13,7 +11,7 @@ import java.util.Queue;
 
 public class SelectiveRepeat extends Window implements ReceivingWindow {
 
-    private Queue<Packet> received;
+    private final Queue<Packet> received;
     private Packet ackThis;
 
     public SelectiveRepeat(int windowSize, Connection connection) {
@@ -52,6 +50,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     @Override
     public Packet ackThis() {
+        assert shouldAck();
         return this.ackThis;
     }
 
