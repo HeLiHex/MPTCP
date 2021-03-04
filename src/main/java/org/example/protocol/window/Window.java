@@ -37,18 +37,16 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implem
 
     @Override
     public int sendingPacketIndex(Packet packet){
-        Connection conn = this.connection;
         int packetSeqNum = packet.getSequenceNumber();
-        int connSeqNum = conn.getNextSequenceNumber();
+        int connSeqNum = this.connection.getNextSequenceNumber();
         return packetSeqNum - connSeqNum;
     }
 
 
     @Override
     public int receivingPacketIndex(Packet packet){
-        Connection conn = this.connection;
         int seqNum = packet.getSequenceNumber();
-        int ackNum = conn.getNextAcknowledgementNumber();
+        int ackNum = this.connection.getNextAcknowledgementNumber();
         return seqNum - ackNum;
     }
 
