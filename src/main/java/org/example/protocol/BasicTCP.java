@@ -13,8 +13,6 @@ public class BasicTCP extends AbstractTCP {
 
     private final Logger logger;
 
-    private Packet lastAcknowledged;
-
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
@@ -25,24 +23,6 @@ public class BasicTCP extends AbstractTCP {
                 NOISE_TOLERANCE
         );
         this.logger = Logger.getLogger(this.getClass().getSimpleName());
-    }
-
-    @Override
-    public Packet receive() {
-        return ((ReceivingWindow)this.inputBuffer).getReceivedPackets().poll();
-    }
-
-    private void ack(Packet packet) {
-        this.lastAcknowledged = packet;
-        Packet ack = new PacketBuilder().ackBuild(packet);
-        this.route(ack);
-    }
-
-    @Override
-    protected void setReceived(Packet packet) {
-        ReceivingWindow receivingWindow = (ReceivingWindow) this.inputBuffer;
-        receivingWindow.receive();
-        this.ack(receivingWindow.ackThis());
     }
 
 

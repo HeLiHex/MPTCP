@@ -121,7 +121,14 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         this.send(packet);
     }
 
-    protected abstract void setReceived(Packet packet);
+    @Override
+    public Packet receive() {
+        try {
+            return this.getReceivingWindow().getReceivedPackets().poll();
+        } catch (IllegalAccessException e) {
+            return null;
+        }
+    }
 
     @Override
     public void close() {
@@ -173,6 +180,20 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
         return 4 * this.rtt;
     }
 
+    private void ack(Packet packet) {
+        Packet ack = new PacketBuilder().ackBuild(packet);
+        this.route(ack);
+    }
+
+    protected void setReceived() {
+        try {
+            ReceivingWindow receivingWindow = this.getReceivingWindow();
+            receivingWindow.receive();
+            this.ack(receivingWindow.ackThis());
+        } catch (IllegalAccessException e) {
+            //Nothing should be acked or received
+        }
+    }
 
     protected void setConnection(Connection connection) {
         this.connection = connection;
@@ -265,7 +286,7 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
             }
             return false;
         }
-        this.setReceived(packet);
+        this.setReceived();
         return true;
     }
 
