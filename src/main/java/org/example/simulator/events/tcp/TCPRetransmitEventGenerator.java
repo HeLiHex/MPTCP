@@ -1,7 +1,7 @@
 package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.EventGenerator;
@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 
 public class TCPRetransmitEventGenerator extends EventGenerator {
 
-    private final BasicTCP tcp;
+    private final ClassicTCP tcp;
     private final Packet packet;
 
-    public TCPRetransmitEventGenerator(BasicTCP tcp, Packet packet) {
+    public TCPRetransmitEventGenerator(ClassicTCP tcp, Packet packet) {
         super(tcp.getRTO());
         this.tcp = tcp;
         this.packet = packet;

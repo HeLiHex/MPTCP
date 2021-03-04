@@ -1,7 +1,7 @@
 package org.example.data;
 
 import org.example.network.interfaces.Endpoint;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,14 +16,14 @@ public class PacketTest {
 
     @Test
     public void buildPacketWithDestinationBuildsPacketWithDestinationTest(){
-        Endpoint endpoint = new BasicTCP();
+        Endpoint endpoint = new ClassicTCP();
         Packet packet = new PacketBuilder().withDestination(endpoint).build();
         Assert.assertEquals(endpoint, packet.getDestination());
     }
 
     @Test
     public void buildPacketWithOriginBuildsPacketWithOriginTest(){
-        Endpoint endpoint = new BasicTCP();
+        Endpoint endpoint = new ClassicTCP();
         Packet packet = new PacketBuilder().withOrigin(endpoint).build();
         Assert.assertEquals(endpoint, packet.getOrigin());
     }

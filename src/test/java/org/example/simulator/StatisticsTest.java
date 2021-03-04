@@ -3,7 +3,7 @@ package org.example.simulator;
 import org.example.data.Message;
 import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
@@ -37,8 +37,8 @@ public class StatisticsTest {
         for (int j = 0; j < 10; j++) {
             EventHandler eventHandler = new EventHandler();
 
-            BasicTCP client = new BasicTCP();
-            BasicTCP server = new BasicTCP();
+            ClassicTCP client = new ClassicTCP();
+            ClassicTCP server = new ClassicTCP();
             Router r1 = new Router.RouterBuilder().build();
 
             client.addChannel(r1);
@@ -87,8 +87,8 @@ public class StatisticsTest {
             EventHandler eventHandler = new EventHandler();
             Util.setSeed(1337);
 
-            BasicTCP client = new BasicTCP();
-            BasicTCP server = new BasicTCP();
+            ClassicTCP client = new ClassicTCP();
+            ClassicTCP server = new ClassicTCP();
             Router r1 = new Router.RouterBuilder()
                     .withNoiseTolerance(noiseTolerance)
                     .build();
@@ -127,8 +127,8 @@ public class StatisticsTest {
             eventHandler = new EventHandler();
             Util.setSeed(1337);
 
-            client = new BasicTCP();
-            server = new BasicTCP();
+            client = new ClassicTCP();
+            server = new ClassicTCP();
             r1 = new Router.RouterBuilder()
                     .withNoiseTolerance(noiseTolerance)
                     .build();
@@ -175,8 +175,8 @@ public class StatisticsTest {
         double noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
 
         client.addChannel(r1);
@@ -242,8 +242,8 @@ public class StatisticsTest {
         EventHandler eventHandler = new EventHandler();
         Util.setSeed(1337);
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
@@ -264,8 +264,8 @@ public class StatisticsTest {
     public void TCPRetransmitEventGeneratorIsLastInEventQueueTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
@@ -300,8 +300,8 @@ public class StatisticsTest {
     public void TCPRetransmitEventGeneratorIsGeneratedPerPacketSentTest(){
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
@@ -337,8 +337,8 @@ public class StatisticsTest {
     public void trackNetworkNodeInputBufferTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
 
         //no loss
         Router r1 = new Router.RouterBuilder().build();

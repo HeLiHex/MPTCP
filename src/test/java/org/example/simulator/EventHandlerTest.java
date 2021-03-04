@@ -3,7 +3,7 @@ package org.example.simulator;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
@@ -80,8 +80,8 @@ public class EventHandlerTest {
     public void runTest(){
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -106,8 +106,8 @@ public class EventHandlerTest {
     public void runFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -144,8 +144,8 @@ public class EventHandlerTest {
         double noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();
@@ -208,8 +208,8 @@ public class EventHandlerTest {
         double noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
-        BasicTCP client = new BasicTCP();
-        BasicTCP server = new BasicTCP();
+        ClassicTCP client = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP();
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();

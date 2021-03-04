@@ -18,9 +18,9 @@ import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BasicTCP extends RoutableEndpoint implements TCP {
+public class ClassicTCP extends RoutableEndpoint implements TCP {
 
-    private final Logger logger = Logger.getLogger(BasicTCP.class.getSimpleName());
+    private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
 
     protected static final int WINDOW_SIZE = 7;
     protected static final int BUFFER_SIZE = 10000;
@@ -32,7 +32,7 @@ public class BasicTCP extends RoutableEndpoint implements TCP {
     private long rtt;
 
 
-    public BasicTCP() {
+    public ClassicTCP() {
         super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
                 new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 NOISE_TOLERANCE

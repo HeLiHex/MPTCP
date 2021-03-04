@@ -2,7 +2,7 @@ package org.example.simulator;
 
 import org.example.data.Message;
 import org.example.network.interfaces.Endpoint;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
@@ -21,15 +21,15 @@ import java.util.Queue;
 public class EventTest {
 
     private Queue<Event> events;
-    private BasicTCP tcp;
-    private BasicTCP host;
+    private ClassicTCP tcp;
+    private ClassicTCP host;
 
 
     @Before
     public void setup(){
         this.events = new PriorityQueue<>();
-        this.tcp = new BasicTCP();
-        this.host = new BasicTCP();
+        this.tcp = new ClassicTCP();
+        this.host = new ClassicTCP();
     }
 
     public void connect(TCP linkedClient, Endpoint linkedServer){

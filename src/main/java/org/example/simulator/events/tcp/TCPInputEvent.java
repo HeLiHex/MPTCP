@@ -1,7 +1,7 @@
 package org.example.simulator.events.tcp;
 
 import org.example.network.Channel;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
@@ -14,14 +14,14 @@ public class TCPInputEvent extends Event {
     private boolean ackSent;
 
     public TCPInputEvent(TCP tcp) {
-        super(((BasicTCP) tcp).processingDelay());
+        super(((ClassicTCP) tcp).processingDelay());
         if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");
         this.tcp = tcp;
     }
 
     @Override
     public void run() {
-        this.ackSent = ((BasicTCP) this.tcp).handleIncoming();
+        this.ackSent = ((ClassicTCP) this.tcp).handleIncoming();
 
     }
 
