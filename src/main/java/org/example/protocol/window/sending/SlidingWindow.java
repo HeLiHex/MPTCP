@@ -34,6 +34,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public Packet send() {
         Packet packetToSend = this.poll();
+        assert packetToSend != null : "packet to send is null";
         if (this.window.offer(packetToSend)){
             return packetToSend;
         }
