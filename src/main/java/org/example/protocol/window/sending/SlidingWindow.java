@@ -6,14 +6,16 @@ import org.example.protocol.window.Window;
 import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.BoundedQueue;
 
+import java.util.Comparator;
+
 
 public class SlidingWindow extends Window implements SendingWindow, BoundedQueue<Packet> {
 
     private final BoundedQueue<Packet> window;
 
-    public SlidingWindow(int windowSize, Connection connection) {
-        super(windowSize, connection);
-        this.window = new BoundedPriorityBlockingQueue<>(windowSize, PACKET_COMPARATOR);
+    public SlidingWindow(int windowSize, Connection connection, Comparator comparator) {
+        super(1000000, connection, comparator);
+        this.window = new BoundedPriorityBlockingQueue<>(windowSize, comparator);
     }
 
     @Override

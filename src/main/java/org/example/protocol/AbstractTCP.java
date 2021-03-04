@@ -74,8 +74,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
 
             this.rtt = Util.seeTime();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
-            this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection);
-            this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection);
+            this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
+            this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
 
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
@@ -271,8 +271,8 @@ public abstract class AbstractTCP extends RoutableEndpoint implements TCP {
                     packet.getAcknowledgmentNumber() - 1,
                     packet.getSequenceNumber())
             );
-            this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection);
-            this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection);
+            this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
+            this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
             this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
             return false;
         }

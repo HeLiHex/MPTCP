@@ -8,12 +8,11 @@ import java.util.Comparator;
 
 public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implements IWindow {
 
-    protected static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     protected final Connection connection;
     protected final int windowSize;
 
-    public Window(int windowSize, Connection connection) {
-        super(100000, PACKET_COMPARATOR);
+    public Window(int windowSize, Connection connection, Comparator comparator) {
+        super(windowSize, comparator);
         this.connection = connection;
         this.windowSize = windowSize;
     }

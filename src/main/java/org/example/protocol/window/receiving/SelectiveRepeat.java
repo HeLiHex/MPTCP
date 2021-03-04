@@ -6,6 +6,7 @@ import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.simulator.Statistics;
 
+import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -14,9 +15,9 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     private final Queue<Packet> received;
     private Packet ackThis;
 
-    public SelectiveRepeat(int windowSize, Connection connection) {
-        super(windowSize, connection);
-        this.received = new PriorityQueue<>(PACKET_COMPARATOR);
+    public SelectiveRepeat(int windowSize, Connection connection, Comparator comparator) {
+        super(windowSize, connection, comparator);
+        this.received = new PriorityQueue<>(comparator);
         this.ackThis = new PacketBuilder().withConnection(connection).build();
     }
 
