@@ -88,6 +88,7 @@ public abstract class Routable implements NetworkNode {
         return this.inputBuffer.isEmpty();
     }
 
+    @Override
     public int inputBufferSize() {
         return this.inputBuffer.size();
     }
