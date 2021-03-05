@@ -12,9 +12,18 @@ import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPSendEvent;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 public class ClassicTCPTest {
+
+    private int seconds(int seconds){
+        return 1000 * seconds;
+    }
+
+    @Rule
+    public Timeout globalTimeout = new Timeout(seconds(30));
 
     @Test
     public void connectToEndpointTest(){
