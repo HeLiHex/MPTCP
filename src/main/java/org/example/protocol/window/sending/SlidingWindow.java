@@ -12,10 +12,12 @@ import java.util.Comparator;
 public class SlidingWindow extends Window implements SendingWindow, BoundedQueue<Packet> {
 
     private final BoundedQueue<Packet> window;
+    private final int defaultCongestionSize;
 
     public SlidingWindow(int windowSize, Connection connection, Comparator comparator) {
         super(1000000, connection, comparator);
         this.window = new BoundedPriorityBlockingQueue<>(windowSize, comparator);
+        this.defaultCongestionSize = 1;
     }
 
     @Override
@@ -46,5 +48,22 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public boolean canRetransmit(Packet packet) {
         return this.window.contains(packet);
+    }
+
+    @Override
+    public void increase() {
+        this.window.resize(this.getWindowSize() + 1);
+    }
+
+    @Override
+    public void decrease() {
+        int curWindowSize = this.getWindowSize();
+        int newWindowSize = (int)Math.ceil(curWindowSize/2);
+        if (newWindowSize == 0) newWindowSize = this.defaultCongestionSize;
+
+        for (int i = 0; i < curWindowSize - newWindowSize; i++) {
+            this.offer(this.window.poll());
+        }
+        this.window.resize(newWindowSize);
     }
 }

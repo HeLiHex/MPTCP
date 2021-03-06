@@ -9,12 +9,10 @@ import java.util.Comparator;
 public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implements IWindow {
 
     protected final Connection connection;
-    protected final int windowSize;
 
     public Window(int windowSize, Connection connection, Comparator comparator) {
         super(windowSize, comparator);
         this.connection = connection;
-        this.windowSize = windowSize;
     }
 
     @Override
@@ -30,8 +28,7 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implem
     }
 
     private boolean inWindow(int packetIndex){
-        int windowSize = this.windowSize;
-        return packetIndex < windowSize && packetIndex >= 0;
+        return packetIndex < this.getWindowSize() && packetIndex >= 0;
     }
 
     @Override
@@ -49,4 +46,8 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implem
         return seqNum - ackNum;
     }
 
+    @Override
+    public int getWindowSize() {
+        return this.bound();
+    }
 }

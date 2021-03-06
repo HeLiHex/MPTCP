@@ -11,4 +11,6 @@ public interface IWindow {
     boolean inSendingWindow(Packet packet);
 
     boolean inReceivingWindow(Packet packet);
+
+    int getWindowSize();
 }
