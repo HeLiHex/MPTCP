@@ -50,7 +50,7 @@ public class ReceivingWindowTest {
     @Test
     public void ackThisReturnsPacketTest(){
         Packet toBeAcked = this.receivingWindow.ackThis();
-        Assert.assertTrue(toBeAcked instanceof Packet);
+        Assert.assertNotNull(toBeAcked);
     }
 
 
