@@ -76,7 +76,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
             this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
             this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
 
-            this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
+            //Sthis.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
 
     }
@@ -225,7 +225,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         }
 
         if (packet.hasAllFlags(Flag.ACK)) {
-            System.out.println("creating connection");
+            //System.out.println("creating connection");
             this.setConnection(new Connection(
                     this,
                     packet.getOrigin(),
@@ -234,7 +234,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
             );
             this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
             this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
-            this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
+            //this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
             return false;
         }
         return false;
