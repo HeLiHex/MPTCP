@@ -15,5 +15,5 @@ public interface BoundedQueue<T> extends Iterable<T>, Collection<T>, BlockingQue
 
     int bound();
 
-    void resize(int newCapacity);
+    void setBound(int bound);
 }

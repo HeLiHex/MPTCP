@@ -29,11 +29,11 @@ public class Util {
     }
 
     public static void tickTime(Event event){
-        time = event.getInstant();
+        time = event.getInstant() + 1;
     }
 
     public static long getTime(){
-        return time++;
+        return time;
     }
 
     public static long seeTime(){

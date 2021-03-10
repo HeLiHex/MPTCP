@@ -68,8 +68,8 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     }
 
     @Override
-    public void resize(int newCapacity) {
-        this.bound = newCapacity;
+    public void setBound(int bound) {
+        this.bound = bound;
     }
 
     /**

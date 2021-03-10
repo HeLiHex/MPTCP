@@ -25,13 +25,13 @@ public class StatisticsTest {
     public Timeout globalTimeout = new Timeout(50, TimeUnit.SECONDS);
 
     @Test
-    public void noExceptionCallingToStringTest(){
+    public void noExceptionCallingToStringTest() {
         Statistics statistics = new Statistics();
         System.out.println(statistics.toString());
         Assert.assertTrue(statistics.toString().length() > 0);
     }
 
-    private void connect(EventHandler eventHandler, TCP client, Endpoint endpoint){
+    private void connect(EventHandler eventHandler, TCP client, Endpoint endpoint) {
         eventHandler.addEvent(new TCPConnectEvent(client, endpoint));
         eventHandler.run();
         Statistics.reset();
@@ -291,18 +291,16 @@ public class StatisticsTest {
         }
         eventHandler.addEvent(new TCPInputEvent(client));
 
-        while (!(eventHandler.peekEvent() instanceof TCPRetransmitEventGenerator)){
+        Event lastEvent = null;
+        while (!eventHandler.getEvents().isEmpty()){
+            lastEvent = eventHandler.peekEvent();
             eventHandler.singleRun();
         }
-
-        Queue<Event> events = eventHandler.getEvents();
-        while (!events.isEmpty()){
-            Assert.assertEquals(events.poll().getClass(), TCPRetransmitEventGenerator.class);
-        }
+        Assert.assertEquals(TCPRetransmitEventGenerator.class, lastEvent.getClass());
     }
 
     @Test
-    public void TCPRetransmitEventGeneratorIsGeneratedPerPacketSentTest(){
+    public void TCPRetransmitEventGeneratorIsGeneratedPerPacketSentTest() {
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP();
@@ -318,8 +316,7 @@ public class StatisticsTest {
 
         connect(eventHandler, client, server);
 
-        int multiplier = 100;
-        int numPacketsToSend = server.getWindowSize() * multiplier;
+        int numPacketsToSend = 100;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
@@ -327,15 +324,15 @@ public class StatisticsTest {
         }
         eventHandler.addEvent(new TCPInputEvent(client));
 
-        while (!(eventHandler.peekEvent() instanceof TCPRetransmitEventGenerator)){
+        int numRetransmitGenerators = 0;
+
+        while (eventHandler.peekEvent() != null){
+            if (eventHandler.peekEvent() instanceof TCPRetransmitEventGenerator) numRetransmitGenerators++;
             eventHandler.singleRun();
         }
 
-        Queue<Event> events = eventHandler.getEvents();
-        Assert.assertEquals(Statistics.getNumberOfPackets(), events.size());
+        Assert.assertEquals(Statistics.getNumberOfPacketsSent(), numRetransmitGenerators);
     }
-
-
 
 
     @Test
@@ -366,15 +363,14 @@ public class StatisticsTest {
         eventHandler.addEvent(new TCPInputEvent(client));
 
         int channelEventCount = 0;
-        while (eventHandler.peekEvent() != null){
-            if (eventHandler.peekEvent() instanceof ChannelEvent){
+        while (eventHandler.peekEvent() != null) {
+            if (eventHandler.peekEvent() instanceof ChannelEvent) {
                 channelEventCount++;
             }
             eventHandler.singleRun();
         }
         int numberOfChannels = 4;
         Assert.assertEquals(numPacketsToSend * numberOfChannels, channelEventCount);
-
 
 
     }

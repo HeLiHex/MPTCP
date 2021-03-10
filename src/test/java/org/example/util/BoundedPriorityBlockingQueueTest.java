@@ -115,7 +115,7 @@ public class BoundedPriorityBlockingQueueTest {
         BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
                 new BoundedPriorityBlockingQueue<>(5, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
 
-        boundedPriorityBlockingQueue.resize(10);
+        boundedPriorityBlockingQueue.setBound(10);
         Assert.assertEquals(10, boundedPriorityBlockingQueue.bound());
     }
 
@@ -143,7 +143,7 @@ public class BoundedPriorityBlockingQueueTest {
 
         Assert.assertTrue(boundedPriorityBlockingQueue.isFull());
 
-        boundedPriorityBlockingQueue.resize(8);
+        boundedPriorityBlockingQueue.setBound(8);
         Assert.assertEquals(8, boundedPriorityBlockingQueue.bound());
 
 
