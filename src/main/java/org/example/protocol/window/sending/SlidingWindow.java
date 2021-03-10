@@ -13,18 +13,17 @@ import java.util.Queue;
 public class SlidingWindow extends Window implements SendingWindow, BoundedQueue<Packet> {
 
     private final Queue<Packet> queue;
-    //private static final int DEFAULT_CONGESTION_WINDOW_SIZE = 1;
+    private static final int DEFAULT_CONGESTION_WINDOW_SIZE = 1;
     private final int receiverWindowSize;
 
     public SlidingWindow(int receiverWindowSize, Connection connection, Comparator comparator) {
-        super(receiverWindowSize, connection, comparator);
+        super(DEFAULT_CONGESTION_WINDOW_SIZE, connection, comparator);
         this.queue = new PriorityQueue<>(comparator);
         this.receiverWindowSize = receiverWindowSize;
     }
 
     @Override
     public boolean isWaitingForAck() {
-        System.out.println(isFull());
         return this.isFull();
     }
 
@@ -60,23 +59,14 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void increase() {
-        /*
         if (this.getWindowCapacity() >= this.receiverWindowSize) return;
-        this.window.resize(this.getWindowCapacity() + 1);
-
-         */
+        this.setBound(this.getWindowCapacity() + 1);
     }
 
     @Override
     public void decrease() {
-        /*
         int newWindowSize = Math.max((int) Math.ceil(this.getWindowCapacity() / 2), DEFAULT_CONGESTION_WINDOW_SIZE);
-        for (int i = 0; i < this.getWindowCapacity() - newWindowSize; i++) {
-            this.offer(this.window.poll());
-        }
-        this.window.resize(newWindowSize);
-
-         */
+        this.setBound(newWindowSize);
     }
 
     @Override

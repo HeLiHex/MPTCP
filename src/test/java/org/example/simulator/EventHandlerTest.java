@@ -4,6 +4,7 @@ import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
+import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
@@ -14,8 +15,10 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
@@ -144,10 +147,7 @@ public class EventHandlerTest {
         }
     }
 
-
-    @Test
-    public void eventArrangementsAreConsistent(){
-        double noiseTolerance = 1;
+    private ArrayList<Event> allEventsList(int numPacketsToSend, double noiseTolerance){
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP();
@@ -168,17 +168,13 @@ public class EventHandlerTest {
 
         Assert.assertNull(eventHandler.peekEvent());
 
-        Util.setSeed(1337);
-
-        int numPacketsToSend = 1000;
-
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
         eventHandler.addEvent(new TCPInputEvent(client));
 
-        Deque<Event> eventList = new ArrayDeque<>();
+        ArrayList<Event> eventList = new ArrayList<>();
 
         while (eventHandler.peekEvent() != null){
             eventList.add(eventHandler.peekEvent());
@@ -190,21 +186,18 @@ public class EventHandlerTest {
         Assert.assertNull(r1.dequeueInputBuffer());
         Assert.assertNull(eventHandler.peekEvent());
 
-        Util.setSeed(1337);
-        Util.resetTime();
+        return eventList;
+    }
 
-        for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message("test " + i);
-            client.send(msg);
-        }
-        eventHandler.addEvent(new TCPInputEvent(client));
+    @Test
+    public void eventArrangementsAreConsistent(){
+        double noiseTolerance = 1;
+        int numPacketsToSend = 1000;
+        ArrayList<Event> eventList1 = this.allEventsList(numPacketsToSend, noiseTolerance);
+        ArrayList<Event> eventList2 = this.allEventsList(numPacketsToSend, noiseTolerance);
 
-        while (eventHandler.peekEvent() != null){
-            //System.out.println(eventList.peek().getClass().equals(eventHandler.peekEvent().getClass()));
-            Event event = eventList.poll();
-            if (event == null) Assert.fail();
-            Assert.assertEquals(event.getClass(), eventHandler.peekEvent().getClass());
-            eventHandler.singleRun();
+        for (Event event : eventList1){
+            Assert.assertEquals(event.getClass(), eventList2.remove(0).getClass());
         }
     }
 

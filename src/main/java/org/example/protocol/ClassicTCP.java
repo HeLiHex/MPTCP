@@ -284,7 +284,6 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
             if (sendingWindow.isQueueEmpty()) return null;
             if (sendingWindow.isWaitingForAck()){
-                System.out.println("waiting for ack");
                 return null;
             }
 

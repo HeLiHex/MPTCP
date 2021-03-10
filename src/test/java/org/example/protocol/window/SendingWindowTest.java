@@ -75,7 +75,7 @@ public class SendingWindowTest {
         for (int i = 0; i < this.server.getWindowSize(); i++) {
             this.sendingWindow.increase();
         }
-        Assert.assertEquals(this.server.getWindowSize(), this.sendingWindow.packetsInTransmission());
+        Assert.assertEquals(this.server.getWindowSize(), this.sendingWindow.getWindowCapacity());
     }
 
 
