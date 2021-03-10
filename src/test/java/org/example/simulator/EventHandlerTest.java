@@ -9,14 +9,20 @@ import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.util.Util;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 
 public class EventHandlerTest {
+
+    @Rule
+    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Test
     public void runRunsWithoutErrorTest(){

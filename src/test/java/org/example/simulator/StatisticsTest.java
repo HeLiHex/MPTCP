@@ -12,12 +12,17 @@ import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
 import org.example.util.Util;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 public class StatisticsTest {
 
+    @Rule
+    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Test
     public void noExceptionCallingToStringTest(){

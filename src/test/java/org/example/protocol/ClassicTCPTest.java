@@ -16,14 +16,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
+import java.util.concurrent.TimeUnit;
+
 public class ClassicTCPTest {
 
-    private int seconds(int seconds){
-        return 1000 * seconds;
-    }
-
     @Rule
-    public Timeout globalTimeout = new Timeout(seconds(30));
+    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
+
 
     @Test
     public void connectToEndpointTest(){
