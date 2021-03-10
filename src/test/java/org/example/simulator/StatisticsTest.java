@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 public class StatisticsTest {
@@ -296,6 +295,7 @@ public class StatisticsTest {
             lastEvent = eventHandler.peekEvent();
             eventHandler.singleRun();
         }
+        Assert.assertNotNull(lastEvent);
         Assert.assertEquals(TCPRetransmitEventGenerator.class, lastEvent.getClass());
     }
 
