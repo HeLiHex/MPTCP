@@ -80,12 +80,31 @@ public class SendingWindowTest {
 
     @Test
     public void windowCanDecreaseWhenInMaxCapacity(){
-        for (int i = 0; i < this.server.getWindowSize() * 10; i++) {
+        for (int i = 0; i < this.server.getWindowSize(); i++) {
             this.sendingWindow.increase();
         }
         this.sendingWindow.decrease();
         Assert.assertEquals((int)Math.ceil(this.server.getWindowSize()/2), this.sendingWindow.getWindowCapacity());
     }
+
+    @Test
+    public void initWindowCanNotDecrease(){
+        this.sendingWindow.decrease();
+        Assert.assertEquals(1, this.sendingWindow.getWindowCapacity());
+    }
+
+    @Test
+    public void windowWillDecreaseToDefaultValueIfDecreasedEnough(){
+        for (int i = 0; i < this.server.getWindowSize(); i++) {
+            this.sendingWindow.increase();
+        }
+
+        for (int i = 0; i < this.server.getWindowSize(); i++) {
+            this.sendingWindow.decrease();
+        }
+        Assert.assertEquals(1, this.sendingWindow.getWindowCapacity());
+    }
+
 
 
 }
