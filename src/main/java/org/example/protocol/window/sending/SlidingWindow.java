@@ -7,23 +7,25 @@ import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.BoundedQueue;
 
 import java.util.Comparator;
-
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class SlidingWindow extends Window implements SendingWindow, BoundedQueue<Packet> {
 
-    private final BoundedQueue<Packet> window;
-    private static final int DEFAULT_CONGESTION_WINDOW_SIZE = 1;
+    private final Queue<Packet> queue;
+    //private static final int DEFAULT_CONGESTION_WINDOW_SIZE = 1;
     private final int receiverWindowSize;
 
     public SlidingWindow(int receiverWindowSize, Connection connection, Comparator comparator) {
-        super(1000000, connection, comparator);
-        this.window = new BoundedPriorityBlockingQueue<>(DEFAULT_CONGESTION_WINDOW_SIZE, comparator);
+        super(receiverWindowSize, connection, comparator);
+        this.queue = new PriorityQueue<>(comparator);
         this.receiverWindowSize = receiverWindowSize;
     }
 
     @Override
     public boolean isWaitingForAck() {
-        return this.window.isFull();
+        System.out.println(isFull());
+        return this.isFull();
     }
 
     @Override
@@ -31,7 +33,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         int ackIndex = this.sendingPacketIndex(ack);
 
         for (int i = 0; i <= ackIndex; i++) {
-            this.window.poll();
+            this.poll();
             this.increase();
         }
         this.connection.update(ack);
@@ -39,9 +41,9 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public Packet send() {
-        Packet packetToSend = this.poll();
+        Packet packetToSend = this.queue.poll();
         assert packetToSend != null : "packet to send is null";
-        if (this.window.offer(packetToSend)){
+        if (super.offer(packetToSend)){
             return packetToSend;
         }
         throw new IllegalStateException("Packet was not added to the sending window");
@@ -49,7 +51,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public boolean canRetransmit(Packet packet) {
-        if (this.window.contains(packet)){
+        if (this.contains(packet)){
             if (this.sendingPacketIndex(packet) == 0) this.decrease();
             return true;
         }
@@ -58,29 +60,28 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void increase() {
+        /*
         if (this.getWindowCapacity() >= this.receiverWindowSize) return;
         this.window.resize(this.getWindowCapacity() + 1);
+
+         */
     }
 
     @Override
     public void decrease() {
+        /*
         int newWindowSize = Math.max((int) Math.ceil(this.getWindowCapacity() / 2), DEFAULT_CONGESTION_WINDOW_SIZE);
         for (int i = 0; i < this.getWindowCapacity() - newWindowSize; i++) {
             this.offer(this.window.poll());
         }
         this.window.resize(newWindowSize);
+
+         */
     }
 
     @Override
     public int packetsInTransmission(){
-        return this.window.size();
-    }
-
-
-    @Override
-    public int getWindowCapacity() {
-        return this.window.size();
-        //return this.window.bound();
+        return this.size();
     }
 
     @Override
@@ -95,5 +96,21 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         int connSeqNum = this.connection.getNextSequenceNumber();
         return packetSeqNum - connSeqNum;
     }
+
+    @Override
+    public boolean offer(Packet packet) {
+        return this.queue.offer(packet);
+    }
+
+    @Override
+    public int queueSize(){
+       return this.queue.size();
+    }
+
+    @Override
+    public boolean isQueueEmpty(){
+        return this.queue.isEmpty();
+    }
+
 
 }

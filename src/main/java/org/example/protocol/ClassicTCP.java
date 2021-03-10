@@ -100,8 +100,12 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     @Override
     public void send(Packet packet) {
         if (!this.isConnected()) return;
-        int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.outputBuffer.size();
-        packet.setSequenceNumber(nextPacketSeqNum);
+        try {
+            int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.getSendingWindow().queueSize();
+            packet.setSequenceNumber(nextPacketSeqNum);
+        }catch (IllegalAccessException e) {
+            return;
+        }
 
         boolean wasAdded = this.enqueueOutputBuffer(packet);
         if (!wasAdded) {
@@ -122,9 +126,11 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     @Override
     public Packet receive() {
         try {
-            return this.getReceivingWindow().getReceivedPackets().poll();
+            Packet receivedPacket = this.getReceivingWindow().getReceivedPackets().poll();
+            //assert receivedPacket != null : "a packet is missing";
+            return receivedPacket;
         } catch (IllegalAccessException e) {
-            return null;
+            throw new IllegalStateException("trying to receive from not existing receiving window");
         }
     }
 
@@ -276,9 +282,9 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         if (this.outputBuffer instanceof SendingWindow){
             SendingWindow sendingWindow = (SendingWindow) this.outputBuffer;
 
-            if (sendingWindow.isEmpty()) return null;
+            if (sendingWindow.isQueueEmpty()) return null;
             if (sendingWindow.isWaitingForAck()){
-                System.out.println("waiting");
+                System.out.println("waiting for ack");
                 return null;
             }
 

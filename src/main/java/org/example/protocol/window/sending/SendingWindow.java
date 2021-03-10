@@ -24,5 +24,10 @@ public interface SendingWindow extends IWindow, BoundedQueue<Packet> {
 
     boolean inSendingWindow(Packet packet);
 
+    int queueSize();
 
+    boolean isQueueEmpty();
+
+    @Override
+    boolean offer(Packet packet);
 }

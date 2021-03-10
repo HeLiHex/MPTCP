@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class StatisticsTest {
 
     @Rule
-    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
+    public Timeout globalTimeout = new Timeout(50, TimeUnit.SECONDS);
 
     @Test
     public void noExceptionCallingToStringTest(){
@@ -86,7 +86,7 @@ public class StatisticsTest {
     public void statisticsAreConsistentWithLoss() {
         double noiseTolerance = 1;
         int numPacketsToSend = 400;
-        for (int j = 0; j < 100; j++) {
+        for (int j = 0; j < 50; j++) {
 
             //first run
             EventHandler eventHandler = new EventHandler();
