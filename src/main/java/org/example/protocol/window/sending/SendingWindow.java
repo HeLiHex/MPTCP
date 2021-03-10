@@ -18,4 +18,11 @@ public interface SendingWindow extends IWindow, BoundedQueue<Packet> {
 
     void decrease();
 
+    int packetsInTransmission();
+
+    int sendingPacketIndex(Packet packet);
+
+    boolean inSendingWindow(Packet packet);
+
+
 }

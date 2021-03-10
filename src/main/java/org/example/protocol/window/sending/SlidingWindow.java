@@ -14,7 +14,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private final BoundedQueue<Packet> window;
     private static final int DEFAULT_CONGESTION_WINDOW_SIZE = 1;
     private final int receiverWindowSize;
-    private int dupAckCount = 0;
 
     public SlidingWindow(int receiverWindowSize, Connection connection, Comparator comparator) {
         super(1000000, connection, comparator);
@@ -59,21 +58,42 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void increase() {
-        if (this.getWindowSize() >= this.receiverWindowSize) return;
-        this.window.resize(this.getWindowSize() + 1);
+        if (this.getWindowCapacity() >= this.receiverWindowSize) return;
+        this.window.resize(this.getWindowCapacity() + 1);
     }
 
     @Override
     public void decrease() {
-        int newWindowSize = Math.max((int) Math.ceil(this.getWindowSize() / 2), DEFAULT_CONGESTION_WINDOW_SIZE);
-        for (int i = 0; i < this.getWindowSize() - newWindowSize; i++) {
+        int newWindowSize = Math.max((int) Math.ceil(this.getWindowCapacity() / 2), DEFAULT_CONGESTION_WINDOW_SIZE);
+        for (int i = 0; i < this.getWindowCapacity() - newWindowSize; i++) {
             this.offer(this.window.poll());
         }
         this.window.resize(newWindowSize);
     }
 
     @Override
-    public int getWindowSize() {
+    public int packetsInTransmission(){
         return this.window.size();
     }
+
+
+    @Override
+    public int getWindowCapacity() {
+        return this.window.size();
+        //return this.window.bound();
+    }
+
+    @Override
+    public boolean inSendingWindow(Packet packet){
+        int packetIndex = sendingPacketIndex(packet);
+        return inWindow(packetIndex);
+    }
+
+    @Override
+    public int sendingPacketIndex(Packet packet){
+        int packetSeqNum = packet.getSequenceNumber();
+        int connSeqNum = this.connection.getNextSequenceNumber();
+        return packetSeqNum - connSeqNum;
+    }
+
 }

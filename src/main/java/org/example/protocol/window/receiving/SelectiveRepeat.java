@@ -69,4 +69,17 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     public Queue<Packet> getReceivedPackets() {
         return this.received;
     }
+
+    @Override
+    public int receivingPacketIndex(Packet packet){
+        int seqNum = packet.getSequenceNumber();
+        int ackNum = this.connection.getNextAcknowledgementNumber();
+        return seqNum - ackNum;
+    }
+
+    @Override
+    public boolean inReceivingWindow(Packet packet){
+        int packetIndex = receivingPacketIndex(packet);
+        return inWindow(packetIndex);
+    }
 }
