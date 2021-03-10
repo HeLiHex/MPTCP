@@ -22,10 +22,10 @@ import java.util.Queue;
 
 public class ReceivingWindowTest {
 
+    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
+
     private ClassicTCP client;
     private ClassicTCP server;
-
-    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private ReceivingWindow receivingWindow;
 
     @Before
@@ -46,6 +46,8 @@ public class ReceivingWindowTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
     }
+
+
 
     @Test
     public void ackThisReturnsPacketTest(){
