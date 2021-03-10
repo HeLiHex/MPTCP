@@ -72,7 +72,7 @@ public class SendingWindowTest {
 
     @Test
     public void windowCantIncreaseToMoreThanServersReceivingWindow(){
-        for (int i = 0; i < this.server.getWindowSize(); i++) {
+        for (int i = 0; i < this.server.getWindowSize() * 10; i++) {
             this.sendingWindow.increase();
         }
         Assert.assertEquals(this.server.getWindowSize(), this.sendingWindow.getWindowCapacity());
