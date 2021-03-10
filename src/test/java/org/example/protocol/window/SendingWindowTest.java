@@ -84,7 +84,7 @@ public class SendingWindowTest {
             this.sendingWindow.increase();
         }
         this.sendingWindow.decrease();
-        Assert.assertEquals((int)Math.ceil(this.server.getWindowSize()/2), this.sendingWindow.getWindowCapacity());
+        Assert.assertEquals((int)Math.ceil(this.server.getWindowSize()/2.0), this.sendingWindow.getWindowCapacity());
     }
 
     @Test

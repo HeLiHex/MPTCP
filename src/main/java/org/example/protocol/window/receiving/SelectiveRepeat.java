@@ -17,7 +17,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     private final Queue<Packet> received;
     private Packet ackThis;
 
-    public SelectiveRepeat(int windowSize, Connection connection, Comparator comparator) {
+    public SelectiveRepeat(int windowSize, Connection connection, Comparator<Packet> comparator) {
         super(windowSize, connection, comparator);
         this.received = new PriorityQueue<>(comparator);
         this.ackThis = new PacketBuilder().withConnection(connection).build();
@@ -42,7 +42,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             return false;
         }
 
-        if (packet == null) throw new IllegalStateException("null packet received");
         if (this.inReceivingWindow(packet)) {
             if (receivingPacketIndex(packet) == 0) {
                 this.connection.update(packet);

@@ -15,7 +15,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private static final int DEFAULT_CONGESTION_WINDOW_SIZE = 1;
     private final int receiverWindowSize;
 
-    public SlidingWindow(int receiverWindowSize, Connection connection, Comparator comparator) {
+    public SlidingWindow(int receiverWindowSize, Connection connection, Comparator<Packet> comparator) {
         super(DEFAULT_CONGESTION_WINDOW_SIZE, connection, comparator);
         this.queue = new PriorityQueue<>(comparator);
         this.receiverWindowSize = receiverWindowSize;
@@ -69,7 +69,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void decrease() {
-        int newWindowSize = Math.max((int) Math.ceil(this.getWindowCapacity() / 2), DEFAULT_CONGESTION_WINDOW_SIZE);
+        int newWindowSize = Math.max((int) Math.ceil(this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_SIZE);
         this.setBound(newWindowSize);
     }
 
