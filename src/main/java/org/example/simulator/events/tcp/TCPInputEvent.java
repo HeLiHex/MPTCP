@@ -22,7 +22,6 @@ public class TCPInputEvent extends Event {
     @Override
     public void run() {
         this.ackSent = ((ClassicTCP) this.tcp).handleIncoming();
-
     }
 
     @Override

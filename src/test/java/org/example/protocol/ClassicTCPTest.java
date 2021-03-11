@@ -543,7 +543,7 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         ClassicTCP client = new ClassicTCP();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(1.8).build();
         ClassicTCP server = new ClassicTCP();
 
         client.addChannel(router);
@@ -557,8 +557,8 @@ public class ClassicTCPTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        Assert.assertTrue(server.isConnected());
         Assert.assertTrue(client.isConnected());
+        Assert.assertTrue(server.isConnected());
 
         System.out.println("connected");
 
@@ -568,7 +568,7 @@ public class ClassicTCPTest {
         Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(router.inputBufferIsEmpty());
 
-        int numPacketsToSend = server.getWindowSize() * 100;
+        int numPacketsToSend = server.getWindowSize() * 1000;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
@@ -579,7 +579,6 @@ public class ClassicTCPTest {
 
         Assert.assertTrue(client.inputBufferIsEmpty());
         Assert.assertTrue(server.inputBufferIsEmpty());
-        System.out.println(client.dequeueOutputBuffer());
         Assert.assertTrue(client.outputBufferIsEmpty());
         Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(router.inputBufferIsEmpty());
@@ -587,7 +586,6 @@ public class ClassicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
-            System.out.println(received);
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }

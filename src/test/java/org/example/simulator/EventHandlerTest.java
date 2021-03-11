@@ -191,7 +191,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventArrangementsAreConsistent(){
-        double noiseTolerance = 1;
+        double noiseTolerance = 2;
         int numPacketsToSend = 1000;
         ArrayList<Event> eventList1 = this.allEventsList(numPacketsToSend, noiseTolerance);
         ArrayList<Event> eventList2 = this.allEventsList(numPacketsToSend, noiseTolerance);
@@ -204,7 +204,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventAreRunningInCorrectOrderWithRespectToTime() {
-        double noiseTolerance = 1;
+        double noiseTolerance = 2;
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP();

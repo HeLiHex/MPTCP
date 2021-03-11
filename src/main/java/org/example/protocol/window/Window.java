@@ -10,8 +10,8 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implem
 
     protected final Connection connection;
 
-    public Window(int windowSize, Connection connection, Comparator comparator) {
-        super(windowSize, comparator);
+    public Window(int windowCapacity, Connection connection, Comparator comparator) {
+        super(windowCapacity, comparator);
         this.connection = connection;
     }
 

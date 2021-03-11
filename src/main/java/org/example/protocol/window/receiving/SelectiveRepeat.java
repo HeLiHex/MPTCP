@@ -25,7 +25,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     private void receive(Packet packet){
         if (this.received.contains(packet)) return;
-        System.out.println(packet);
         boolean added = this.received.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
         Statistics.packetReceived();
