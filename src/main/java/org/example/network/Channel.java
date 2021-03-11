@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 public class Channel implements Comparable<Channel> {
 
     private final Logger logger;
+    boolean goodState = true;
 
     private final Queue<Packet> line;
     private final NetworkNode source;
@@ -48,6 +49,11 @@ public class Channel implements Comparable<Channel> {
         if (this.source.equals(this.destination)) return false;
         double gaussianNoise = Util.getNextGaussian();
         double noise = StrictMath.abs(gaussianNoise);
+        if (goodState){
+            this.goodState = Util.getNextRandomInt(100) >= 10;
+            return noise > this.noiseTolerance + 2;
+        }
+        this.goodState = Util.getNextRandomInt(100) >= 50;
         return noise > this.noiseTolerance;
     }
 
@@ -68,7 +74,7 @@ public class Channel implements Comparable<Channel> {
     }
 
     public boolean channel() {
-        //channel is in same cases called without the packet making it's way to the line
+        //channel is in some cases called without the packet making it's way to the line
         //this prevents NullPointerException
         if (this.line.isEmpty()) {
             return false;

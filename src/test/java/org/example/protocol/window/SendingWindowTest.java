@@ -88,7 +88,7 @@ public class SendingWindowTest {
             this.sendingWindow.increase();
         }
         this.sendingWindow.decrease();
-        Assert.assertEquals((int)Math.ceil(this.server.getWindowSize()/2.0), this.sendingWindow.getWindowCapacity());
+        Assert.assertEquals((int) (this.server.getWindowSize()/2.0), this.sendingWindow.getWindowCapacity());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class SendingWindowTest {
     @Test
     public void floodWithPacketsInLossyChannelShouldResultInVariableWindowCapacity() throws IllegalAccessException {
         ClassicTCP client = new ClassicTCP();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
         ClassicTCP server = new ClassicTCP();
 
         client.addChannel(router);
@@ -152,7 +152,7 @@ public class SendingWindowTest {
             boolean packetAcked = curWindowCapacity > prevWindowCapacity;
 
             if (loss){
-                Assert.assertEquals((int) Math.ceil(prevWindowCapacity/2.0), curWindowCapacity);
+                Assert.assertEquals((int) (prevWindowCapacity/2.0), curWindowCapacity);
             }else if (packetAcked){
                 Assert.assertTrue(this.client.getWindowSize() >= curWindowCapacity);
             }else{

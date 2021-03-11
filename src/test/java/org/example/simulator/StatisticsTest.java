@@ -1,6 +1,7 @@
 package org.example.simulator;
 
 import org.example.data.Message;
+import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.ClassicTCP;
@@ -33,6 +34,9 @@ public class StatisticsTest {
     private void connect(EventHandler eventHandler, TCP client, Endpoint endpoint) {
         eventHandler.addEvent(new TCPConnectEvent(client, endpoint));
         eventHandler.run();
+
+        Assert.assertTrue(client.isConnected());
+        Assert.assertTrue(endpoint.isConnected());
         Statistics.reset();
     }
 
@@ -177,11 +181,9 @@ public class StatisticsTest {
     @Test
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
         double noiseTolerance = 1;
-        EventHandler eventHandler = new EventHandler();
-
         ClassicTCP client = new ClassicTCP();
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
         ClassicTCP server = new ClassicTCP();
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
 
         client.addChannel(r1);
         r1.addChannel(server);
@@ -190,15 +192,26 @@ public class StatisticsTest {
         r1.updateRoutingTable();
         server.updateRoutingTable();
 
-        connect(eventHandler, client, server);
+        EventHandler eventHandler = new EventHandler();
+        this.connect(eventHandler, client, server);
 
-        int multiplier = 100;
-        int numPacketsToSend = server.getWindowSize() * multiplier;
+        Assert.assertTrue(client.isConnected());
+        Assert.assertTrue(server.isConnected());
 
+        System.out.println("connected");
+
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(r1.inputBufferIsEmpty());
+
+        int numPacketsToSend = server.getWindowSize() * 1000;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
+
         eventHandler.addEvent(new TCPInputEvent(client));
         eventHandler.run();
 
@@ -302,7 +315,7 @@ public class StatisticsTest {
 
     @Test
     public void TCPRetransmitEventGeneratorIsGeneratedPerPacketSentTest() {
-        int noiseTolerance = 1;
+        double noiseTolerance = 1.1;
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP();

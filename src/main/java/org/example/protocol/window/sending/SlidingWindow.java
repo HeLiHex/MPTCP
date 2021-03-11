@@ -69,7 +69,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void decrease() {
-        int newWindowSize = Math.max((int) Math.ceil(this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_CAPACITY);
+        int newWindowSize = Math.max((int) (this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_CAPACITY);
         this.setBound(newWindowSize);
     }
 
