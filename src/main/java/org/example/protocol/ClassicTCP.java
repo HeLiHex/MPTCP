@@ -201,7 +201,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     private boolean packetIsFromValidConnection(Packet packet) {
         if (packet.hasAllFlags(Flag.SYN)) return true;
         Connection conn = this.getConnection();
-        if (conn == null) return true;
+        if (conn == null) return false;
         if (packet.hasAllFlags(Flag.ACK)) return true;
         return packet.getOrigin().equals(conn.getConnectedNode())
                 && packet.getDestination().equals(conn.getConnectionSource()
@@ -210,10 +210,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        boolean shouldEnqueue = packet.hasAllFlags(Flag.ACK)
-                || packet.hasAllFlags(Flag.SYN)
-                || packetIsFromValidConnection(packet);
-        if (shouldEnqueue) {
+        if (packetIsFromValidConnection(packet)) {
             return super.enqueueInputBuffer(packet);
         }
         this.logger.log(Level.INFO, "packet was not added due to non valid connection");
