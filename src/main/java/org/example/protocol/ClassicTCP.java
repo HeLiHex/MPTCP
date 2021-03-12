@@ -131,9 +131,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     @Override
     public Packet receive() {
         try {
-            Packet receivedPacket = this.getReceivingWindow().getReceivedPackets().poll();
-            //assert receivedPacket != null : "a packet is missing";
-            return receivedPacket;
+            return this.getReceivingWindow().getReceivedPackets().poll();
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("trying to receive from not existing receiving window");
         }
@@ -262,10 +260,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     public boolean canRetransmit(Packet packet) {
         try {
-            if (this.getSendingWindow().canRetransmit(packet)){
-                return true;
-            }
-            return false;
+            return this.getSendingWindow().canRetransmit(packet);
         } catch (IllegalAccessException e) {
             //Retransmission should not happen if there is no SendingWindow
             return false;
