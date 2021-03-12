@@ -14,6 +14,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private final Queue<Packet> queue;
     private static final int DEFAULT_CONGESTION_WINDOW_CAPACITY = 1;
     private final int receiverWindowSize;
+    private boolean seriousLossDetected = false;
 
     public SlidingWindow(int receiverWindowCapacity, Connection connection, Comparator<Packet> comparator) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, connection, comparator);
@@ -38,6 +39,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         for (int i = 0; i <= ackIndex; i++) {
             this.poll();
             this.increase();
+            this.seriousLossDetected = false;
         }
         this.connection.update(ack);
     }
@@ -56,6 +58,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     public boolean canRetransmit(Packet packet) {
         if (this.contains(packet)){
             if (this.sendingPacketIndex(packet) == 0) this.decrease();
+            if (this.sendingPacketIndex(packet) >= this.getWindowCapacity() - 1) this.seriousLossDetected = true;
             return true;
         }
         return false;
@@ -71,6 +74,11 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     public void decrease() {
         int newWindowSize = Math.max((int) (this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_CAPACITY);
         this.setBound(newWindowSize);
+    }
+
+    @Override
+    public boolean isSeriousLossDetected(){
+        return this.seriousLossDetected;
     }
 
     @Override

@@ -4,8 +4,9 @@ import org.example.data.Packet;
 import org.example.data.Payload;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
+import org.example.network.interfaces.NetworkNode;
 
-public interface TCP {
+public interface TCP extends Endpoint {
 
     /**
      * A method that initiates connection with a host
@@ -73,6 +74,14 @@ public interface TCP {
     long getRTT();
 
     long getRTO();
+
+    boolean handleIncoming();
+
+    boolean canRetransmit(Packet packet);
+
+    boolean seriousLossDetected();
+
+
 
 
 }

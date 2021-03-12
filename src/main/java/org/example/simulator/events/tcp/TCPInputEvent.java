@@ -14,14 +14,14 @@ public class TCPInputEvent extends Event {
     private boolean ackSent;
 
     public TCPInputEvent(TCP tcp) {
-        super(((ClassicTCP) tcp).processingDelay());
+        super(tcp.processingDelay());
         if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");
         this.tcp = tcp;
     }
 
     @Override
     public void run() {
-        this.ackSent = ((ClassicTCP) this.tcp).handleIncoming();
+        this.ackSent = this.tcp.handleIncoming();
     }
 
     @Override

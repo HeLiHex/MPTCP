@@ -252,9 +252,20 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
+    public boolean seriousLossDetected(){
+        try {
+            return this.getSendingWindow().isSeriousLossDetected();
+        } catch (IllegalAccessException e) {
+            return false;
+        }
+    }
+
     public boolean canRetransmit(Packet packet) {
         try {
-            return this.getSendingWindow().canRetransmit(packet);
+            if (this.getSendingWindow().canRetransmit(packet)){
+                return true;
+            }
+            return false;
         } catch (IllegalAccessException e) {
             //Retransmission should not happen if there is no SendingWindow
             return false;
@@ -278,6 +289,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
                 this.ack(receivingWindow.ackThis());
                 return true;
             }
+            //ACK is received and nothing more should be done
             return false;
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("TCP is connected but no ReceivingWindow or SendingWindow is established");

@@ -18,6 +18,8 @@ public interface SendingWindow extends IWindow, BoundedQueue<Packet> {
 
     void decrease();
 
+    boolean isSeriousLossDetected();
+
     int packetsInTransmission();
 
     int sendingPacketIndex(Packet packet);

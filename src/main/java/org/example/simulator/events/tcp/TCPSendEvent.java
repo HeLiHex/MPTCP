@@ -17,7 +17,7 @@ public class TCPSendEvent extends Event {
 
 
     public TCPSendEvent(TCP tcp) {
-        super(((ClassicTCP) tcp).processingDelay());
+        super(tcp.processingDelay());
         this.tcp = tcp;
     }
 
@@ -32,7 +32,7 @@ public class TCPSendEvent extends Event {
         if (this.packetSent != null) {
             if (tcp.isConnected()) {
                 events.add(new TCPSendEvent(this.tcp));
-                events.add(new TCPRetransmitEventGenerator((ClassicTCP) this.tcp, this.packetSent));
+                events.add(new TCPRetransmitEventGenerator(this.tcp, this.packetSent));
             }
             Channel channel = this.tcp.getChannel();
             events.add(new ChannelEvent(channel));

@@ -36,7 +36,7 @@ public class TCPConnectEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
         if (this.client.isConnected()) return;
 
-        Channel channel = ((Routable) this.client).getPath(this.host);
+        Channel channel = this.client.getPath(this.host);
         events.add(new ChannelEvent(channel));
         events.add(new TCPConnectEvent(1000, this.client, this.host));
     }
