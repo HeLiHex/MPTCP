@@ -58,7 +58,9 @@ public class Channel implements Comparable<Channel> {
     }
 
     public void channelPackage(Packet packet) {
-        this.line.offer(packet);
+        if (!this.line.offer(packet)){
+            System.out.println("loss in channel due to channelcapacity");
+        }
     }
 
     public NetworkNode getSource() {

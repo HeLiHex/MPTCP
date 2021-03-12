@@ -33,12 +33,12 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
 
     public ClassicTCP() {
-        super(new BoundedPriorityBlockingQueue<>(WINDOW_SIZE, PACKET_COMPARATOR),
+        super(new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 NOISE_TOLERANCE
         );
-    }
 
+    }
 
     @Override
     public void connect(Endpoint host) {
@@ -108,7 +108,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         try {
             int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.getSendingWindow().queueSize();
             packet.setSequenceNumber(nextPacketSeqNum);
-        }catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             return;
         }
 
@@ -159,7 +159,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return this.getChannels().get(channelIndex);
     }
 
-    public int getWindowSize(){
+    public int getWindowSize() {
         return WINDOW_SIZE;
     }
 
@@ -215,7 +215,6 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
-
     private boolean unconnectedInputHandler() {
         if (this.inputBuffer.isEmpty()) return false;
         Packet packet = this.dequeueInputBuffer();
@@ -250,7 +249,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return false;
     }
 
-    public boolean seriousLossDetected(){
+    public boolean seriousLossDetected() {
         try {
             return this.getSendingWindow().isSeriousLossDetected();
         } catch (IllegalAccessException e) {
@@ -267,7 +266,6 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         }
     }
 
-
     private void ack(Packet packet) {
         assert packet != null : "Packet is null";
         Packet ack = new PacketBuilder().ackBuild(packet);
@@ -280,7 +278,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         try {
             ReceivingWindow receivingWindow = this.getReceivingWindow();
             boolean packetReceived = receivingWindow.receive(this.getSendingWindow());
-            if (packetReceived && receivingWindow.shouldAck()){
+            if (packetReceived && receivingWindow.shouldAck()) {
                 this.ack(receivingWindow.ackThis());
                 return true;
             }
@@ -292,11 +290,11 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     }
 
     public Packet trySend() {
-        if (this.outputBuffer instanceof SendingWindow){
+        if (this.outputBuffer instanceof SendingWindow) {
             SendingWindow sendingWindow = (SendingWindow) this.outputBuffer;
 
             if (sendingWindow.isQueueEmpty()) return null;
-            if (sendingWindow.isWaitingForAck()){
+            if (sendingWindow.isWaitingForAck()) {
                 return null;
             }
 

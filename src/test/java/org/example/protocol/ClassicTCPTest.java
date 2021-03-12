@@ -244,7 +244,7 @@ public class ClassicTCPTest {
 
 
     @Test
-    public void routedMessagesUnorderedReceiveOrderedTest() {
+    public void routedMessagesUnorderedReceiveOrderedTest() throws IllegalAccessException {
         ClassicTCP client = new ClassicTCP();
         Routable router = new Router.RouterBuilder().build();
         ClassicTCP server = new ClassicTCP();
@@ -265,6 +265,11 @@ public class ClassicTCPTest {
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
+        //increase window capacity to max
+        for (int i = 0; i < client.getWindowSize(); i++) {
+            client.getSendingWindow().increase();
+        }
+
         for (int i = client.getWindowSize() - 1; i >= 0 ; i--) {
             Packet packet = new PacketBuilder()
                     .withOrigin(client)
@@ -277,8 +282,10 @@ public class ClassicTCPTest {
         }
         eventHandler.run();
 
+        System.out.println(server.getReceivingWindow().getReceivedPackets());
         for (int i = 0; i < client.getWindowSize(); i++) {
             Packet received = server.receive();
+            System.out.println(received);
             Assert.assertNotNull("iteration: " + i, received);
             Assert.assertEquals(i + "", received.getPayload().toString());
         }
