@@ -11,10 +11,10 @@ public class RoutingTableTest {
 
     @Test(expected = IllegalStateException.class)
     public void routingTableTrowsIllegalStateExceptionIfNotUpdated(){
-        Endpoint r1 = new ClassicTCP();
+        Endpoint r1 = new ClassicTCP(7);
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
-        Endpoint r4 = new ClassicTCP();
+        Endpoint r4 = new ClassicTCP(7);
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
@@ -43,10 +43,10 @@ public class RoutingTableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void routingTableTrowsIllegalArgumentExceptionIfDestinationIsUnconnected(){
-        Endpoint r1 = new ClassicTCP();
+        Endpoint r1 = new ClassicTCP(7);
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
-        Endpoint r4 = new ClassicTCP();
+        Endpoint r4 = new ClassicTCP(7);
 
         r1.addChannel(r2);
         r2.addChannel(r3);
@@ -72,10 +72,10 @@ public class RoutingTableTest {
     @Test
     public void getPathChoosesShortestPathTest(){
         for (int i = 0; i < 100; i++) {
-            Endpoint r1 = new ClassicTCP();
+            Endpoint r1 = new ClassicTCP(7);
             NetworkNode r2 = new Router.RouterBuilder().build();
             NetworkNode r3 = new Router.RouterBuilder().build();
-            Endpoint r4 = new ClassicTCP();
+            Endpoint r4 = new ClassicTCP(7);
 
             r1.addChannel(r2);
             r1.addChannel(r3);

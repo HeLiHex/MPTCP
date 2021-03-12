@@ -4,7 +4,6 @@ import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
-import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
@@ -14,11 +13,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
@@ -89,8 +85,8 @@ public class EventHandlerTest {
     public void runTest(){
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -115,8 +111,8 @@ public class EventHandlerTest {
     public void runFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -150,8 +146,8 @@ public class EventHandlerTest {
     private ArrayList<Event> allEventsList(int numPacketsToSend, double noiseTolerance){
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();
@@ -207,8 +203,8 @@ public class EventHandlerTest {
         double noiseTolerance = 2;
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();

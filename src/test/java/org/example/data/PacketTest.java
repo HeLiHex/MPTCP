@@ -16,14 +16,14 @@ public class PacketTest {
 
     @Test
     public void buildPacketWithDestinationBuildsPacketWithDestinationTest(){
-        Endpoint endpoint = new ClassicTCP();
+        Endpoint endpoint = new ClassicTCP(7);
         Packet packet = new PacketBuilder().withDestination(endpoint).build();
         Assert.assertEquals(endpoint, packet.getDestination());
     }
 
     @Test
     public void buildPacketWithOriginBuildsPacketWithOriginTest(){
-        Endpoint endpoint = new ClassicTCP();
+        Endpoint endpoint = new ClassicTCP(7);
         Packet packet = new PacketBuilder().withOrigin(endpoint).build();
         Assert.assertEquals(endpoint, packet.getOrigin());
     }

@@ -26,9 +26,9 @@ public class ClassicTCPTest {
 
     @Test
     public void connectToEndpointTest(){
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -49,9 +49,9 @@ public class ClassicTCPTest {
 
     @Test
     public void connectThenSendMsgWorksTest(){
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -77,8 +77,8 @@ public class ClassicTCPTest {
 
     @Test
     public void connectThenSendMsgOverMultipleNodesLineWorksTest(){
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
@@ -114,9 +114,9 @@ public class ClassicTCPTest {
 
     @Test
     public void packetsAreOrderedTest(){
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -140,9 +140,9 @@ public class ClassicTCPTest {
 
     @Test
     public void unorderedPacketsAreNotReceivedTest(){
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -181,8 +181,8 @@ public class ClassicTCPTest {
 
     @Test
     public void unorderedPacketsAreDroppedAndOrderedPacketsAreReceivedWithoutBlockTest(){
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
@@ -245,9 +245,9 @@ public class ClassicTCPTest {
 
     @Test
     public void routedMessagesUnorderedReceiveOrderedTest() throws IllegalAccessException {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -296,9 +296,9 @@ public class ClassicTCPTest {
 
     @Test
     public void routeToManyMessagesUnorderedReceiveOrderedAndDropCorrectTest() {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -339,9 +339,9 @@ public class ClassicTCPTest {
 
     @Test
     public void packetIndexShouldUpdateAfterReceivingPacketInOrderTest() throws IllegalAccessException {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -377,9 +377,9 @@ public class ClassicTCPTest {
 
     @Test
     public void packetIndexShouldNotUpdateAfterReceivingPacketOutOfOrderButInWindowTest() throws IllegalAccessException {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -422,9 +422,9 @@ public class ClassicTCPTest {
 
     @Test
     public void inWindowShouldWorkOnPacketsThatShouldBeInWindowTest() {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -465,9 +465,9 @@ public class ClassicTCPTest {
 
     @Test
     public void inWindowShouldNotWorkOnPacketsThatShouldNotBeInWindowTest() {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -505,10 +505,10 @@ public class ClassicTCPTest {
 
     @Test
     public void floodWithPacketsInOrderShouldWorkTest(){
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable r1 = new Router.RouterBuilder().build();
         Routable r2 = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -549,9 +549,9 @@ public class ClassicTCPTest {
 
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);

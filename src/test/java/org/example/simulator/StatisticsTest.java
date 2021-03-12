@@ -45,8 +45,8 @@ public class StatisticsTest {
         for (int j = 0; j < 10; j++) {
             EventHandler eventHandler = new EventHandler();
 
-            ClassicTCP client = new ClassicTCP();
-            ClassicTCP server = new ClassicTCP();
+            ClassicTCP client = new ClassicTCP(7);
+            ClassicTCP server = new ClassicTCP(7);
             Router r1 = new Router.RouterBuilder().build();
 
             client.addChannel(r1);
@@ -95,8 +95,8 @@ public class StatisticsTest {
             EventHandler eventHandler = new EventHandler();
             Util.setSeed(1337);
 
-            ClassicTCP client = new ClassicTCP();
-            ClassicTCP server = new ClassicTCP();
+            ClassicTCP client = new ClassicTCP(7);
+            ClassicTCP server = new ClassicTCP(7);
             Router r1 = new Router.RouterBuilder()
                     .withNoiseTolerance(noiseTolerance)
                     .build();
@@ -135,8 +135,8 @@ public class StatisticsTest {
             eventHandler = new EventHandler();
             Util.setSeed(1337);
 
-            client = new ClassicTCP();
-            server = new ClassicTCP();
+            client = new ClassicTCP(7);
+            server = new ClassicTCP(7);
             r1 = new Router.RouterBuilder()
                     .withNoiseTolerance(noiseTolerance)
                     .build();
@@ -181,9 +181,9 @@ public class StatisticsTest {
     @Test
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
         double noiseTolerance = 1;
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(r1);
         r1.addChannel(server);
@@ -259,8 +259,8 @@ public class StatisticsTest {
         EventHandler eventHandler = new EventHandler();
         Util.setSeed(1337);
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
 
         client.addChannel(r1);
@@ -282,8 +282,8 @@ public class StatisticsTest {
         int noiseTolerance = 1;
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
 
         client.addChannel(r1);
@@ -318,8 +318,8 @@ public class StatisticsTest {
         double noiseTolerance = 1.1;
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
 
         client.addChannel(r1);
@@ -354,8 +354,8 @@ public class StatisticsTest {
     public void trackNetworkNodeInputBufferTest() {
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(7);
 
         //no loss
         Router r1 = new Router.RouterBuilder().build();

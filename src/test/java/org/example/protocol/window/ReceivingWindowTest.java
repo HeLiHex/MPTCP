@@ -30,8 +30,8 @@ public class ReceivingWindowTest {
 
     @Before
     public void setup(){
-        this.client = new ClassicTCP();
-        this.server = new ClassicTCP();
+        this.client = new ClassicTCP(7);
+        this.server = new ClassicTCP(7);
         this.connect(client, server);
 
         this.receivingWindow = new SelectiveRepeat(10, client.getConnection(), PACKET_COMPARATOR);

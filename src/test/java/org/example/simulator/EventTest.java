@@ -13,7 +13,6 @@ import org.example.simulator.events.tcp.TCPSendEvent;
 import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.PriorityQueue;
@@ -31,8 +30,8 @@ public class EventTest {
         Util.resetTime();
         Util.setSeed(1337);
         this.events = new PriorityQueue<>();
-        this.tcp = new ClassicTCP();
-        this.host = new ClassicTCP();
+        this.tcp = new ClassicTCP(7);
+        this.host = new ClassicTCP(7);
     }
 
     public void connect(TCP linkedClient, Endpoint linkedServer){

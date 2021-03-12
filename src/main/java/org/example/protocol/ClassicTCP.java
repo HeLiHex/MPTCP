@@ -22,7 +22,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
 
-    protected static final int WINDOW_SIZE = 7;
+    protected final int receivingWindowCapacity;
     protected static final int BUFFER_SIZE = 10000;
     protected static final double NOISE_TOLERANCE = 100.0;
     protected static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
@@ -32,12 +32,12 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     private long rtt;
 
 
-    public ClassicTCP() {
+    public ClassicTCP(int receivingWindowCapacity) {
         super(new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 NOISE_TOLERANCE
         );
-
+        this.receivingWindowCapacity = receivingWindowCapacity;
     }
 
     @Override
@@ -160,7 +160,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     }
 
     public int getWindowSize() {
-        return WINDOW_SIZE;
+        return receivingWindowCapacity;
     }
 
     @Override

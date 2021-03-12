@@ -22,8 +22,8 @@ public class SendingWindowTest {
 
     @Before
     public void setup() throws IllegalAccessException {
-        this.client = new ClassicTCP();
-        this.server = new ClassicTCP();
+        this.client = new ClassicTCP(7);
+        this.server = new ClassicTCP(7);
         this.connect(client, server);
 
         this.sendingWindow = this.client.getSendingWindow();
@@ -111,9 +111,9 @@ public class SendingWindowTest {
 
     @Test
     public void floodWithPacketsInLossyChannelShouldResultInVariableWindowCapacity() throws IllegalAccessException {
-        ClassicTCP client = new ClassicTCP();
+        ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
-        ClassicTCP server = new ClassicTCP();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
