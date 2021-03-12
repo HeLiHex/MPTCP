@@ -52,10 +52,10 @@ public class SendingWindowTest {
 
     @Test
     public void initIsWaitingForAckIsTrueIfSendingWindowIsFullTest(){
-        for (int i = 0; i < this.client.getWindowSize(); i++) {
+        for (int i = 0; i < this.client.getReceivingWindowCapacity(); i++) {
             this.client.send(new Message("test " + i));
         }
-        for (int i = 0; i < this.client.getWindowSize(); i++) {
+        for (int i = 0; i < this.client.getReceivingWindowCapacity(); i++) {
             this.client.trySend();
         }
         Assert.assertTrue(this.sendingWindow.isWaitingForAck());
@@ -63,32 +63,32 @@ public class SendingWindowTest {
 
     @Test
     public void isWaitingForAckIsFalseIfSendingWindowIsAlmostFullTest(){
-        for (int i = 0; i < this.client.getWindowSize(); i++) {
+        for (int i = 0; i < this.client.getReceivingWindowCapacity(); i++) {
             this.client.send(new Message("test " + i));
             this.sendingWindow.increase();
         }
-        for (int i = 0; i < this.client.getWindowSize() - 1; i++) {
+        for (int i = 0; i < this.client.getReceivingWindowCapacity() - 1; i++) {
             this.client.trySend();
         }
-        Assert.assertEquals(this.client.getWindowSize(), this.sendingWindow.getWindowCapacity());
+        Assert.assertEquals(this.client.getReceivingWindowCapacity(), this.sendingWindow.getWindowCapacity());
         Assert.assertFalse(this.sendingWindow.isWaitingForAck());
     }
 
     @Test
     public void windowCantIncreaseToMoreThanServersReceivingWindow(){
-        for (int i = 0; i < this.server.getWindowSize() * 10; i++) {
+        for (int i = 0; i < this.server.getReceivingWindowCapacity() * 10; i++) {
             this.sendingWindow.increase();
         }
-        Assert.assertEquals(this.server.getWindowSize(), this.sendingWindow.getWindowCapacity());
+        Assert.assertEquals(this.server.getReceivingWindowCapacity(), this.sendingWindow.getWindowCapacity());
     }
 
     @Test
     public void windowCanDecreaseWhenInMaxCapacity(){
-        for (int i = 0; i < this.server.getWindowSize(); i++) {
+        for (int i = 0; i < this.server.getReceivingWindowCapacity(); i++) {
             this.sendingWindow.increase();
         }
         this.sendingWindow.decrease();
-        Assert.assertEquals((int) (this.server.getWindowSize()/2.0), this.sendingWindow.getWindowCapacity());
+        Assert.assertEquals((int) (this.server.getReceivingWindowCapacity()/2.0), this.sendingWindow.getWindowCapacity());
     }
 
     @Test
@@ -99,11 +99,11 @@ public class SendingWindowTest {
 
     @Test
     public void windowWillDecreaseToDefaultValueIfDecreasedEnough(){
-        for (int i = 0; i < this.server.getWindowSize(); i++) {
+        for (int i = 0; i < this.server.getReceivingWindowCapacity(); i++) {
             this.sendingWindow.increase();
         }
 
-        for (int i = 0; i < this.server.getWindowSize(); i++) {
+        for (int i = 0; i < this.server.getReceivingWindowCapacity(); i++) {
             this.sendingWindow.decrease();
         }
         Assert.assertEquals(1, this.sendingWindow.getWindowCapacity());
@@ -137,7 +137,7 @@ public class SendingWindowTest {
         Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(router.inputBufferIsEmpty());
 
-        int numPacketsToSend = server.getWindowSize() * 1000;
+        int numPacketsToSend = server.getReceivingWindowCapacity() * 1000;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
@@ -154,7 +154,7 @@ public class SendingWindowTest {
             if (loss){
                 Assert.assertEquals((int) (prevWindowCapacity/2.0), curWindowCapacity);
             }else if (packetAcked){
-                Assert.assertTrue(this.client.getWindowSize() >= curWindowCapacity);
+                Assert.assertTrue(this.client.getReceivingWindowCapacity() >= curWindowCapacity);
             }else{
                 Assert.assertEquals(prevWindowCapacity, curWindowCapacity);
             }

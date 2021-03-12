@@ -126,7 +126,7 @@ public class EventHandlerTest {
         eventHandler.run();
 
         int multiplier = 100;
-        int numPacketsToSend = server.getWindowSize() * multiplier;
+        int numPacketsToSend = server.getReceivingWindowCapacity() * multiplier;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);

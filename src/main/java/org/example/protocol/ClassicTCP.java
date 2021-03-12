@@ -73,8 +73,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
             this.rtt = Util.seeTime();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
-            this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
-            this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
+            this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+            this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
 
             //this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
@@ -97,8 +97,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         this.route(synAck);
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
-        this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
-        this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
+        this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+        this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
 
     }
 
@@ -159,8 +159,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return this.getChannels().get(channelIndex);
     }
 
-    public int getWindowSize() {
-        return receivingWindowCapacity;
+    public int getReceivingWindowCapacity() {
+        return this.receivingWindowCapacity;
     }
 
     @Override
@@ -239,8 +239,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
                     packet.getAcknowledgmentNumber() - 1,
                     packet.getSequenceNumber())
             );
-            this.outputBuffer = new SlidingWindow(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
-            this.inputBuffer = new SelectiveRepeat(this.getWindowSize(), this.connection, PACKET_COMPARATOR);
+            this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+            this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
 
              */
             //this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
