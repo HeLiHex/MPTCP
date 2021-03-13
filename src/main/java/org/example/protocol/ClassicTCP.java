@@ -22,11 +22,11 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
 
-    protected final int receivingWindowCapacity;
-    protected static final int BUFFER_SIZE = 10000;
-    protected static final double NOISE_TOLERANCE = 100.0;
-    protected static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
+    private static final int BUFFER_SIZE = 10000;
+    private static final double NOISE_TOLERANCE = 100.0;
+    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
+    private final int receivingWindowCapacity;
     private Connection connection;
     private int initialSequenceNumber;
     private long rtt;
