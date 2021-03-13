@@ -5,6 +5,7 @@ import org.example.data.PacketBuilder;
 import org.example.data.Payload;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
+import org.example.simulator.Statistics;
 import org.example.util.BoundedQueue;
 
 import java.util.*;
@@ -16,11 +17,13 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private static final int DEFAULT_CONGESTION_WINDOW_CAPACITY = 1;
     private final int receiverWindowSize;
     private boolean seriousLossDetected = false;
+    private int numPacketsReceivedWithoutIncreasingWindow;
 
     public SlidingWindow(int receiverWindowCapacity, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, connection, comparator);
         this.payloadsToSend = payloadsToSend;
         this.receiverWindowSize = receiverWindowCapacity;
+        this.numPacketsReceivedWithoutIncreasingWindow = 0;
     }
 
     @Override
@@ -85,13 +88,21 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public void increase() {
         if (this.getWindowCapacity() >= this.receiverWindowSize) return;
-        this.setBound(this.getWindowCapacity() + 1);
+        if (this.numPacketsReceivedWithoutIncreasingWindow % this.getWindowCapacity() == 0 && this.numPacketsReceivedWithoutIncreasingWindow != 0){
+            this.numPacketsReceivedWithoutIncreasingWindow = 0;
+            this.setBound(this.getWindowCapacity() + 1);
+            Statistics.trackCwnd(this.getWindowCapacity());
+            return;
+        }
+        this.numPacketsReceivedWithoutIncreasingWindow++;
     }
 
     @Override
     public void decrease() {
         int newWindowSize = Math.max((int) (this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_CAPACITY);
         this.setBound(newWindowSize);
+        Statistics.trackCwnd(this.getWindowCapacity());
+
     }
 
     @Override
