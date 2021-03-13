@@ -166,6 +166,15 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return 4 * this.rtt;
     }
 
+    @Override
+    public int getSendingWindowCapacity() {
+        try {
+            return this.getSendingWindow().getWindowCapacity();
+        } catch (IllegalAccessException e) {
+            return 0;
+        }
+    }
+
     private void setConnection(Connection connection) {
         this.connection = connection;
     }

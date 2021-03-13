@@ -74,6 +74,8 @@ public interface TCP extends Endpoint {
 
     boolean seriousLossDetected();
 
+    int getSendingWindowCapacity();
+
 
 
 
