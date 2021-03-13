@@ -581,7 +581,7 @@ public class ClassicTCPTest {
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
 
         ClassicTCP client = new ClassicTCP(7);
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(1.5).build();
         ClassicTCP server = new ClassicTCP(20);
 
         client.addChannel(router);
@@ -606,7 +606,7 @@ public class ClassicTCPTest {
         Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(router.inputBufferIsEmpty());
 
-        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 1000;
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 100;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);

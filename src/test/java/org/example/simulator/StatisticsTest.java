@@ -87,7 +87,7 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreConsistentWithLoss() {
-        double noiseTolerance = 1;
+        double noiseTolerance = 1.5;
         int numPacketsToSend = 1000;
         for (int j = 0; j < 50; j++) {
 
@@ -180,7 +180,7 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
-        double noiseTolerance = 1;
+        double noiseTolerance = 1.5;
         ClassicTCP client = new ClassicTCP(7);
         Routable r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
         ClassicTCP server = new ClassicTCP(7);
@@ -279,7 +279,7 @@ public class StatisticsTest {
 
     @Test
     public void TCPRetransmitEventGeneratorIsLastInEventQueueTest() {
-        int noiseTolerance = 1;
+        double noiseTolerance = 1.5;
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP(7);

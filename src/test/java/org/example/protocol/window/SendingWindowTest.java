@@ -62,7 +62,7 @@ public class SendingWindowTest {
 
     @Test
     public void isWaitingForAckIsFalseIfSendingWindowIsAlmostFullTest(){
-        for (int i = 0; i < this.client.getOtherReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < Math.pow(this.server.getThisReceivingWindowCapacity(), 2); i++) {
             this.client.send(new Message("test " + i));
             this.sendingWindow.increase();
         }
@@ -75,7 +75,7 @@ public class SendingWindowTest {
 
     @Test
     public void windowCantIncreaseToMoreThanServersReceivingWindow(){
-        for (int i = 0; i < this.server.getThisReceivingWindowCapacity() * 10; i++) {
+        for (int i = 0; i < Math.pow(this.server.getThisReceivingWindowCapacity(), 2) * 10; i++) {
             this.sendingWindow.increase();
         }
         Assert.assertEquals(this.server.getThisReceivingWindowCapacity(), this.sendingWindow.getWindowCapacity());
@@ -83,7 +83,7 @@ public class SendingWindowTest {
 
     @Test
     public void windowCanDecreaseWhenInMaxCapacity(){
-        for (int i = 0; i < this.server.getThisReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < Math.pow(this.server.getThisReceivingWindowCapacity(), 2); i++) {
             this.sendingWindow.increase();
         }
         this.sendingWindow.decrease();
