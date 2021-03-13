@@ -49,6 +49,37 @@ public class ClassicTCPTest {
     }
 
     @Test
+    public void connectToEndpointShouldResultInCorrectReceivingAndSendingWindowCapacityTest(){
+        int clientReceivingWindow = 3;
+        int serverReceivingWindow = 7;
+        ClassicTCP client = new ClassicTCP(clientReceivingWindow);
+        Routable router = new Router.RouterBuilder().build();
+        ClassicTCP server = new ClassicTCP(serverReceivingWindow);
+
+        client.addChannel(router);
+        router.addChannel(server);
+
+        client.updateRoutingTable();
+        router.updateRoutingTable();
+        server.updateRoutingTable();
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        Assert.assertEquals(server, client.getConnection().getConnectedNode());
+        Assert.assertEquals(client, server.getConnection().getConnectedNode());
+
+        Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
+
+        Assert.assertEquals(clientReceivingWindow, client.getThisReceivingWindowCapacity());
+        Assert.assertEquals(serverReceivingWindow, server.getThisReceivingWindowCapacity());
+
+        Assert.assertEquals(serverReceivingWindow, client.getOtherReceivingWindowCapacity());
+        Assert.assertEquals(clientReceivingWindow, server.getOtherReceivingWindowCapacity());
+    }
+
+    @Test
     public void connectThenSendMsgWorksTest(){
         ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().build();
@@ -130,7 +161,7 @@ public class ClassicTCPTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        for (int i = 0; i <= server.getReceivingWindowCapacity() * 2; i++) {
+        for (int i = 0; i <= server.getThisReceivingWindowCapacity() * 2; i++) {
             Message msg = new Message( "test " + i);
             client.send(msg);
             eventHandler.addEvent(new TCPInputEvent(client));
@@ -207,7 +238,7 @@ public class ClassicTCPTest {
         eventHandler.run();
 
 
-        for (int i = 0; i < server.getReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < server.getThisReceivingWindowCapacity(); i++) {
             Packet packet1 = new PacketBuilder()
                     .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 5000 + i)
                     .withAcknowledgmentNumber(client.getConnection().getNextAcknowledgementNumber() + 20000 + i)
@@ -233,7 +264,7 @@ public class ClassicTCPTest {
             eventHandler.run();
         }
 
-        for (int i = 0; i < server.getReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < server.getThisReceivingWindowCapacity(); i++) {
             Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals("test " + i, received.getPayload().toString());
@@ -267,11 +298,11 @@ public class ClassicTCPTest {
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
         //increase window capacity to max
-        for (int i = 0; i < client.getReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < client.getThisReceivingWindowCapacity(); i++) {
             client.getSendingWindow().increase();
         }
 
-        for (int i = client.getReceivingWindowCapacity() - 1; i >= 0 ; i--) {
+        for (int i = client.getThisReceivingWindowCapacity() - 1; i >= 0 ; i--) {
             Packet packet = new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
@@ -284,7 +315,7 @@ public class ClassicTCPTest {
         eventHandler.run();
 
         System.out.println(server.getReceivingWindow().getReceivedPackets());
-        for (int i = 0; i < client.getReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < client.getThisReceivingWindowCapacity(); i++) {
             Packet received = server.receive();
             System.out.println(received);
             Assert.assertNotNull("iteration: " + i, received);
@@ -317,7 +348,7 @@ public class ClassicTCPTest {
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
-        for (int i = client.getReceivingWindowCapacity()*2; i >= 0 ; i--) {
+        for (int i = client.getThisReceivingWindowCapacity()*2; i >= 0 ; i--) {
             eventHandler.addEvent(new RouteEvent(client, new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
@@ -329,7 +360,7 @@ public class ClassicTCPTest {
             eventHandler.run();
         }
 
-        for (int i = 0; i < client.getReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < client.getThisReceivingWindowCapacity(); i++) {
             Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals(i + "", received.getPayload().toString());
@@ -397,7 +428,7 @@ public class ClassicTCPTest {
         System.out.println("connected");
 
         //this test does not make sens for window size = 1
-        if (client.getReceivingWindowCapacity() <= 1) return;
+        if (client.getThisReceivingWindowCapacity() <= 1) return;
 
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
@@ -405,12 +436,12 @@ public class ClassicTCPTest {
 
         Packet packet = new PacketBuilder()
                 .withConnection(client.getConnection())
-                .withSequenceNumber(seqNum + client.getReceivingWindowCapacity()-1)
-                .withAcknowledgmentNumber(ackNum + client.getReceivingWindowCapacity()-1)
+                .withSequenceNumber(seqNum + client.getThisReceivingWindowCapacity()-1)
+                .withAcknowledgmentNumber(ackNum + client.getThisReceivingWindowCapacity()-1)
                 .build();
 
         int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet);
-        Assert.assertEquals(client.getReceivingWindowCapacity()-1, indexBeforeSending);
+        Assert.assertEquals(client.getThisReceivingWindowCapacity()-1, indexBeforeSending);
 
 
         eventHandler.addEvent(new RouteEvent(client, packet));
@@ -418,7 +449,7 @@ public class ClassicTCPTest {
         Assert.assertNotNull(server.receive());
 
         int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet);
-        Assert.assertEquals(client.getReceivingWindowCapacity()-1, indexAfterReceived);
+        Assert.assertEquals(client.getThisReceivingWindowCapacity()-1, indexAfterReceived);
     }
 
     @Test
@@ -446,7 +477,7 @@ public class ClassicTCPTest {
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
-        for (int i = 0; i < client.getReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < client.getThisReceivingWindowCapacity(); i++) {
             Packet packet = new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
@@ -486,7 +517,7 @@ public class ClassicTCPTest {
         int seqNum = client.getConnection().getNextSequenceNumber();
         int ackNum = client.getConnection().getNextAcknowledgementNumber();
 
-        for (int i = 0; i < client.getReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < client.getThisReceivingWindowCapacity(); i++) {
             Packet packet = new PacketBuilder()
                     .withOrigin(client)
                     .withDestination(server)
@@ -524,7 +555,7 @@ public class ClassicTCPTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        int numPacketsToSend = server.getReceivingWindowCapacity() * 100;
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 100;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
@@ -553,7 +584,7 @@ public class ClassicTCPTest {
 
         ClassicTCP client = new ClassicTCP(7);
         Routable router = new Router.RouterBuilder().withNoiseTolerance(1).build();
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(20);
 
         client.addChannel(router);
         router.addChannel(server);
@@ -577,7 +608,7 @@ public class ClassicTCPTest {
         Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(router.inputBufferIsEmpty());
 
-        int numPacketsToSend = server.getReceivingWindowCapacity() * 1000;
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 1000;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
@@ -633,7 +664,7 @@ public class ClassicTCPTest {
             Assert.assertTrue(server.outputBufferIsEmpty());
             Assert.assertTrue(router.inputBufferIsEmpty());
 
-            int numPacketsToSend = server.getReceivingWindowCapacity() * 10;
+            int numPacketsToSend = server.getThisReceivingWindowCapacity() * 10;
             for (int i = 1; i <= numPacketsToSend; i++) {
                 Message msg = new Message("test " + i);
                 client.send(msg);
@@ -688,7 +719,7 @@ public class ClassicTCPTest {
             Assert.assertTrue(server.outputBufferIsEmpty());
             Assert.assertTrue(router.inputBufferIsEmpty());
 
-            int numPacketsToSend = server.getReceivingWindowCapacity() * 10;
+            int numPacketsToSend = server.getThisReceivingWindowCapacity() * 10;
             for (int i = 1; i <= numPacketsToSend; i++) {
                 Message msg = new Message("test " + i);
                 client.send(msg);

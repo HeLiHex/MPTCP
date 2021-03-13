@@ -1,9 +1,6 @@
 package org.example.protocol;
 
-import org.example.data.Flag;
-import org.example.data.Packet;
-import org.example.data.PacketBuilder;
-import org.example.data.Payload;
+import org.example.data.*;
 import org.example.network.Channel;
 import org.example.network.RoutableEndpoint;
 import org.example.network.interfaces.Endpoint;
@@ -26,18 +23,19 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
 
-    private final int receivingWindowCapacity;
+    private final int thisReceivingWindowCapacity;
+    private int otherReceivingWindowCapacity;
     private Connection connection;
     private int initialSequenceNumber;
     private long rtt;
 
 
-    public ClassicTCP(int receivingWindowCapacity) {
+    public ClassicTCP(int thisReceivingWindowCapacity) {
         super(new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 NOISE_TOLERANCE
         );
-        this.receivingWindowCapacity = receivingWindowCapacity;
+        this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
     }
 
     @Override
@@ -49,6 +47,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
                 .withOrigin(this)
                 .withFlags(Flag.SYN)
                 .withSequenceNumber(this.initialSequenceNumber)
+                .withPayload(new Message(this.thisReceivingWindowCapacity + ""))
                 .build();
         this.route(syn);
     }
@@ -60,6 +59,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
                 this.logger.log(Level.INFO, "Wrong ack number");
                 return;
             }
+            this.otherReceivingWindowCapacity = Integer.parseInt(synAck.getPayload().toString());
             int finalSeqNum = synAck.getAcknowledgmentNumber();
             int ackNum = synAck.getSequenceNumber() + 1;
             Packet ack = new PacketBuilder()
@@ -85,12 +85,14 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         Endpoint node = syn.getOrigin();
         int seqNum = Util.getNextRandomInt(100);
         int ackNum = syn.getSequenceNumber() + 1;
+        this.otherReceivingWindowCapacity = Integer.parseInt(syn.getPayload().toString());
         Packet synAck = new PacketBuilder()
                 .withDestination(node)
                 .withOrigin(this)
                 .withFlags(Flag.SYN, Flag.ACK)
                 .withSequenceNumber(seqNum)
                 .withAcknowledgmentNumber(ackNum)
+                .withPayload(new Message(this.thisReceivingWindowCapacity + ""))
                 .build();
         this.rtt = Util.seeTime() * 2;
         this.route(synAck);
@@ -157,8 +159,12 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return this.getChannels().get(channelIndex);
     }
 
-    public int getReceivingWindowCapacity() {
-        return this.receivingWindowCapacity;
+    public int getThisReceivingWindowCapacity() {
+        return this.thisReceivingWindowCapacity;
+    }
+
+    public int getOtherReceivingWindowCapacity() {
+        return this.otherReceivingWindowCapacity;
     }
 
     @Override
@@ -185,8 +191,9 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     }
 
     private void createWindows(){
-        this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
-        this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+        System.out.println("other window: " + this.otherReceivingWindowCapacity);
+        this.outputBuffer = new SlidingWindow(this.otherReceivingWindowCapacity, this.connection, PACKET_COMPARATOR);
+        this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR);
     }
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {
@@ -242,8 +249,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
                     packet.getAcknowledgmentNumber() - 1,
                     packet.getSequenceNumber())
             );
-            this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
-            this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+            this.outputBuffer = new SlidingWindow(this.getThisReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+            this.inputBuffer = new SelectiveRepeat(this.getThisReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
 
              */
             //this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());

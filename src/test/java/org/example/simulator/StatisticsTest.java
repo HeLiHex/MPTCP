@@ -206,7 +206,7 @@ public class StatisticsTest {
         Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(r1.inputBufferIsEmpty());
 
-        int numPacketsToSend = server.getReceivingWindowCapacity() * 1000;
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 1000;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);
@@ -244,7 +244,7 @@ public class StatisticsTest {
 
         int losses = (packetsLost + packetsDropped + packetsAckedMoreThanOnce);
         Assert.assertTrue(Statistics.getNumberOfPacketsRetransmitted() >= losses);
-        Assert.assertTrue(Statistics.getNumberOfPacketsRetransmitted() <= losses * client.getReceivingWindowCapacity());
+        Assert.assertTrue(Statistics.getNumberOfPacketsRetransmitted() <= losses * client.getThisReceivingWindowCapacity());
         //Assert.assertEquals(0, Statistics.getNumberOfPacketsRetransmitted() - (packetsLost + packetsDropped + packetsAckedMoreThanOnce));
 
     }
@@ -296,7 +296,7 @@ public class StatisticsTest {
         connect(eventHandler, client, server);
 
         int multiplier = 100;
-        int numPacketsToSend = server.getReceivingWindowCapacity() * multiplier;
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * multiplier;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
