@@ -1,7 +1,15 @@
 package org.example.simulator;
 
+import org.example.util.Util;
+import org.knowm.xchart.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class Statistics {
 
+    private static ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
+    private static ArrayList<Long> time = new ArrayList<>();
     private static int numberOfPackets; //total number of packets to be served. not counting retransmissions
     private static int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private static int numberOfPacketsRetransmitted; //total number of packets retransmitted
@@ -32,6 +40,11 @@ public class Statistics {
 
     public static void packetLost() {
         numberOfPacketsLost++;
+    }
+
+    public static void trackCwnd(int cwnd){
+        congestionWindowCapacities.add(cwnd);
+        time.add(Util.seeTime());
     }
 
     public static void packetDropped() {
@@ -68,6 +81,19 @@ public class Statistics {
 
     public static int getNumberOfPacketsReceived() {
         return numberOfPacketsReceived;
+    }
+
+    public void createChart(){
+        XYChart chart = new XYChartBuilder().width(1500).height(500).xAxisTitle("time").yAxisTitle("CWND").title("Congestion Window Capacity").build();
+        chart.addSeries("CWND", time, congestionWindowCapacities);
+        //XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", time, congestionWindowCapacities);
+        try {
+            BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Show it
+        new SwingWrapper(chart).displayChart();
     }
 
     @Override
