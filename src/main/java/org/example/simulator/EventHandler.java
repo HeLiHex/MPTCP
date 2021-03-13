@@ -46,8 +46,8 @@ public class EventHandler {
                 throw new IllegalStateException("get null event when events queue are nonempty!");
             return false;
         }
-        Util.tickTime(event);
         event.run();
+        Util.tickTime(event);
         event.generateNextEvent(this.events);
         return true;
     }
