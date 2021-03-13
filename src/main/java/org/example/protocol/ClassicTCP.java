@@ -73,8 +73,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
             this.rtt = Util.seeTime();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
-            this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
-            this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+            this.createWindows();
 
             //this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
@@ -97,8 +96,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         this.route(synAck);
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
-        this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
-        this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+        this.createWindows();
 
     }
 
@@ -184,6 +182,11 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     private void setConnection(Connection connection) {
         this.connection = connection;
+    }
+
+    private void createWindows(){
+        this.outputBuffer = new SlidingWindow(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
+        this.inputBuffer = new SelectiveRepeat(this.getReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
     }
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {
