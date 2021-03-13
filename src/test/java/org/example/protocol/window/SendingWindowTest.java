@@ -65,14 +65,14 @@ public class SendingWindowTest {
 
     @Test
     public void isWaitingForAckIsFalseIfSendingWindowIsAlmostFullTest(){
-        for (int i = 0; i < this.client.getThisReceivingWindowCapacity(); i++) {
+        for (int i = 0; i < this.client.getOtherReceivingWindowCapacity(); i++) {
             this.client.send(new Message("test " + i));
             this.sendingWindow.increase();
         }
-        for (int i = 0; i < this.client.getThisReceivingWindowCapacity() - 1; i++) {
+        for (int i = 0; i < this.client.getOtherReceivingWindowCapacity() - 1; i++) {
             this.client.trySend();
         }
-        Assert.assertEquals(this.client.getThisReceivingWindowCapacity(), this.sendingWindow.getWindowCapacity());
+        Assert.assertEquals(this.client.getOtherReceivingWindowCapacity(), this.sendingWindow.getWindowCapacity());
         Assert.assertFalse(this.sendingWindow.isWaitingForAck());
     }
 
