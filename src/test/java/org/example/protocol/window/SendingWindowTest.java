@@ -2,12 +2,9 @@ package org.example.protocol.window;
 
 import org.example.data.Message;
 import org.example.data.Packet;
-import org.example.network.Routable;
-import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
-import org.example.simulator.events.Event;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.junit.Assert;
@@ -141,9 +138,6 @@ public class SendingWindowTest {
             if (loss){
                 Assert.assertEquals((int) (prevWindowCapacity/2.0), curWindowCapacity);
             }else if (packetAcked){
-                System.out.println(this.client.getOtherReceivingWindowCapacity());
-                System.out.println(curWindowCapacity);
-                System.out.println();
                 Assert.assertTrue(this.client.getOtherReceivingWindowCapacity() >= curWindowCapacity);
             }else{
                 Assert.assertEquals(prevWindowCapacity, curWindowCapacity);
