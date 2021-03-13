@@ -314,10 +314,8 @@ public class ClassicTCPTest {
         }
         eventHandler.run();
 
-        System.out.println(server.getReceivingWindow().getReceivedPackets());
         for (int i = 0; i < client.getThisReceivingWindowCapacity(); i++) {
             Packet received = server.receive();
-            System.out.println(received);
             Assert.assertNotNull("iteration: " + i, received);
             Assert.assertEquals(i + "", received.getPayload().toString());
         }
@@ -397,7 +395,7 @@ public class ClassicTCPTest {
         int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet);
         Assert.assertEquals(0, indexBeforeSending);
 
-        client.send(packet);
+        client.send(packet.getPayload());
         eventHandler.addEvent(new TCPSendEvent(client));
         eventHandler.run();
         Assert.assertNotNull(server.receive());
@@ -741,6 +739,54 @@ public class ClassicTCPTest {
                 Assert.assertEquals(msg, received.getPayload());
             }
         }
+    }
+
+
+    @Test
+    public void floodWithPacketsBeforeConnectingShouldWorkTest() {
+        ClassicTCP client = new ClassicTCP(7);
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(1.5).build();
+        ClassicTCP server = new ClassicTCP(7);
+
+        client.addChannel(router);
+        router.addChannel(server);
+
+        client.updateRoutingTable();
+        router.updateRoutingTable();
+        server.updateRoutingTable();
+
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 1000;
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+
+        Assert.assertFalse(client.isConnected());
+        Assert.assertFalse(server.isConnected());
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        Assert.assertTrue(client.isConnected());
+        Assert.assertTrue(server.isConnected());
+
+        System.out.println("connected");
+
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(router.inputBufferIsEmpty());
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            Packet received = server.receive();
+            Assert.assertNotNull(received);
+            Assert.assertEquals(msg, received.getPayload());
+        }
+
+        eventHandler.printStatistics();
     }
 
 }

@@ -31,13 +31,6 @@ public interface TCP extends Endpoint {
     void connect(Packet syn);
 
     /**
-     * Enqueues a new Packet to the output-buffer
-     *
-     * @param packet
-     */
-    void send(Packet packet);
-
-    /**
      * Creates a packet with Payload and enqueues the new Packet to the output-buffer
      *
      * @param payload

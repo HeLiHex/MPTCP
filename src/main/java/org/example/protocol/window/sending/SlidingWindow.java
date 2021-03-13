@@ -1,24 +1,25 @@
 package org.example.protocol.window.sending;
 
 import org.example.data.Packet;
+import org.example.data.PacketBuilder;
+import org.example.data.Payload;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.util.BoundedQueue;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
+import java.util.logging.Level;
 
 public class SlidingWindow extends Window implements SendingWindow, BoundedQueue<Packet> {
 
-    private final Queue<Packet> queue;
+    private final List<Payload> payloadsToSend;
     private static final int DEFAULT_CONGESTION_WINDOW_CAPACITY = 1;
     private final int receiverWindowSize;
     private boolean seriousLossDetected = false;
 
-    public SlidingWindow(int receiverWindowCapacity, Connection connection, Comparator<Packet> comparator) {
+    public SlidingWindow(int receiverWindowCapacity, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, connection, comparator);
-        this.queue = new PriorityQueue<>(comparator);
+        this.payloadsToSend = payloadsToSend;
         this.receiverWindowSize = receiverWindowCapacity;
     }
 
@@ -46,13 +47,30 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public Packet send() {
-        Packet packetToSend = this.queue.poll();
+        int nextPacketSeqNum = this.connection.getNextSequenceNumber() + this.size();
+        Packet packet = new PacketBuilder()
+                .withConnection(this.connection)
+                .withPayload(this.payloadsToSend.remove(0))
+                .withSequenceNumber(nextPacketSeqNum)
+                .build();
+
+        if (super.offer(packet)){
+            return packet;
+        }
+        return null;
+
+        /*
+        Packet packetToSend = this.payloadsToSend.remove(0);
         assert packetToSend != null : "packet to send is null";
         if (super.offer(packetToSend)){
             return packetToSend;
         }
         throw new IllegalStateException("Packet was not added to the sending window");
+
+         */
     }
+
+
 
     @Override
     public boolean canRetransmit(Packet packet) {
@@ -101,17 +119,17 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public boolean offer(Packet packet) {
-        return this.queue.offer(packet);
+        return this.payloadsToSend.add(packet.getPayload());
     }
 
     @Override
     public int queueSize(){
-       return this.queue.size();
+       return this.payloadsToSend.size();
     }
 
     @Override
     public boolean isQueueEmpty(){
-        return this.queue.isEmpty();
+        return this.payloadsToSend.isEmpty();
     }
 
 

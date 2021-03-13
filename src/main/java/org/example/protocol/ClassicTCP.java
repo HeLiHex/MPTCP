@@ -11,7 +11,7 @@ import org.example.protocol.window.sending.SlidingWindow;
 import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.Util;
 
-import java.util.Comparator;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +22,9 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
+
+    private final Queue<Packet> receivedPackets;
+    private final List<Payload> payloadsToSend;
 
     private final int thisReceivingWindowCapacity;
     private int otherReceivingWindowCapacity;
@@ -35,6 +38,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
                 new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 NOISE_TOLERANCE
         );
+        this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
+        this.payloadsToSend = new ArrayList<>();
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
     }
 
@@ -103,38 +108,13 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     }
 
     @Override
-    public void send(Packet packet) {
-        if (!this.isConnected()) return;
-        try {
-            int nextPacketSeqNum = this.getConnection().getNextSequenceNumber() + this.getSendingWindow().queueSize();
-            packet.setSequenceNumber(nextPacketSeqNum);
-        } catch (IllegalAccessException e) {
-            return;
-        }
-
-        boolean wasAdded = this.enqueueOutputBuffer(packet);
-        if (!wasAdded) {
-            logger.log(Level.WARNING, "Packet was not added to the output queue");
-        }
-    }
-
-    @Override
     public void send(Payload payload) {
-        if (!this.isConnected()) return;
-        Packet packet = new PacketBuilder()
-                .withConnection(this.getConnection())
-                .withPayload(payload)
-                .build();
-        this.send(packet);
+        this.payloadsToSend.add(payload);
     }
 
     @Override
     public Packet receive() {
-        try {
-            return this.getReceivingWindow().getReceivedPackets().poll();
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException("trying to receive from not existing receiving window");
-        }
+        return this.receivedPackets.poll();
     }
 
     @Override
@@ -143,7 +123,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
                 .withConnection(this.getConnection())
                 .withFlags(Flag.FIN)
                 .build();
-        this.send(fin);
+        this.route(fin);
     }
 
     @Override
@@ -192,8 +172,8 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     private void createWindows(){
         System.out.println("other window: " + this.otherReceivingWindowCapacity);
-        this.outputBuffer = new SlidingWindow(this.otherReceivingWindowCapacity, this.connection, PACKET_COMPARATOR);
-        this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR);
+        this.outputBuffer = new SlidingWindow(this.otherReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.payloadsToSend);
+        this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.receivedPackets);
     }
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {

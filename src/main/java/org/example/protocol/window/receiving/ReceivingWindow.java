@@ -21,8 +21,6 @@ public interface ReceivingWindow extends IWindow, BoundedQueue<Packet> {
 
     boolean shouldAck();
 
-    Queue<Packet> getReceivedPackets();
-
     int receivingPacketIndex(Packet packet);
 
     boolean inReceivingWindow(Packet packet);

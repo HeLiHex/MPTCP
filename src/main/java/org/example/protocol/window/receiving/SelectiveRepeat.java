@@ -17,9 +17,9 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     private final Queue<Packet> received;
     private Packet ackThis;
 
-    public SelectiveRepeat(int windowSize, Connection connection, Comparator<Packet> comparator) {
+    public SelectiveRepeat(int windowSize, Connection connection, Comparator<Packet> comparator, Queue<Packet> receivedContainer) {
         super(windowSize, connection, comparator);
-        this.received = new PriorityQueue<>(comparator);
+        this.received = receivedContainer;
         this.ackThis = new PacketBuilder().withConnection(connection).build();
     }
 
@@ -65,11 +65,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     public Packet ackThis() {
         assert shouldAck();
         return this.ackThis;
-    }
-
-    @Override
-    public Queue<Packet> getReceivedPackets() {
-        return this.received;
     }
 
     @Override

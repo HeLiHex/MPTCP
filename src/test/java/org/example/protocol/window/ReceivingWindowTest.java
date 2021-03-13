@@ -1,9 +1,6 @@
 package org.example.protocol.window;
 
-import org.example.data.Flag;
-import org.example.data.Message;
-import org.example.data.Packet;
-import org.example.data.PacketBuilder;
+import org.example.data.*;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
@@ -16,8 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-import java.util.Comparator;
-import java.util.Queue;
+import java.util.*;
 
 
 public class ReceivingWindowTest {
@@ -27,14 +23,18 @@ public class ReceivingWindowTest {
     private ClassicTCP client;
     private ClassicTCP server;
     private ReceivingWindow receivingWindow;
+    private Queue<Packet> receivedPackets;
+    private List<Payload> payloadsToSend;
 
     @Before
     public void setup(){
+        this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
+        this.payloadsToSend = new ArrayList<>();
         this.client = new ClassicTCP(7);
         this.server = new ClassicTCP(7);
         this.connect(client, server);
 
-        this.receivingWindow = new SelectiveRepeat(10, client.getConnection(), PACKET_COMPARATOR);
+        this.receivingWindow = new SelectiveRepeat(10, client.getConnection(), PACKET_COMPARATOR, this.receivedPackets);
     }
 
     private void connect(ClassicTCP client, ClassicTCP server){
@@ -63,8 +63,7 @@ public class ReceivingWindowTest {
 
     @Test
     public void getReceivedPacketsShouldReturnEmptyQueueWhenNoPacketsAreReceived(){
-        Queue<Packet> receivedPackets = this.receivingWindow.getReceivedPackets();
-        Assert.assertTrue(receivedPackets.isEmpty());
+        Assert.assertTrue(this.receivedPackets.isEmpty());
     }
 
     @Test
@@ -97,7 +96,7 @@ public class ReceivingWindowTest {
         Assert.assertTrue(this.receivingWindow.inReceivingWindow(ackFromServer));
         this.receivingWindow.offer(ackFromServer);
 
-        SendingWindow sendingWindow = new SlidingWindow(10 , client.getConnection(), PACKET_COMPARATOR);
+        SendingWindow sendingWindow = new SlidingWindow(10 , client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
         Assert.assertFalse(this.receivingWindow.receive(sendingWindow));
     }
 
@@ -112,10 +111,10 @@ public class ReceivingWindowTest {
         Assert.assertTrue(this.receivingWindow.inReceivingWindow(packetFromServer));
         this.receivingWindow.offer(packetFromServer);
 
-        SendingWindow sendingWindow = new SlidingWindow(10 , client.getConnection(), PACKET_COMPARATOR);
+        SendingWindow sendingWindow = new SlidingWindow(10 , client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
         Assert.assertTrue(this.receivingWindow.receive(sendingWindow));
 
-        Assert.assertEquals(packetFromServer, this.receivingWindow.getReceivedPackets().poll());
+        Assert.assertEquals(packetFromServer, this.receivedPackets.poll());
     }
 
 
