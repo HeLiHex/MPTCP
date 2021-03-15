@@ -93,7 +93,7 @@ public class Statistics {
             e.printStackTrace();
         }
         // Show it
-        new SwingWrapper(chart).displayChart();
+        //new SwingWrapper(chart).displayChart();
     }
 
     @Override

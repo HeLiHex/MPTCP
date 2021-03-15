@@ -9,6 +9,7 @@ import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.util.Util;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -22,6 +23,12 @@ public class EventHandlerTest {
 
     @Rule
     public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
+
+    @Before
+    public void setup(){
+        Util.setSeed(1337);
+        Util.resetTime();
+    }
 
     @Test
     public void runRunsWithoutErrorTest(){
@@ -144,6 +151,8 @@ public class EventHandlerTest {
     }
 
     private ArrayList<Event> allEventsList(int numPacketsToSend, double noiseTolerance){
+        Util.setSeed(1337);
+        Util.resetTime();
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP(7);
@@ -188,7 +197,7 @@ public class EventHandlerTest {
     @Test
     public void eventArrangementsAreConsistent(){
         double noiseTolerance = 2;
-        int numPacketsToSend = 1000;
+        int numPacketsToSend = 1001;
         ArrayList<Event> eventList1 = this.allEventsList(numPacketsToSend, noiseTolerance);
         ArrayList<Event> eventList2 = this.allEventsList(numPacketsToSend, noiseTolerance);
 

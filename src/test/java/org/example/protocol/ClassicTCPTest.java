@@ -13,6 +13,7 @@ import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPSendEvent;
 import org.example.util.Util;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -24,6 +25,12 @@ public class ClassicTCPTest {
     @Rule
     public Timeout globalTimeout = new Timeout(120, TimeUnit.SECONDS);
 
+
+    @Before
+    public void setup(){
+        Util.setSeed(1337);
+        Util.resetTime();
+    }
 
     @Test
     public void connectToEndpointTest(){

@@ -17,14 +17,16 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private final int receiverWindowSize;
     private boolean seriousLossDetected = false;
     private int numPacketsReceivedWithoutIncreasingWindow;
-    private boolean slowStart;
+    private int ssthresh;
+    private boolean isReno;
 
     public SlidingWindow(int receiverWindowCapacity, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, connection, comparator);
         this.payloadsToSend = payloadsToSend;
         this.receiverWindowSize = receiverWindowCapacity;
         this.numPacketsReceivedWithoutIncreasingWindow = 0;
-        this.slowStart = true;
+        this.ssthresh = receiverWindowCapacity; //essentially no ssthresh
+        this.isReno = true;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public void increase() {
         if (this.getWindowCapacity() >= this.receiverWindowSize) return;
-        if (this.slowStart) slowStart();
+        if (this.ssthresh > this.getWindowCapacity()) slowStart();
         else congestionAvoidance();
     }
 
@@ -115,10 +117,15 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public void decrease() {
         Statistics.trackCwnd(this.getWindowCapacity());
-        int newWindowSize = Math.max((int) (this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_CAPACITY);
+        this.ssthresh = Math.max((int) (this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_CAPACITY);
+        int newWindowSize = this.findNewWindowSize();
         this.setBound(newWindowSize);
         Statistics.trackCwnd(this.getWindowCapacity());
-        this.slowStart = false;
+    }
+
+    private int findNewWindowSize(){
+        if (this.isReno) return Math.max((int) (this.getWindowCapacity() / 2.0), DEFAULT_CONGESTION_WINDOW_CAPACITY);
+        return DEFAULT_CONGESTION_WINDOW_CAPACITY;
     }
 
     @Override
