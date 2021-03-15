@@ -18,15 +18,15 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private boolean seriousLossDetected = false;
     private int numPacketsReceivedWithoutIncreasingWindow;
     private int ssthresh;
-    private boolean isReno;
+    private final boolean isReno;
 
-    public SlidingWindow(int receiverWindowCapacity, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
+    public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, connection, comparator);
         this.payloadsToSend = payloadsToSend;
         this.receiverWindowSize = receiverWindowCapacity;
         this.numPacketsReceivedWithoutIncreasingWindow = 0;
         this.ssthresh = receiverWindowCapacity; //essentially no ssthresh
-        this.isReno = true;
+        this.isReno = isReno;
     }
 
     @Override
@@ -98,7 +98,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private void slowStart(){
         this.setBound(this.getWindowCapacity() + 1);
         Statistics.trackCwnd(this.getWindowCapacity());
-        return;
     }
 
     private void congestionAvoidance(){

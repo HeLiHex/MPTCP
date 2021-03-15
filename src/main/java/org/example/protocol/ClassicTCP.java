@@ -181,7 +181,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     private void createWindows(){
         System.out.println("other window: " + this.otherReceivingWindowCapacity);
-        this.outputBuffer = new SlidingWindow(this.otherReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.payloadsToSend);
+        this.outputBuffer = new SlidingWindow(this.otherReceivingWindowCapacity, true, this.connection, PACKET_COMPARATOR, this.payloadsToSend);
         this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.receivedPackets);
     }
 

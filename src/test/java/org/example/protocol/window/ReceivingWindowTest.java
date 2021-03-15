@@ -96,7 +96,7 @@ public class ReceivingWindowTest {
         Assert.assertTrue(this.receivingWindow.inReceivingWindow(ackFromServer));
         this.receivingWindow.offer(ackFromServer);
 
-        SendingWindow sendingWindow = new SlidingWindow(10 , client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
+        SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
         Assert.assertFalse(this.receivingWindow.receive(sendingWindow));
     }
 
@@ -111,7 +111,7 @@ public class ReceivingWindowTest {
         Assert.assertTrue(this.receivingWindow.inReceivingWindow(packetFromServer));
         this.receivingWindow.offer(packetFromServer);
 
-        SendingWindow sendingWindow = new SlidingWindow(10 , client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
+        SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
         Assert.assertTrue(this.receivingWindow.receive(sendingWindow));
 
         Assert.assertEquals(packetFromServer, this.receivedPackets.poll());
