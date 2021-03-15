@@ -538,7 +538,7 @@ public class ClassicTCPTest {
         ClassicTCP client = new ClassicTCP(7);
         Routable r1 = new Router.RouterBuilder().build();
         Routable r2 = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(20);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -574,6 +574,8 @@ public class ClassicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(received.getPayload(), msg);
         }
+
+        eventHandler.printStatistics();
     }
 
 
@@ -581,8 +583,8 @@ public class ClassicTCPTest {
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
 
         ClassicTCP client = new ClassicTCP(7);
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(1.5).build();
-        ClassicTCP server = new ClassicTCP(20);
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
         router.addChannel(server);
