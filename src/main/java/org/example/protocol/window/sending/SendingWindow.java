@@ -14,6 +14,8 @@ public interface SendingWindow extends IWindow, BoundedQueue<Packet> {
 
     boolean canRetransmit(Packet packet);
 
+    Packet fastRetransmit();
+
     void increase();
 
     void decrease();

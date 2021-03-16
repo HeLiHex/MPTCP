@@ -19,6 +19,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private int numPacketsReceivedWithoutIncreasingWindow;
     private int ssthresh;
     private final boolean isReno;
+    private int dupAckCount;
 
     public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, connection, comparator);
@@ -27,6 +28,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         this.numPacketsReceivedWithoutIncreasingWindow = 0;
         this.ssthresh = receiverWindowCapacity; //initial value is essentially no ssthresh
         this.isReno = isReno;
+        this.dupAckCount = 0;
     }
 
     @Override
@@ -40,6 +42,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
         boolean dupAck = -this.getWindowCapacity() < ackIndex && ackIndex < 0;
         if (dupAck){
+            this.dupAckCount++;
             return;
         }
 
@@ -78,6 +81,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
 
 
+
     @Override
     public boolean canRetransmit(Packet packet) {
         if (this.contains(packet)){
@@ -86,6 +90,12 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Packet fastRetransmit() {
+        if (this.dupAckCount == 3) return this.peek();
+        return null;
     }
 
     @Override
