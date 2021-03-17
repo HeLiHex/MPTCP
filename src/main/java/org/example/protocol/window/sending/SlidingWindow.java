@@ -28,7 +28,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         this.receiverWindowSize = receiverWindowCapacity;
         this.numPacketsReceivedWithoutIncreasingWindow = 0;
         this.ssthresh = receiverWindowCapacity; //initial value is essentially no ssthresh
-        this.isReno = true;
+        this.isReno = isReno;
         this.dupAckCount = 0;
         this.fastRetransmitted = false;
 

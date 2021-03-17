@@ -91,7 +91,7 @@ public class SendingWindowTest {
             this.sendingWindow.increase();
         }
         this.sendingWindow.decrease();
-        Assert.assertEquals((int) (this.server.getThisReceivingWindowCapacity()/2.0), this.sendingWindow.getWindowCapacity());
+        Assert.assertEquals(1, this.sendingWindow.getWindowCapacity());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class SendingWindowTest {
             boolean packetAcked = curWindowCapacity > prevWindowCapacity;
 
             if (loss){
-                Assert.assertEquals((int) (prevWindowCapacity/2.0), curWindowCapacity);
+                Assert.assertEquals(1, curWindowCapacity);
             }else if (packetAcked){
                 Assert.assertTrue(this.client.getOtherReceivingWindowCapacity() >= curWindowCapacity);
             }else{

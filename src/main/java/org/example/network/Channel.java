@@ -50,12 +50,12 @@ public class Channel implements Comparable<Channel> {
         if (this.source.equals(this.destination)) return false;
         double gaussianNoise = Util.getNextGaussian();
         double noise = StrictMath.abs(gaussianNoise);
-        /*if (goodState){
+        if (goodState){
             this.goodState = Util.getNextRandomInt(100) >= 10;
             return noise > this.noiseTolerance + 2;
         }
-        this.goodState = Util.getNextRandomInt(100) >= 50;*/
-        return noise > this.noiseTolerance;
+        this.goodState = Util.getNextRandomInt(100) >= 50;
+        return noise > this.noiseTolerance+1;
     }
 
     public void channelPackage(Packet packet) {
