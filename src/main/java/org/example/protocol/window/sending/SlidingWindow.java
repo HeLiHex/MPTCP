@@ -94,7 +94,10 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public Packet fastRetransmit() {
-        if (this.dupAckCount == 3) return this.peek();
+        if (this.dupAckCount >= 3){
+            this.dupAckCount = 0;
+            return this.peek();
+        }
         return null;
     }
 
@@ -133,7 +136,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     }
 
     private int findNewWindowSize(){
-        if (this.isReno) return this.findNewSSThresh();
+        if (this.isReno) return this.ssthresh;
         return DEFAULT_CONGESTION_WINDOW_CAPACITY;
     }
 
