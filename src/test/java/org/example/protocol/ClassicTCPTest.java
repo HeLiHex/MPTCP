@@ -543,8 +543,8 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsInOrderShouldWorkTest(){
         ClassicTCP client = new ClassicTCP(7);
-        Routable r1 = new Router.RouterBuilder().build();
-        Routable r2 = new Router.RouterBuilder().build();
+        Routable r1 = new Router.RouterBuilder().withBufferSize(100).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(100).build();
         ClassicTCP server = new ClassicTCP(20);
 
         client.addChannel(r1);
@@ -585,12 +585,71 @@ public class ClassicTCPTest {
         eventHandler.printStatistics();
     }
 
+    @Test
+    public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
+        ClassicTCP client = new ClassicTCP(100);
+        Routable r1 = new Router.RouterBuilder().withBufferSize(100).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(100).build();
+        Routable r3 = new Router.RouterBuilder().withBufferSize(5).build();
+        Routable r4 = new Router.RouterBuilder().withBufferSize(100).build();
+        ClassicTCP server = new ClassicTCP(50);
+
+        client.addChannel(r1);
+        r1.addChannel(r2);
+        r2.addChannel(r3);
+        r3.addChannel(r4);
+        r4.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        r4.updateRoutingTable();
+        server.updateRoutingTable();
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+
+        Assert.assertTrue(client.isConnected());
+        Assert.assertTrue(server.isConnected());
+
+        System.out.println("connected");
+
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 10;
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+
+        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.run();
+
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message( "test " + i);
+            Packet received = server.receive();
+            Assert.assertNotNull(received);
+            Assert.assertEquals(msg, received.getPayload());
+        }
+
+        eventHandler.printStatistics();
+    }
+
 
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
-
         ClassicTCP client = new ClassicTCP(7);
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(2.5).build();
         ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
