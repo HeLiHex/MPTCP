@@ -167,6 +167,21 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     }
 
     @Override
+    public Packet fastRetransmit() {
+        try {
+            return this.getSendingWindow().fastRetransmit();
+        } catch (IllegalAccessException e) {
+            //should not fast retransmit if there is no sending window
+            return null;
+        }
+    }
+
+    @Override
+    public long processingDelay() {
+        return 2;
+    }
+
+    @Override
     public int getSendingWindowCapacity() {
         try {
             return this.getSendingWindow().getWindowCapacity();

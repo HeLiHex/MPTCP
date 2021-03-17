@@ -72,6 +72,8 @@ public interface TCP extends Endpoint {
 
     boolean canRetransmit(Packet packet);
 
+    public Packet fastRetransmit();
+
     boolean seriousLossDetected();
 
     int getSendingWindowCapacity();

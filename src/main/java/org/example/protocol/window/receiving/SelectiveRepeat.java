@@ -50,7 +50,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             }
             this.receive(packet);
             //false because the packet is not acked. this packet will be acked indirectly when correct packet is received
-            return false;
+            return true;
         }
         //false, beacuse packets outside the window has already ben acked
         return false;

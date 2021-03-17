@@ -543,8 +543,8 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsInOrderShouldWorkTest(){
         ClassicTCP client = new ClassicTCP(7);
-        Routable r1 = new Router.RouterBuilder().withBufferSize(100).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(100).build();
+        Routable r1 = new Router.RouterBuilder().withBufferSize(10).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(5).build();
         ClassicTCP server = new ClassicTCP(20);
 
         client.addChannel(r1);
@@ -587,12 +587,12 @@ public class ClassicTCPTest {
 
     @Test
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
-        ClassicTCP client = new ClassicTCP(100);
-        Routable r1 = new Router.RouterBuilder().withBufferSize(100).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(100).build();
-        Routable r3 = new Router.RouterBuilder().withBufferSize(5).build();
-        Routable r4 = new Router.RouterBuilder().withBufferSize(100).build();
-        ClassicTCP server = new ClassicTCP(50);
+        ClassicTCP client = new ClassicTCP(10);
+        Routable r1 = new Router.RouterBuilder().withBufferSize(10).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(3).build();
+        Routable r3 = new Router.RouterBuilder().withBufferSize(7).build();
+        Routable r4 = new Router.RouterBuilder().withBufferSize(70).build();
+        ClassicTCP server = new ClassicTCP(30);
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -648,9 +648,9 @@ public class ClassicTCPTest {
 
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
-        ClassicTCP client = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP(10);
         Routable router = new Router.RouterBuilder().withNoiseTolerance(2.5).build();
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP server = new ClassicTCP(10);
 
         client.addChannel(router);
         router.addChannel(server);
