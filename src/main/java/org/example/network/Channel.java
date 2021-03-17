@@ -20,7 +20,7 @@ public class Channel implements Comparable<Channel> {
     private final NetworkNode destination;
     private final int cost;
     private final double noiseTolerance;
-    private final int capacity = 10;
+    private final int capacity = 100;
 
     private Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
@@ -42,7 +42,8 @@ public class Channel implements Comparable<Channel> {
     }
 
     public long propogationDelay() {
-        return Util.getNextRandomInt((this.capacity + this.cost));
+        //Util.getNextRandomInt((this.capacity + this.cost));
+        return (this.capacity + this.cost)/10;
     }
 
     private boolean lossy() {

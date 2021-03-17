@@ -7,9 +7,10 @@ import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.Timeout;
+
+import java.util.concurrent.TimeUnit;
 
 
 public class SendingWindowTest {
@@ -19,9 +20,12 @@ public class SendingWindowTest {
     private SendingWindow sendingWindow;
     private EventHandler eventHandler;
 
+    @Rule
+    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
+
     @Before
     public void setup() throws IllegalAccessException {
-        this.client = new ClassicTCP(10);
+        this.client = new ClassicTCP(20);
         this.server = new ClassicTCP(20);
         this.connect(client, server);
 
@@ -121,7 +125,7 @@ public class SendingWindowTest {
         Assert.assertTrue(server.outputBufferIsEmpty());
         //Assert.assertTrue(router.inputBufferIsEmpty());
 
-        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 1000;
+        int numPacketsToSend = server.getThisReceivingWindowCapacity() * 100;
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             client.send(msg);

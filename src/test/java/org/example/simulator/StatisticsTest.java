@@ -315,7 +315,7 @@ public class StatisticsTest {
 
     @Test
     public void TCPRetransmitEventGeneratorIsGeneratedPerPacketSentTest() {
-        double noiseTolerance = 1.1;
+        double noiseTolerance = 2;
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP(7);

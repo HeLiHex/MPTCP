@@ -813,7 +813,7 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsBeforeConnectingShouldWorkTest() {
         ClassicTCP client = new ClassicTCP(7);
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(1.5).build();
+        Routable router = new Router.RouterBuilder().withBufferSize(100).withNoiseTolerance(1.5).build();
         ClassicTCP server = new ClassicTCP(7);
 
         client.addChannel(router);
