@@ -84,7 +84,7 @@ public class Statistics {
     }
 
     public void createChart(){
-        XYChart chart = new XYChartBuilder().width(1500).height(500).xAxisTitle("time").yAxisTitle("CWND").title("Congestion Window Capacity").build();
+        XYChart chart = new XYChartBuilder().width(10000).height(500).xAxisTitle("time").yAxisTitle("CWND").title("Congestion Window Capacity").build();
         chart.addSeries("CWND", time, congestionWindowCapacities);
         //XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", time, congestionWindowCapacities);
         try {
