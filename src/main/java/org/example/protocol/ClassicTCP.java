@@ -163,7 +163,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public long getRTO() {
-        return 4 * this.rtt;
+        return 3 * this.rtt;
     }
 
     @Override
@@ -178,7 +178,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public long processingDelay() {
-        return 2;
+        return super.processingDelay();
     }
 
     @Override

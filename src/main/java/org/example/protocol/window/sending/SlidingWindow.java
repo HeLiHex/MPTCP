@@ -147,7 +147,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     }
 
     public void decrease(boolean timeout) {
-        if (this.getWindowCapacity() <= this.ssthresh && !timeout) return;
+        //if (this.getWindowCapacity() <= this.ssthresh && !timeout) return;
         Statistics.trackCwnd(this.getWindowCapacity());
 
         this.ssthresh = this.findNewSSThresh();

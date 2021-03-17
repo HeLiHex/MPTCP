@@ -43,7 +43,7 @@ public class Channel implements Comparable<Channel> {
 
     public long propogationDelay() {
         //Util.getNextRandomInt((this.capacity + this.cost));
-        return (this.capacity + this.cost)/10;
+        return this.cost/2;
     }
 
     private boolean lossy() {
@@ -55,7 +55,7 @@ public class Channel implements Comparable<Channel> {
             return noise > this.noiseTolerance + 2;
         }
         this.goodState = Util.getNextRandomInt(100) >= 50;
-        return noise > this.noiseTolerance+1;
+        return noise > this.noiseTolerance;
     }
 
     public void channelPackage(Packet packet) {
