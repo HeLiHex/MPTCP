@@ -35,7 +35,7 @@ public class EventHandler {
     }
 
     public void printStatistics() {
-        //STATISTICS.createChart();
+        STATISTICS.createChart();
         System.out.println(STATISTICS.toString());
     }
 
