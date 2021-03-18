@@ -28,7 +28,6 @@ public class Main {
             BitmapEncoder.saveBitmapWithDPI(chart, "./Sample_Chart_300_DPI", BitmapEncoder.BitmapFormat.PNG, 300);
         } catch (IOException e) {
             Logger.getLogger(Main.class.getSimpleName()).log(Level.WARNING, "chart fail");
-            return;
         }
     }
 }
