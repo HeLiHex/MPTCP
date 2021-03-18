@@ -2,7 +2,6 @@ import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
-import org.knowm.xchart.internal.chartpart.Chart;
 
 import java.io.IOException;
 import java.util.logging.Level;
