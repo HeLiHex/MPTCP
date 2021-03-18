@@ -241,26 +241,6 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
             this.connect(packet);
             return true;
         }
-
-        /*
-        if (packet.hasAllFlags(Flag.ACK)) {
-            //if (this.connection != null) this.connection.update(packet);
-            //System.out.println("creating connection");
-            this.setConnection(new Connection(
-                    this,
-                    packet.getOrigin(),
-                    packet.getAcknowledgmentNumber() - 1,
-                    packet.getSequenceNumber())
-            );
-            this.outputBuffer = new SlidingWindow(this.getThisReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
-            this.inputBuffer = new SelectiveRepeat(this.getThisReceivingWindowCapacity(), this.connection, PACKET_COMPARATOR);
-
-
-            //this.logger.log(Level.INFO, () -> "connection established with: " + this.getConnection());
-            return false;
-        }
-
-         */
         return false;
     }
 
