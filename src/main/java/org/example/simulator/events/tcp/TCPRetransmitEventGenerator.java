@@ -1,7 +1,6 @@
 package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
-import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
@@ -9,8 +8,6 @@ import org.example.simulator.events.EventGenerator;
 import org.example.simulator.events.RouteEvent;
 
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TCPRetransmitEventGenerator extends EventGenerator {
 

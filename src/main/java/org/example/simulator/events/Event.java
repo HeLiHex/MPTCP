@@ -28,7 +28,7 @@ public abstract class Event implements Comparable<Event> {
         this.instant = this.findInstant(channel.propagationDelay());
     }
 
-    private long findInstant(long delay){
+    private long findInstant(long delay) {
         return Util.getTime() + delay;
     }
 

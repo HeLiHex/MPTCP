@@ -2,7 +2,6 @@ package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
-import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
@@ -30,7 +29,7 @@ public class TCPInputEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.packetToFastRetransmit != null){
+        if (this.packetToFastRetransmit != null) {
             events.add(new RouteEvent(this.tcp, this.packetToFastRetransmit));
         }
 

@@ -1,7 +1,6 @@
 package org.example.simulator.events.tcp;
 
 import org.example.network.Channel;
-import org.example.network.Routable;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;

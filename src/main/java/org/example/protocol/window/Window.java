@@ -16,7 +16,7 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implem
     }
 
     @Override
-    public boolean inWindow(int packetIndex){
+    public boolean inWindow(int packetIndex) {
         return packetIndex < this.getWindowCapacity() && packetIndex >= 0;
     }
 

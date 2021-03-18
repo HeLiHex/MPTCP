@@ -20,7 +20,7 @@ public interface TCP extends Endpoint {
 
     /**
      * A method that handles incoming connections
-     *
+     * <p>
      * 1. Receive SYN Packet with random number A that indicates that a client wants to connect
      * 2. Send SYN-ACK with A+1 and sequence number random B
      * 3. Receive ACK with ACK-number A+2 and sequence number is B+1
@@ -76,8 +76,6 @@ public interface TCP extends Endpoint {
     boolean seriousLossDetected();
 
     int getSendingWindowCapacity();
-
-
 
 
 }

@@ -4,7 +4,6 @@ import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
-
 import java.util.Objects;
 
 public class Connection {

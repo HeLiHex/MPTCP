@@ -9,7 +9,6 @@ import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.Statistics;
 
 import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class SelectiveRepeat extends Window implements ReceivingWindow {
@@ -23,7 +22,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         this.ackThis = new PacketBuilder().withConnection(connection).build();
     }
 
-    private void receive(Packet packet){
+    private void receive(Packet packet) {
         if (this.received.contains(packet)) return;
         boolean added = this.received.offer(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
@@ -36,7 +35,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
         Packet packet = this.poll();
 
-        if (packet.hasAllFlags(Flag.ACK)){
+        if (packet.hasAllFlags(Flag.ACK)) {
             sendingWindow.ackReceived(packet);
             return false;
         }
@@ -67,14 +66,14 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     }
 
     @Override
-    public int receivingPacketIndex(Packet packet){
+    public int receivingPacketIndex(Packet packet) {
         int seqNum = packet.getSequenceNumber();
         int ackNum = this.connection.getNextAcknowledgementNumber();
         return seqNum - ackNum;
     }
 
     @Override
-    public boolean inReceivingWindow(Packet packet){
+    public boolean inReceivingWindow(Packet packet) {
         int packetIndex = receivingPacketIndex(packet);
         return inWindow(packetIndex);
     }

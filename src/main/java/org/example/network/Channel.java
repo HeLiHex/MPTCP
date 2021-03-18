@@ -13,14 +13,13 @@ import java.util.logging.Logger;
 public class Channel implements Comparable<Channel> {
 
     private final Logger logger;
-    boolean goodState = true;
-
     private final Queue<Packet> line;
     private final NetworkNode source;
     private final NetworkNode destination;
     private final int cost;
     private final double noiseTolerance;
     private final int capacity = 100;
+    boolean goodState = true;
 
     private Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
@@ -42,14 +41,14 @@ public class Channel implements Comparable<Channel> {
     }
 
     public long propagationDelay() {
-        return this.cost/2;
+        return this.cost / 2;
     }
 
     private boolean lossy() {
         if (this.source.equals(this.destination)) return false;
         double gaussianNoise = Util.getNextGaussian();
         double noise = StrictMath.abs(gaussianNoise);
-        if (goodState){
+        if (goodState) {
             this.goodState = Util.getNextRandomInt(100) >= 10;
             return noise > this.noiseTolerance + 2;
         }
@@ -58,7 +57,7 @@ public class Channel implements Comparable<Channel> {
     }
 
     public void channelPackage(Packet packet) {
-        if (!this.line.offer(packet)){
+        if (!this.line.offer(packet)) {
             this.logger.log(Level.INFO, () -> packet.toString() + " lost due to channel capacity");
         }
     }

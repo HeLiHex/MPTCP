@@ -8,8 +8,8 @@ import java.util.Queue;
 
 public class EventHandler {
 
-    private final Queue<Event> events;
     private static final Statistics STATISTICS = new Statistics();
+    private final Queue<Event> events;
 
     public EventHandler() {
         this.events = new PriorityQueue<>();

@@ -7,6 +7,19 @@ import java.util.logging.Logger;
 
 public class Router extends Routable {
 
+    private Router(int bufferSize, double noiseTolerance) {
+        super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance);
+    }
+
+    @Override
+    public void run() {
+        if (!this.inputBufferIsEmpty()) {
+            this.route(this.dequeueInputBuffer());
+            return;
+        }
+        Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "this router has an empty buffer");
+    }
+
     public static class RouterBuilder {
 
         private int bufferSize = 100;
@@ -27,19 +40,6 @@ public class Router extends Routable {
         }
 
 
-    }
-
-    private Router(int bufferSize, double noiseTolerance) {
-        super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance);
-    }
-
-    @Override
-    public void run() {
-        if (!this.inputBufferIsEmpty()) {
-            this.route(this.dequeueInputBuffer());
-            return;
-        }
-        Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "this router has an empty buffer");
     }
 
 

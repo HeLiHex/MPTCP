@@ -17,12 +17,10 @@ import java.util.logging.Logger;
 
 public class ClassicTCP extends RoutableEndpoint implements TCP {
 
-    private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
-
     private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
-
+    private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
     private final Queue<Packet> receivedPackets;
     private final List<Payload> payloadsToSend;
 
@@ -156,6 +154,10 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return this.connection;
     }
 
+    private void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
     @Override
     public long getRTT() {
         return this.rtt;
@@ -178,7 +180,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public long processingDelay() {
-        return super.processingDelay()*2;
+        return super.processingDelay() * 2;
     }
 
     @Override
@@ -190,11 +192,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         }
     }
 
-    private void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
-    private void createWindows(){
+    private void createWindows() {
         this.outputBuffer = new SlidingWindow(this.otherReceivingWindowCapacity, true, this.connection, PACKET_COMPARATOR, this.payloadsToSend);
         this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.receivedPackets);
     }

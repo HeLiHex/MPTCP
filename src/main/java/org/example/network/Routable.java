@@ -11,9 +11,9 @@ public abstract class Routable implements NetworkNode {
 
     private final RoutingTable routingTable;
     private final List<Channel> channels;
-    protected BlockingQueue<Packet> inputBuffer;
     private final Address address;
     private final double noiseTolerance;
+    protected BlockingQueue<Packet> inputBuffer;
 
     protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
@@ -44,7 +44,7 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public long processingDelay() {
-        return ((long)this.inputBufferSize())*10;
+        return ((long) this.inputBufferSize()) * 10;
     }
 
     @Override

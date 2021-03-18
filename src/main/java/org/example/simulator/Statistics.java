@@ -1,7 +1,9 @@
 package org.example.simulator;
 
 import org.example.util.Util;
-import org.knowm.xchart.*;
+import org.knowm.xchart.BitmapEncoder;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class Statistics {
         numberOfPacketsLost++;
     }
 
-    public static void trackCwnd(int cwnd){
+    public static void trackCwnd(int cwnd) {
         congestionWindowCapacities.add(cwnd);
         time.add(Util.seeTime());
     }
@@ -83,7 +85,7 @@ public class Statistics {
         return numberOfPacketsReceived;
     }
 
-    public void createChart(){
+    public void createChart() {
         XYChart chart = new XYChartBuilder().width(10000).height(500).xAxisTitle("time").yAxisTitle("CWND").title("Congestion Window Capacity").build();
         chart.addSeries("CWND", time, congestionWindowCapacities);
         //XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", time, congestionWindowCapacities);

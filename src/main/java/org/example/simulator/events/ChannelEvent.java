@@ -4,9 +4,9 @@ import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
-import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.run.RunEndpointEvent;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
+import org.example.simulator.events.tcp.TCPInputEvent;
 
 import java.util.Queue;
 
