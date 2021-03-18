@@ -25,7 +25,7 @@ public abstract class Event implements Comparable<Event> {
 
     protected Event(Channel channel) {
         if (channel == null) throw new IllegalArgumentException("channel is null");
-        this.instant = this.findInstant(channel.propogationDelay());
+        this.instant = this.findInstant(channel.propagationDelay());
     }
 
     private long findInstant(long delay){

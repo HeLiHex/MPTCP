@@ -3,7 +3,6 @@ import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

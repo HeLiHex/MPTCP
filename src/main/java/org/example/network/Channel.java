@@ -41,8 +41,7 @@ public class Channel implements Comparable<Channel> {
         this(source, source, 0, 0);
     }
 
-    public long propogationDelay() {
-        //Util.getNextRandomInt((this.capacity + this.cost));
+    public long propagationDelay() {
         return this.cost/2;
     }
 
@@ -60,7 +59,7 @@ public class Channel implements Comparable<Channel> {
 
     public void channelPackage(Packet packet) {
         if (!this.line.offer(packet)){
-            System.out.println("loss in channel due to channelcapacity");
+            this.logger.log(Level.INFO, () -> "Packet " + packet.toString() + " lost due to channel capacity");
         }
     }
 
