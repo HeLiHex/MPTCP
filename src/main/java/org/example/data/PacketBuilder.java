@@ -16,14 +16,14 @@ public class PacketBuilder {
     private int sequenceNumber = -1;
     private int acknowledgmentNumber = -1;
 
-    public Packet build(){
-        if (!this.hasFlag(Flag.ACK)){
+    public Packet build() {
+        if (!this.hasFlag(Flag.ACK)) {
             this.acknowledgmentNumber = -1;
         }
         return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
     }
 
-    public Packet ackBuild(Packet packetToAck){
+    public Packet ackBuild(Packet packetToAck) {
         this.withDestination(packetToAck.getOrigin());
         this.withOrigin(packetToAck.getDestination());
         this.withFlags(Flag.ACK);
@@ -33,7 +33,7 @@ public class PacketBuilder {
         return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
     }
 
-    public PacketBuilder withFlags(Flag... flags){
+    public PacketBuilder withFlags(Flag... flags) {
         for (Flag flag : flags) {
             if (this.flags.contains(flag)) continue;
             this.flags.add(flag);
@@ -41,38 +41,38 @@ public class PacketBuilder {
         return this;
     }
 
-    public PacketBuilder withPayload(Payload payload){
+    public PacketBuilder withPayload(Payload payload) {
         this.payload = payload;
         return this;
     }
 
-    public PacketBuilder withOrigin(Endpoint self){
+    public PacketBuilder withOrigin(Endpoint self) {
         this.origin = self;
         return this;
     }
 
-    public PacketBuilder withDestination(Endpoint destination){
+    public PacketBuilder withDestination(Endpoint destination) {
         this.destination = destination;
         return this;
     }
 
-    public PacketBuilder withSequenceNumber(int sequenceNumber){
+    public PacketBuilder withSequenceNumber(int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
         return this;
     }
 
-    public PacketBuilder withAcknowledgmentNumber(int acknowledgmentNumber){
+    public PacketBuilder withAcknowledgmentNumber(int acknowledgmentNumber) {
         this.acknowledgmentNumber = acknowledgmentNumber;
         return this;
     }
 
-    public PacketBuilder withConnection(Connection connection){
+    public PacketBuilder withConnection(Connection connection) {
         this.withOrigin(connection.getConnectionSource());
         this.withDestination(connection.getConnectedNode());
         return this;
     }
 
-    public boolean hasFlag(Flag... flags){
+    public boolean hasFlag(Flag... flags) {
         boolean hasFlag = true;
         for (Flag flag : flags) {
             hasFlag &= this.flags.contains(flag);

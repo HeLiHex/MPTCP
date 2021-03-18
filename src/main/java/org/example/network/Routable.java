@@ -11,9 +11,9 @@ public abstract class Routable implements NetworkNode {
 
     private final RoutingTable routingTable;
     private final List<Channel> channels;
-    protected final BlockingQueue<Packet> inputBuffer;
     private final Address address;
     private final double noiseTolerance;
+    protected BlockingQueue<Packet> inputBuffer;
 
     protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
@@ -38,23 +38,23 @@ public abstract class Routable implements NetworkNode {
     }
 
     @Override
-    public Channel getPath(NetworkNode destination){
+    public Channel getPath(NetworkNode destination) {
         return this.routingTable.getPath(this, destination);
     }
 
     @Override
-    public void processingDelay(){
-       //todo
+    public long processingDelay() {
+        return ((long) this.inputBufferSize()) * 10;
     }
 
     @Override
-    public List<Channel> getChannels(){
+    public List<Channel> getChannels() {
         return this.channels;
     }
 
     @Override
     public void addChannel(NetworkNode node) {
-        for (Channel channel : this.getChannels()){
+        for (Channel channel : this.getChannels()) {
             boolean thisContainsNode = channel.getDestination().equals(node);
             if (thisContainsNode) return;
         }
@@ -70,11 +70,6 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        // this if prohibits multiple packets with the same sequence number!
-        if (this.inputBuffer.stream().anyMatch(
-                p -> p.getSequenceNumber() == packet.getSequenceNumber())){
-            return false;
-        }
         return this.inputBuffer.offer(packet);
     }
 
@@ -93,7 +88,8 @@ public abstract class Routable implements NetworkNode {
         return this.inputBuffer.isEmpty();
     }
 
-    public int inputBufferSize(){
+    @Override
+    public int inputBufferSize() {
         return this.inputBuffer.size();
     }
 

@@ -4,19 +4,19 @@ import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
-import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.run.RunEndpointEvent;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
+import org.example.simulator.events.tcp.TCPInputEvent;
 
 import java.util.Queue;
 
-public class ChannelEvent extends Event{
+public class ChannelEvent extends Event {
 
     private final Channel channel;
     private boolean channelSuccess;
 
     public ChannelEvent(Channel channel) {
-        //super(Instant.now().plus(channel.propogationDelay()));
+        super(channel);
         this.channel = channel;
         this.channelSuccess = false;
     }
@@ -28,7 +28,7 @@ public class ChannelEvent extends Event{
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.channelSuccess){
+        if (this.channelSuccess) {
             NetworkNode nextNode = this.channel.getDestination();
             if (nextNode instanceof TCP) {
                 events.add(new TCPInputEvent((TCP) nextNode));

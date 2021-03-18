@@ -29,8 +29,15 @@ public interface Endpoint extends NetworkNode {
     boolean outputBufferIsEmpty();
 
 
+    /**
+     * A method that returns the size of the outputBuffer
+     *
+     * @return size of the outputBuffer
+     */
+    int outputBufferSize();
+
+
     boolean isConnected();
 
-    Endpoint getConnectedEndpoint();
 
 }

@@ -392,7 +392,7 @@ public class RoutableTest {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
-        Router r3 = new Router.RouterBuilder().withNoiseTolerance(0).build();
+        Router r3 = new Router.RouterBuilder().withNoiseTolerance(-100).build();
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
@@ -422,7 +422,7 @@ public class RoutableTest {
 
         Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
 
-        Assert.assertNull(null, receivedPacket);
+        Assert.assertNull(receivedPacket);
     }
 
 

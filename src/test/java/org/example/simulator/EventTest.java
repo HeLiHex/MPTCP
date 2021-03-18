@@ -1,10 +1,8 @@
 package org.example.simulator;
 
 import org.example.data.Message;
-import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
-import org.example.protocol.AbstractTCP;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
@@ -12,27 +10,28 @@ import org.example.simulator.events.Event;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
 import org.example.simulator.events.tcp.TCPSendEvent;
+import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class EventTest {
 
-    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private Queue<Event> events;
-    private AbstractTCP tcp;
-    private AbstractTCP host;
+    private ClassicTCP tcp;
+    private ClassicTCP host;
 
 
     @Before
     public void setup(){
+        Util.resetTime();
+        Util.setSeed(1337);
         this.events = new PriorityQueue<>();
-        this.tcp = new BasicTCP();
-        this.host = new BasicTCP();
+        this.tcp = new ClassicTCP(7);
+        this.host = new ClassicTCP(7);
     }
 
     public void connect(TCP linkedClient, Endpoint linkedServer){
@@ -42,63 +41,70 @@ public class EventTest {
     }
 
     @Test
-    public void test(){
+    public void EventsOccurInAPreMatchedSequence(){
         this.tcp.addChannel(this.host);
         this.tcp.updateRoutingTable();
         this.host.updateRoutingTable();
         this.connect(this.tcp, this.host);
 
-        this.tcp.send(new Message("hello"));
+        int numberOfRuns = 100;
+        for (int i = 0; i < numberOfRuns; i++) {
+            Util.resetTime();
+            Util.setSeed(1337);
 
-        this.events.add(new TCPSendEvent(this.tcp));
+            this.tcp.send(new Message("hello"));
+            this.events.add(new TCPSendEvent(this.tcp));
 
-        Event curEvent = this.events.poll();
-        Assert.assertEquals(TCPSendEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            String debugString = "Iteration: " + i;
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(TCPSendEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            Event curEvent = this.events.poll();
+            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(ChannelEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(TCPInputEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, ChannelEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(ChannelEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, TCPInputEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(TCPSendEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(TCPInputEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, ChannelEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(TCPSendEvent.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, TCPInputEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        curEvent = this.events.poll();
-        Assert.assertEquals(TCPRetransmitEventGenerator.class, curEvent.getClass());
-        curEvent.run();
-        curEvent.generateNextEvent(this.events);
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
-        Assert.assertEquals(0, this.events.size());
+            curEvent = this.events.poll();
+            Assert.assertEquals(debugString, TCPRetransmitEventGenerator.class, curEvent.getClass());
+            curEvent.run();
+            curEvent.generateNextEvent(this.events);
 
+            Assert.assertEquals(debugString, 0, this.events.size());
+
+        }
     }
 
 

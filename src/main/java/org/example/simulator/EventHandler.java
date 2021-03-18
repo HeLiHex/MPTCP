@@ -8,21 +8,21 @@ import java.util.Queue;
 
 public class EventHandler {
 
-    private final Queue<Event> events;
     private static final Statistics STATISTICS = new Statistics();
+    private final Queue<Event> events;
 
-    public EventHandler(){
+    public EventHandler() {
         this.events = new PriorityQueue<>();
         Util.setSeed(1337);
         Util.resetTime();
         Statistics.reset();
     }
 
-    public void addEvent(Event event){
+    public void addEvent(Event event) {
         this.events.add(event);
     }
 
-    public Event peekEvent(){
+    public Event peekEvent() {
         return this.events.peek();
     }
 
@@ -30,35 +30,31 @@ public class EventHandler {
         return events;
     }
 
-    public int getNumberOfEvents(){
+    public int getNumberOfEvents() {
         return this.events.size();
     }
 
-    public void printStatistics(){
+    public void printStatistics() {
+        //STATISTICS.createChart();
         System.out.println(STATISTICS.toString());
     }
 
-    public void singleRun(){
+    public boolean singleRun() {
+        //System.out.println(Util.seeTime());
         Event event = this.events.poll();
-        if (event == null){
-            if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
-            return;
+        if (event == null) {
+            if (!this.events.isEmpty())
+                throw new IllegalStateException("get null event when events queue are nonempty!");
+            return false;
         }
         event.run();
-        event.generateNextEvent(this.events);
         Util.tickTime(event);
+        event.generateNextEvent(this.events);
+        return true;
     }
 
-    public void run(){
-        while(true){
-            Event event = this.events.poll();
-            if (event == null){
-                if (!this.events.isEmpty()) throw new IllegalStateException("get null event when events queue are nonempty!");
-                break;
-            }
-            event.run();
-            event.generateNextEvent(this.events);
-            Util.tickTime(event);
-        }
+    public void run() {
+        while (singleRun()) ;
+        //System.out.println(Util.seeTime());
     }
 }

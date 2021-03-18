@@ -1,40 +1,52 @@
 package org.example.simulator.events;
 
+import org.example.network.Channel;
+import org.example.network.interfaces.NetworkNode;
 import org.example.util.Util;
 
 import java.util.Queue;
 
 public abstract class Event implements Comparable<Event> {
 
-    private static final int DEFAULT_DELAY = 1;
-    private final int instant;
+    private final long instant;
 
-    protected Event(int delay){
-        this.instant = Util.getTime() + delay;
+    protected Event(long delay) {
+        this.instant = this.findInstant(delay);
     }
 
-    protected Event(){
-        this(DEFAULT_DELAY);
+    protected Event() {
+        this.instant = findInstant(0);
+    }
+
+    protected Event(NetworkNode node) {
+        if (node == null) throw new IllegalArgumentException("node is null");
+        this.instant = this.findInstant(node.processingDelay());
+    }
+
+    protected Event(Channel channel) {
+        if (channel == null) throw new IllegalArgumentException("channel is null");
+        this.instant = this.findInstant(channel.propagationDelay());
+    }
+
+    private long findInstant(long delay) {
+        return Util.getTime() + delay;
     }
 
     public abstract void run();
 
     public abstract void generateNextEvent(Queue<Event> events);
 
-    public int getInitInstant(){
+    public long getInstant() {
         return this.instant;
     }
 
     @Override
     public int compareTo(Event o) {
-        if (this.getInitInstant() < o.getInitInstant()) return -1;
-        if (this.getInitInstant() > o.getInitInstant()) return 1;
-        return 0;
+        return Long.compare(this.getInstant(), o.getInstant());
     }
 
     @Override
     public boolean equals(Object obj) {
-        //(Event.compareTo(e) == 0) != Event.Equals(e)
         return super.equals(obj);
     }
 

@@ -17,12 +17,12 @@ public interface NetworkNode {
     /**
      * A method that routes the packet to the next router on the path to it's destination
      *
-     * @param packet
+     * @param packet to route
      */
     void route(Packet packet);
 
 
-    void processingDelay();
+    long processingDelay();
 
 
     /**
@@ -80,10 +80,16 @@ public interface NetworkNode {
      */
     boolean inputBufferIsEmpty();
 
+    /**
+     * A method that returns the size of the inputBuffer
+     *
+     * @return size of the inputBuffer
+     */
+    int inputBufferSize();
+
     Channel getPath(NetworkNode destination);
 
     void run();
-
 
 
 }

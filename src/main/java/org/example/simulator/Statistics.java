@@ -1,7 +1,19 @@
 package org.example.simulator;
 
+import org.example.util.Util;
+import org.knowm.xchart.BitmapEncoder;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Statistics {
 
+    private static ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
+    private static ArrayList<Long> time = new ArrayList<>();
     private static int numberOfPackets; //total number of packets to be served. not counting retransmissions
     private static int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private static int numberOfPacketsRetransmitted; //total number of packets retransmitted
@@ -10,7 +22,7 @@ public class Statistics {
     private static int numberOfPacketsAckedMoreThanOnce; // total number of packets dropped
     private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
-    public static void reset(){
+    public static void reset() {
         numberOfPackets = 0;
         numberOfPacketsSent = 0;
         numberOfPacketsRetransmitted = 0;
@@ -20,25 +32,30 @@ public class Statistics {
         numberOfPacketsReceived = 0;
     }
 
-    public static void packetSent(){
+    public static void packetSent() {
         numberOfPackets++;
         numberOfPacketsSent++;
     }
 
-    public static void packetRetransmit(){
+    public static void packetRetransmit() {
         numberOfPacketsSent++;
         numberOfPacketsRetransmitted++;
     }
 
-    public static void packetLost(){
+    public static void packetLost() {
         numberOfPacketsLost++;
     }
 
-    public static void packetDropped(){
+    public static void trackCwnd(int cwnd) {
+        congestionWindowCapacities.add(cwnd);
+        time.add(Util.seeTime());
+    }
+
+    public static void packetDropped() {
         numberOfPacketsDropped++;
     }
 
-    public static void packetReceived(){
+    public static void packetReceived() {
         numberOfPacketsReceived++;
     }
 
@@ -68,6 +85,16 @@ public class Statistics {
 
     public static int getNumberOfPacketsReceived() {
         return numberOfPacketsReceived;
+    }
+
+    public void createChart() {
+        XYChart chart = new XYChartBuilder().width(10000).height(500).xAxisTitle("time").yAxisTitle("CWND").title("Congestion Window Capacity").build();
+        chart.addSeries("CWND", time, congestionWindowCapacities);
+        try {
+            BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            Logger.getLogger("").log(Level.WARNING, "lol");
+        }
     }
 
     @Override
@@ -121,7 +148,6 @@ public class Statistics {
         sb.append("number of packets received: ");
         sb.append(numberOfPacketsReceived);
         sb.append("\n");
-
 
 
         sb.append('}');

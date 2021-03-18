@@ -4,7 +4,6 @@ import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.interfaces.Endpoint;
 
-
 import java.util.Objects;
 
 public class Connection {
@@ -22,8 +21,8 @@ public class Connection {
         this.acknowledgementNumber = acknowledgementNumber;
     }
 
-    public void update(Packet packet){
-        if (packet.hasAllFlags(Flag.ACK)){
+    public void update(Packet packet) {
+        if (packet.hasAllFlags(Flag.ACK)) {
             this.sequenceNumber = packet.getAcknowledgmentNumber();
             return;
         }

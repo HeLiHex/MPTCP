@@ -1,7 +1,6 @@
 package org.example.simulator.events.tcp;
 
 import org.example.network.Channel;
-import org.example.network.Routable;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
@@ -20,7 +19,7 @@ public class TCPConnectEvent extends Event {
         this.host = host;
     }
 
-    public TCPConnectEvent(TCP client, Endpoint host){
+    public TCPConnectEvent(TCP client, Endpoint host) {
         super();
         this.client = client;
         this.host = host;
@@ -36,9 +35,9 @@ public class TCPConnectEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
         if (this.client.isConnected()) return;
 
-        Channel channel = ((Routable)this.client).getPath(this.host);
+        Channel channel = this.client.getPath(this.host);
         events.add(new ChannelEvent(channel));
-        events.add(new TCPConnectEvent(100, this.client, this.host));
+        events.add(new TCPConnectEvent(1000, this.client, this.host));
     }
 
     @Override

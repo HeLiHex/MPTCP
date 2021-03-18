@@ -1,32 +1,39 @@
 package org.example.simulator.events.tcp;
 
+import org.example.data.Packet;
 import org.example.network.Channel;
-import org.example.protocol.AbstractTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.RouteEvent;
 
 import java.util.Queue;
 
 public class TCPInputEvent extends Event {
 
     private final TCP tcp;
-    private int numberOfPacketsAcked;
+    private boolean ackSent;
+    private Packet packetToFastRetransmit;
 
     public TCPInputEvent(TCP tcp) {
-        super();
+        super(tcp);
         if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");
         this.tcp = tcp;
     }
 
     @Override
     public void run() {
-        this.numberOfPacketsAcked = ((AbstractTCP)this.tcp).handleIncoming();
+        this.ackSent = this.tcp.handleIncoming();
+        this.packetToFastRetransmit = this.tcp.fastRetransmit();
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        for (int i = 0; i < this.numberOfPacketsAcked; i++) {
+        if (this.packetToFastRetransmit != null) {
+            events.add(new RouteEvent(this.tcp, this.packetToFastRetransmit));
+        }
+
+        if (this.ackSent) {
             Channel channelUsed = this.tcp.getChannel();
             events.add(new ChannelEvent(channelUsed));
         }

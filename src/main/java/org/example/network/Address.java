@@ -2,7 +2,7 @@ package org.example.network;
 
 import java.util.UUID;
 
-public class Address implements Comparable<Address>{
+public class Address implements Comparable<Address> {
 
     private final UUID identifier;
 
@@ -10,7 +10,7 @@ public class Address implements Comparable<Address>{
         this.identifier = UUID.randomUUID();
     }
 
-    private UUID getIdentifier(){
+    private UUID getIdentifier() {
         return this.identifier;
     }
 
@@ -28,7 +28,7 @@ public class Address implements Comparable<Address>{
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Address) return this.identifier.hashCode() == obj.hashCode();
+        if (obj instanceof Address) return this.identifier.hashCode() == obj.hashCode();
         return false;
     }
 

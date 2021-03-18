@@ -109,4 +109,73 @@ public class BoundedPriorityBlockingQueueTest {
         Assert.assertFalse(boundedPriorityBlockingQueue.isFull());
     }
 
+
+    @Test
+    public void resizeWorksTest(){
+        BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
+                new BoundedPriorityBlockingQueue<>(5, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
+
+        boundedPriorityBlockingQueue.setBound(10);
+        Assert.assertEquals(10, boundedPriorityBlockingQueue.bound());
+    }
+
+    @Test
+    public void resizeAllowsMoreElementsInQueue(){
+        BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
+                new BoundedPriorityBlockingQueue<>(4, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
+        Packet one = new PacketBuilder()
+                .withSequenceNumber(1)
+                .build();
+        Packet two = new PacketBuilder()
+                .withSequenceNumber(2)
+                .build();
+        Packet three = new PacketBuilder()
+                .withSequenceNumber(3)
+                .build();
+        Packet four = new PacketBuilder()
+                .withSequenceNumber(4)
+                .build();
+
+        boundedPriorityBlockingQueue.offer(one);
+        boundedPriorityBlockingQueue.offer(two);
+        boundedPriorityBlockingQueue.offer(three);
+        boundedPriorityBlockingQueue.offer(four);
+
+        Assert.assertTrue(boundedPriorityBlockingQueue.isFull());
+
+        boundedPriorityBlockingQueue.setBound(8);
+        Assert.assertEquals(8, boundedPriorityBlockingQueue.bound());
+
+
+        Packet five = new PacketBuilder()
+                .withSequenceNumber(5)
+                .build();
+        Packet six = new PacketBuilder()
+                .withSequenceNumber(6)
+                .build();
+        Packet seven = new PacketBuilder()
+                .withSequenceNumber(7)
+                .build();
+        Packet eight = new PacketBuilder()
+                .withSequenceNumber(8)
+                .build();
+
+        boundedPriorityBlockingQueue.offer(five);
+        boundedPriorityBlockingQueue.offer(six);
+        boundedPriorityBlockingQueue.offer(seven);
+        boundedPriorityBlockingQueue.offer(eight);
+
+        Assert.assertTrue(boundedPriorityBlockingQueue.isFull());
+
+
+
+        Packet nine = new PacketBuilder()
+                .withSequenceNumber(9)
+                .build();
+        boundedPriorityBlockingQueue.offer(nine);
+
+        Assert.assertTrue(boundedPriorityBlockingQueue.isFull());
+        Assert.assertEquals(8, boundedPriorityBlockingQueue.size());
+    }
+
 }

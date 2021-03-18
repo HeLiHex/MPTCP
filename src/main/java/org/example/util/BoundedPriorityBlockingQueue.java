@@ -1,6 +1,8 @@
 package org.example.util;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +23,9 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     }
 
     @Override
-    public boolean isFull(){
-        if (this.pbq.size() > this.bound) throw new IllegalStateException("The queue contains more elements than it can take");
-        return this.pbq.size() == this.bound;
+    public boolean isFull() {
+        //if (this.pbq.size() > this.bound) throw new IllegalStateException("The queue contains more elements than it can take");
+        return this.pbq.size() >= this.bound;
     }
 
     @Override
@@ -57,6 +59,17 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
     @Override
     public int remainingCapacity() {
         return this.bound - this.pbq.size();
+    }
+
+
+    @Override
+    public int bound() {
+        return this.bound;
+    }
+
+    @Override
+    public void setBound(int bound) {
+        this.bound = bound;
     }
 
     /**

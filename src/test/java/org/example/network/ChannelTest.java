@@ -2,7 +2,7 @@ package org.example.network;
 
 import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
-import org.example.protocol.BasicTCP;
+import org.example.protocol.ClassicTCP;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,8 +12,8 @@ import java.util.Random;
 public class ChannelTest {
 
     private Random rand = new Random();
-    private Endpoint source = new BasicTCP();
-    private Endpoint destination = new BasicTCP();
+    private Endpoint source = new ClassicTCP(7);
+    private Endpoint destination = new ClassicTCP(7);
 
     @Test
     public void channelConstructor1Test(){
