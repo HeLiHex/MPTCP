@@ -3,7 +3,10 @@ import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 
+import javax.swing.*;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
 
@@ -15,20 +18,18 @@ public class Main {
         XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", xData, yData);
 
         // Show it
-        new SwingWrapper(chart).displayChart();
+        SwingWrapper<XYChart> sw = new SwingWrapper(chart);
+        sw.displayChart();
 
         // Save it
         try {
             BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        // or save it in high-res
-        try {
+            //high res
             BitmapEncoder.saveBitmapWithDPI(chart, "./Sample_Chart_300_DPI", BitmapEncoder.BitmapFormat.PNG, 300);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(Main.class.getSimpleName()).log(Level.WARNING, "chart fail");
+            return;
         }
     }
 }
