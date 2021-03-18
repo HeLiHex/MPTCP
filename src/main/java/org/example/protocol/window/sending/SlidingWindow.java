@@ -47,7 +47,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         boolean dupAck = ackIndex == -1;
         if (dupAck) {
             this.dupAckCount++;
-            System.out.println(this.dupAckCount);
             return;
         }
         this.dupAckCount = 0;
