@@ -178,7 +178,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public long processingDelay() {
-        return super.processingDelay();
+        return super.processingDelay()*2;
     }
 
     @Override
