@@ -24,7 +24,6 @@ public class BoundedPriorityBlockingQueue<T> implements BoundedQueue<T> {
 
     @Override
     public boolean isFull() {
-        //if (this.pbq.size() > this.bound) throw new IllegalStateException("The queue contains more elements than it can take");
         return this.pbq.size() >= this.bound;
     }
 
