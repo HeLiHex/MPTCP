@@ -1,5 +1,7 @@
 package org.example.simulator.events;
 
+import org.example.network.Channel;
+import org.example.network.interfaces.NetworkNode;
 import org.example.util.Util;
 
 import java.util.Queue;
@@ -9,11 +11,25 @@ public abstract class Event implements Comparable<Event> {
     private final long instant;
 
     protected Event(long delay) {
-        this.instant = Util.getTime() + delay;
+        this.instant = this.findInstant(delay);
     }
 
     protected Event() {
-        this(0);
+        this.instant = findInstant(0);
+    }
+
+    protected Event(NetworkNode node) {
+        if (node == null) throw new IllegalArgumentException("node is null");
+        this.instant = this.findInstant(node.processingDelay());
+    }
+
+    protected Event(Channel channel) {
+        if (channel == null) throw new IllegalArgumentException("channel is null");
+        this.instant = this.findInstant(channel.propogationDelay());
+    }
+
+    private long findInstant(long delay){
+        return Util.getTime() + delay;
     }
 
     public abstract void run();

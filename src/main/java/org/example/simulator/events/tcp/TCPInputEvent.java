@@ -17,7 +17,7 @@ public class TCPInputEvent extends Event {
     private Packet packetToFastRetransmit;
 
     public TCPInputEvent(TCP tcp) {
-        super(tcp.processingDelay());
+        super(tcp);
         if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");
         this.tcp = tcp;
     }
