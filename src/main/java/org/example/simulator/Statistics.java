@@ -7,6 +7,8 @@ import org.knowm.xchart.XYChartBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Statistics {
 
@@ -88,14 +90,11 @@ public class Statistics {
     public void createChart() {
         XYChart chart = new XYChartBuilder().width(10000).height(500).xAxisTitle("time").yAxisTitle("CWND").title("Congestion Window Capacity").build();
         chart.addSeries("CWND", time, congestionWindowCapacities);
-        //XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", time, congestionWindowCapacities);
         try {
             BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger("").log(Level.WARNING, "lol");
         }
-        // Show it
-        //new SwingWrapper(chart).displayChart();
     }
 
     @Override
