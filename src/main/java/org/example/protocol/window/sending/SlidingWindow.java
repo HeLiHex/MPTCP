@@ -76,16 +76,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
             return packet;
         }
         return null;
-
-        /*
-        Packet packetToSend = this.payloadsToSend.remove(0);
-        assert packetToSend != null : "packet to send is null";
-        if (super.offer(packetToSend)){
-            return packetToSend;
-        }
-        throw new IllegalStateException("Packet was not added to the sending window");
-
-         */
     }
 
 
@@ -106,7 +96,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public Packet fastRetransmit() {
         if (this.dupAckCount >= 3) {
-            System.out.println("---- Fast Retransmit ----");
             this.dupAckCount = 0;
             this.decrease(false);
             this.fastRetransmitted = true;
@@ -146,7 +135,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     }
 
     public void decrease(boolean timeout) {
-        //if (this.getWindowCapacity() <= this.ssthresh && !timeout) return;
         Statistics.trackCwnd(this.getWindowCapacity());
 
         this.ssthresh = this.findNewSSThresh();
