@@ -40,7 +40,6 @@ public class EventHandler {
     }
 
     public boolean singleRun() {
-        //System.out.println(Util.seeTime());
         Event event = this.events.poll();
         if (event == null) {
             if (!this.events.isEmpty())
@@ -55,6 +54,5 @@ public class EventHandler {
 
     public void run() {
         while (singleRun()) ;
-        //System.out.println(Util.seeTime());
     }
 }
