@@ -44,7 +44,7 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public long processingDelay() {
-        return this.inputBufferSize()*10;
+        return ((long)this.inputBufferSize())*10;
     }
 
     @Override
