@@ -1,6 +1,7 @@
 package org.example.network;
 
 import org.example.data.Packet;
+import org.example.network.interfaces.Address;
 import org.example.network.interfaces.NetworkNode;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public abstract class Routable implements NetworkNode {
     protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
-        this.address = new Address();
+        this.address = new UUIDAddress();
         this.noiseTolerance = noiseTolerance;
         this.routingTable = new RoutingTable();
     }
