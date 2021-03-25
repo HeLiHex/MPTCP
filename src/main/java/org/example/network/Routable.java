@@ -1,7 +1,8 @@
 package org.example.network;
 
 import org.example.data.Packet;
-import org.example.network.interfaces.Address;
+import org.example.network.address.Address;
+import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.NetworkNode;
 
 import java.util.ArrayList;

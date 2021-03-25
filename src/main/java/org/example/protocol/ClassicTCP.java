@@ -78,7 +78,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
             this.createWindows();
 
-            //this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
+            this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
 
     }

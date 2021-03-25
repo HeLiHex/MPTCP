@@ -1,6 +1,7 @@
 package org.example.network.interfaces;
 
 import org.example.data.Packet;
+import org.example.network.address.Address;
 import org.example.network.Channel;
 
 import java.util.List;

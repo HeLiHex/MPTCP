@@ -1,6 +1,7 @@
 package org.example.network;
 
-import org.example.network.interfaces.Address;
+import org.example.network.address.Address;
+import org.example.network.address.UUIDAddress;
 import org.junit.Assert;
 import org.junit.Test;
 
