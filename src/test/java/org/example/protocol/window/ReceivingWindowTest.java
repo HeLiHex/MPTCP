@@ -30,8 +30,8 @@ public class ReceivingWindowTest {
     public void setup(){
         this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
         this.payloadsToSend = new ArrayList<>();
-        this.client = new ClassicTCP(7);
-        this.server = new ClassicTCP(7);
+        this.client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        this.server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         this.connect(client, server);
 
         this.receivingWindow = new SelectiveRepeat(10, client.getConnection(), PACKET_COMPARATOR, this.receivedPackets);

@@ -30,8 +30,8 @@ public class EventTest {
         Util.resetTime();
         Util.setSeed(1337);
         this.events = new PriorityQueue<>();
-        this.tcp = new ClassicTCP(7);
-        this.host = new ClassicTCP(7);
+        this.tcp = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        this.host = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
     }
 
     public void connect(TCP linkedClient, Endpoint linkedServer){

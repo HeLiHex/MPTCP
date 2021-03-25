@@ -92,8 +92,8 @@ public class EventHandlerTest {
     public void runTest(){
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -118,8 +118,8 @@ public class EventHandlerTest {
     public void runFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -155,8 +155,8 @@ public class EventHandlerTest {
         Util.resetTime();
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();
@@ -212,8 +212,8 @@ public class EventHandlerTest {
         double noiseTolerance = 2;
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();

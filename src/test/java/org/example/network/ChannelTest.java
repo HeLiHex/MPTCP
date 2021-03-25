@@ -11,9 +11,8 @@ import java.util.Random;
 
 public class ChannelTest {
 
-    private Random rand = new Random();
-    private Endpoint source = new ClassicTCP(7);
-    private Endpoint destination = new ClassicTCP(7);
+    private Endpoint source = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+    private Endpoint destination = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
     @Test
     public void channelConstructor1Test(){

@@ -44,15 +44,6 @@ public interface TCP extends Endpoint {
      */
     Packet receive();
 
-    /**
-     * both endpoints can use terminate the connection
-     * 1. send FIN
-     * 2. receive ACK
-     * 3. the other endpoint does the same
-     * 4. the first endpoint to send FIN waits for a timeout before finally closing connection
-     */
-    void close();
-
 
     /**
      * A method that to determine if TCP has an open connection

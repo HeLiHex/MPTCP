@@ -31,7 +31,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     private long rtt;
 
 
-    public ClassicTCP(int thisReceivingWindowCapacity) {
+    private ClassicTCP(int thisReceivingWindowCapacity) {
         super(new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
                 NOISE_TOLERANCE
@@ -115,14 +115,6 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         return this.receivedPackets.poll();
     }
 
-    @Override
-    public void close() {
-        Packet fin = new PacketBuilder()
-                .withConnection(this.getConnection())
-                .withFlags(Flag.FIN)
-                .build();
-        this.route(fin);
-    }
 
     @Override
     public Channel getChannel() {
@@ -314,4 +306,20 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     public int hashCode() {
         return super.hashCode();
     }
+
+
+    public static class ClassicTCPBuilder {
+
+        private int receivingWindowCapacity = 7;
+
+        public ClassicTCPBuilder withReceivingWindowCapacity(int receivingWindowCapacity) {
+            this.receivingWindowCapacity = receivingWindowCapacity;
+            return this;
+        }
+
+        public ClassicTCP build() {
+            return new ClassicTCP(this.receivingWindowCapacity);
+        }
+    }
+
 }

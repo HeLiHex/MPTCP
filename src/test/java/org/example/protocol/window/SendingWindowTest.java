@@ -25,8 +25,8 @@ public class SendingWindowTest {
 
     @Before
     public void setup() throws IllegalAccessException {
-        this.client = new ClassicTCP(20);
-        this.server = new ClassicTCP(20);
+        this.client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).build();
+        this.server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).build();
         this.connect(client, server);
 
         this.sendingWindow = this.client.getSendingWindow();
