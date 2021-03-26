@@ -29,7 +29,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     private SendingWindow sendingWindow;
 
-    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets) {
+    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets, boolean isReno) {
         super(new SelectiveRepeat(thisReceivingWindowCapacity, PACKET_COMPARATOR, receivedPackets),
                 NOISE_TOLERANCE
         );
@@ -265,7 +265,6 @@ public class ClassicTCP extends Routable implements TCP {
 
         if (packet.getOrigin() == null){
             //can't call ack on packet with no origin
-
             Endpoint connectedNode;
             try {
                 connectedNode = this.getSendingWindow().getConnection().getConnectedNode();
@@ -273,7 +272,6 @@ public class ClassicTCP extends Routable implements TCP {
                 //should not be able to ack without a SendingWindow
                 return;
             }
-
             packet = new PacketBuilder()
                     .withDestination(connectedNode)
                     .withOrigin(this)
@@ -305,7 +303,6 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     public Packet trySend() {
-
         if (this.sendingWindow.isQueueEmpty()) return null;
         if (this.sendingWindow.isWaitingForAck()) {
             return null;
@@ -315,7 +312,6 @@ public class ClassicTCP extends Routable implements TCP {
         assert packetToSend != null;
         this.route(packetToSend);
         return packetToSend;
-
     }
 
     @Override
@@ -339,6 +335,7 @@ public class ClassicTCP extends Routable implements TCP {
 
         private int receivingWindowCapacity = 7;
         private Queue<Packet> receivedPacketsContainer = new PriorityQueue<>(PACKET_COMPARATOR);
+        private boolean isReno = true;
 
         public ClassicTCPBuilder withReceivingWindowCapacity(int receivingWindowCapacity) {
             this.receivingWindowCapacity = receivingWindowCapacity;
@@ -350,8 +347,18 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
+        public ClassicTCPBuilder setTahoe() {
+            this.isReno = false;
+            return this;
+        }
+
+        public ClassicTCPBuilder setReno() {
+            this.isReno = true;
+            return this;
+        }
+
         public ClassicTCP build() {
-            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer);
+            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer, this.isReno);
         }
     }
 
