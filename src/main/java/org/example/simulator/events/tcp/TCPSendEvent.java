@@ -8,6 +8,7 @@ import org.example.simulator.Statistics;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
+import java.util.List;
 import java.util.Queue;
 
 public class TCPSendEvent extends Event {
@@ -30,12 +31,14 @@ public class TCPSendEvent extends Event {
     @Override
     public void generateNextEvent(Queue<Event> events) {
         if (this.packetSent != null) {
-            if (tcp.isConnected()) {
+            if (this.tcp.isConnected()) {
                 events.add(new TCPSendEvent(this.tcp));
                 events.add(new TCPRetransmitEventGenerator(this.tcp, this.packetSent));
             }
-            Channel channel = this.tcp.getChannel();
-            events.add(new ChannelEvent(channel));
+            List<Channel> channelsUsed = this.tcp.getChannelsUsed();
+            for (Channel channel : channelsUsed) {
+                events.add(new ChannelEvent(channel));
+            }
         }
     }
 

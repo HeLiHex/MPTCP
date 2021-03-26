@@ -310,6 +310,7 @@ public class ClassicTCP extends Routable implements TCP {
     }
     @Override
     public Packet trySend() {
+        if (this.sendingWindow == null) return null;
         if (this.sendingWindow.isQueueEmpty()) return null;
         if (this.sendingWindow.isWaitingForAck()) {
             return null;

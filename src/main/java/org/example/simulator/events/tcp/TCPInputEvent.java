@@ -7,6 +7,7 @@ import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.RouteEvent;
 
+import java.util.List;
 import java.util.Queue;
 
 public class TCPInputEvent extends Event {
@@ -31,11 +32,16 @@ public class TCPInputEvent extends Event {
         if (this.packetToFastRetransmit != null) {
             events.add(new RouteEvent(this.tcp, this.packetToFastRetransmit));
         }
-
+        List<Channel> channelsUsed = this.tcp.getChannelsUsed();
+        for (Channel channel : channelsUsed) {
+            events.add(new ChannelEvent(channel));
+        }
+        /*
         if (this.ackSent) {
             Channel channelUsed = this.tcp.getChannel();
             events.add(new ChannelEvent(channelUsed));
         }
+         */
         events.add(new TCPSendEvent(this.tcp));
     }
 

@@ -42,6 +42,7 @@ public abstract class Routable implements NetworkNode {
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
         nextChannelOnPath.channelPackage(packet);
 
+        //assert channelsUsed.size() < 1;
         this.channelsUsed.add(nextChannelOnPath);
     }
 
