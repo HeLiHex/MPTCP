@@ -119,15 +119,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public Channel getChannel() {
-        if (this.isConnected()) {
-            return this.getPath(this.getConnection().getConnectedNode());
-        }
-        //todo - what happens with MPTCP
-        return this.getChannel(0);
-    }
-
-    private Channel getChannel(int channelIndex) {
-        return this.getChannels().get(channelIndex);
+        return this.getChannels().get(0);
     }
 
     public int getThisReceivingWindowCapacity() {

@@ -46,7 +46,7 @@ public abstract class Routable implements NetworkNode {
         this.channelsUsed.add(nextChannelOnPath);
     }
 
-    public Channel getPath(NetworkNode destination) {
+    private Channel getPath(NetworkNode destination) {
         return this.routingTable.getPath(this, destination);
     }
 
