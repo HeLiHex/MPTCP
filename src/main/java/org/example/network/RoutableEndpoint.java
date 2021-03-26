@@ -17,12 +17,10 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         this.receivedPackets = new ArrayBlockingQueue<>(10000);
     }
 
-    @Override
     public Packet dequeueOutputBuffer() {
         return this.outputBuffer.poll();
     }
 
-    @Override
     public boolean enqueueOutputBuffer(Packet packet) {
         return this.outputBuffer.offer(packet);
     }
@@ -32,7 +30,6 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         return this.outputBuffer.isEmpty();
     }
 
-    @Override
     public int outputBufferSize() {
         return this.outputBuffer.size();
     }
