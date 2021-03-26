@@ -21,10 +21,9 @@ public class ClassicTCP extends Routable implements TCP {
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
     private final Queue<Packet> receivedPackets;
     private final List<Payload> payloadsToSend;
-
     private final int thisReceivingWindowCapacity;
+
     private int otherReceivingWindowCapacity;
-    private Connection connection;
     private int initialSequenceNumber;
     private long rtt;
 
@@ -41,7 +40,6 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void connect(Endpoint host) {
-        this.connection = null;
         this.initialSequenceNumber = Util.getNextRandomInt(100);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
@@ -136,15 +134,24 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public boolean isConnected() {
-        return this.connection != null;
+        try {
+            return this.getSendingWindow().getConnection() != null;
+        } catch (IllegalAccessException e) {
+            //no SendingWindow means no connection
+            return false;
+        }
     }
 
     public Connection getConnection() {
-        return this.connection;
+        try {
+            return this.getSendingWindow().getConnection();
+        } catch (IllegalAccessException e) {
+            //No SendingWindow means no connection is established
+            return null;
+        }
     }
 
     private void setConnection(Connection connection) {
-        this.connection = connection;
         this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, true, connection, PACKET_COMPARATOR, this.payloadsToSend);
     }
 
@@ -160,7 +167,12 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public Packet fastRetransmit() {
-        return this.getSendingWindow().fastRetransmit();
+        try {
+            return this.getSendingWindow().fastRetransmit();
+        } catch (IllegalAccessException e) {
+            //no Sending Window results in no retransmit
+            return null;
+        }
     }
 
     @Override
@@ -170,11 +182,17 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public int getSendingWindowCapacity() {
-        return this.getSendingWindow().getWindowCapacity();
+        try {
+            return this.getSendingWindow().getWindowCapacity();
+        } catch (IllegalAccessException e) {
+            //todo - is one correct?
+            return 0;
+        }
     }
 
-    public SendingWindow getSendingWindow() {
-        return this.sendingWindow;
+    public SendingWindow getSendingWindow() throws IllegalAccessException {
+        if (this.sendingWindow != null) return this.sendingWindow;
+        throw new IllegalAccessException("SendingWindow is null");
     }
 
     public ReceivingWindow getReceivingWindow() throws IllegalAccessException {
@@ -184,8 +202,9 @@ public class ClassicTCP extends Routable implements TCP {
 
     private boolean packetIsFromValidConnection(Packet packet) {
         if (packet.hasAllFlags(Flag.SYN)) return true;
+        if (!this.isConnected()) return false;
+
         Connection conn = this.getConnection();
-        if (conn == null) return false;
         if (packet.hasAllFlags(Flag.ACK)) return true;
         return packet.getOrigin().equals(conn.getConnectedNode())
                 && packet.getDestination().equals(conn.getConnectionSource()
@@ -223,11 +242,21 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     public boolean seriousLossDetected() {
-        return this.getSendingWindow().isSeriousLossDetected();
+        try {
+            return this.getSendingWindow().isSeriousLossDetected();
+        } catch (IllegalAccessException e) {
+            //can't detect loss without SendingWindow
+            return false;
+        }
     }
 
     public boolean canRetransmit(Packet packet) {
-        return this.getSendingWindow().canRetransmit(packet);
+        try {
+            return this.getSendingWindow().canRetransmit(packet);
+        } catch (IllegalAccessException e) {
+            //should not retransmit without SendingWindow
+            return false;
+        }
     }
 
     private void ack(Packet packet) {
@@ -235,13 +264,17 @@ public class ClassicTCP extends Routable implements TCP {
 
         if (packet.getOrigin() == null){
             //can't call ack on packet with no origin
-            packet = new PacketBuilder()
-                    .withDestination(this.connection.getConnectedNode())
-                    .withOrigin(this)
-                    .withSequenceNumber(packet.getSequenceNumber())
-                    .withAcknowledgmentNumber(packet.getAcknowledgmentNumber())
-                    .withPayload(packet.getPayload())
-                    .build();
+            try {
+                packet = new PacketBuilder()
+                        .withDestination(this.getSendingWindow().getConnection().getConnectedNode())
+                        .withOrigin(this)
+                        .withSequenceNumber(packet.getSequenceNumber())
+                        .withAcknowledgmentNumber(packet.getAcknowledgmentNumber())
+                        .withPayload(packet.getPayload())
+                        .build();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
 
         Packet ack = new PacketBuilder().ackBuild(packet);
