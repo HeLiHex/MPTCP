@@ -22,6 +22,7 @@ public class ClassicTCP extends Routable implements TCP {
     private final Queue<Packet> receivedPackets;
     private final List<Payload> payloadsToSend;
     private final int thisReceivingWindowCapacity;
+    private final boolean isReno;
 
     private int otherReceivingWindowCapacity;
     private int initialSequenceNumber;
@@ -36,6 +37,7 @@ public class ClassicTCP extends Routable implements TCP {
         this.receivedPackets = receivedPackets;
         this.payloadsToSend = new ArrayList<>();
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
+        this.isReno = isReno;
     }
 
     @Override
@@ -152,7 +154,7 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     private void setConnection(Connection connection) {
-        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, true, connection, PACKET_COMPARATOR, this.payloadsToSend);
+        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, this.isReno, connection, PACKET_COMPARATOR, this.payloadsToSend);
     }
 
     @Override
