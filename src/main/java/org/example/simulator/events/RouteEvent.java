@@ -15,6 +15,7 @@ public class RouteEvent extends Event {
 
     public RouteEvent(Endpoint endpoint, Packet packet) {
         super();
+        assert !(endpoint instanceof MPTCP) : "Should only handle Regular tcp or subflows";
         this.endpoint = endpoint;
         this.packet = packet;
     }
@@ -26,7 +27,6 @@ public class RouteEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        assert !(this.endpoint instanceof MPTCP) : "Should only handle Regular tcp or subflows";
         List<Channel> channelsUsed = this.endpoint.getChannelsUsed();
         Channel channel = channelsUsed.get(0);
         if (channel == null) return;
