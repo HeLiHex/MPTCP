@@ -74,7 +74,6 @@ public class ClassicTCP extends Routable implements TCP {
 
             this.rtt = Util.seeTime();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
-            this.createWindows();
 
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
@@ -99,7 +98,6 @@ public class ClassicTCP extends Routable implements TCP {
         this.route(synAck);
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
-        this.createWindows();
 
         this.logger.log(Level.INFO, () -> "connection established with client: " + this.getConnection());
 
@@ -147,6 +145,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     private void setConnection(Connection connection) {
         this.connection = connection;
+        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, true, connection, PACKET_COMPARATOR, this.payloadsToSend);
     }
 
     @Override
@@ -172,11 +171,6 @@ public class ClassicTCP extends Routable implements TCP {
     @Override
     public int getSendingWindowCapacity() {
         return this.getSendingWindow().getWindowCapacity();
-    }
-
-    private void createWindows() {
-        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, true, this.connection, PACKET_COMPARATOR, this.payloadsToSend);
-        //this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.receivedPackets);
     }
 
     public SendingWindow getSendingWindow() {
