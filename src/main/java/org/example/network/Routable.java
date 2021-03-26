@@ -17,10 +17,10 @@ public abstract class Routable implements NetworkNode {
     private final double noiseTolerance;
     protected final BlockingQueue<Packet> inputBuffer;
 
-    protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance) {
+    protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance, Address address) {
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
-        this.address = new UUIDAddress();
+        this.address = address;
         this.noiseTolerance = noiseTolerance;
         this.routingTable = new RoutingTable();
     }

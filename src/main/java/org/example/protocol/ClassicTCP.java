@@ -3,6 +3,8 @@ package org.example.protocol;
 import org.example.data.*;
 import org.example.network.Channel;
 import org.example.network.Routable;
+import org.example.network.address.Address;
+import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
@@ -30,15 +32,17 @@ public class ClassicTCP extends Routable implements TCP {
 
     private SendingWindow sendingWindow;
 
-    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets, boolean isReno) {
+    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets, List<Payload> payloadsToSend, boolean isReno, Address address) {
         super(new SelectiveRepeat(thisReceivingWindowCapacity, PACKET_COMPARATOR, receivedPackets),
-                NOISE_TOLERANCE
+                NOISE_TOLERANCE,
+                address
         );
         this.receivedPackets = receivedPackets;
-        this.payloadsToSend = new ArrayList<>();
+        this.payloadsToSend = payloadsToSend;
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
         this.isReno = isReno;
     }
+
 
     @Override
     public void connect(Endpoint host) {
@@ -337,7 +341,9 @@ public class ClassicTCP extends Routable implements TCP {
 
         private int receivingWindowCapacity = 7;
         private Queue<Packet> receivedPacketsContainer = new PriorityQueue<>(PACKET_COMPARATOR);
+        private List<Payload> payloadsToSend = new ArrayList<>();
         private boolean isReno = true;
+        private Address address = new UUIDAddress();
 
         public ClassicTCPBuilder withReceivingWindowCapacity(int receivingWindowCapacity) {
             this.receivingWindowCapacity = receivingWindowCapacity;
@@ -346,6 +352,11 @@ public class ClassicTCP extends Routable implements TCP {
 
         public ClassicTCPBuilder withReceivedPacketsContainer(Queue<Packet> receivedPacketsContainer) {
             this.receivedPacketsContainer = receivedPacketsContainer;
+            return this;
+        }
+
+        public ClassicTCPBuilder withPayloadsToSend(List<Payload> payloadsToSend) {
+            this.payloadsToSend = payloadsToSend;
             return this;
         }
 
@@ -359,8 +370,13 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
+        public ClassicTCPBuilder withAddress(Address address){
+            this.address = address;
+            return this;
+        }
+
         public ClassicTCP build() {
-            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer, this.isReno);
+            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer, this.payloadsToSend, this.isReno, this.address);
         }
     }
 
