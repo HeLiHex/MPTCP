@@ -24,6 +24,9 @@ public class PacketBuilder {
     }
 
     public Packet ackBuild(Packet packetToAck) {
+        assert packetToAck.getOrigin() != null : "no origin";
+        assert packetToAck.getDestination() != null : "no destination";
+
         this.withDestination(packetToAck.getOrigin());
         this.withOrigin(packetToAck.getDestination());
         this.withFlags(Flag.ACK);

@@ -16,10 +16,10 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     private final Queue<Packet> received;
     private Packet ackThis;
 
-    public SelectiveRepeat(int windowSize, Connection connection, Comparator<Packet> comparator, Queue<Packet> receivedContainer) {
-        super(windowSize, connection, comparator);
+    public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, Queue<Packet> receivedContainer) {
+        super(windowSize, comparator);
         this.received = receivedContainer;
-        this.ackThis = new PacketBuilder().withConnection(connection).build();
+        this.ackThis = new PacketBuilder().build();
     }
 
     private void receive(Packet packet) {
@@ -40,9 +40,11 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             return false;
         }
 
-        if (this.inReceivingWindow(packet)) {
-            if (receivingPacketIndex(packet) == 0) {
-                this.connection.update(packet);
+        Connection connection = sendingWindow.getConnection();
+
+        if (this.inReceivingWindow(packet, connection)) {
+            if (receivingPacketIndex(packet, connection) == 0) {
+                connection.update(packet);
                 this.ackThis = packet;
                 this.receive(packet);
                 return true;
@@ -66,15 +68,15 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     }
 
     @Override
-    public int receivingPacketIndex(Packet packet) {
+    public int receivingPacketIndex(Packet packet, Connection connection) {
         int seqNum = packet.getSequenceNumber();
-        int ackNum = this.connection.getNextAcknowledgementNumber();
+        int ackNum = connection.getNextAcknowledgementNumber();
         return seqNum - ackNum;
     }
 
     @Override
-    public boolean inReceivingWindow(Packet packet) {
-        int packetIndex = receivingPacketIndex(packet);
+    public boolean inReceivingWindow(Packet packet, Connection connection) {
+        int packetIndex = receivingPacketIndex(packet, connection);
         return inWindow(packetIndex);
     }
 }

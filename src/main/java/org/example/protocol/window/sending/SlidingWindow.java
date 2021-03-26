@@ -22,9 +22,10 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private int ssthresh;
     private int dupAckCount;
     private boolean fastRetransmitted;
+    private final Connection connection;
 
     public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
-        super(DEFAULT_CONGESTION_WINDOW_CAPACITY, connection, comparator);
+        super(DEFAULT_CONGESTION_WINDOW_CAPACITY, comparator);
         this.payloadsToSend = payloadsToSend;
         this.receiverWindowSize = receiverWindowCapacity;
         this.numPacketsReceivedWithoutIncreasingWindow = 0;
@@ -32,6 +33,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         this.isReno = isReno;
         this.dupAckCount = 0;
         this.fastRetransmitted = false;
+        this.connection = connection;
 
     }
 
@@ -174,6 +176,11 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         int packetSeqNum = packet.getSequenceNumber();
         int connSeqNum = this.connection.getNextSequenceNumber();
         return packetSeqNum - connSeqNum;
+    }
+
+    @Override
+    public Connection getConnection() {
+        return connection;
     }
 
     @Override

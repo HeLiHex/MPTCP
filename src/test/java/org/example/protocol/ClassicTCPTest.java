@@ -399,7 +399,7 @@ public class ClassicTCPTest {
                 .build();
 
 
-        int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet);
+        int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet, server.getConnection());
         Assert.assertEquals(0, indexBeforeSending);
 
         client.send(packet.getPayload());
@@ -407,7 +407,7 @@ public class ClassicTCPTest {
         eventHandler.run();
         Assert.assertNotNull(server.receive());
 
-        int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet);
+        int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet, server.getConnection());
         Assert.assertEquals(-1, indexAfterReceived);
 
     }
@@ -445,7 +445,7 @@ public class ClassicTCPTest {
                 .withAcknowledgmentNumber(ackNum + client.getThisReceivingWindowCapacity()-1)
                 .build();
 
-        int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet);
+        int indexBeforeSending = server.getReceivingWindow().receivingPacketIndex(packet, server.getConnection());
         Assert.assertEquals(client.getThisReceivingWindowCapacity()-1, indexBeforeSending);
 
 
@@ -453,7 +453,7 @@ public class ClassicTCPTest {
         eventHandler.run();
         Assert.assertNotNull(server.receive());
 
-        int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet);
+        int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet, server.getConnection());
         Assert.assertEquals(client.getThisReceivingWindowCapacity()-1, indexAfterReceived);
     }
 
@@ -493,7 +493,7 @@ public class ClassicTCPTest {
 
             try{
                 ReceivingWindow receivingWindow = server.getReceivingWindow();
-                Assert.assertTrue(receivingWindow.inReceivingWindow(packet));
+                Assert.assertTrue(receivingWindow.inReceivingWindow(packet, server.getConnection()));
             }catch (IllegalAccessException e){
                 Assert.fail();
             }
@@ -532,7 +532,7 @@ public class ClassicTCPTest {
 
             try{
                 ReceivingWindow receivingWindow = server.getReceivingWindow();
-                Assert.assertFalse(receivingWindow.inReceivingWindow(packet));
+                Assert.assertFalse(receivingWindow.inReceivingWindow(packet, server.getConnection()));
             }catch (IllegalAccessException e){
                 Assert.fail();
             }
@@ -692,7 +692,7 @@ public class ClassicTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
-            Assert.assertNotNull(received);
+            Assert.assertNotNull("iteration: " + i, received);
             Assert.assertEquals(msg, received.getPayload());
         }
 

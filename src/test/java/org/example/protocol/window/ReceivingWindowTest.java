@@ -34,7 +34,7 @@ public class ReceivingWindowTest {
         this.server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         this.connect(client, server);
 
-        this.receivingWindow = new SelectiveRepeat(10, client.getConnection(), PACKET_COMPARATOR, this.receivedPackets);
+        this.receivingWindow = new SelectiveRepeat(10, PACKET_COMPARATOR, this.receivedPackets);
     }
 
     private void connect(ClassicTCP client, ClassicTCP server){
@@ -80,7 +80,7 @@ public class ReceivingWindowTest {
                 .withFlags(Flag.ACK)
                 .withConnection(this.server.getConnection())
                 .build();
-        Assert.assertTrue(this.receivingWindow.inReceivingWindow(ackFromServer));
+        Assert.assertTrue(this.receivingWindow.inReceivingWindow(ackFromServer, client.getConnection()));
         this.receivingWindow.offer(ackFromServer);
         Assert.assertFalse(this.receivingWindow.receive(null));
     }
@@ -93,7 +93,7 @@ public class ReceivingWindowTest {
                 .withConnection(this.server.getConnection())
                 .build();
 
-        Assert.assertTrue(this.receivingWindow.inReceivingWindow(ackFromServer));
+        Assert.assertTrue(this.receivingWindow.inReceivingWindow(ackFromServer, client.getConnection()));
         this.receivingWindow.offer(ackFromServer);
 
         SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
@@ -108,7 +108,7 @@ public class ReceivingWindowTest {
                 .withConnection(this.server.getConnection())
                 .build();
 
-        Assert.assertTrue(this.receivingWindow.inReceivingWindow(packetFromServer));
+        Assert.assertTrue(this.receivingWindow.inReceivingWindow(packetFromServer, client.getConnection()));
         this.receivingWindow.offer(packetFromServer);
 
         SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);

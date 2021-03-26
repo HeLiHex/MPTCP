@@ -8,7 +8,6 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.util.BoundedPriorityBlockingQueue;
 import org.example.util.Util;
 
 import java.util.*;
@@ -17,7 +16,6 @@ import java.util.logging.Logger;
 
 public class ClassicTCP extends Routable implements TCP {
 
-    private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
@@ -32,12 +30,11 @@ public class ClassicTCP extends Routable implements TCP {
 
     private SendingWindow sendingWindow;
 
-
-    private ClassicTCP(int thisReceivingWindowCapacity) {
-        super(new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
+    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets) {
+        super(new SelectiveRepeat(thisReceivingWindowCapacity, PACKET_COMPARATOR, receivedPackets),
                 NOISE_TOLERANCE
         );
-        this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
+        this.receivedPackets = receivedPackets;
         this.payloadsToSend = new ArrayList<>();
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
     }
@@ -104,6 +101,8 @@ public class ClassicTCP extends Routable implements TCP {
         this.setConnection(new Connection(this, node, seqNum, ackNum));
         this.createWindows();
 
+        this.logger.log(Level.INFO, () -> "connection established with client: " + this.getConnection());
+
     }
 
     @Override
@@ -115,7 +114,6 @@ public class ClassicTCP extends Routable implements TCP {
     public Packet receive() {
         return this.receivedPackets.poll();
     }
-
 
     @Override
     public Channel getChannel() {
@@ -178,7 +176,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     private void createWindows() {
         this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, true, this.connection, PACKET_COMPARATOR, this.payloadsToSend);
-        this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.receivedPackets);
+        //this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.receivedPackets);
     }
 
     public SendingWindow getSendingWindow() {
@@ -240,6 +238,18 @@ public class ClassicTCP extends Routable implements TCP {
 
     private void ack(Packet packet) {
         assert packet != null : "Packet is null";
+
+        if (packet.getOrigin() == null){
+            //can't call ack on packet with no origin
+            packet = new PacketBuilder()
+                    .withDestination(this.connection.getConnectedNode())
+                    .withOrigin(this)
+                    .withSequenceNumber(packet.getSequenceNumber())
+                    .withAcknowledgmentNumber(packet.getAcknowledgmentNumber())
+                    .withPayload(packet.getPayload())
+                    .build();
+        }
+
         Packet ack = new PacketBuilder().ackBuild(packet);
         this.route(ack);
     }
@@ -295,14 +305,20 @@ public class ClassicTCP extends Routable implements TCP {
     public static class ClassicTCPBuilder {
 
         private int receivingWindowCapacity = 7;
+        private Queue<Packet> receivedPacketsContainer = new PriorityQueue<>(PACKET_COMPARATOR);
 
         public ClassicTCPBuilder withReceivingWindowCapacity(int receivingWindowCapacity) {
             this.receivingWindowCapacity = receivingWindowCapacity;
             return this;
         }
 
+        public ClassicTCPBuilder withReceivedPacketsContainer(Queue<Packet> receivedPacketsContainer) {
+            this.receivedPacketsContainer = receivedPacketsContainer;
+            return this;
+        }
+
         public ClassicTCP build() {
-            return new ClassicTCP(this.receivingWindowCapacity);
+            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer);
         }
     }
 

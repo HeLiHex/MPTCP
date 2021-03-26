@@ -15,7 +15,7 @@ public abstract class Routable implements NetworkNode {
     private final List<Channel> channels;
     private final Address address;
     private final double noiseTolerance;
-    protected BlockingQueue<Packet> inputBuffer;
+    protected final BlockingQueue<Packet> inputBuffer;
 
     protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance) {
         this.inputBuffer = inputBuffer;
