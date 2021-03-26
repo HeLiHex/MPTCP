@@ -154,7 +154,7 @@ public class MPTCP implements TCP{
     }
 
     @Override
-    public Packet trySend() {
+    public List<Packet> trySend() {
         return null;
     }
 

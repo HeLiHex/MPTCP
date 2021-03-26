@@ -301,17 +301,19 @@ public class ClassicTCP extends Routable implements TCP {
         }
     }
     @Override
-    public Packet trySend() {
-        if (this.sendingWindow == null) return null;
-        if (this.sendingWindow.isQueueEmpty()) return null;
-        if (this.sendingWindow.isWaitingForAck()) {
-            return null;
-        }
+    public List<Packet> trySend() {
+        if (this.sendingWindow == null) return new ArrayList<>(0);
+        if (this.sendingWindow.isQueueEmpty()) return new ArrayList<>(0);
+        if (this.sendingWindow.isWaitingForAck()) return new ArrayList<>(0);
+
+        List<Packet> packetsSent = new ArrayList<>(1);
 
         Packet packetToSend = this.sendingWindow.send();
         assert packetToSend != null;
+
         this.route(packetToSend);
-        return packetToSend;
+        packetsSent.add(packetToSend);
+        return packetsSent;
     }
 
     @Override

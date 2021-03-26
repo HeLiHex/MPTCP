@@ -14,7 +14,7 @@ import java.util.Queue;
 public class TCPSendEvent extends Event {
 
     private final TCP tcp;
-    private Packet packetSent;
+    private List<Packet> packetsSent;
 
 
     public TCPSendEvent(TCP tcp) {
@@ -24,16 +24,20 @@ public class TCPSendEvent extends Event {
 
     @Override
     public void run() {
-        this.packetSent = this.tcp.trySend();
-        if (this.packetSent != null) Statistics.packetSent();
+        this.packetsSent = this.tcp.trySend();
+        for (int i = 0; i < this.packetsSent.size(); i++) {
+            Statistics.packetSent();
+        }
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.packetSent != null) {
+        if (!this.packetsSent.isEmpty()) {
             if (this.tcp.isConnected()) {
                 events.add(new TCPSendEvent(this.tcp));
-                events.add(new TCPRetransmitEventGenerator(this.tcp, this.packetSent));
+                for (Packet packet : this.packetsSent) {
+                    events.add(new TCPRetransmitEventGenerator(this.tcp, packet));
+                }
             }
             List<Channel> channelsUsed = this.tcp.getChannelsUsed();
             for (Channel channel : channelsUsed) {

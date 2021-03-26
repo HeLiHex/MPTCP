@@ -62,7 +62,7 @@ public interface TCP extends Endpoint {
 
     boolean handleIncoming();
 
-    Packet trySend();
+    List<Packet> trySend();
 
     boolean canRetransmit(Packet packet);
 
