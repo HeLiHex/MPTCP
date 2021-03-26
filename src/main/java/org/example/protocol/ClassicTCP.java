@@ -259,24 +259,30 @@ public class ClassicTCP extends Routable implements TCP {
         }
     }
 
+
     private void ack(Packet packet) {
         assert packet != null : "Packet is null";
 
         if (packet.getOrigin() == null){
             //can't call ack on packet with no origin
-            try {
-                packet = new PacketBuilder()
-                        .withDestination(this.getSendingWindow().getConnection().getConnectedNode())
-                        .withOrigin(this)
-                        .withSequenceNumber(packet.getSequenceNumber())
-                        .withAcknowledgmentNumber(packet.getAcknowledgmentNumber())
-                        .withPayload(packet.getPayload())
-                        .build();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
 
+            Endpoint connectedNode;
+            try {
+                connectedNode = this.getSendingWindow().getConnection().getConnectedNode();
+            } catch (IllegalAccessException e) {
+                //should not be able to ack without a SendingWindow
+                return;
+            }
+
+            packet = new PacketBuilder()
+                    .withDestination(connectedNode)
+                    .withOrigin(this)
+                    .withSequenceNumber(packet.getSequenceNumber())
+                    .withAcknowledgmentNumber(packet.getAcknowledgmentNumber())
+                    .withPayload(packet.getPayload())
+                    .build();
+
+        }
         Packet ack = new PacketBuilder().ackBuild(packet);
         this.route(ack);
     }
