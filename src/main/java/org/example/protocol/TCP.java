@@ -62,6 +62,8 @@ public interface TCP extends Endpoint {
 
     boolean handleIncoming();
 
+    Packet trySend();
+
     boolean canRetransmit(Packet packet);
 
     Packet fastRetransmit();

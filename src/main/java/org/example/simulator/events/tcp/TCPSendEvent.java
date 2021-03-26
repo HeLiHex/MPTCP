@@ -23,7 +23,7 @@ public class TCPSendEvent extends Event {
 
     @Override
     public void run() {
-        this.packetSent = ((ClassicTCP) this.tcp).trySend();
+        this.packetSent = this.tcp.trySend();
         if (this.packetSent != null) Statistics.packetSent();
     }
 

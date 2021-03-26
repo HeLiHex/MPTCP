@@ -154,6 +154,11 @@ public class MPTCP implements TCP{
     }
 
     @Override
+    public Packet trySend() {
+        return null;
+    }
+
+    @Override
     public boolean canRetransmit(Packet packet) {
         return false;
     }

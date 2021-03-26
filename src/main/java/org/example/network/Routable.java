@@ -53,7 +53,6 @@ public abstract class Routable implements NetworkNode {
     public List<Channel> getChannelsUsed() {
         List<Channel> used = this.channelsUsed;
         this.channelsUsed = new ArrayList<>(1);
-        System.out.println(used.size());
         return used;
     }
 
