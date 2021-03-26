@@ -17,7 +17,6 @@ public class TCPInputEvent extends Event {
 
     public TCPInputEvent(TCP tcp) {
         super(tcp);
-        if (tcp == null) throw new IllegalArgumentException("given TCP can not be null");
         this.tcp = tcp;
     }
 
