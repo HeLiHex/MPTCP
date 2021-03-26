@@ -5,6 +5,8 @@ import org.example.data.Payload;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 
+import java.util.List;
+
 public interface TCP extends Endpoint {
 
     /**

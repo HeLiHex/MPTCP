@@ -17,12 +17,16 @@ public abstract class Routable implements NetworkNode {
     private final double noiseTolerance;
     protected final BlockingQueue<Packet> inputBuffer;
 
+    private List<Channel> channelsUsed;
+
     protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance, Address address) {
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
         this.address = address;
         this.noiseTolerance = noiseTolerance;
         this.routingTable = new RoutingTable();
+
+        this.channelsUsed = new ArrayList<>(1);
     }
 
     @Override
@@ -37,11 +41,20 @@ public abstract class Routable implements NetworkNode {
         NetworkNode destination = packet.getDestination();
         Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
         nextChannelOnPath.channelPackage(packet);
+
+        this.channelsUsed.add(nextChannelOnPath);
+    }
+
+    public Channel getPath(NetworkNode destination) {
+        return this.routingTable.getPath(this, destination);
     }
 
     @Override
-    public Channel getPath(NetworkNode destination) {
-        return this.routingTable.getPath(this, destination);
+    public List<Channel> getChannelsUsed() {
+        List<Channel> used = this.channelsUsed;
+        this.channelsUsed = new ArrayList<>(1);
+        System.out.println(used.size());
+        return used;
     }
 
     @Override

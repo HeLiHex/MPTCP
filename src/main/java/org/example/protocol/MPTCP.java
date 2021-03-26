@@ -99,7 +99,7 @@ public class MPTCP implements TCP{
     }
 
     @Override
-    public Channel getPath(NetworkNode destination) {
+    public List<Channel> getChannelsUsed() {
         return null;
     }
 

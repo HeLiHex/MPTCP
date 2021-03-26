@@ -6,6 +6,7 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
+import java.util.List;
 import java.util.Queue;
 
 public class RunNetworkNodeEvent extends Event {
@@ -26,7 +27,9 @@ public class RunNetworkNodeEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        Channel channel = this.node.getPath(this.packetDestination);
+        List<Channel> channelsUsed = this.node.getChannelsUsed();
+        assert channelsUsed.size() == 1 : "Multiple channels used in one NetworkNodeEvent";
+        Channel channel = channelsUsed.get(0);
         events.add(new ChannelEvent(channel));
     }
 

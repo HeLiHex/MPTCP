@@ -87,7 +87,9 @@ public interface NetworkNode {
      */
     int inputBufferSize();
 
-    Channel getPath(NetworkNode destination);
+    List<Channel> getChannelsUsed();
+
+    //Channel getPath(NetworkNode destination);
 
     void run();
 
