@@ -11,15 +11,15 @@ import java.util.Queue;
 public class TCPConnectEvent extends Event {
 
     private final TCP client;
-    private final Endpoint host;
+    private final TCP host;
 
-    public TCPConnectEvent(int delay, TCP client, Endpoint host) {
+    public TCPConnectEvent(int delay, TCP client, TCP host) {
         super(delay);
         this.client = client;
         this.host = host;
     }
 
-    public TCPConnectEvent(TCP client, Endpoint host) {
+    public TCPConnectEvent(TCP client, TCP host) {
         super();
         this.client = client;
         this.host = host;

@@ -34,7 +34,7 @@ public class EventTest {
         this.host = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
     }
 
-    public void connect(TCP linkedClient, Endpoint linkedServer){
+    public void connect(TCP linkedClient, TCP linkedServer){
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(0, linkedClient, linkedServer));
         eventHandler.run();

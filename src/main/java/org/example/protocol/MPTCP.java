@@ -19,8 +19,6 @@ public class MPTCP implements TCP{
     private final TCP[] subflows;
     private final Address address;
 
-
-
     public MPTCP(int numberOfSubflows, int... receivingWindowCapacities) {
         if (receivingWindowCapacities.length != numberOfSubflows) throw new IllegalArgumentException("the number of receiving capacities does not match the given number of subflows");
         this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
@@ -45,7 +43,9 @@ public class MPTCP implements TCP{
 
     @Override
     public void updateRoutingTable() {
-
+        for (TCP subflow : this.subflows) {
+            subflow.updateRoutingTable();
+        }
     }
 
     @Override
@@ -63,9 +63,21 @@ public class MPTCP implements TCP{
         return null;
     }
 
+    public Endpoint getEndpointToAddChannelTo(){
+        for (Endpoint endpoint : this.subflows) {
+            if (endpoint.getChannels().isEmpty()) return endpoint;
+        }
+        throw new IllegalStateException("no endpoints available for channel adding");
+    }
+
     @Override
     public void addChannel(NetworkNode node) {
-
+        for (TCP subflow : this.subflows){
+            if (subflow.getChannels().isEmpty()){
+                subflow.addChannel(node);
+                return;
+            }
+        }
     }
 
     @Override
@@ -98,19 +110,27 @@ public class MPTCP implements TCP{
         return 0;
     }
 
-    @Override
-    public List<Channel> getChannelsUsed() {
-        return null;
-    }
 
     @Override
     public void run() {
 
     }
 
-    @Override
-    public void connect(Endpoint host) {
+    public TCP[] getSubflows(){
+        return this.subflows;
+    }
 
+    @Override
+    public void connect(TCP host) {
+        if (host instanceof MPTCP){
+            MPTCP mptcpHost = (MPTCP) host;
+            TCP[] hostSubflows = mptcpHost.getSubflows();
+            int numberOfConnections = Math.min(this.subflows.length, hostSubflows.length);
+            for (int i = 0; i < numberOfConnections; i++) {
+                if (subflows[i].isConnected()) continue;
+                this.subflows[i].connect(hostSubflows[i]);
+            }
+        }
     }
 
     @Override
@@ -120,22 +140,37 @@ public class MPTCP implements TCP{
 
     @Override
     public void send(Payload payload) {
-
+        payloadsToSend.add(payload);
     }
 
     @Override
     public Packet receive() {
-        return null;
+        return this.receivedPackets.poll();
     }
 
     @Override
     public boolean isConnected() {
-        return false;
+        for (TCP subflow : this.subflows) {
+            if (!subflow.isConnected()) return false;
+        }
+        return true;
     }
+
 
     @Override
     public Channel getChannel() {
         return null;
+    }
+
+    @Override
+    public List<Channel> getChannelsUsed() {
+        List<Channel> usedChannels = new ArrayList<>(this.subflows.length);
+        for (TCP subflow : this.subflows) {
+            for (Channel channel : subflow.getChannelsUsed()) {
+                usedChannels.add(channel);
+            }
+        }
+        return usedChannels;
     }
 
     @Override
@@ -150,12 +185,21 @@ public class MPTCP implements TCP{
 
     @Override
     public boolean handleIncoming() {
+        for (TCP subflow : this.subflows) {
+            subflow.handleIncoming();
+        }
         return false;
     }
 
     @Override
     public List<Packet> trySend() {
-        return null;
+        List<Packet> packetsSent = new ArrayList<>();
+        for (TCP subflow : this.subflows) {
+            for (Packet packet : subflow.trySend()) {
+                packetsSent.add(packet);
+            }
+        }
+        return packetsSent;
     }
 
     @Override

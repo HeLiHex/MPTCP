@@ -13,7 +13,6 @@ import java.util.Queue;
 public class TCPInputEvent extends Event {
 
     private final TCP tcp;
-    private boolean ackSent;
     private Packet packetToFastRetransmit;
 
     public TCPInputEvent(TCP tcp) {
@@ -23,7 +22,7 @@ public class TCPInputEvent extends Event {
 
     @Override
     public void run() {
-        this.ackSent = this.tcp.handleIncoming();
+        this.tcp.handleIncoming();
         this.packetToFastRetransmit = this.tcp.fastRetransmit();
     }
 

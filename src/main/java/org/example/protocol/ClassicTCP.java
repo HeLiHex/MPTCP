@@ -45,7 +45,7 @@ public class ClassicTCP extends Routable implements TCP {
 
 
     @Override
-    public void connect(Endpoint host) {
+    public void connect(TCP host) {
         this.initialSequenceNumber = Util.getNextRandomInt(100);
         Packet syn = new PacketBuilder()
                 .withDestination(host)

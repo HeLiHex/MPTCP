@@ -18,7 +18,7 @@ public interface TCP extends Endpoint {
      *
      * @param host to connect to
      */
-    void connect(Endpoint host);
+    void connect(TCP host);
 
     /**
      * A method that handles incoming connections
@@ -71,6 +71,7 @@ public interface TCP extends Endpoint {
     boolean seriousLossDetected();
 
     int getSendingWindowCapacity();
+
 
 
 }

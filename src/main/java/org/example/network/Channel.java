@@ -58,7 +58,7 @@ public class Channel implements Comparable<Channel> {
 
     public void channelPackage(Packet packet) {
         if (!this.line.offer(packet)) {
-            //this.logger.log(Level.INFO, () -> packet.toString() + " lost due to channel capacity");
+            this.logger.log(Level.INFO, () -> packet.toString() + " lost due to channel capacity");
         }
     }
 
@@ -84,14 +84,14 @@ public class Channel implements Comparable<Channel> {
         Packet packet = this.line.poll();
         if (lossy()) {
             Statistics.packetLost();
-            //this.logger.log(Level.INFO, () -> packet.toString() + " lost due to noise");
+            this.logger.log(Level.INFO, () -> packet.toString() + " lost due to noise");
             return false;
         }
 
         boolean sendSuccess = this.destination.enqueueInputBuffer(packet);
         if (!sendSuccess) {
             Statistics.packetDropped();
-            //this.logger.log(Level.INFO, () -> packet.toString() + " was not delivered to " + this.destination);
+            this.logger.log(Level.INFO, () -> packet.toString() + " was not delivered to " + this.destination);
             return false;
         }
         return true;

@@ -3,7 +3,6 @@ package org.example.simulator;
 import org.example.data.Message;
 import org.example.network.Routable;
 import org.example.network.Router;
-import org.example.network.interfaces.Endpoint;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
@@ -31,7 +30,7 @@ public class StatisticsTest {
         Assert.assertTrue(statistics.toString().length() > 0);
     }
 
-    private void connect(EventHandler eventHandler, TCP client, Endpoint endpoint) {
+    private void connect(EventHandler eventHandler, TCP client, TCP endpoint) {
         eventHandler.addEvent(new TCPConnectEvent(client, endpoint));
         eventHandler.run();
 

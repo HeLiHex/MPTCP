@@ -4,6 +4,7 @@ import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.NetworkNode;
+import org.example.protocol.MPTCP;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +74,12 @@ public abstract class Routable implements NetworkNode {
             boolean thisContainsNode = channel.getDestination().equals(node);
             if (thisContainsNode) return;
         }
+
+        if (node instanceof MPTCP){
+            MPTCP mptcp = (MPTCP) node;
+            node = mptcp.getEndpointToAddChannelTo();
+        }
+
         Channel channel = new Channel(this, node, this.noiseTolerance);
         this.channels.add(channel);
         node.addChannel(this);
