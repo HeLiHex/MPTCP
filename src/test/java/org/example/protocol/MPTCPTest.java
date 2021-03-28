@@ -383,9 +383,9 @@ public class MPTCPTest {
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest(){
         MPTCP client = new MPTCP(3, 7, 7, 7);
-        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(1).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(1).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(1).withAddress(new SimpleAddress("C")).build();
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(1.5).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(1.5).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(1.5).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 7, 7, 7);
 
         //path one
@@ -418,7 +418,7 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
 
-        int numPacketsToSend = 100;
+        int numPacketsToSend = 1000;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);

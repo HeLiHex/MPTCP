@@ -9,6 +9,8 @@ import org.example.protocol.MPTCP;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class Routable implements NetworkNode {
 
@@ -92,7 +94,12 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        return this.inputBuffer.offer(packet);
+        if (!this.inputBuffer.offer(packet)){
+            Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " lost due to capacity");
+            return false;
+        }
+        return true;
+        //return this.inputBuffer.offer(packet);
     }
 
     @Override
