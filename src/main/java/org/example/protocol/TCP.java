@@ -72,6 +72,8 @@ public interface TCP extends Endpoint {
 
     int getSendingWindowCapacity();
 
+    TCP getMainFlow();
+
 
 
 }

@@ -37,6 +37,11 @@ public class MPTCP implements TCP{
     }
 
     @Override
+    public TCP getMainFlow() {
+        return this;
+    }
+
+    @Override
     public boolean outputBufferIsEmpty() {
         return this.payloadsToSend.isEmpty();
     }

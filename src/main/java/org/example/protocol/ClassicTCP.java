@@ -32,7 +32,9 @@ public class ClassicTCP extends Routable implements TCP {
 
     private SendingWindow sendingWindow;
 
-    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets, List<Payload> payloadsToSend, boolean isReno, Address address) {
+    private final TCP mainFlow;
+
+    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets, List<Payload> payloadsToSend, boolean isReno, Address address, TCP mainFlow) {
         super(new SelectiveRepeat(thisReceivingWindowCapacity, PACKET_COMPARATOR, receivedPackets),
                 NOISE_TOLERANCE,
                 address
@@ -41,6 +43,12 @@ public class ClassicTCP extends Routable implements TCP {
         this.payloadsToSend = payloadsToSend;
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
         this.isReno = isReno;
+
+        if (mainFlow == null){
+            this.mainFlow = this;
+        }else{
+            this.mainFlow = mainFlow;
+        }
     }
 
 
@@ -186,6 +194,11 @@ public class ClassicTCP extends Routable implements TCP {
             //todo - is one correct?
             return 0;
         }
+    }
+
+    @Override
+    public TCP getMainFlow() {
+        return this.mainFlow;
     }
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {
@@ -340,6 +353,7 @@ public class ClassicTCP extends Routable implements TCP {
         private List<Payload> payloadsToSend = new ArrayList<>();
         private boolean isReno = true;
         private Address address = new UUIDAddress();
+        private TCP mainflow = null;
 
         public ClassicTCPBuilder withReceivingWindowCapacity(int receivingWindowCapacity) {
             this.receivingWindowCapacity = receivingWindowCapacity;
@@ -371,8 +385,13 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
+        public ClassicTCPBuilder withMainFlow(TCP tcp){
+            this.mainflow = tcp;
+            return this;
+        }
+
         public ClassicTCP build() {
-            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer, this.payloadsToSend, this.isReno, this.address);
+            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer, this.payloadsToSend, this.isReno, this.address, this.mainflow);
         }
     }
 
