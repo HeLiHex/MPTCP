@@ -53,16 +53,11 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         }
         this.dupAckCount = 0;
 
-        boolean isValidAckIndex = true;//ackIndex <= (this.getWindowCapacity() + 1) * 4;
-        System.out.println("valid ack: " + isValidAckIndex);
-        if (isValidAckIndex) {
-            for (int i = 0; i <= ackIndex; i++) {
-                if (this.isEmpty()) break;
-                Packet packetPolled = this.poll();
-                System.out.println("packet acked: " + packetPolled);
-                this.increase();
-                this.seriousLossDetected = false;
-            }
+        for (int i = 0; i <= ackIndex; i++) {
+            if (this.isEmpty()) break;
+            this.poll();
+            this.increase();
+            this.seriousLossDetected = false;
         }
         this.connection.update(ack);
     }

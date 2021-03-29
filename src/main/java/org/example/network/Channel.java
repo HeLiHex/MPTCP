@@ -90,8 +90,8 @@ public class Channel implements Comparable<Channel> {
 
         boolean sendSuccess = this.destination.enqueueInputBuffer(packet);
         if (!sendSuccess) {
-            Statistics.packetDropped();
             this.logger.log(Level.INFO, () -> packet.toString() + " was not delivered to " + this.destination);
+            Statistics.packetDropped();
             return false;
         }
         return true;

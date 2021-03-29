@@ -10,6 +10,7 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
+import org.example.simulator.Statistics;
 import org.example.util.Util;
 
 import java.util.*;

@@ -20,4 +20,16 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implem
     public int getWindowCapacity() {
         return this.bound();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Packet packet : this) {
+            stringBuilder.append("[");
+            stringBuilder.append(packet);
+            stringBuilder.append("]");
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
+    }
 }

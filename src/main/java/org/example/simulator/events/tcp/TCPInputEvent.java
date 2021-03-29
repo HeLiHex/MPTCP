@@ -3,6 +3,7 @@ package org.example.simulator.events.tcp;
 import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.protocol.TCP;
+import org.example.simulator.Statistics;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.RouteEvent;
@@ -30,6 +31,7 @@ public class TCPInputEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
         if (this.packetToFastRetransmit != null) {
             events.add(new RouteEvent(this.tcp, this.packetToFastRetransmit));
+            Statistics.packetFastRetransmit();
         }
         List<Channel> channelsUsed = this.tcp.getChannelsUsed();
         for (Channel channel : channelsUsed) {

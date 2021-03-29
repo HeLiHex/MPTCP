@@ -19,7 +19,7 @@ public class Statistics {
     private static int numberOfPacketsRetransmitted; //total number of packets retransmitted
     private static int numberOfPacketsLost; //total number of packets lost
     private static int numberOfPacketsDropped; // total number of packets dropped
-    private static int numberOfPacketsAckedMoreThanOnce; // total number of packets dropped
+    private static int numberOfPacketsFastRetransmitted; // total number of packets dropped
     private static int numberOfPacketsReceived; //total number of packets received. Should be the same as numberOfPackets(!?)
 
     public static void reset() {
@@ -28,7 +28,7 @@ public class Statistics {
         numberOfPacketsRetransmitted = 0;
         numberOfPacketsLost = 0;
         numberOfPacketsDropped = 0;
-        numberOfPacketsAckedMoreThanOnce = 0;
+        numberOfPacketsFastRetransmitted = 0;
         numberOfPacketsReceived = 0;
     }
 
@@ -40,6 +40,11 @@ public class Statistics {
     public static void packetRetransmit() {
         numberOfPacketsSent++;
         numberOfPacketsRetransmitted++;
+    }
+
+    public static void packetFastRetransmit() {
+        numberOfPacketsSent++;
+        numberOfPacketsFastRetransmitted++;
     }
 
     public static void packetLost() {
@@ -79,8 +84,8 @@ public class Statistics {
         return numberOfPacketsDropped;
     }
 
-    public static int getNumberOfPacketsAckedMoreThanOnce() {
-        return numberOfPacketsAckedMoreThanOnce;
+    public static int getNumberOfPacketsFastRetransmitted() {
+        return numberOfPacketsFastRetransmitted;
     }
 
     public static int getNumberOfPacketsReceived() {
@@ -133,8 +138,8 @@ public class Statistics {
 
         sb.append("    ");
         sb.append("    ");
-        sb.append("Number of packets acked more than once: ");
-        sb.append(numberOfPacketsAckedMoreThanOnce);
+        sb.append("Number of packets fast retransmitted: ");
+        sb.append(numberOfPacketsFastRetransmitted);
         sb.append("\n");
 
         sb.append("    ");
