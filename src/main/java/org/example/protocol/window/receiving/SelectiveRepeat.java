@@ -9,14 +9,15 @@ import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.Statistics;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Queue;
 
 public class SelectiveRepeat extends Window implements ReceivingWindow {
 
-    private final Queue<Packet> received;
+    private final List<Packet> received;
     private Packet ackThis;
 
-    public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, Queue<Packet> receivedContainer) {
+    public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, List<Packet> receivedContainer) {
         super(windowSize, comparator);
         this.received = receivedContainer;
         this.ackThis = new PacketBuilder().build();
@@ -24,7 +25,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     private void receive(Packet packet) {
         if (this.received.contains(packet)) return;
-        boolean added = this.received.offer(packet);
+        boolean added = this.received.add(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
         Statistics.packetReceived();
     }

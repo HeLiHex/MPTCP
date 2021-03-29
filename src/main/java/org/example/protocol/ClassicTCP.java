@@ -10,7 +10,6 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.simulator.Statistics;
 import org.example.util.Util;
 
 import java.util.*;
@@ -22,7 +21,7 @@ public class ClassicTCP extends Routable implements TCP {
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
-    private final Queue<Packet> receivedPackets;
+    private final List<Packet> receivedPackets;
     private final List<Payload> payloadsToSend;
     private final int thisReceivingWindowCapacity;
     private final boolean isReno;
@@ -35,7 +34,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     private final TCP mainFlow;
 
-    private ClassicTCP(int thisReceivingWindowCapacity, Queue<Packet> receivedPackets, List<Payload> payloadsToSend, boolean isReno, Address address, TCP mainFlow) {
+    private ClassicTCP(int thisReceivingWindowCapacity, List<Packet> receivedPackets, List<Payload> payloadsToSend, boolean isReno, Address address, TCP mainFlow) {
         super(new SelectiveRepeat(thisReceivingWindowCapacity, PACKET_COMPARATOR, receivedPackets),
                 NOISE_TOLERANCE,
                 address
@@ -123,7 +122,8 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public Packet receive() {
-        return this.receivedPackets.poll();
+        if (this.receivedPackets.isEmpty()) return null;
+        return this.receivedPackets.remove(0);
     }
 
     @Override
@@ -355,7 +355,7 @@ public class ClassicTCP extends Routable implements TCP {
     public static class ClassicTCPBuilder {
 
         private int receivingWindowCapacity = 7;
-        private Queue<Packet> receivedPacketsContainer = new PriorityQueue<>(PACKET_COMPARATOR);
+        private List<Packet> receivedPacketsContainer = new ArrayList<>();
         private List<Payload> payloadsToSend = new ArrayList<>();
         private boolean isReno = true;
         private Address address = new UUIDAddress();
@@ -366,7 +366,7 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
-        public ClassicTCPBuilder withReceivedPacketsContainer(Queue<Packet> receivedPacketsContainer) {
+        public ClassicTCPBuilder withReceivedPacketsContainer(List<Packet> receivedPacketsContainer) {
             this.receivedPacketsContainer = receivedPacketsContainer;
             return this;
         }

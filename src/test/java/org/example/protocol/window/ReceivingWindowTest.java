@@ -23,12 +23,12 @@ public class ReceivingWindowTest {
     private ClassicTCP client;
     private ClassicTCP server;
     private ReceivingWindow receivingWindow;
-    private Queue<Packet> receivedPackets;
+    private List<Packet> receivedPackets;
     private List<Payload> payloadsToSend;
 
     @Before
     public void setup(){
-        this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
+        this.receivedPackets = new ArrayList<>();
         this.payloadsToSend = new ArrayList<>();
         this.client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         this.server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
@@ -114,7 +114,7 @@ public class ReceivingWindowTest {
         SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend);
         Assert.assertTrue(this.receivingWindow.receive(sendingWindow));
 
-        Assert.assertEquals(packetFromServer, this.receivedPackets.poll());
+        Assert.assertEquals(packetFromServer, this.receivedPackets.remove(0));
     }
 
 

@@ -14,14 +14,14 @@ import java.util.*;
 public class MPTCP implements TCP{
 
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
-    private final Queue<Packet> receivedPackets;
+    private final List<Packet> receivedPackets;
     private final List<Payload> payloadsToSend;
     private final TCP[] subflows;
     private final Address address;
 
     public MPTCP(int numberOfSubflows, int... receivingWindowCapacities) {
         if (receivingWindowCapacities.length != numberOfSubflows) throw new IllegalArgumentException("the number of receiving capacities does not match the given number of subflows");
-        this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
+        this.receivedPackets = new ArrayList<>();
         this.payloadsToSend = new ArrayList<>();
         this.subflows = new TCP[numberOfSubflows];
         this.address = new UUIDAddress();
@@ -150,7 +150,8 @@ public class MPTCP implements TCP{
 
     @Override
     public Packet receive() {
-        return this.receivedPackets.poll();
+        if (this.receivedPackets.isEmpty()) return null;
+        return this.receivedPackets.remove(0);
     }
 
     @Override
