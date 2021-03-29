@@ -33,23 +33,26 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     public boolean receive(SendingWindow sendingWindow) {
         if (this.isEmpty()) return false;
 
-        Packet packet = this.poll();
-
-        if (packet.hasAllFlags(Flag.ACK)) {
-            sendingWindow.ackReceived(packet);
+        if (this.peek().hasAllFlags(Flag.ACK)) {
+            sendingWindow.ackReceived(this.peek());
+            this.poll();
             return false;
         }
 
         Connection connection = sendingWindow.getConnection();
 
-        if (this.inReceivingWindow(packet, connection)) {
-            if (receivingPacketIndex(packet, connection) == 0) {
-                connection.update(packet);
-                this.ackThis = packet;
-                this.receive(packet);
-                return true;
+        if (this.inReceivingWindow(this.peek(), connection)) {
+            while (receivingPacketIndex(this.peek(), connection) == 0){
+                connection.update(this.peek());
+                this.ackThis = this.peek();
+                this.receive(this.peek());
+                System.out.println(this.peek() + " received");
+                System.out.println(this);
+                System.out.println(this.size());
+                this.remove();
+                if (this.isEmpty()) return true;
             }
-            this.receive(packet);
+            System.out.println(this);
             return true; // true so that duplicate AKCs are sent
         }
         //false, because packets outside the window has already ben acked
@@ -78,5 +81,32 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     public boolean inReceivingWindow(Packet packet, Connection connection) {
         int packetIndex = receivingPacketIndex(packet, connection);
         return inWindow(packetIndex);
+    }
+
+    @Override
+    public boolean offer(Packet packet) {
+        System.out.println("packet offered: " + packet);
+        if (this.remainingCapacity() == 0){
+            System.out.println("receiver window full");
+            System.out.println(this.size());
+            System.out.println(this);
+        }
+        if (this.contains(packet)){
+            System.out.println("contains: " + packet);
+            return false;
+        }
+        return super.offer(packet);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Packet packet : this) {
+            stringBuilder.append("[");
+            stringBuilder.append(packet);
+            stringBuilder.append("]");
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
     }
 }

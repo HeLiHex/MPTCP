@@ -217,9 +217,14 @@ public class ClassicTCP extends Routable implements TCP {
 
         Connection conn = this.getConnection();
         if (packet.hasAllFlags(Flag.ACK)) return true;
-        return packet.getOrigin().equals(conn.getConnectedNode())
-                && packet.getDestination().equals(conn.getConnectionSource()
-        );
+
+        try {
+            return packet.getOrigin().equals(conn.getConnectedNode())
+                    && packet.getDestination().equals(conn.getConnectionSource())
+                    && this.getReceivingWindow().inReceivingWindow(packet, conn);
+        } catch (IllegalAccessException e) {
+            return false;
+        }
     }
 
     @Override

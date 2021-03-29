@@ -49,14 +49,14 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         boolean dupAck = ackIndex == -1;
         if (dupAck) {
             this.dupAckCount++;
-            return;
         }
-        this.dupAckCount = 0;
 
-        boolean isValidAckIndex = ackIndex < this.getWindowCapacity();
+        boolean isValidAckIndex = true;//ackIndex < this.getWindowCapacity();
+        System.out.println("valid ack: " + isValidAckIndex);
         if (isValidAckIndex) {
             for (int i = 0; i <= ackIndex; i++) {
-                this.poll();
+                Packet packetPolled = this.poll();
+                System.out.println("packet acked: " + packetPolled);
                 this.increase();
                 this.seriousLossDetected = false;
             }
@@ -73,6 +73,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
                 .withSequenceNumber(nextPacketSeqNum)
                 .build();
 
+        if (this.contains(packet)) throw new IllegalStateException("can't add same packet twice");
         if (super.offer(packet)) {
             return packet;
         }
