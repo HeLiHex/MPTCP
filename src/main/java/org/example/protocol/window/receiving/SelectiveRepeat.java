@@ -10,7 +10,6 @@ import org.example.simulator.Statistics;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Queue;
 
 public class SelectiveRepeat extends Window implements ReceivingWindow {
 

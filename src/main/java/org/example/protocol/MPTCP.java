@@ -13,7 +13,6 @@ import java.util.*;
 
 public class MPTCP implements TCP{
 
-    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final List<Packet> receivedPackets;
     private final List<Payload> payloadsToSend;
     private final TCP[] subflows;
@@ -186,6 +185,11 @@ public class MPTCP implements TCP{
 
     @Override
     public long getRTO() {
+        return 0;
+    }
+
+    @Override
+    public long afterConnectSendDelay() {
         return 0;
     }
 

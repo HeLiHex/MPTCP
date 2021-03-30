@@ -30,6 +30,8 @@ public class ClassicTCP extends Routable implements TCP {
     private int initialSequenceNumber;
     private long rtt;
 
+    private long afterConnectSendDelay = 100000;
+
     private SendingWindow sendingWindow;
 
     private final TCP mainFlow;
@@ -170,6 +172,13 @@ public class ClassicTCP extends Routable implements TCP {
     @Override
     public long getRTO() {
         return 3 * this.rtt;
+    }
+
+    @Override
+    public long afterConnectSendDelay() {
+        long delay = this.afterConnectSendDelay;
+        this.afterConnectSendDelay = 0;
+        return delay;
     }
 
     @Override

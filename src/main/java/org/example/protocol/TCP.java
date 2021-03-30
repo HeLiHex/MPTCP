@@ -60,6 +60,8 @@ public interface TCP extends Endpoint {
 
     long getRTO();
 
+    long afterConnectSendDelay();
+
     boolean handleIncoming();
 
     List<Packet> trySend();

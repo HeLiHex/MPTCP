@@ -18,7 +18,7 @@ public class TCPSendEvent extends Event {
 
 
     public TCPSendEvent(TCP tcp) {
-        super();
+        super(tcp.afterConnectSendDelay());
         this.tcp = tcp;
     }
 

@@ -19,7 +19,7 @@ public interface Payload {
     String toString();
 
     /**
-     * A method to check if two object is equal or not
+     * A method to check if two object are equal or not
      *
      * @param obj to be checked against
      * @return true if this is considered equal to given object
