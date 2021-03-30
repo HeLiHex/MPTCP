@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class ClassicTCP extends Routable implements TCP {
 
     private static final double NOISE_TOLERANCE = 100.0;
-    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
+    private static final Comparator<Packet> SENDING_WINDOW_PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
     private final List<Packet> receivedPackets;
     private final List<Pair<Integer, Payload>> payloadsToSend;
@@ -37,11 +37,14 @@ public class ClassicTCP extends Routable implements TCP {
 
     private final TCP mainFlow;
 
-    private ClassicTCP(int thisReceivingWindowCapacity, List<Packet> receivedPackets, List<Pair<Integer, Payload>> payloadsToSend, boolean isReno, Address address, TCP mainFlow) {
-        super(new SelectiveRepeat(thisReceivingWindowCapacity, PACKET_COMPARATOR, receivedPackets),
-                NOISE_TOLERANCE,
-                address
-        );
+    private ClassicTCP(int thisReceivingWindowCapacity,
+                       List<Packet> receivedPackets,
+                       List<Pair<Integer, Payload>> payloadsToSend,
+                       boolean isReno,
+                       Address address,
+                       TCP mainFlow,
+                       ReceivingWindow receivingWindow) {
+        super(receivingWindow, NOISE_TOLERANCE, address);
         this.receivedPackets = receivedPackets;
         this.payloadsToSend = payloadsToSend;
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
@@ -125,7 +128,7 @@ public class ClassicTCP extends Routable implements TCP {
             return;
         }
         int indexOfLastAdded = this.payloadsToSend.get(this.payloadsToSend.size() - 1).getValue0();
-        this.payloadsToSend.add(Pair.with(indexOfLastAdded, payload));
+        this.payloadsToSend.add(Pair.with(indexOfLastAdded + 1, payload));
 
     }
 
@@ -168,7 +171,7 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     private void setConnection(Connection connection) {
-        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, this.isReno, connection, PACKET_COMPARATOR, this.payloadsToSend);
+        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, this.isReno, connection, SENDING_WINDOW_PACKET_COMPARATOR, this.payloadsToSend);
     }
 
     @Override
@@ -217,6 +220,7 @@ public class ClassicTCP extends Routable implements TCP {
     public TCP getMainFlow() {
         return this.mainFlow;
     }
+
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {
         if (this.sendingWindow != null) return this.sendingWindow;
@@ -326,7 +330,11 @@ public class ClassicTCP extends Routable implements TCP {
             ReceivingWindow receivingWindow = this.getReceivingWindow();
             boolean packetReceived = receivingWindow.receive(this.getSendingWindow());
             if (packetReceived && receivingWindow.shouldAck()) {
-                this.ack(receivingWindow.ackThis());
+                try{
+                    this.ack(receivingWindow.ackThis());
+                }catch (IllegalArgumentException e){
+                    return false;
+                }
                 return true;
             }
             //ACK is received and nothing more should be done
@@ -376,6 +384,7 @@ public class ClassicTCP extends Routable implements TCP {
         private boolean isReno = true;
         private Address address = new UUIDAddress();
         private TCP mainflow = null;
+        private ReceivingWindow receivingWindow = new SelectiveRepeat(this.receivingWindowCapacity, Comparator.comparingInt(Packet::getSequenceNumber), this.receivedPacketsContainer);
 
         public ClassicTCPBuilder withReceivingWindowCapacity(int receivingWindowCapacity) {
             this.receivingWindowCapacity = receivingWindowCapacity;
@@ -412,8 +421,19 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
+        public ClassicTCPBuilder withReceivingWindow(ReceivingWindow receivingWindow){
+            this.receivingWindow = receivingWindow;
+            return this;
+        }
+
         public ClassicTCP build() {
-            return new ClassicTCP(this.receivingWindowCapacity, this.receivedPacketsContainer, this.payloadsToSend, this.isReno, this.address, this.mainflow);
+            return new ClassicTCP(this.receivingWindowCapacity,
+                    this.receivedPacketsContainer,
+                    this.payloadsToSend,
+                    this.isReno,
+                    this.address,
+                    this.mainflow,
+                    this.receivingWindow);
         }
     }
 

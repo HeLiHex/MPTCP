@@ -12,6 +12,7 @@ public class PacketBuilder {
     private Endpoint origin = null;
     private List<Flag> flags = new ArrayList<>();
     private Payload payload = null;
+    private int index = 0;
 
     private int sequenceNumber = -1;
     private int acknowledgmentNumber = -1;
@@ -20,7 +21,7 @@ public class PacketBuilder {
         if (!this.hasFlag(Flag.ACK)) {
             this.acknowledgmentNumber = -1;
         }
-        return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
+        return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber, this.index);
     }
 
     public Packet ackBuild(Packet packetToAck) {
@@ -33,7 +34,7 @@ public class PacketBuilder {
         this.withPayload(null);
         this.withAcknowledgmentNumber(packetToAck.getSequenceNumber() + 1);
         this.withSequenceNumber(packetToAck.getSequenceNumber());
-        return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber);
+        return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber, this.index);
     }
 
     public PacketBuilder withFlags(Flag... flags) {
@@ -74,6 +75,13 @@ public class PacketBuilder {
         this.withDestination(connection.getConnectedNode());
         return this;
     }
+
+    public PacketBuilder withIndex(int index) {
+        this.index = index;
+        return this;
+    }
+
+
 
     public boolean hasFlag(Flag... flags) {
         boolean hasFlag = true;

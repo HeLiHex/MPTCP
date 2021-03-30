@@ -21,12 +21,12 @@ public class SendingWindowTest {
     private EventHandler eventHandler;
 
     @Rule
-    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
+    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Before
     public void setup() throws IllegalAccessException {
-        this.client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).build();
-        this.server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).build();
+        this.client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).setTahoe().build();
+        this.server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).setTahoe().build();
         this.connect(client, server);
 
         this.sendingWindow = this.client.getSendingWindow();

@@ -11,10 +11,13 @@ import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 public class ReceivingWindowTest {
@@ -26,6 +29,10 @@ public class ReceivingWindowTest {
     private ReceivingWindow receivingWindow;
     private List<Packet> receivedPackets;
     private List<Pair<Integer, Payload>> payloadsToSend;
+
+
+    @Rule
+    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Before
     public void setup(){

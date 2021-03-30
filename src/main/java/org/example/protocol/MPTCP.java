@@ -8,29 +8,37 @@ import org.example.network.address.SimpleAddress;
 import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
+import org.example.protocol.window.receiving.ReceivingWindow;
+import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.javatuples.Pair;
 
 import java.util.*;
 
 public class MPTCP implements TCP{
 
+    private static final Comparator<Packet> PACKET_INDEX_COMPARATOR = Comparator.comparingInt(Packet::getIndex);
     private final List<Packet> receivedPackets;
     private final List<Pair<Integer, Payload>> payloadsToSend;
     private final TCP[] subflows;
     private final Address address;
+    private final ReceivingWindow receivingWindow;
 
-    public MPTCP(int numberOfSubflows, int... receivingWindowCapacities) {
-        if (receivingWindowCapacities.length != numberOfSubflows) throw new IllegalArgumentException("the number of receiving capacities does not match the given number of subflows");
+    public MPTCP(int numberOfSubflows, int receivingWindowCapacity) {
+        //if (receivingWindowCapacities.length != numberOfSubflows) throw new IllegalArgumentException("the number of receiving capacities does not match the given number of subflows");
         this.receivedPackets = new ArrayList<>();
         this.payloadsToSend = new ArrayList<>();
         this.subflows = new TCP[numberOfSubflows];
         this.address = new UUIDAddress();
+        this.receivingWindow = new SelectiveRepeat(receivingWindowCapacity, PACKET_INDEX_COMPARATOR, this.receivedPackets);
+
         for (int i = 0; i < numberOfSubflows; i++) {
             TCP tcp = new ClassicTCP.ClassicTCPBuilder()
-                    .withReceivingWindowCapacity(receivingWindowCapacities[i])
+                    .withReceivingWindowCapacity(receivingWindowCapacity/(2+numberOfSubflows))
                     .withAddress(new SimpleAddress("Subflow " + i + " " + this.address))
                     .withReceivedPacketsContainer(this.receivedPackets)
                     .withPayloadsToSend(this.payloadsToSend)
+                    .withReceivingWindow(this.receivingWindow)
+                    .withMainFlow(this)
                     .build();
             this.subflows[i] = tcp;
         }
@@ -150,11 +158,12 @@ public class MPTCP implements TCP{
             return;
         }
         int indexOfLastAdded = this.payloadsToSend.get(this.payloadsToSend.size() - 1).getValue0();
-        this.payloadsToSend.add(Pair.with(indexOfLastAdded, payload));
+        this.payloadsToSend.add(Pair.with(indexOfLastAdded + 1, payload));
     }
 
     @Override
     public Packet receive() {
+        System.out.println(this.receivingWindow);
         if (this.receivedPackets.isEmpty()) return null;
         return this.receivedPackets.remove(0);
     }
@@ -203,7 +212,11 @@ public class MPTCP implements TCP{
     public boolean handleIncoming() {
         System.out.println("incoming");
         for (TCP subflow : this.subflows) {
-            subflow.handleIncoming();
+            try{
+                subflow.handleIncoming();
+            }catch (IllegalArgumentException e){
+                continue;
+            }
         }
         return false;
     }

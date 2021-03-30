@@ -14,18 +14,20 @@ public class Packet {
     private final Endpoint origin;
     private final List<Flag> flags;
     private final Payload payload;
+    private final int index;
 
-    private int sequenceNumber;
+    private final int sequenceNumber;
     private final int acknowledgmentNumber;
 
 
-    protected Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber) {
+    protected Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber, int index) {
         this.logger = Logger.getLogger(this.getClass().getName());
 
         this.destination = destination;
         this.origin = origin;
         this.flags = flags;
         this.payload = payload;
+        this.index = index;
 
         this.sequenceNumber = sequenceNumber;
         this.acknowledgmentNumber = acknowledgmentNumber;
@@ -68,11 +70,11 @@ public class Packet {
 
 
     public int getSequenceNumber() {
-        return sequenceNumber;
+        return this.sequenceNumber;
     }
 
-    public void setSequenceNumber(int sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
+    public int getIndex() {
+        return this.index;
     }
 
     public int getAcknowledgmentNumber() {

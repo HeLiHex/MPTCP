@@ -66,12 +66,13 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public Packet send() {
         int nextPacketSeqNum = this.connection.getNextSequenceNumber() + this.size();
-        Pair indexAndPayload = this.payloadsToSend.remove(0);
+        Pair<Integer, Payload> indexAndPayload = this.payloadsToSend.remove(0);
 
         Packet packet = new PacketBuilder()
                 .withConnection(this.connection)
-                .withPayload((Payload) indexAndPayload.getValue1())
+                .withPayload(indexAndPayload.getValue1())
                 .withSequenceNumber(nextPacketSeqNum)
+                .withIndex(indexAndPayload.getValue0())
                 .build();
 
         if (this.contains(packet)) throw new IllegalStateException("can't add same packet twice");

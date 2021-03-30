@@ -15,11 +15,13 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     private final List<Packet> received;
     private Packet ackThis;
+    private int packetCount;
 
     public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, List<Packet> receivedContainer) {
         super(windowSize, comparator);
         this.received = receivedContainer;
         this.ackThis = new PacketBuilder().build();
+        this.packetCount = 0;
     }
 
     private void receive(Packet packet) {
@@ -41,12 +43,24 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
         Connection connection = sendingWindow.getConnection();
 
+        System.out.println(peek().getIndex());
+        System.out.println(peek().getPayload());
+        System.out.println(peek().getSequenceNumber());
+        System.out.println();
+
         if (this.inReceivingWindow(this.peek(), connection)) {
             while (receivingPacketIndex(this.peek(), connection) == 0){
                 connection.update(this.peek());
                 this.ackThis = this.peek();
-                this.receive(this.peek());
-                this.remove();
+                while (this.peek().getIndex() <= this.packetCount){
+                    connection.update(this.peek());
+                    this.ackThis = this.peek();
+                    this.receive(this.peek());
+                    System.out.println(this.peek() + " received");
+                    this.remove();
+                    this.packetCount++;
+                    if (this.isEmpty()) break;
+                }
                 if (this.isEmpty()) break;
             }
             return true; // true so that duplicate AKCs are sent

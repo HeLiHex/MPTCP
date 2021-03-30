@@ -249,12 +249,13 @@ public class ClassicTCPTest {
                     .withOrigin(client)
                     .withDestination(server)
                     .withPayload(new Message("should not be received 1"))
+                    .withIndex(i + 50000)
                     .build();
             eventHandler.addEvent(new RouteEvent(client, packet1));
 
             Message msg = new Message( "test " + i);
             client.send(msg);
-            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.addEvent(new TCPSendEvent(client));
 
             Packet packet2 = new PacketBuilder()
                     .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100 + i)
@@ -262,11 +263,11 @@ public class ClassicTCPTest {
                     .withOrigin(client)
                     .withDestination(server)
                     .withPayload(new Message("should not be received 2"))
+                    .withIndex(i + 100)
                     .build();
             eventHandler.addEvent(new RouteEvent(client, packet2));
-
-            eventHandler.run();
         }
+        eventHandler.run();
 
         for (int i = 0; i < server.getThisReceivingWindowCapacity(); i++) {
             Packet received = server.receive();
@@ -313,6 +314,7 @@ public class ClassicTCPTest {
                     .withSequenceNumber(seqNum + i)
                     .withAcknowledgmentNumber(ackNum + i)
                     .withPayload(new Message(i + ""))
+                    .withIndex(i)
                     .build();
             eventHandler.addEvent(new RouteEvent(client, packet));
         }

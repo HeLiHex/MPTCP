@@ -21,7 +21,6 @@ import org.junit.rules.Timeout;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-@Ignore
 public class MPTCPTest {
 
     @Rule
@@ -32,13 +31,16 @@ public class MPTCPTest {
         Util.setSeed(1337);
         Util.resetTime();
     }
-
+/*
     @Test(expected = IllegalArgumentException.class)
     public void mptcpThrowExceptionIfReceivingCapacityListLengthNotEqualToNumberOfSubflowsTest(){
         new MPTCP(2, 7);
     }
 
+ */
+
     @Test
+    @Ignore
     public void mptcpWithOneSubflowRoutingPacketRoutsItToItsDestinationStraitLine(){
         MPTCP client = new MPTCP(1, 7);
         Router r1 = new Router.RouterBuilder().build();
@@ -78,8 +80,9 @@ public class MPTCPTest {
     }
 
     @Test
+    @Ignore
     public void mptcpWithTwoSubflowsRoutingPacketRoutsItToItsDestinationStraitLine(){
-        MPTCP client = new MPTCP(2, 7, 7);
+        MPTCP client = new MPTCP(2, 14);
 
         //path one
         Router r11 = new Router.RouterBuilder().build();
@@ -137,8 +140,9 @@ public class MPTCPTest {
     }
 
     @Test
+    @Ignore
     public void mptcpWithTwoSubFlowsAndNonDistinctPathRoutsCorrectTest(){
-        MPTCP client = new MPTCP(2, 7, 7);
+        MPTCP client = new MPTCP(2, 14);
 
         Router r11 = new Router.RouterBuilder().build();
         Router r12 = new Router.RouterBuilder().build();
@@ -321,11 +325,11 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPConnectToMPTCPThenSendMsgOverThreeSubflowsTest(){
-        MPTCP client = new MPTCP(3, 7, 7, 7);
+        MPTCP client = new MPTCP(3, 21);
         Routable r1 = new Router.RouterBuilder().withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(3, 7, 7, 7);
+        MPTCP server = new MPTCP(3, 21);
 
         //path one
         client.addChannel(r1);
@@ -369,25 +373,33 @@ public class MPTCPTest {
 
         Packet received1 = server.receive();
         Assert.assertNotNull(received1);
+        System.out.println(received1.getIndex());
+        System.out.println(received1.getPayload());
         Assert.assertEquals(msg1, received1.getPayload());
 
         Packet received2 = server.receive();
         Assert.assertNotNull(received2);
+        System.out.println(received2.getIndex());
+        System.out.println(received2.getPayload());
         Assert.assertEquals(msg2, received2.getPayload());
 
         Packet received3 = server.receive();
         Assert.assertNotNull(received3);
+        System.out.println(received3.getIndex());
+        System.out.println(received3.getPayload());
         Assert.assertEquals(msg3, received3.getPayload());
+
+        Assert.assertNull(server.receive());
     }
 
 
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest(){
-        MPTCP client = new MPTCP(3, 7, 7, 7);
-        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(1.5).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(1.5).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(1.5).withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(3, 7, 7, 7);
+        MPTCP client = new MPTCP(3, 21);
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("C")).build();
+        MPTCP server = new MPTCP(3, 21);
 
         //path one
         client.addChannel(r1);
@@ -419,7 +431,7 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
 
-        int numPacketsToSend = 1000;
+        int numPacketsToSend = 10000;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
