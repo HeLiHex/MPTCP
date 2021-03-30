@@ -11,6 +11,7 @@ import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
 import org.example.util.Util;
+import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ public class ClassicTCP extends Routable implements TCP {
     private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
     private final List<Packet> receivedPackets;
-    private final List<Payload> payloadsToSend;
+    private final List<Pair<Integer, Payload>> payloadsToSend;
     private final int thisReceivingWindowCapacity;
     private final boolean isReno;
 
@@ -36,7 +37,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     private final TCP mainFlow;
 
-    private ClassicTCP(int thisReceivingWindowCapacity, List<Packet> receivedPackets, List<Payload> payloadsToSend, boolean isReno, Address address, TCP mainFlow) {
+    private ClassicTCP(int thisReceivingWindowCapacity, List<Packet> receivedPackets, List<Pair<Integer, Payload>> payloadsToSend, boolean isReno, Address address, TCP mainFlow) {
         super(new SelectiveRepeat(thisReceivingWindowCapacity, PACKET_COMPARATOR, receivedPackets),
                 NOISE_TOLERANCE,
                 address
@@ -119,7 +120,13 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void send(Payload payload) {
-        this.payloadsToSend.add(payload);
+        if (this.payloadsToSend.isEmpty()) {
+            this.payloadsToSend.add(Pair.with(0, payload));
+            return;
+        }
+        int indexOfLastAdded = this.payloadsToSend.get(this.payloadsToSend.size() - 1).getValue0();
+        this.payloadsToSend.add(Pair.with(indexOfLastAdded, payload));
+
     }
 
     @Override
@@ -365,7 +372,7 @@ public class ClassicTCP extends Routable implements TCP {
 
         private int receivingWindowCapacity = 7;
         private List<Packet> receivedPacketsContainer = new ArrayList<>();
-        private List<Payload> payloadsToSend = new ArrayList<>();
+        private List<Pair<Integer, Payload>> payloadsToSend = new ArrayList<>();
         private boolean isReno = true;
         private Address address = new UUIDAddress();
         private TCP mainflow = null;
@@ -380,7 +387,7 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
-        public ClassicTCPBuilder withPayloadsToSend(List<Payload> payloadsToSend) {
+        public ClassicTCPBuilder withPayloadsToSend(List<Pair<Integer, Payload>> payloadsToSend) {
             this.payloadsToSend = payloadsToSend;
             return this;
         }

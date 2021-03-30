@@ -7,6 +7,7 @@ import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.simulator.Statistics;
 import org.example.util.BoundedQueue;
+import org.javatuples.Pair;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class SlidingWindow extends Window implements SendingWindow, BoundedQueue<Packet> {
 
     private static final int DEFAULT_CONGESTION_WINDOW_CAPACITY = 1;
-    private final List<Payload> payloadsToSend;
+    private final List<Pair<Integer, Payload>> payloadsToSend;
     private final int receiverWindowSize;
     private final boolean isReno;
     private boolean seriousLossDetected = false;
@@ -24,7 +25,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private boolean fastRetransmitted;
     private final Connection connection;
 
-    public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Payload> payloadsToSend) {
+    public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Pair<Integer, Payload>> payloadsToSend) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, comparator);
         this.payloadsToSend = payloadsToSend;
         this.receiverWindowSize = receiverWindowCapacity;
@@ -65,9 +66,11 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     @Override
     public Packet send() {
         int nextPacketSeqNum = this.connection.getNextSequenceNumber() + this.size();
+        Pair indexAndPayload = this.payloadsToSend.remove(0);
+
         Packet packet = new PacketBuilder()
                 .withConnection(this.connection)
-                .withPayload(this.payloadsToSend.remove(0))
+                .withPayload((Payload) indexAndPayload.getValue1())
                 .withSequenceNumber(nextPacketSeqNum)
                 .build();
 
@@ -182,10 +185,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         return connection;
     }
 
-    @Override
-    public boolean offer(Packet packet) {
-        return this.payloadsToSend.add(packet.getPayload());
-    }
 
     @Override
     public int queueSize() {

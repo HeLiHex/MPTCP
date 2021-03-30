@@ -8,6 +8,7 @@ import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.TCPConnectEvent;
+import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,7 @@ public class ReceivingWindowTest {
     private ClassicTCP server;
     private ReceivingWindow receivingWindow;
     private List<Packet> receivedPackets;
-    private List<Payload> payloadsToSend;
+    private List<Pair<Integer, Payload>> payloadsToSend;
 
     @Before
     public void setup(){

@@ -8,13 +8,14 @@ import org.example.network.address.SimpleAddress;
 import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
+import org.javatuples.Pair;
 
 import java.util.*;
 
 public class MPTCP implements TCP{
 
     private final List<Packet> receivedPackets;
-    private final List<Payload> payloadsToSend;
+    private final List<Pair<Integer, Payload>> payloadsToSend;
     private final TCP[] subflows;
     private final Address address;
 
@@ -144,7 +145,12 @@ public class MPTCP implements TCP{
 
     @Override
     public void send(Payload payload) {
-        payloadsToSend.add(payload);
+        if (this.payloadsToSend.isEmpty()) {
+            this.payloadsToSend.add(Pair.with(0, payload));
+            return;
+        }
+        int indexOfLastAdded = this.payloadsToSend.get(this.payloadsToSend.size() - 1).getValue0();
+        this.payloadsToSend.add(Pair.with(indexOfLastAdded, payload));
     }
 
     @Override
