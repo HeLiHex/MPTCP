@@ -431,7 +431,7 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
 
-        int numPacketsToSend = 10000;
+        int numPacketsToSend = 100000;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);

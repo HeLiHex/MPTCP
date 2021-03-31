@@ -35,13 +35,15 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     public boolean receive(SendingWindow sendingWindow) {
         if (this.isEmpty()) return false;
 
+        Connection connection = sendingWindow.getConnection();
+
         if (this.peek().hasAllFlags(Flag.ACK)) {
-            sendingWindow.ackReceived(this.peek());
-            this.poll();
+            if (this.peek().getOrigin().equals(connection.getConnectedNode())){
+                sendingWindow.ackReceived(this.peek());
+                this.poll();
+            }
             return false;
         }
-
-        Connection connection = sendingWindow.getConnection();
 
         System.out.println(peek().getIndex());
         System.out.println(peek().getPayload());
