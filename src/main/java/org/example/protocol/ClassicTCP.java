@@ -358,11 +358,9 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     private List<Packet> trySend(List<Packet> packetsSent){
-        System.out.println("hei");
         if (this.sendingWindow == null) return packetsSent;
         if (this.sendingWindow.isQueueEmpty()) return packetsSent;
         if (this.sendingWindow.isWaitingForAck()) return packetsSent;
-        System.out.println("hello");
 
         Packet packetToSend = this.sendingWindow.send();
         assert packetToSend != null;
@@ -370,8 +368,7 @@ public class ClassicTCP extends Routable implements TCP {
         this.route(packetToSend);
         Statistics.packetSent();
         packetsSent.add(packetToSend);
-        if (isConnected()) return trySend(packetsSent);
-        return packetsSent;
+        return trySend(packetsSent);
     }
 
 
