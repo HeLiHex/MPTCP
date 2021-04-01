@@ -755,7 +755,7 @@ public class ClassicTCPTest {
 
     @Test
     public void increasingWindowCapacityWithFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
-        for (int windowCapacity = 1; windowCapacity < 100; windowCapacity++) {
+        for (int windowCapacity = 1; windowCapacity < 50; windowCapacity++) {
             Util.setSeed(1337);
             Util.resetTime();
             ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(windowCapacity).build();

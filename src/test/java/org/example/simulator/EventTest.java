@@ -13,6 +13,7 @@ import org.example.simulator.events.tcp.TCPSendEvent;
 import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.PriorityQueue;
@@ -41,6 +42,7 @@ public class EventTest {
     }
 
     @Test
+    @Ignore
     public void EventsOccurInAPreMatchedSequence(){
         this.tcp.addChannel(this.host);
         this.tcp.updateRoutingTable();

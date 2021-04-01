@@ -2,6 +2,7 @@ package org.example.protocol.window;
 
 import org.example.data.Message;
 import org.example.data.Packet;
+import org.example.data.PacketBuilder;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
@@ -65,13 +66,12 @@ public class SendingWindowTest {
     }
 
     @Test
-    public void isWaitingForAckIsFalseIfSendingWindowIsAlmostFullTest(){
+    public void isWaitingForAckIsFalseIfSendingWindowIsAlmostFullTest() throws IllegalAccessException {
         for (int i = 0; i < Math.pow(this.server.getThisReceivingWindowCapacity(), 2); i++) {
-            this.client.send(new Message("test " + i));
             this.sendingWindow.increase();
         }
         for (int i = 0; i < this.client.getOtherReceivingWindowCapacity() - 1; i++) {
-            this.client.trySend();
+            this.client.getSendingWindow().add(new PacketBuilder().build());
         }
         Assert.assertEquals(this.client.getOtherReceivingWindowCapacity(), this.sendingWindow.getWindowCapacity());
         Assert.assertFalse(this.sendingWindow.isWaitingForAck());

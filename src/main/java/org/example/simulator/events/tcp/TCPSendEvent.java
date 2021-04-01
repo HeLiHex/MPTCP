@@ -2,7 +2,6 @@ package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
-import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.ChannelEvent;
@@ -34,7 +33,7 @@ public class TCPSendEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
         if (!this.packetsSent.isEmpty()) {
             if (this.tcp.isConnected()) {
-                events.add(new TCPSendEvent(this.tcp));
+                //events.add(new TCPSendEvent(this.tcp));
                 for (Packet packet : this.packetsSent) {
                     events.add(new TCPRetransmitEventGenerator(this.tcp, packet));
                 }

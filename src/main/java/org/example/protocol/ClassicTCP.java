@@ -350,21 +350,30 @@ public class ClassicTCP extends Routable implements TCP {
             throw new IllegalStateException("TCP is connected but no ReceivingWindow or SendingWindow is established");
         }
     }
+
+
     @Override
     public List<Packet> trySend() {
-        if (this.sendingWindow == null) return new ArrayList<>(0);
-        if (this.sendingWindow.isQueueEmpty()) return new ArrayList<>(0);
-        if (this.sendingWindow.isWaitingForAck()) return new ArrayList<>(0);
+        return this.trySend(new ArrayList<>());
+    }
 
-        List<Packet> packetsSent = new ArrayList<>(1);
+    private List<Packet> trySend(List<Packet> packetsSent){
+        System.out.println("hei");
+        if (this.sendingWindow == null) return packetsSent;
+        if (this.sendingWindow.isQueueEmpty()) return packetsSent;
+        if (this.sendingWindow.isWaitingForAck()) return packetsSent;
+        System.out.println("hello");
 
         Packet packetToSend = this.sendingWindow.send();
         assert packetToSend != null;
 
         this.route(packetToSend);
         packetsSent.add(packetToSend);
+        if (isConnected()) return trySend(packetsSent);
         return packetsSent;
     }
+
+
 
     @Override
     public void run() {

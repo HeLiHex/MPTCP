@@ -1,12 +1,9 @@
 package org.example.simulator.events.tcp;
 
-import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.protocol.TCP;
-import org.example.simulator.Statistics;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.RouteEvent;
 
 import java.util.List;
 import java.util.Queue;
