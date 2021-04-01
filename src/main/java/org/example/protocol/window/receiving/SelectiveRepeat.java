@@ -45,10 +45,13 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             return false;
         }
 
+        /*
         System.out.println(peek().getIndex());
         System.out.println(peek().getPayload());
         System.out.println(peek().getSequenceNumber());
         System.out.println();
+
+         */
 
         if (this.inReceivingWindow(this.peek(), connection)) {
             while (receivingPacketIndex(this.peek(), connection) == 0){
