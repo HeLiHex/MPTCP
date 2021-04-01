@@ -14,7 +14,6 @@ import java.util.Queue;
 public class TCPInputEvent extends Event {
 
     private final TCP tcp;
-    private Packet packetToFastRetransmit;
 
     public TCPInputEvent(TCP tcp) {
         super(tcp);
@@ -24,25 +23,14 @@ public class TCPInputEvent extends Event {
     @Override
     public void run() {
         this.tcp.handleIncoming();
-        this.packetToFastRetransmit = this.tcp.fastRetransmit();
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        if (this.packetToFastRetransmit != null) {
-            events.add(new RouteEvent(this.tcp, this.packetToFastRetransmit));
-            Statistics.packetFastRetransmit();
-        }
         List<Channel> channelsUsed = this.tcp.getChannelsUsed();
         for (Channel channel : channelsUsed) {
             events.add(new ChannelEvent(channel));
         }
-        /*
-        if (this.ackSent) {
-            Channel channelUsed = this.tcp.getChannel();
-            events.add(new ChannelEvent(channelUsed));
-        }
-         */
         events.add(new TCPSendEvent(this.tcp));
     }
 

@@ -196,7 +196,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventArrangementsAreConsistent(){
-        double noiseTolerance = 2;
+        double noiseTolerance = 2.5;
         int numPacketsToSend = 1001;
         ArrayList<Event> eventList1 = this.allEventsList(numPacketsToSend, noiseTolerance);
         ArrayList<Event> eventList2 = this.allEventsList(numPacketsToSend, noiseTolerance);

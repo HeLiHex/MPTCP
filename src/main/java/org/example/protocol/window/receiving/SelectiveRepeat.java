@@ -52,9 +52,9 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
         if (this.inReceivingWindow(this.peek(), connection)) {
             while (receivingPacketIndex(this.peek(), connection) == 0){
-                connection.update(this.peek());
-                this.ackThis = this.peek();
-                while (this.peek().getIndex() <= this.packetCount){
+                //connection.update(this.peek());
+                //this.ackThis = this.peek();
+                //while (this.peek().getIndex() <= this.packetCount){
                     connection.update(this.peek());
                     this.ackThis = this.peek();
                     this.receive(this.peek());
@@ -62,8 +62,8 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
                     this.remove();
                     this.packetCount++;
                     if (this.isEmpty()) break;
-                }
-                if (this.isEmpty()) break;
+                //}
+                //if (this.isEmpty()) break;
             }
             return true; // true so that duplicate AKCs are sent
         }

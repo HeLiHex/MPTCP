@@ -10,6 +10,7 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
+import org.example.simulator.Statistics;
 import org.example.util.Util;
 import org.javatuples.Pair;
 
@@ -338,10 +339,13 @@ public class ClassicTCP extends Routable implements TCP {
                 }catch (IllegalArgumentException e){
                     return false;
                 }
-                return true;
             }
-            //ACK is received and nothing more should be done
-            return false;
+            Packet packetToFastRetransmit = this.fastRetransmit();
+            if (packetToFastRetransmit != null){
+                this.route(packetToFastRetransmit);
+                Statistics.packetFastRetransmit();
+            }
+            return true;
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("TCP is connected but no ReceivingWindow or SendingWindow is established");
         }
