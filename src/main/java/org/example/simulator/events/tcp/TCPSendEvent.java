@@ -24,9 +24,6 @@ public class TCPSendEvent extends Event {
     @Override
     public void run() {
         this.packetsSent = this.tcp.trySend();
-        for (int i = 0; i < this.packetsSent.size(); i++) {
-            Statistics.packetSent();
-        }
     }
 
     @Override

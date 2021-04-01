@@ -368,6 +368,7 @@ public class ClassicTCP extends Routable implements TCP {
         assert packetToSend != null;
 
         this.route(packetToSend);
+        Statistics.packetSent();
         packetsSent.add(packetToSend);
         if (isConnected()) return trySend(packetsSent);
         return packetsSent;
