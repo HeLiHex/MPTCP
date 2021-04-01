@@ -20,6 +20,7 @@ public class TCPInputEvent extends Event {
     @Override
     public void run() {
         this.tcp.handleIncoming();
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
@@ -29,6 +30,7 @@ public class TCPInputEvent extends Event {
             events.add(new ChannelEvent(channel));
         }
         events.add(new TCPSendEvent(this.tcp));
+
     }
 
     @Override

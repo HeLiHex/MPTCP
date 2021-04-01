@@ -8,6 +8,7 @@ import org.example.network.Router;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.RouteEvent;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPSendEvent;
@@ -103,7 +104,7 @@ public class ClassicTCPTest {
         Message msg = new Message( "hello på do!");
 
         client.send(msg);
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(msg, server.receive().getPayload());
@@ -140,7 +141,7 @@ public class ClassicTCPTest {
         Message msg = new Message( "hello på do!");
 
         client.send(msg);
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(msg, server.receive().getPayload());
@@ -168,7 +169,7 @@ public class ClassicTCPTest {
         for (int i = 0; i <= server.getThisReceivingWindowCapacity() * 2; i++) {
             Message msg = new Message( "test " + i);
             client.send(msg);
-            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.addEvent(new RunTCPEvent(client));
             eventHandler.run();
             Assert.assertEquals(msg, server.receive().getPayload());
         }
@@ -195,7 +196,7 @@ public class ClassicTCPTest {
 
         Message msg = new Message( "test1");
         client.send(msg);
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         Message msg2 = new Message( "test2");
         Packet packet = new PacketBuilder()
@@ -255,7 +256,7 @@ public class ClassicTCPTest {
 
             Message msg = new Message( "test " + i);
             client.send(msg);
-            eventHandler.addEvent(new TCPSendEvent(client));
+            eventHandler.addEvent(new RunTCPEvent(client));
 
             Packet packet2 = new PacketBuilder()
                     .withSequenceNumber(client.getConnection().getNextSequenceNumber() + 100 + i)
@@ -402,7 +403,7 @@ public class ClassicTCPTest {
         Assert.assertEquals(0, indexBeforeSending);
 
         client.send(packet.getPayload());
-        eventHandler.addEvent(new TCPSendEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
         Assert.assertNotNull(server.receive());
 
@@ -565,7 +566,7 @@ public class ClassicTCPTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Assert.assertTrue(client.inputBufferIsEmpty());
@@ -626,7 +627,7 @@ public class ClassicTCPTest {
             client.send(msg);
         }
 
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Assert.assertTrue(client.inputBufferIsEmpty());
@@ -679,7 +680,7 @@ public class ClassicTCPTest {
             client.send(msg);
         }
 
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Assert.assertTrue(client.inputBufferIsEmpty());
@@ -735,7 +736,7 @@ public class ClassicTCPTest {
                 client.send(msg);
             }
 
-            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.addEvent(new RunTCPEvent(client));
             eventHandler.run();
 
             Assert.assertTrue(client.inputBufferIsEmpty());
@@ -790,7 +791,7 @@ public class ClassicTCPTest {
                 client.send(msg);
             }
 
-            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.addEvent(new RunTCPEvent(client));
             eventHandler.run();
 
             Assert.assertTrue(client.inputBufferIsEmpty());
@@ -884,7 +885,7 @@ public class ClassicTCPTest {
             Message msg = new Message("test " + i);
             server.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(server));
+        eventHandler.addEvent(new RunTCPEvent(server));
         eventHandler.run();
 
         Assert.assertTrue(client.inputBufferIsEmpty());

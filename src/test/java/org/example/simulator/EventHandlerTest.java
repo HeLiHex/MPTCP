@@ -5,6 +5,8 @@ import org.example.data.Packet;
 import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.RouteEvent;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.util.Util;
@@ -108,7 +110,7 @@ public class EventHandlerTest {
 
 
         client.send(new Message("test"));
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(0, eventHandler.getNumberOfEvents());
@@ -139,7 +141,7 @@ public class EventHandlerTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -177,7 +179,7 @@ public class EventHandlerTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         ArrayList<Event> eventList = new ArrayList<>();
 
@@ -238,7 +240,7 @@ public class EventHandlerTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         Event prevEvent;
         while (true) {

@@ -24,6 +24,7 @@ public class TCPSendEvent extends Event {
     @Override
     public void run() {
         this.packetsSent = this.tcp.trySend();
+        throw new IllegalStateException("deprecated");
     }
 
     @Override

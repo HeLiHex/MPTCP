@@ -6,6 +6,7 @@ import org.example.data.PacketBuilder;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.junit.*;
@@ -132,7 +133,7 @@ public class SendingWindowTest {
         }
 
         int prevWindowCapacity = client.getSendingWindow().getWindowCapacity();
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         while (eventHandler.singleRun()){
             int curWindowCapacity = client.getSendingWindow().getWindowCapacity();
 

@@ -7,6 +7,8 @@ import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.RouteEvent;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
@@ -64,7 +66,7 @@ public class StatisticsTest {
                 Message msg = new Message("test " + i);
                 client.send(msg);
             }
-            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.addEvent(new RunTCPEvent(client));
             eventHandler.run();
 
             eventHandler.printStatistics();
@@ -114,7 +116,7 @@ public class StatisticsTest {
                 Message msg = new Message("test " + i);
                 client.send(msg);
             }
-            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.addEvent(new RunTCPEvent(client));
             eventHandler.run();
 
             eventHandler.printStatistics();
@@ -154,7 +156,7 @@ public class StatisticsTest {
                 Message msg = new Message("test " + i);
                 client.send(msg);
             }
-            eventHandler.addEvent(new TCPInputEvent(client));
+            eventHandler.addEvent(new RunTCPEvent(client));
             eventHandler.run();
 
             eventHandler.printStatistics();
@@ -212,7 +214,7 @@ public class StatisticsTest {
             client.send(msg);
         }
 
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         eventHandler.printStatistics();
@@ -298,7 +300,7 @@ public class StatisticsTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         Event lastEvent = null;
         while (!eventHandler.getEvents().isEmpty()){
@@ -333,7 +335,7 @@ public class StatisticsTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         int numRetransmitGenerators = 0;
 
@@ -371,7 +373,7 @@ public class StatisticsTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         int channelEventCount = 0;
         while (eventHandler.peekEvent() != null) {
