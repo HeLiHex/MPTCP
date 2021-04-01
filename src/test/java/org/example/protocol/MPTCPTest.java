@@ -11,6 +11,7 @@ import org.example.network.Router;
 import org.example.network.address.SimpleAddress;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.RouteEvent;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 
 import org.example.simulator.events.tcp.TCPSendEvent;
@@ -21,7 +22,6 @@ import org.junit.rules.Timeout;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-@Ignore
 public class MPTCPTest {
 
     @Rule
@@ -369,7 +369,7 @@ public class MPTCPTest {
         client.send(msg1);
         client.send(msg2);
         client.send(msg3);
-        eventHandler.addEvent(new TCPSendEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Packet received1 = server.receive();
@@ -438,7 +438,7 @@ public class MPTCPTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPSendEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         //Assert.assertTrue(client.inputBufferIsEmpty());

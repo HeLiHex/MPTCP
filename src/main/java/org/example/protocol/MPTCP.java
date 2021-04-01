@@ -63,7 +63,7 @@ public class MPTCP implements TCP{
 
     @Override
     public void route(Packet packet) {
-
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
@@ -95,38 +95,38 @@ public class MPTCP implements TCP{
 
     @Override
     public Address getAddress() {
-        return null;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public Packet peekInputBuffer() {
-        return null;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public Packet dequeueInputBuffer() {
-        return null;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        return false;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public boolean inputBufferIsEmpty() {
-        return false;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public int inputBufferSize() {
-        return 0;
+        throw new IllegalStateException("deprecated");
     }
 
 
     @Override
     public void run() {
-
+        throw new IllegalStateException("deprecated");
     }
 
     public TCP[] getSubflows(){
@@ -148,7 +148,7 @@ public class MPTCP implements TCP{
 
     @Override
     public void connect(Packet syn) {
-
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
@@ -179,7 +179,7 @@ public class MPTCP implements TCP{
 
     @Override
     public Channel getChannel() {
-        return null;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
@@ -195,17 +195,17 @@ public class MPTCP implements TCP{
 
     @Override
     public long getRTT() {
-        return 0;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public long getRTO() {
-        return 0;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public long afterConnectSendDelay() {
-        return 0;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
@@ -234,21 +234,24 @@ public class MPTCP implements TCP{
 
     @Override
     public boolean canRetransmit(Packet packet) {
+        for (TCP subflow : this.subflows) {
+            if (subflow.canRetransmit(packet)) return true;
+        }
         return false;
     }
 
     @Override
     public Packet fastRetransmit() {
-        return null;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public boolean seriousLossDetected() {
-        return false;
+        throw new IllegalStateException("deprecated");
     }
 
     @Override
     public int getSendingWindowCapacity() {
-        return 0;
+        throw new IllegalStateException("deprecated");
     }
 }

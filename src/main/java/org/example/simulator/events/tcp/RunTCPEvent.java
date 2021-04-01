@@ -53,7 +53,7 @@ public class RunTCPEvent extends Event {
         }
 
         for (Packet packet : this.packetsSent) {
-            events.add(new TCPRetransmitEventGenerator(this.tcp, packet));
+            events.add(new TCPRetransmitEventGenerator(packet));
         }
     }
 

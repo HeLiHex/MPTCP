@@ -33,7 +33,7 @@ public class TCPSendEvent extends Event {
             if (this.tcp.isConnected()) {
                 //events.add(new TCPSendEvent(this.tcp));
                 for (Packet packet : this.packetsSent) {
-                    events.add(new TCPRetransmitEventGenerator(this.tcp, packet));
+                    events.add(new TCPRetransmitEventGenerator(packet));
                 }
             }
             List<Channel> channelsUsed = this.tcp.getChannelsUsed();
