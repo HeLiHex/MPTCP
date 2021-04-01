@@ -259,7 +259,10 @@ public class ClassicTCP extends Routable implements TCP {
             return super.enqueueInputBuffer(packet);
         }
         this.logger.log(Level.INFO, "packet was not added due to non valid connection");
-        return false;
+
+        // return true because the packet has arrived the endpoint
+        // the packet is not added to the input buffer, but it is checked
+        return true;
     }
 
     private boolean unconnectedInputHandler() {

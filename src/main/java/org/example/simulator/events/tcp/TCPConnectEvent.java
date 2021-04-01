@@ -13,7 +13,7 @@ public class TCPConnectEvent extends Event {
     private final TCP client;
     private final TCP host;
 
-    public TCPConnectEvent(int delay, TCP client, TCP host) {
+    private TCPConnectEvent(int delay, TCP client, TCP host) {
         super(delay);
         this.client = client;
         this.host = host;

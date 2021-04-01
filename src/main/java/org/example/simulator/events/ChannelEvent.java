@@ -34,6 +34,7 @@ public class ChannelEvent extends Event {
                 events.add(new TCPInputEvent((TCP) nextNode));
                 return;
             }
+            assert !nextNode.inputBufferIsEmpty() : "The next NetworkNode has no packet in the input buffer";
             if (nextNode instanceof Endpoint) {
                 events.add(new RunEndpointEvent((Endpoint) nextNode));
                 return;

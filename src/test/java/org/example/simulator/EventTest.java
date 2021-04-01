@@ -36,7 +36,7 @@ public class EventTest {
 
     public void connect(TCP linkedClient, TCP linkedServer){
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new TCPConnectEvent(0, linkedClient, linkedServer));
+        eventHandler.addEvent(new TCPConnectEvent( linkedClient, linkedServer));
         eventHandler.run();
     }
 

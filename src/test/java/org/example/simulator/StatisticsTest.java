@@ -87,7 +87,7 @@ public class StatisticsTest {
 
     @Test
     public void statisticsAreConsistentWithLoss() {
-        double noiseTolerance = 1.5;
+        double noiseTolerance = 2.5;
         int numPacketsToSend = 1000;
         for (int j = 0; j < 50; j++) {
 
@@ -275,7 +275,7 @@ public class StatisticsTest {
 
     @Test
     public void TCPRetransmitEventGeneratorIsLastInEventQueueTest() {
-        double noiseTolerance = 1.5;
+        double noiseTolerance = 10000;
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();

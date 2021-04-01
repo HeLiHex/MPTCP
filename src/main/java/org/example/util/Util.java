@@ -1,6 +1,7 @@
 package org.example.util;
 
 import org.example.simulator.events.Event;
+import org.example.simulator.simulatables.SimulatableEvent;
 
 import java.util.Random;
 
@@ -30,6 +31,10 @@ public class Util {
 
     public static void tickTime(Event event) {
         time = event.getInstant() + 1;
+    }
+
+    public static void tickTime(SimulatableEvent simulatableEvent) {
+        time = simulatableEvent.getInstant() + 1;
     }
 
     public static long getTime() {
