@@ -17,14 +17,12 @@ import java.util.Map;
 public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     private final List<Packet> received;
-    private Packet ackThis;
     private int packetCount;
     private Map<Endpoint, Packet> ackThisMap;
 
     public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, List<Packet> receivedContainer) {
         super(windowSize, comparator);
         this.received = receivedContainer;
-        this.ackThis = new PacketBuilder().build();
         this.packetCount = 0;
         this.ackThisMap = new HashMap<>();
     }
@@ -62,11 +60,9 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             while (receivingPacketIndex(this.peek(), connection) == 0){
                 connection.update(this.peek());
                 this.ackThisMap.put(this.peek().getOrigin(), this.peek());
-                //this.ackThis = this.peek();
                 while (this.peek().getIndex() <= this.packetCount){
                     connection.update(this.peek());
                     this.ackThisMap.put(this.peek().getOrigin(), this.peek());
-                    //this.ackThis = this.peek();
                     this.receive(this.peek());
                     System.out.println(this.peek() + " received");
                     this.remove();
@@ -91,7 +87,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     public Packet ackThis(Endpoint endpointToReceiveAck) {
         assert shouldAck();
         return this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
-        //return this.ackThis;
     }
 
     @Override
