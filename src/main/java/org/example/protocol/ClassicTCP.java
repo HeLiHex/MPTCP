@@ -335,7 +335,7 @@ public class ClassicTCP extends Routable implements TCP {
             boolean packetReceived = receivingWindow.receive(this.getSendingWindow());
             if (packetReceived && receivingWindow.shouldAck()) {
                 try{
-                    this.ack(receivingWindow.ackThis());
+                    this.ack(receivingWindow.ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
                 }catch (IllegalArgumentException e){
                     return false;
                 }

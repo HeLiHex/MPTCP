@@ -59,7 +59,7 @@ public class ReceivingWindowTest {
 
     @Test
     public void ackThisReturnsPacketTest(){
-        Packet toBeAcked = this.receivingWindow.ackThis();
+        Packet toBeAcked = this.receivingWindow.ackThis(this.client);
         Assert.assertNotNull(toBeAcked);
     }
 

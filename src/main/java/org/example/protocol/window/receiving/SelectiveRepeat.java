@@ -3,25 +3,30 @@ package org.example.protocol.window.receiving;
 import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
+import org.example.network.interfaces.Endpoint;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.Statistics;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     private final List<Packet> received;
     private Packet ackThis;
     private int packetCount;
+    private Map<Endpoint, Packet> ackThisMap;
 
     public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, List<Packet> receivedContainer) {
         super(windowSize, comparator);
         this.received = receivedContainer;
         this.ackThis = new PacketBuilder().build();
         this.packetCount = 0;
+        this.ackThisMap = new HashMap<>();
     }
 
     private void receive(Packet packet) {
@@ -55,18 +60,20 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
         if (this.inReceivingWindow(this.peek(), connection)) {
             while (receivingPacketIndex(this.peek(), connection) == 0){
-                //connection.update(this.peek());
+                connection.update(this.peek());
+                this.ackThisMap.put(this.peek().getOrigin(), this.peek());
                 //this.ackThis = this.peek();
-                //while (this.peek().getIndex() <= this.packetCount){
+                while (this.peek().getIndex() <= this.packetCount){
                     connection.update(this.peek());
-                    this.ackThis = this.peek();
+                    this.ackThisMap.put(this.peek().getOrigin(), this.peek());
+                    //this.ackThis = this.peek();
                     this.receive(this.peek());
                     System.out.println(this.peek() + " received");
                     this.remove();
                     this.packetCount++;
                     if (this.isEmpty()) break;
-                //}
-                //if (this.isEmpty()) break;
+                }
+                if (this.isEmpty()) break;
             }
             return true; // true so that duplicate AKCs are sent
         }
@@ -81,9 +88,10 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     }
 
     @Override
-    public Packet ackThis() {
+    public Packet ackThis(Endpoint endpointToReceiveAck) {
         assert shouldAck();
-        return this.ackThis;
+        return this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
+        //return this.ackThis;
     }
 
     @Override
