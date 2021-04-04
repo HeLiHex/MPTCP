@@ -98,7 +98,7 @@ public class Packet {
         } else {
             returnString = "[" + this.payload.toString() + "]";
         }
-        returnString += "[seq: " + this.getSequenceNumber() + "]";
+        returnString += "[seq: " + this.getSequenceNumber() + "]" + "[index: " + this.getIndex() + "]";
 
         return returnString;
     }
