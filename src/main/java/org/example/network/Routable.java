@@ -94,12 +94,7 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        if (!this.inputBuffer.offer(packet)){
-            Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " lost due to capacity");
-            return false;
-        }
-        return true;
-        //return this.inputBuffer.offer(packet);
+        return this.inputBuffer.offer(packet);
     }
 
     @Override

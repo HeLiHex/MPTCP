@@ -13,6 +13,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SelectiveRepeat extends Window implements ReceivingWindow {
 
@@ -56,6 +58,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
          */
 
+        System.out.println(size());
         System.out.println();
         System.out.println(this);
         System.out.println();
@@ -108,8 +111,14 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     @Override
     public boolean offer(Packet packet) {
-        if (this.isFull()) return false;
-        if (this.contains(packet)) return false;
+        if (this.isFull()){
+            Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " lost due to capacity");
+            return false;
+        }
+        if (this.contains(packet)){
+            Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " is already in queue");
+            return false;
+        }
         return super.offer(packet);
     }
 
