@@ -33,7 +33,7 @@ public class MPTCP implements TCP{
 
         for (int i = 0; i < numberOfSubflows; i++) {
             TCP tcp = new ClassicTCP.ClassicTCPBuilder()
-                    .withReceivingWindowCapacity(receivingWindowCapacity/(2+numberOfSubflows))
+                    .withReceivingWindowCapacity(receivingWindowCapacity/numberOfSubflows)
                     .withAddress(new SimpleAddress("Subflow " + i + " " + this.address))
                     .withReceivedPacketsContainer(this.receivedPackets)
                     .withPayloadsToSend(this.payloadsToSend)
@@ -210,7 +210,6 @@ public class MPTCP implements TCP{
 
     @Override
     public boolean handleIncoming() {
-        System.out.println("incoming");
         for (TCP subflow : this.subflows) {
             try{
                 subflow.handleIncoming();

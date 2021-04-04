@@ -56,12 +56,16 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
          */
 
+        System.out.println();
+        System.out.println(this);
+        System.out.println();
+
         if (this.inReceivingWindow(this.peek(), connection)) {
             while (receivingPacketIndex(this.peek(), connection) == 0){
                 connection.update(this.peek());
                 this.ackThisMap.put(this.peek().getOrigin(), this.peek());
-                while (this.peek().getIndex() <= this.packetCount){
-                    connection.update(this.peek());
+                while (this.peek().getIndex() == this.packetCount){
+                    if (receivingPacketIndex(this.peek(), connection) == 0) connection.update(this.peek());
                     this.ackThisMap.put(this.peek().getOrigin(), this.peek());
                     this.receive(this.peek());
                     System.out.println(this.peek() + " received");

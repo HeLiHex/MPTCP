@@ -32,7 +32,8 @@ public class ChannelEvent extends Event {
         if (this.channelSuccess) {
             NetworkNode nextNode = this.channel.getDestination();
             if (nextNode instanceof TCP) {
-                events.add(new RunTCPEvent((TCP) nextNode));
+                TCP tcp = ((TCP) nextNode).getMainFlow();
+                events.add(new RunTCPEvent(tcp));
                 return;
             }
             assert !nextNode.inputBufferIsEmpty() : "The next NetworkNode has no packet in the input buffer";
