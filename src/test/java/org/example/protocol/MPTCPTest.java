@@ -399,8 +399,8 @@ public class MPTCPTest {
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest(){
         MPTCP client = new MPTCP(3, 21);
         Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.7).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(10).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(5).withAddress(new SimpleAddress("C")).build();
+        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(2.7).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(2.7).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
 
         //path one

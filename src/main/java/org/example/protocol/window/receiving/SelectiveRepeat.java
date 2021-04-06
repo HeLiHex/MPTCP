@@ -52,10 +52,10 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         }
 
 
-        /*
+
         Packet packetToUpdateWith = this.ackThisMap.get(connection.getConnectedNode());
         if (packetToUpdateWith != null) connection.update(packetToUpdateWith);
-         */
+
 
 
 

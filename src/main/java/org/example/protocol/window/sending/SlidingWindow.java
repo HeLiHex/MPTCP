@@ -15,6 +15,7 @@ import java.util.List;
 public class SlidingWindow extends Window implements SendingWindow, BoundedQueue<Packet> {
 
     private static final int DEFAULT_CONGESTION_WINDOW_CAPACITY = 1;
+    private final int numDupAckFastRetransmitTrigger;
     private final List<Pair<Integer, Payload>> payloadsToSend;
     private final int receiverWindowSize;
     private final boolean isReno;
@@ -35,6 +36,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         this.dupAckCount = 0;
         this.fastRetransmitted = false;
         this.connection = connection;
+        this.numDupAckFastRetransmitTrigger = 3;
 
     }
 
@@ -100,7 +102,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public Packet fastRetransmit() {
-        if (this.dupAckCount >= 3) {
+        if (this.dupAckCount >= this.numDupAckFastRetransmitTrigger) {
             this.dupAckCount = 0;
             this.decrease(false);
             this.fastRetransmitted = true;
