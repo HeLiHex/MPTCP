@@ -117,6 +117,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         }
         if (this.contains(packet)){
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " is already in queue");
+            System.out.println(this.received);
             return false;
         }
         return super.offer(packet);
