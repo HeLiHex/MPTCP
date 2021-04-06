@@ -13,22 +13,25 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
 
     private final TCP tcp;
     private final Packet packet;
+    private int numAttempts;
 
-    public TCPRetransmitEventGenerator(Packet packet) {
-        super(((TCP) packet.getOrigin()).getRTO());
-        this.tcp = (TCP) packet.getOrigin();
-        this.packet = packet;
+    public TCPRetransmitEventGenerator(Packet packe, int numAttempts) {
+        super(((TCP) packe.getOrigin()).getRTO());
+        this.tcp = (TCP) packe.getOrigin();
+        this.packet = packe;
+        this.numAttempts = numAttempts;
     }
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
+        if (this.numAttempts > 3 ) return;
         if (!this.tcp.isConnected()) return;
 
         if (this.tcp.canRetransmit(this.packet)) {
             //Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, () -> "Retransmit packet: " + this.packet);
             Statistics.packetRetransmit();
             events.add(new RouteEvent(this.tcp, this.packet));
-            events.add(new TCPRetransmitEventGenerator(this.packet));
+            events.add(new TCPRetransmitEventGenerator(this.packet, this.numAttempts + 1 ));
         }
     }
 

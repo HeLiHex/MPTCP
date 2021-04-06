@@ -3,7 +3,6 @@ package org.example.simulator.events.tcp;
 import org.example.data.Packet;
 import org.example.network.Channel;
 import org.example.protocol.TCP;
-import org.example.simulator.Statistics;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
 
@@ -33,7 +32,7 @@ public class TCPSendEvent extends Event {
             if (this.tcp.isConnected()) {
                 //events.add(new TCPSendEvent(this.tcp));
                 for (Packet packet : this.packetsSent) {
-                    events.add(new TCPRetransmitEventGenerator(packet));
+                    events.add(new TCPRetransmitEventGenerator(packet, 0));
                 }
             }
             List<Channel> channelsUsed = this.tcp.getChannelsUsed();

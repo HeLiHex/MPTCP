@@ -21,7 +21,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     private final List<Packet> received;
     private int packetCount;
     private Map<Endpoint, Packet> ackThisMap;
-    private boolean shouldAck;
 
     public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, List<Packet> receivedContainer) {
         super(windowSize, comparator);

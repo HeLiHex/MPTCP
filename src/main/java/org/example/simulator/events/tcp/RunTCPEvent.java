@@ -2,7 +2,6 @@ package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
-import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
@@ -53,7 +52,7 @@ public class RunTCPEvent extends Event {
         }
 
         for (Packet packet : this.packetsSent) {
-            events.add(new TCPRetransmitEventGenerator(packet));
+            events.add(new TCPRetransmitEventGenerator(packet, 0));
         }
     }
 

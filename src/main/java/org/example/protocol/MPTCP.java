@@ -210,11 +210,13 @@ public class MPTCP implements TCP{
 
     @Override
     public boolean handleIncoming() {
-        for (TCP subflow : this.subflows) {
-            try{
-                subflow.handleIncoming();
-            }catch (IllegalArgumentException e){
-                continue;
+        for (int i = 0; i < this.subflows.length; i++) {
+            for (TCP subflow : this.subflows) {
+                try{
+                    subflow.handleIncoming();
+                }catch (IllegalArgumentException e){
+                    continue;
+                }
             }
         }
         return false;
