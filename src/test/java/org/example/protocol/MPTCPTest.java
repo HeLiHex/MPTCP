@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class MPTCPTest {
 
     @Rule
-    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
+    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
 
     @Before
     public void setup(){
@@ -398,9 +398,9 @@ public class MPTCPTest {
     @Ignore
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest(){
         MPTCP client = new MPTCP(3, 21);
-        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("C")).build();
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.7).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(10).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(5).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
 
         //path one
@@ -457,6 +457,8 @@ public class MPTCPTest {
             //Assert.assertNotNull(received);
             //Assert.assertEquals("iteration " + i, received.getPayload(), msg);
         }
+
+        eventHandler.printStatistics();
     }
 
 

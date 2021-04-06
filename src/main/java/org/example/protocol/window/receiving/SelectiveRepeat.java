@@ -21,6 +21,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     private final List<Packet> received;
     private int packetCount;
     private Map<Endpoint, Packet> ackThisMap;
+    private boolean shouldAck;
 
     public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, List<Packet> receivedContainer) {
         super(windowSize, comparator);
@@ -50,6 +51,14 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             return false;
         }
 
+
+        /*
+        Packet packetToUpdateWith = this.ackThisMap.get(connection.getConnectedNode());
+        if (packetToUpdateWith != null) connection.update(packetToUpdateWith);
+         */
+
+
+
         /*
         System.out.println(peek().getIndex());
         System.out.println(peek().getPayload());
@@ -64,20 +73,25 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         System.out.println();
 
         if (this.inReceivingWindow(this.peek(), connection)) {
-            while (receivingPacketIndex(this.peek(), connection) == 0){
+            while (receivingPacketIndex(this.peek(), connection) == 0 && this.peek().getIndex() == this.packetCount){
                 connection.update(this.peek());
                 this.ackThisMap.put(this.peek().getOrigin(), this.peek());
-                while (this.peek().getIndex() == this.packetCount){
-                    if (receivingPacketIndex(this.peek(), connection) == 0) connection.update(this.peek());
-                    this.ackThisMap.put(this.peek().getOrigin(), this.peek());
-                    this.receive(this.peek());
-                    System.out.println(this.peek() + " received");
-                    this.remove();
-                    this.packetCount++;
-                    if (this.isEmpty()) break;
-                }
-                if (this.isEmpty()) break;
+                this.receive(this.peek());
+                System.out.println(this.peek() + " received");
+                this.remove();
+                this.packetCount++;
+                if (this.isEmpty()) return true;
             }
+
+            /*while (this.peek().getIndex() == this.packetCount){
+                if (receivingPacketIndex(this.peek(), connection) == 0) connection.update(this.peek());
+                this.ackThisMap.put(this.peek().getOrigin(), this.peek());
+                this.receive(this.peek());
+                System.out.println(this.peek() + " received");
+                this.remove();
+                this.packetCount++;
+                if (this.isEmpty()) return true;
+            }*/
             return true; // true so that duplicate AKCs are sent
         }
         //false, because packets outside the window has already ben acked
@@ -117,7 +131,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         }
         if (this.contains(packet)){
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " is already in queue");
-            System.out.println(this.received);
+            //System.out.println(this.received);
             return false;
         }
         return super.offer(packet);

@@ -34,6 +34,7 @@ public class PacketBuilder {
         this.withPayload(null);
         this.withAcknowledgmentNumber(packetToAck.getSequenceNumber() + 1);
         this.withSequenceNumber(packetToAck.getSequenceNumber());
+        this.withIndex(packetToAck.getIndex());
         return new Packet(this.destination, this.origin, this.flags, this.payload, this.sequenceNumber, this.acknowledgmentNumber, this.index);
     }
 
