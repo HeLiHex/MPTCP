@@ -41,6 +41,7 @@ public class EventHandler {
 
     public boolean singleRun() {
         Event event = this.events.poll();
+        //System.out.println(event);
         if (event == null) {
             if (!this.events.isEmpty())
                 throw new IllegalStateException("get null event when events queue are nonempty!");

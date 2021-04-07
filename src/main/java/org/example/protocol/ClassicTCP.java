@@ -61,7 +61,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void connect(TCP host) {
-        this.initialSequenceNumber = Util.getNextRandomInt(1000);
+        this.initialSequenceNumber = Util.getNextRandomInt(10000);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
@@ -102,7 +102,7 @@ public class ClassicTCP extends Routable implements TCP {
     @Override
     public void connect(Packet syn) {
         Endpoint node = syn.getOrigin();
-        int seqNum = Util.getNextRandomInt(1000);
+        int seqNum = Util.getNextRandomInt(10000);
         int ackNum = syn.getSequenceNumber() + 1;
         this.otherReceivingWindowCapacity = Integer.parseInt(syn.getPayload().toString());
         Packet synAck = new PacketBuilder()
@@ -222,6 +222,10 @@ public class ClassicTCP extends Routable implements TCP {
         return this.mainFlow;
     }
 
+    @Override
+    public int getNumberOfFlows() {
+        return 1;
+    }
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {
         if (this.sendingWindow != null) return this.sendingWindow;

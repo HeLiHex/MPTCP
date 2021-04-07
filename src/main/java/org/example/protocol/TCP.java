@@ -76,6 +76,8 @@ public interface TCP extends Endpoint {
 
     TCP getMainFlow();
 
+    int getNumberOfFlows();
+
 
 
 }

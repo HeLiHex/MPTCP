@@ -64,12 +64,14 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         System.out.println(peek().getSequenceNumber());
         System.out.println();
 
-         */
+
 
         System.out.println(size());
         System.out.println();
         System.out.println(this);
         System.out.println();
+
+         */
 
         if (this.inReceivingWindow(this.peek(), connection)) {
             while (receivingPacketIndex(this.peek(), connection) == 0 && this.peek().getIndex() == this.packetCount){

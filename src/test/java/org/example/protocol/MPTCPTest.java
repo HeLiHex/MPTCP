@@ -151,7 +151,8 @@ public class MPTCPTest {
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
 
-        RoutableEndpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100),100);
+        MPTCP server = new MPTCP(2, 14);
+
         //path one
         client.addChannel(r11);
         client.addChannel(r12);
@@ -168,16 +169,13 @@ public class MPTCPTest {
         server.updateRoutingTable();
 
         Message msg = new Message( "hello på do!");
-        Packet packet = new PacketBuilder()
-                .withPayload(msg)
-                .withDestination(server)
-                .build();
+        client.send(msg);
 
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new RouteEvent(client, packet));
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        Packet receivedPacket = server.getReceivedPacket();
+        Packet receivedPacket = server.receive();
         Assert.assertNotNull(receivedPacket);
 
         Payload receivedPayload = receivedPacket.getPayload();
@@ -396,11 +394,11 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest(){
-        MPTCP client = new MPTCP(3, 50);
-        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(3, 50);
+        MPTCP client = new MPTCP(3, 21);
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("C")).build();
+        MPTCP server = new MPTCP(3, 21);
 
         //path one
         client.addChannel(r1);
@@ -432,7 +430,7 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
 
-        int numPacketsToSend = 10000;
+        int numPacketsToSend = 1000;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
@@ -441,8 +439,8 @@ public class MPTCPTest {
         eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
-        //Assert.assertTrue(client.inputBufferIsEmpty());
-        //Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
         Assert.assertTrue(r1.inputBufferIsEmpty());
         Assert.assertTrue(r2.inputBufferIsEmpty());
         Assert.assertTrue(r3.inputBufferIsEmpty());
@@ -453,11 +451,63 @@ public class MPTCPTest {
             Message msg = new Message( "test " + i);
             Packet received = server.receive();
             System.out.println("received " + received);
-            //Assert.assertNotNull(received);
-            //Assert.assertEquals("iteration " + i, received.getPayload(), msg);
+            Assert.assertNotNull(received);
+            Assert.assertEquals("iteration " + i, received.getPayload(), msg);
         }
+        Assert.assertNull(server.receive());
 
         eventHandler.printStatistics();
+    }
+
+
+    @Test
+    public void MPTCPFloodWithPacketsInOrderWithVariableNumberOfSubflowsShouldWorkTest(){
+        int maxSubflows = 10;
+        for (int numSubflows = 1; numSubflows <= maxSubflows; numSubflows++) {
+            MPTCP client = new MPTCP(numSubflows, 21);
+            MPTCP server = new MPTCP(numSubflows, 21);
+
+            for (int i = 1; i <= numSubflows; i++) {
+                Routable router = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("Router " + i)).build();
+                client.addChannel(router);
+                router.addChannel(server);
+                router.updateRoutingTable();
+            }
+            client.updateRoutingTable();
+            server.updateRoutingTable();
+
+            EventHandler eventHandler = new EventHandler();
+            eventHandler.addEvent(new TCPConnectEvent(client, server));
+            eventHandler.run();
+            System.out.println("connected");
+
+            for (TCP subflow : client.getSubflows()) {
+                Assert.assertTrue(subflow.isConnected());
+            }
+
+            int numPacketsToSend = 1000;
+            for (int i = 1; i <= numPacketsToSend; i++) {
+                Message msg = new Message("test " + i);
+                client.send(msg);
+            }
+            eventHandler.addEvent(new RunTCPEvent(client));
+            eventHandler.run();
+
+            Assert.assertTrue(client.inputBufferIsEmpty());
+            Assert.assertTrue(server.inputBufferIsEmpty());
+            for (TCP subflow : client.getSubflows()) {
+                Assert.assertTrue(subflow.inputBufferIsEmpty());
+            }
+
+            for (int i = 1; i <= numPacketsToSend; i++) {
+                Message msg = new Message( "test " + i);
+                Packet received = server.receive();
+                System.out.println("received " + received);
+                Assert.assertNotNull(received);
+                Assert.assertEquals("iteration " + i, received.getPayload(), msg);
+            }
+            Assert.assertNull(server.receive());
+        }
     }
 
 
