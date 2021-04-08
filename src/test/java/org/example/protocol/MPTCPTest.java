@@ -192,20 +192,14 @@ public class MPTCPTest {
 
         Packet received1 = server.receive();
         Assert.assertNotNull(received1);
-        System.out.println(received1.getIndex());
-        System.out.println(received1.getPayload());
         Assert.assertEquals(msg1, received1.getPayload());
 
         Packet received2 = server.receive();
         Assert.assertNotNull(received2);
-        System.out.println(received2.getIndex());
-        System.out.println(received2.getPayload());
         Assert.assertEquals(msg2, received2.getPayload());
 
         Packet received3 = server.receive();
         Assert.assertNotNull(received3);
-        System.out.println(received3.getIndex());
-        System.out.println(received3.getPayload());
         Assert.assertEquals(msg3, received3.getPayload());
 
         Assert.assertNull(server.receive());
@@ -242,10 +236,6 @@ public class MPTCPTest {
         eventHandler.run();
         System.out.println("connected");
 
-        //Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
-        //Assert.assertEquals(server.getSubflows()[0].getConnection().getNextSequenceNumber() , client.getSubflows()[1].getConnection().getNextAcknowledgementNumber());
-
-
         Assert.assertTrue(client.getSubflows()[0].isConnected());
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
@@ -262,20 +252,14 @@ public class MPTCPTest {
 
         Packet received1 = server.receive();
         Assert.assertNotNull(received1);
-        System.out.println(received1.getIndex());
-        System.out.println(received1.getPayload());
         Assert.assertEquals(msg1, received1.getPayload());
 
         Packet received2 = server.receive();
         Assert.assertNotNull(received2);
-        System.out.println(received2.getIndex());
-        System.out.println(received2.getPayload());
         Assert.assertEquals(msg2, received2.getPayload());
 
         Packet received3 = server.receive();
         Assert.assertNotNull(received3);
-        System.out.println(received3.getIndex());
-        System.out.println(received3.getPayload());
         Assert.assertEquals(msg3, received3.getPayload());
 
         Assert.assertNull(server.receive());
@@ -313,14 +297,11 @@ public class MPTCPTest {
         eventHandler.run();
         System.out.println("connected");
 
-        //Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
-        //Assert.assertEquals(server.getSubflows()[0].getConnection().getNextSequenceNumber() , client.getSubflows()[1].getConnection().getNextAcknowledgementNumber());
-
         Assert.assertTrue(client.getSubflows()[0].isConnected());
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
 
-        int numPacketsToSend = 1000;
+        int numPacketsToSend = 10000;
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
@@ -339,7 +320,68 @@ public class MPTCPTest {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             Packet received = server.receive();
-            System.out.println("received " + received);
+            Assert.assertNotNull(received);
+            Assert.assertEquals("iteration " + i, received.getPayload(), msg);
+        }
+        Assert.assertNull(server.receive());
+
+        eventHandler.printStatistics();
+    }
+
+    @Test
+    public void MPTCPFloodWithPacketsInLossyChannelsShouldWorkTest() {
+        MPTCP client = new MPTCP(3, 21);
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(5).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(5).withAddress(new SimpleAddress("C")).build();
+        MPTCP server = new MPTCP(3, 21);
+
+        //path one
+        client.addChannel(r1);
+        r1.addChannel(server);
+
+        //path two
+        client.addChannel(r2);
+        r2.addChannel(server);
+
+        //path three
+        client.addChannel(r3);
+        r3.addChannel(server);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        server.updateRoutingTable();
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+        System.out.println("connected");
+
+        Assert.assertTrue(client.getSubflows()[0].isConnected());
+        Assert.assertTrue(client.getSubflows()[1].isConnected());
+        Assert.assertTrue(client.getSubflows()[2].isConnected());
+
+        int numPacketsToSend = 10000;
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            client.send(msg);
+        }
+        eventHandler.addEvent(new RunTCPEvent(client));
+        eventHandler.run();
+
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(r1.inputBufferIsEmpty());
+        Assert.assertTrue(r2.inputBufferIsEmpty());
+        Assert.assertTrue(r3.inputBufferIsEmpty());
+
+
+        for (int i = 1; i <= numPacketsToSend; i++) {
+            Message msg = new Message("test " + i);
+            Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals("iteration " + i, received.getPayload(), msg);
         }
@@ -374,7 +416,7 @@ public class MPTCPTest {
                 Assert.assertTrue(subflow.isConnected());
             }
 
-            int numPacketsToSend = 1000;
+            int numPacketsToSend = 10000;
             for (int i = 1; i <= numPacketsToSend; i++) {
                 Message msg = new Message("test " + i);
                 client.send(msg);
@@ -391,7 +433,6 @@ public class MPTCPTest {
             for (int i = 1; i <= numPacketsToSend; i++) {
                 Message msg = new Message("test " + i);
                 Packet received = server.receive();
-                System.out.println("received " + received);
                 Assert.assertNotNull(received);
                 Assert.assertEquals("iteration " + i, received.getPayload(), msg);
             }
