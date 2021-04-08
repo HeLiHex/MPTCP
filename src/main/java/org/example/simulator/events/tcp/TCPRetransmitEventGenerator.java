@@ -1,6 +1,7 @@
 package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
+import org.example.protocol.MPTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.Statistics;
 import org.example.simulator.events.Event;
@@ -25,6 +26,7 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
     @Override
     public void generateNextEvent(Queue<Event> events) {
         if (this.numAttempts > 3 ) return;
+        
         if (!this.tcp.isConnected()) return;
 
         if (this.tcp.canRetransmit(this.packet)) {

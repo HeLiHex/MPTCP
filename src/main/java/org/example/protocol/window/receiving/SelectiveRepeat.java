@@ -39,6 +39,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     @Override
     public boolean receive(SendingWindow sendingWindow) {
         if (this.isEmpty()) return false;
+        if (this.peek().hasAllFlags(Flag.SYN)) return false;
 
         Connection connection = sendingWindow.getConnection();
 

@@ -168,11 +168,15 @@ public class MPTCPTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message( "hello på do!");
-        client.send(msg);
-
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+        System.out.println("connected");
+
+        Assert.fail();
+        Message msg = new Message( "hello på do!");
+        client.send(msg);
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Packet receivedPacket = server.receive();
@@ -321,6 +325,66 @@ public class MPTCPTest {
         Assert.assertEquals(msg2, received2.getPayload());
     }
 */
+
+    @Test
+    public void MPTCPConnectToMPTCPNonDistinctPathTest(){
+        MPTCP client = new MPTCP(2, 20);
+        Routable r1 = new Router.RouterBuilder().withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
+        MPTCP server = new MPTCP(2, 20);
+
+        client.addChannel(r1);
+        client.addChannel(r2);
+
+        r3.addChannel(r1);
+        r3.addChannel(r2);
+
+        server.addChannel(r3);
+
+        client.updateRoutingTable();
+        r1.updateRoutingTable();
+        r2.updateRoutingTable();
+        r3.updateRoutingTable();
+        server.updateRoutingTable();
+
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addEvent(new TCPConnectEvent(client, server));
+        eventHandler.run();
+        System.out.println("connected");
+
+        Assert.assertTrue(client.isConnected());
+
+        Message msg1 = new Message( "hello 1!");
+        Message msg2 = new Message( "hello 2!");
+        Message msg3 = new Message( "hello 3!");
+
+        client.send(msg1);
+        client.send(msg2);
+        client.send(msg3);
+        eventHandler.addEvent(new RunTCPEvent(client));
+        eventHandler.run();
+
+        Packet received1 = server.receive();
+        Assert.assertNotNull(received1);
+        System.out.println(received1.getIndex());
+        System.out.println(received1.getPayload());
+        Assert.assertEquals(msg1, received1.getPayload());
+
+        Packet received2 = server.receive();
+        Assert.assertNotNull(received2);
+        System.out.println(received2.getIndex());
+        System.out.println(received2.getPayload());
+        Assert.assertEquals(msg2, received2.getPayload());
+
+        Packet received3 = server.receive();
+        Assert.assertNotNull(received3);
+        System.out.println(received3.getIndex());
+        System.out.println(received3.getPayload());
+        Assert.assertEquals(msg3, received3.getPayload());
+
+        Assert.assertNull(server.receive());
+    }
 
     @Test
     public void MPTCPConnectToMPTCPThenSendMsgOverThreeSubflowsTest(){

@@ -78,7 +78,13 @@ public class MPTCP implements TCP{
 
     @Override
     public List<Channel> getChannels() {
-        return null;
+        List<Channel> channels = new ArrayList<>();
+        for (TCP subflow : this.subflows) {
+            for (Channel c  : subflow.getChannels()) {
+                channels.add(c);
+            }
+        }
+        return channels;
     }
 
     public Endpoint getEndpointToAddChannelTo(){

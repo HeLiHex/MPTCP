@@ -61,6 +61,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void connect(TCP host) {
+        if (this.isConnected()) return;
         this.initialSequenceNumber = Util.getNextRandomInt(10000);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
@@ -101,6 +102,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void connect(Packet syn) {
+        if (this.isConnected()) return;
         Endpoint node = syn.getOrigin();
         int seqNum = Util.getNextRandomInt(10000);
         int ackNum = syn.getSequenceNumber() + 1;
@@ -271,6 +273,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     private boolean unconnectedInputHandler() {
         if (this.inputBuffer.isEmpty()) return false;
+        if (!this.peekInputBuffer().getDestination().equals(this)) return false;
         Packet packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)) {
