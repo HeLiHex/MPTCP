@@ -30,7 +30,7 @@ public class MPTCPTest {
     }
 
     @Test
-    public void mptcpWithTwoSubFlowsAndNonDistinctPathConnectAndSendCorrectTest() {
+    public void MPTCPWithTwoSubFlowsAndNonDistinctPathConnectAndSendCorrectTest() {
         MPTCP client = new MPTCP(2, 14);
 
         Router r11 = new Router.RouterBuilder().build();
