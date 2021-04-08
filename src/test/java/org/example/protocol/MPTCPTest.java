@@ -40,45 +40,6 @@ public class MPTCPTest {
 
  */
 
-    @Test
-    @Ignore
-    public void mptcpWithOneSubflowRoutingPacketRoutsItToItsDestinationStraitLine(){
-        MPTCP client = new MPTCP(1, 7);
-        Router r1 = new Router.RouterBuilder().build();
-        Router r2 = new Router.RouterBuilder().build();
-        Router r3 = new Router.RouterBuilder().build();
-        Router r4 = new Router.RouterBuilder().build();
-        RoutableEndpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100),100);
-
-        client.addChannel(r1);
-        r1.addChannel(r2);
-        r2.addChannel(r3);
-        r3.addChannel(r4);
-        r4.addChannel(server);
-
-        client.updateRoutingTable();
-        r1.updateRoutingTable();
-        r2.updateRoutingTable();
-        r3.updateRoutingTable();
-        r4.updateRoutingTable();
-        server.updateRoutingTable();
-
-        Message msg = new Message( "hello på do!");
-        Packet packet = new PacketBuilder()
-                .withPayload(msg)
-                .withDestination(server)
-                .build();
-
-        EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new RouteEvent(client, packet));
-        eventHandler.run();
-
-        Packet receivedPacket = server.getReceivedPacket();
-        Assert.assertNotNull(receivedPacket);
-
-        Payload receivedPayload = receivedPacket.getPayload();
-        Assert.assertEquals(receivedPayload, msg);
-    }
 
     @Test
     @Ignore
@@ -141,8 +102,7 @@ public class MPTCPTest {
     }
 
     @Test
-    @Ignore
-    public void mptcpWithTwoSubFlowsAndNonDistinctPathRoutsCorrectTest(){
+    public void mptcpWithTwoSubFlowsAndNonDistinctPathConnectAndSendCorrectTest(){
         MPTCP client = new MPTCP(2, 14);
 
         Router r11 = new Router.RouterBuilder().build();
@@ -160,6 +120,7 @@ public class MPTCPTest {
         r12.addChannel(r3);
         r3.addChannel(r4);
         r4.addChannel(server);
+        r4.addChannel(server);
 
         client.updateRoutingTable();
         r11.updateRoutingTable();
@@ -173,7 +134,7 @@ public class MPTCPTest {
         eventHandler.run();
         System.out.println("connected");
 
-        Assert.fail();
+
         Message msg = new Message( "hello på do!");
         client.send(msg);
         eventHandler.addEvent(new RunTCPEvent(client));
@@ -184,6 +145,8 @@ public class MPTCPTest {
 
         Payload receivedPayload = receivedPacket.getPayload();
         Assert.assertEquals(receivedPayload, msg);
+
+        Assert.assertNull(server.receive());
     }
 /*
     @Test
