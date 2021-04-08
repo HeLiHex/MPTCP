@@ -148,34 +148,6 @@ public class ClassicTCPTest {
 
     }
 
-
-    @Test
-    @Ignore //because doing things this way will result inn 0 index for every packet
-    public void packetsAreOrderedTest(){
-        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-
-        client.addChannel(router);
-        router.addChannel(server);
-
-        client.updateRoutingTable();
-        router.updateRoutingTable();
-        server.updateRoutingTable();
-
-        EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new TCPConnectEvent(client, server));
-        eventHandler.run();
-
-        for (int i = 0; i <= server.getThisReceivingWindowCapacity() * 2; i++) {
-            Message msg = new Message( "test " + i);
-            client.send(msg);
-            eventHandler.addEvent(new RunTCPEvent(client));
-            eventHandler.run();
-            Assert.assertEquals(msg, server.receive().getPayload());
-        }
-    }
-
     @Test
     public void unorderedPacketsAreNotReceivedTest(){
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
