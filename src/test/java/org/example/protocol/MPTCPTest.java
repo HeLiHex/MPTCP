@@ -310,6 +310,8 @@ public class MPTCPTest {
         eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
+        Assert.assertTrue("client still has packets to send", client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
         Assert.assertTrue(client.inputBufferIsEmpty());
         Assert.assertTrue(server.inputBufferIsEmpty());
         Assert.assertTrue(r1.inputBufferIsEmpty());
@@ -426,6 +428,8 @@ public class MPTCPTest {
             eventHandler.addEvent(new RunTCPEvent(client));
             eventHandler.run();
 
+            Assert.assertTrue("client still has packets to send", client.outputBufferIsEmpty());
+            Assert.assertTrue(server.outputBufferIsEmpty());
             Assert.assertTrue(client.inputBufferIsEmpty());
             Assert.assertTrue(server.inputBufferIsEmpty());
             for (TCP subflow : client.getSubflows()) {
