@@ -331,9 +331,9 @@ public class MPTCPTest {
     @Test
     public void MPTCPFloodWithPacketsInLossyChannelsShouldWorkTest() {
         MPTCP client = new MPTCP(3, 21);
-        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(5).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(5).withAddress(new SimpleAddress("C")).build();
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
 
         //path one
@@ -372,12 +372,14 @@ public class MPTCPTest {
         eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
+        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+
         Assert.assertTrue(client.inputBufferIsEmpty());
         Assert.assertTrue(server.inputBufferIsEmpty());
         Assert.assertTrue(r1.inputBufferIsEmpty());
         Assert.assertTrue(r2.inputBufferIsEmpty());
         Assert.assertTrue(r3.inputBufferIsEmpty());
-
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
