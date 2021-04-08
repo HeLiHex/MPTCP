@@ -1,15 +1,13 @@
 package org.example.simulator;
 
 import org.example.data.Message;
+import org.example.network.ChannelTest;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
-import org.example.simulator.events.tcp.TCPConnectEvent;
+import org.example.simulator.events.tcp.*;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.tcp.TCPInputEvent;
-import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
-import org.example.simulator.events.tcp.TCPSendEvent;
 import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,87 +23,75 @@ public class EventTest {
     private ClassicTCP tcp;
     private ClassicTCP host;
 
-
-    @Before
-    public void setup(){
-        Util.resetTime();
-        Util.setSeed(1337);
-        this.events = new PriorityQueue<>();
-        this.tcp = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        this.host = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-    }
-
     public void connect(TCP linkedClient, TCP linkedServer){
         EventHandler eventHandler = new EventHandler();
-        eventHandler.addEvent(new TCPConnectEvent( linkedClient, linkedServer));
+        eventHandler.addEvent(new TCPConnectEvent(linkedClient, linkedServer));
         eventHandler.run();
+        Assert.assertTrue(linkedClient.isConnected());
+        Assert.assertTrue(linkedServer.isConnected());
     }
 
     @Test
-    @Ignore
     public void EventsOccurInAPreMatchedSequence(){
-        this.tcp.addChannel(this.host);
-        this.tcp.updateRoutingTable();
-        this.host.updateRoutingTable();
-        this.connect(this.tcp, this.host);
-
         int numberOfRuns = 100;
         for (int i = 0; i < numberOfRuns; i++) {
             Util.resetTime();
             Util.setSeed(1337);
+            this.events = new PriorityQueue<>();
+            this.tcp = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+            this.host = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+
+            this.tcp.addChannel(this.host);
+            this.tcp.updateRoutingTable();
+            this.host.updateRoutingTable();
+            this.connect(this.tcp, this.host);
 
             this.tcp.send(new Message("hello"));
-            this.events.add(new TCPSendEvent(this.tcp));
+            this.events.add(new RunTCPEvent(this.tcp));
 
-            String debugString = "Iteration: " + i;
+            String debugString = "Iteration: " + (i + 1);
 
             Event curEvent = this.events.poll();
-            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
+            Assert.assertNotNull(curEvent);
+            Assert.assertEquals(debugString, RunTCPEvent.class, curEvent.getClass());
             curEvent.run();
             curEvent.generateNextEvent(this.events);
 
             curEvent = this.events.poll();
-            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
-            curEvent.run();
-            curEvent.generateNextEvent(this.events);
-
-            curEvent = this.events.poll();
+            Assert.assertNotNull(curEvent);
             Assert.assertEquals(debugString, ChannelEvent.class, curEvent.getClass());
             curEvent.run();
             curEvent.generateNextEvent(this.events);
 
             curEvent = this.events.poll();
-            Assert.assertEquals(debugString, TCPInputEvent.class, curEvent.getClass());
+            Assert.assertNotNull(curEvent);
+            Assert.assertEquals(debugString, RunTCPEvent.class, curEvent.getClass());
             curEvent.run();
             curEvent.generateNextEvent(this.events);
 
             curEvent = this.events.poll();
-            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
-            curEvent.run();
-            curEvent.generateNextEvent(this.events);
-
-            curEvent = this.events.poll();
+            Assert.assertNotNull(curEvent);
             Assert.assertEquals(debugString, ChannelEvent.class, curEvent.getClass());
             curEvent.run();
             curEvent.generateNextEvent(this.events);
 
             curEvent = this.events.poll();
-            Assert.assertEquals(debugString, TCPInputEvent.class, curEvent.getClass());
+            Assert.assertNotNull(curEvent);
+            Assert.assertEquals(debugString, RunTCPEvent.class, curEvent.getClass());
             curEvent.run();
             curEvent.generateNextEvent(this.events);
 
             curEvent = this.events.poll();
-            Assert.assertEquals(debugString, TCPSendEvent.class, curEvent.getClass());
-            curEvent.run();
-            curEvent.generateNextEvent(this.events);
-
-            curEvent = this.events.poll();
+            Assert.assertNotNull(curEvent);
             Assert.assertEquals(debugString, TCPRetransmitEventGenerator.class, curEvent.getClass());
             curEvent.run();
             curEvent.generateNextEvent(this.events);
 
+            Assert.assertTrue(debugString, this.tcp.outputBufferIsEmpty());
+            Assert.assertTrue(debugString, this.host.outputBufferIsEmpty());
+            Assert.assertTrue(debugString, this.tcp.inputBufferIsEmpty());
+            Assert.assertTrue(debugString, this.host.inputBufferIsEmpty());
             Assert.assertEquals(debugString, 0, this.events.size());
-
         }
     }
 
