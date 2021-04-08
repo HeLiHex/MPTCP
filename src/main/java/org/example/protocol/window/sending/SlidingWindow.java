@@ -47,7 +47,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void ackReceived(Packet ack) {
-        System.out.println("ack received " + ack);
         int ackIndex = this.sendingPacketIndex(ack);
 
         boolean dupAck = ackIndex == -1;

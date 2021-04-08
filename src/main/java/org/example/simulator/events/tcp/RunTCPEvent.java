@@ -55,7 +55,6 @@ public class RunTCPEvent extends Event {
         }
 
         if (this.scheduleFirstSend){
-            System.out.println("first connect delay");
             //add delay before sending first packet
             //this is important if we have a "downloading situation"
             events.add(new RunTCPEvent(this.tcp, 1000));
