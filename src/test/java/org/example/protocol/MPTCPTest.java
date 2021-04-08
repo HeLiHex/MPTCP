@@ -148,13 +148,15 @@ public class MPTCPTest {
 
         Assert.assertNull(server.receive());
     }
-/*
-    @Test
-    public void MPTCPConnectToEndpointTest(){
-        MPTCP client = new MPTCP(2, 7, 7);
-        Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
+    @Test
+    @Ignore
+    public void MPTCPConnectToEndpointTest(){
+        MPTCP client = new MPTCP(2, 14);
+        Routable router = new Router.RouterBuilder().withAddress(new SimpleAddress("router")).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withAddress(new SimpleAddress("server")).withReceivingWindowCapacity(7).build();
+
+        client.addChannel(router);
         client.addChannel(router);
         router.addChannel(server);
 
@@ -162,18 +164,21 @@ public class MPTCPTest {
         router.updateRoutingTable();
         server.updateRoutingTable();
 
+        System.out.println(client.getChannels());
+        System.out.println(router.getChannels());
+        System.out.println(server.getChannels());
+
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        //Assert.assertEquals(server, client.getConnection().getConnectedNode());
-        //Assert.assertEquals(client, server.getConnection().getConnectedNode());
+        //Assert.assertFalse(client.isConnected());
 
-        //Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
-        //Assert.assertTrue(client.getSubflows()[0].isConnected());
-        //Assert.assertFalse(client.getSubflows()[1].isConnected());
+        Assert.assertTrue(client.getSubflows()[0].isConnected());
+        Assert.assertFalse(client.getSubflows()[1].isConnected());
     }
 
+    /*
     @Test
     public void MPTCPOverlappingPathConnectToEndpointTest(){
         MPTCP client = new MPTCP(2, 7, 7);
@@ -383,6 +388,7 @@ public class MPTCPTest {
 
         //Assert.assertEquals(server.getConnection().getNextSequenceNumber() , client.getConnection().getNextAcknowledgementNumber());
         //Assert.assertEquals(server.getSubflows()[0].getConnection().getNextSequenceNumber() , client.getSubflows()[1].getConnection().getNextAcknowledgementNumber());
+
 
         Assert.assertTrue(client.getSubflows()[0].isConnected());
         Assert.assertTrue(client.getSubflows()[1].isConnected());

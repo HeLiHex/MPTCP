@@ -146,64 +146,29 @@ public class MPTCP implements TCP{
 
     @Override
     public void connect(TCP host) {
-        if (host instanceof MPTCP){
-            MPTCP mptcpHost = (MPTCP) host;
-            TCP[] hostSubflows = mptcpHost.getSubflows();
-            //int numberOfConnections = Math.min(this.subflows.length, hostSubflows.length);
+        if (!(host instanceof MPTCP)) {
+            this.subflows[0].connect(host);
+            return;
+        }
+        MPTCP mptcpHost = (MPTCP) host;
+        TCP[] hostSubflows = mptcpHost.getSubflows();
 
-
-            for (int i = 0; i < this.subflows.length; i++) {
-                TCP cFlow = this.subflows[i];
-                if (cFlow.isConnected()) continue;
-                for (int j = i; j < hostSubflows.length; j++) {
-                    TCP hFlow = hostSubflows[i];
-                    if (hFlow.isConnected()) continue;
-                    try {
-                        cFlow.connect(hFlow);
-                        break;
-                    }catch (IllegalArgumentException e){
-                        continue;
-                    }
-                }
-                break;
-            }
-/*
-            int i = 0;
-            for (TCP cFlow : this.subflows) {
-                if (cFlow.isConnected()) continue;
-                while (i < hostSubflows.length) {
-                    TCP hFlow = hostSubflows[i];
-                    i++;
-                    if (hFlow.isConnected()) continue;
-                    try {
-                        cFlow.connect(hFlow);
-                        break;
-                    }catch (IllegalArgumentException e){
-                        continue;
-                    }
-                }
-                break;
-            }
-
- */
-
-/*
-            int numberOfConnections = Math.min(this.subflows.length, hostSubflows.length);
-            for (int i = 0; i < numberOfConnections; i++) {
-                if (subflows[i].isConnected()) continue;
-                for (int h = 0; h < numberOfConnections; h++) {
-                    if (hostSubflows[h].isConnected()) continue;
-                    try {
-                        this.subflows[i].connect(hostSubflows[h]);
-                        System.out.println("connection made");
-                        break;
-                    }catch (IllegalArgumentException e){
-                        continue;
-                    }
+        for (int i = 0; i < this.subflows.length; i++) {
+            TCP cFlow = this.subflows[i];
+            if (cFlow.isConnected()) continue;
+            for (int j = i; j < hostSubflows.length; j++) {
+                TCP hFlow = hostSubflows[i];
+                if (hFlow.isConnected()) continue;
+                try {
+                    cFlow.connect(hFlow);
+                    System.out.println("trying to connect");
+                    break;
+                }catch (IllegalArgumentException e){
+                    System.out.println("connect fail");
+                    continue;
                 }
             }
-
- */
+            break;
         }
     }
 

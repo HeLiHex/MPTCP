@@ -2,6 +2,7 @@ package org.example.simulator.events.tcp;
 
 import org.example.data.Packet;
 import org.example.network.Channel;
+import org.example.protocol.MPTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
@@ -29,7 +30,16 @@ public class RunTCPEvent extends Event {
 
     @Override
     public void run() {
-        if (this.tcp.isConnected()){
+        if (this.tcp instanceof MPTCP){
+            for (TCP subflow : ((MPTCP) this.tcp).getSubflows()) {
+                if (subflow.isConnected()){
+                    this.tcp.handleIncoming();
+                    this.packetsSent = this.tcp.trySend();
+                    return;
+                }
+            }
+        }
+        else if (this.tcp.isConnected()){
             this.tcp.handleIncoming();
             this.packetsSent = this.tcp.trySend();
             return;
