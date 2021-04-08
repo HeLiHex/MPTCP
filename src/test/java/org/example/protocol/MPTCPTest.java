@@ -340,6 +340,7 @@ public class MPTCPTest {
         r3.addChannel(r1);
         r3.addChannel(r2);
 
+        server.addChannel(r3);//todo - rart at du må ha 2, men gir litt mening også....
         server.addChannel(r3);
 
         client.updateRoutingTable();
