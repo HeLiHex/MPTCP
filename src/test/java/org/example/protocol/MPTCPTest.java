@@ -372,7 +372,7 @@ public class MPTCPTest {
         eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
-        Assert.assertTrue(client.outputBufferIsEmpty());
+        Assert.assertTrue("client still has packets to send", client.outputBufferIsEmpty());
         Assert.assertTrue(server.outputBufferIsEmpty());
 
         Assert.assertTrue(client.inputBufferIsEmpty());
