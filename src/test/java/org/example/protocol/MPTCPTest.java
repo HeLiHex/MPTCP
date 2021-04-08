@@ -2,24 +2,20 @@ package org.example.protocol;
 
 import org.example.data.Message;
 import org.example.data.Packet;
-import org.example.data.PacketBuilder;
 import org.example.data.Payload;
 import org.example.network.Routable;
-import org.example.network.RoutableEndpoint;
 import org.example.network.Router;
-
 import org.example.network.address.SimpleAddress;
 import org.example.simulator.EventHandler;
-import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
-
-import org.example.simulator.events.tcp.TCPSendEvent;
 import org.example.util.Util;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.Timeout;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class MPTCPTest {
@@ -28,13 +24,13 @@ public class MPTCPTest {
     public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
 
     @Before
-    public void setup(){
+    public void setup() {
         Util.setSeed(1337);
         Util.resetTime();
     }
 
     @Test
-    public void mptcpWithTwoSubFlowsAndNonDistinctPathConnectAndSendCorrectTest(){
+    public void mptcpWithTwoSubFlowsAndNonDistinctPathConnectAndSendCorrectTest() {
         MPTCP client = new MPTCP(2, 14);
 
         Router r11 = new Router.RouterBuilder().build();
@@ -67,7 +63,7 @@ public class MPTCPTest {
         System.out.println("connected");
 
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         client.send(msg);
         eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
@@ -82,7 +78,7 @@ public class MPTCPTest {
     }
 
     @Test
-    public void MPTCPConnectToTCPTest(){
+    public void MPTCPConnectToTCPTest() {
         MPTCP client = new MPTCP(2, 14);
         Routable router = new Router.RouterBuilder().withAddress(new SimpleAddress("router")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withAddress(new SimpleAddress("server")).withReceivingWindowCapacity(7).build();
@@ -110,7 +106,7 @@ public class MPTCPTest {
 
 
     @Test
-    public void MPTCPConnectThenSendMsgOverTwoSubflowsTest(){
+    public void MPTCPConnectThenSendMsgOverTwoSubflowsTest() {
         MPTCP client = new MPTCP(2, 14);
         Routable r1 = new Router.RouterBuilder().build();
         Routable r2 = new Router.RouterBuilder().build();
@@ -136,8 +132,8 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[0].isConnected());
         Assert.assertFalse(client.getSubflows()[1].isConnected());
 
-        Message msg1 = new Message( "hello 1!");
-        Message msg2 = new Message( "hello 2!");
+        Message msg1 = new Message("hello 1!");
+        Message msg2 = new Message("hello 2!");
 
         client.send(msg1);
         client.send(msg2);
@@ -155,7 +151,7 @@ public class MPTCPTest {
 
 
     @Test
-    public void MPTCPConnectToMPTCPNonDistinctPathTest(){
+    public void MPTCPConnectToMPTCPNonDistinctPathTest() {
         MPTCP client = new MPTCP(2, 20);
         Routable r1 = new Router.RouterBuilder().withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
@@ -184,9 +180,9 @@ public class MPTCPTest {
 
         Assert.assertTrue(client.isConnected());
 
-        Message msg1 = new Message( "hello 1!");
-        Message msg2 = new Message( "hello 2!");
-        Message msg3 = new Message( "hello 3!");
+        Message msg1 = new Message("hello 1!");
+        Message msg2 = new Message("hello 2!");
+        Message msg3 = new Message("hello 3!");
 
         client.send(msg1);
         client.send(msg2);
@@ -216,7 +212,7 @@ public class MPTCPTest {
     }
 
     @Test
-    public void MPTCPConnectToMPTCPThenSendMsgOverThreeSubflowsTest(){
+    public void MPTCPConnectToMPTCPThenSendMsgOverThreeSubflowsTest() {
         MPTCP client = new MPTCP(3, 21);
         Routable r1 = new Router.RouterBuilder().withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
@@ -254,9 +250,9 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
 
-        Message msg1 = new Message( "hello 1!");
-        Message msg2 = new Message( "hello 2!");
-        Message msg3 = new Message( "hello 3!");
+        Message msg1 = new Message("hello 1!");
+        Message msg2 = new Message("hello 2!");
+        Message msg3 = new Message("hello 3!");
 
         client.send(msg1);
         client.send(msg2);
@@ -287,7 +283,7 @@ public class MPTCPTest {
 
 
     @Test
-    public void MPTCPFloodWithPacketsInOrderShouldWorkTest(){
+    public void MPTCPFloodWithPacketsInOrderShouldWorkTest() {
         MPTCP client = new MPTCP(3, 21);
         Routable r1 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("B")).build();
@@ -340,9 +336,8 @@ public class MPTCPTest {
         Assert.assertTrue(r3.inputBufferIsEmpty());
 
 
-
         for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message( "test " + i);
+            Message msg = new Message("test " + i);
             Packet received = server.receive();
             System.out.println("received " + received);
             Assert.assertNotNull(received);
@@ -355,7 +350,7 @@ public class MPTCPTest {
 
 
     @Test
-    public void MPTCPFloodWithPacketsInOrderWithVariableNumberOfSubflowsShouldWorkTest(){
+    public void MPTCPFloodWithPacketsInOrderWithVariableNumberOfSubflowsShouldWorkTest() {
         int maxSubflows = 10;
         for (int numSubflows = 1; numSubflows <= maxSubflows; numSubflows++) {
             MPTCP client = new MPTCP(numSubflows, 21);
@@ -394,7 +389,7 @@ public class MPTCPTest {
             }
 
             for (int i = 1; i <= numPacketsToSend; i++) {
-                Message msg = new Message( "test " + i);
+                Message msg = new Message("test " + i);
                 Packet received = server.receive();
                 System.out.println("received " + received);
                 Assert.assertNotNull(received);
@@ -403,7 +398,6 @@ public class MPTCPTest {
             Assert.assertNull(server.receive());
         }
     }
-
 
 
 }
