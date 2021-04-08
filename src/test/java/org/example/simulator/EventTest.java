@@ -1,17 +1,15 @@
 package org.example.simulator;
 
 import org.example.data.Message;
-import org.example.network.ChannelTest;
-import org.example.network.interfaces.Endpoint;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
-import org.example.simulator.events.tcp.*;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.tcp.RunTCPEvent;
+import org.example.simulator.events.tcp.TCPConnectEvent;
+import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
 import org.example.util.Util;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.PriorityQueue;
@@ -23,7 +21,7 @@ public class EventTest {
     private ClassicTCP tcp;
     private ClassicTCP host;
 
-    public void connect(TCP linkedClient, TCP linkedServer){
+    public void connect(TCP linkedClient, TCP linkedServer) {
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(linkedClient, linkedServer));
         eventHandler.run();
@@ -32,7 +30,7 @@ public class EventTest {
     }
 
     @Test
-    public void EventsOccurInAPreMatchedSequence(){
+    public void EventsOccurInAPreMatchedSequence() {
         int numberOfRuns = 100;
         for (int i = 0; i < numberOfRuns; i++) {
             Util.resetTime();
@@ -94,8 +92,6 @@ public class EventTest {
             Assert.assertEquals(debugString, 0, this.events.size());
         }
     }
-
-
 
 
 }
