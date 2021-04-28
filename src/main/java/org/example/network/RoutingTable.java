@@ -80,9 +80,9 @@ public class RoutingTable {
     public String toString() {
         var builder = new StringBuilder();
         for (Map.Entry<NetworkNode, Map.Entry<Channel, Integer>> entry : this.table.entrySet()) {
-            NetworkNode networkNode = entry.getKey();
+            var networkNode = entry.getKey();
             Map.Entry<Channel, Integer> value = entry.getValue();
-            Channel channel = value.getKey();
+            var channel = value.getKey();
             int cost = value.getValue();
 
             builder.append("Node: ");
