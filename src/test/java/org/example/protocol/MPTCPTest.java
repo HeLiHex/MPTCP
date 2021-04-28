@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class MPTCPTest {
 
     @Rule
-    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
+    public Timeout globalTimeout = new Timeout(120, TimeUnit.SECONDS);
 
     @Before
     public void setup() {

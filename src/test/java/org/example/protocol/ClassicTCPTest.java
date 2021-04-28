@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ClassicTCPTest {
 
     @Rule
-    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
+    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
 
 
     @Before
