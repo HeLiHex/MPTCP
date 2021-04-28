@@ -167,10 +167,8 @@ public class MPTCP implements TCP{
                     break;
                 }catch (IllegalArgumentException e){
                     Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "connection failed");
-                    continue;
                 }
             }
-            //break;
         }
     }
 
