@@ -112,7 +112,7 @@ public class Packet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Packet packet = (Packet) o;
+        var packet = (Packet) o;
         return sequenceNumber == packet.sequenceNumber
                 && acknowledgmentNumber == packet.acknowledgmentNumber
                 && destination.equals(packet.destination)
