@@ -102,7 +102,6 @@ public class RealTCPStats implements TCPStats {
     }
 
     private void setGoodput(){
-        System.out.println(this.rtt);
         this.goodput = (double)(this.numberOfPacketsSent + this.numberOfPacketsRetransmitted + this.numberOfPacketsFastRetransmitted)/((double)Util.seeTime());
     }
 
