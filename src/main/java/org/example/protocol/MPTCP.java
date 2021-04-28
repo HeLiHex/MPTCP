@@ -189,7 +189,6 @@ public class MPTCP implements TCP{
 
     @Override
     public Packet receive() {
-        System.out.println(this.receivingWindow);
         if (this.receivedPackets.isEmpty()) return null;
         return this.receivedPackets.remove(0);
     }
