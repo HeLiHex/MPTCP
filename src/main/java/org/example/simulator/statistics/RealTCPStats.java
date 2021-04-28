@@ -18,8 +18,8 @@ public class RealTCPStats implements TCPStats {
     private final String filename;
     private long rtt;
 
-    private ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
-    private ArrayList<Double> time = new ArrayList<>();
+    private final ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
+    private final ArrayList<Double> time = new ArrayList<>();
 
     private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private int numberOfPacketsRetransmitted; //total number of packets retransmitted
@@ -111,8 +111,7 @@ public class RealTCPStats implements TCPStats {
         this.setGoodput();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String jsonString = mapper.writeValueAsString(this);
-            return jsonString;
+            return mapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return "fail";
         }
