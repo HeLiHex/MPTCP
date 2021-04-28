@@ -60,7 +60,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         }
         this.dupAckCount = 0;
 
-        for (int i = 0; i <= ackIndex; i++) {
+        for (var i = 0; i <= ackIndex; i++) {
             if (this.isEmpty()) break;
             this.poll();
             this.increase();
@@ -74,7 +74,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         int nextPacketSeqNum = this.connection.getNextSequenceNumber() + this.size();
         Pair<Integer, Payload> indexAndPayload = this.payloadsToSend.remove(0);
 
-        Packet packet = new PacketBuilder()
+        var packet = new PacketBuilder()
                 .withConnection(this.connection)
                 .withPayload(indexAndPayload.getValue1())
                 .withSequenceNumber(nextPacketSeqNum)
