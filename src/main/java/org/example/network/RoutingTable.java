@@ -57,7 +57,7 @@ public class RoutingTable {
         }
 
         while (!priorityQueue.isEmpty()) {
-            Channel bestChannel = priorityQueue.poll();
+            var bestChannel = priorityQueue.poll();
             if (visited.contains(bestChannel.getDestination())) continue;
             update(bestChannel.getDestination(), visited, priorityQueue);
         }
