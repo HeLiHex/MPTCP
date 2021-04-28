@@ -180,9 +180,8 @@ public class StatisticsTest {
 
 
     @Test
-    @Ignore
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
-        double noiseTolerance = 2.2;
+        double noiseTolerance = 2.5;
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Routable r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
