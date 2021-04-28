@@ -70,7 +70,7 @@ public class RoutingTable {
         if (!this.table.containsKey(destination))
             throw new IllegalArgumentException("Destination " + destination + " does not exist in this routing table");
 
-        Channel curChannel = this.table.get(destination).getKey();
+        var curChannel = this.table.get(destination).getKey();
         NetworkNode prevNode = curChannel.getSource();
         if (source.equals(prevNode)) return curChannel;
         return getPath(source, prevNode);
