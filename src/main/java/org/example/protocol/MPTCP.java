@@ -17,6 +17,7 @@ import java.util.*;
 
 public class MPTCP implements TCP{
 
+    private static final String DEPRECATED_STRING = "DEPRECATED";
     private static final Comparator<Packet> PACKET_INDEX_COMPARATOR = Comparator.comparingInt(Packet::getIndex);
     private final List<Packet> receivedPackets;
     private final List<Pair<Integer, Payload>> payloadsToSend;
@@ -25,14 +26,13 @@ public class MPTCP implements TCP{
     private final ReceivingWindow receivingWindow;
 
     public MPTCP(int numberOfSubflows, int receivingWindowCapacity) {
-        //if (receivingWindowCapacities.length != numberOfSubflows) throw new IllegalArgumentException("the number of receiving capacities does not match the given number of subflows");
         this.receivedPackets = new ArrayList<>();
         this.payloadsToSend = new ArrayList<>();
         this.subflows = new TCP[numberOfSubflows];
         this.address = new UUIDAddress();
         this.receivingWindow = new SelectiveRepeat(receivingWindowCapacity, PACKET_INDEX_COMPARATOR, this.receivedPackets);
 
-        for (int i = 0; i < numberOfSubflows; i++) {
+        for (var i = 0; i < numberOfSubflows; i++) {
             TCP tcp = new ClassicTCP.ClassicTCPBuilder()
                     .withReceivingWindowCapacity(receivingWindowCapacity/numberOfSubflows)
                     .withAddress(new SimpleAddress("Subflow " + i + " " + this.address))
@@ -69,7 +69,7 @@ public class MPTCP implements TCP{
 
     @Override
     public void route(Packet packet) {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
@@ -107,22 +107,22 @@ public class MPTCP implements TCP{
 
     @Override
     public Address getAddress() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
     public Packet peekInputBuffer() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
     public Packet dequeueInputBuffer() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class MPTCP implements TCP{
 
     @Override
     public void run() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     public TCP[] getSubflows(){
@@ -175,7 +175,7 @@ public class MPTCP implements TCP{
 
     @Override
     public void connect(Packet syn) {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class MPTCP implements TCP{
 
     @Override
     public Channel getChannel() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
@@ -222,17 +222,17 @@ public class MPTCP implements TCP{
 
     @Override
     public long getRTT() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
     public long getRTO() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
     public long afterConnectSendDelay() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
@@ -278,16 +278,16 @@ public class MPTCP implements TCP{
 
     @Override
     public Packet fastRetransmit() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
     public boolean seriousLossDetected() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
     public int getSendingWindowCapacity() {
-        throw new IllegalStateException("deprecated");
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 }
