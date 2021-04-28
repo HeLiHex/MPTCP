@@ -114,8 +114,7 @@ public class RealTCPStats implements TCPStats {
             String jsonString = mapper.writeValueAsString(this);
             return jsonString;
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            return "fail";
         }
-        return "fail";
     }
 }
