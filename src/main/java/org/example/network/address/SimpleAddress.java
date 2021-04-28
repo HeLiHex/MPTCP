@@ -12,4 +12,14 @@ public class SimpleAddress extends Address{
     public String getId() {
         return this.id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
