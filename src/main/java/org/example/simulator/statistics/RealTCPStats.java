@@ -84,7 +84,7 @@ public class RealTCPStats implements TCPStats {
     @Override
     public void trackCwnd(int cwnd) {
         congestionWindowCapacities.add(cwnd);
-        time.add((double) Util.seeTime()/(double) 1000);
+        time.add((double) Util.seeTime()/(double) this.rtt);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class RealTCPStats implements TCPStats {
 
     private void setGoodput(){
         System.out.println(this.rtt);
-        this.goodput = (double)(this.numberOfPacketsSent + this.numberOfPacketsRetransmitted + this.numberOfPacketsFastRetransmitted)/((double)Util.seeTime()/(double)1000);
+        this.goodput = (double)(this.numberOfPacketsSent + this.numberOfPacketsRetransmitted + this.numberOfPacketsFastRetransmitted)/((double)Util.seeTime());
     }
 
     @Override

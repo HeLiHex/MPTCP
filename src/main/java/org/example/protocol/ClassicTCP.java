@@ -36,6 +36,7 @@ public class ClassicTCP extends Routable implements TCP {
     private int initialSequenceNumber;
     private long rtt;
     private long rttStartTimer = 0;
+    private boolean timerStarted = false;
     private boolean rttSet = false;
 
     private long afterConnectSendDelay = 100000;
@@ -69,7 +70,6 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void connect(TCP host) {
-        this.rttStartTimer = Util.seeTime();
         if (this.isConnected()) return;
         this.initialSequenceNumber = Util.getNextRandomInt(10000);
         Packet syn = new PacketBuilder()
@@ -80,6 +80,10 @@ public class ClassicTCP extends Routable implements TCP {
                 .withPayload(new Message(this.thisReceivingWindowCapacity + ""))
                 .build();
         this.route(syn);
+        if (!this.timerStarted){
+            this.rttStartTimer = Util.seeTime();
+            this.timerStarted = true;
+        }
     }
 
     public void continueConnect(Packet synAck) {
@@ -111,7 +115,6 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void connect(Packet syn) {
-        this.rttStartTimer = Util.seeTime();
         if (this.isConnected()) return;
         Endpoint node = syn.getOrigin();
         int seqNum = Util.getNextRandomInt(10000);
@@ -126,6 +129,11 @@ public class ClassicTCP extends Routable implements TCP {
                 .withPayload(new Message(this.thisReceivingWindowCapacity + ""))
                 .build();
         this.route(synAck);
+
+        if (!this.timerStarted){
+            this.rttStartTimer = Util.seeTime();
+            this.timerStarted = true;
+        }
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
 
@@ -222,7 +230,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long processingDelay() {
-        return super.processingDelay() * 2;
+        return super.processingDelay();
     }
 
     @Override

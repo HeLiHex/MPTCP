@@ -13,6 +13,7 @@ import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
 import org.example.simulator.statistics.Statistics;
 import org.example.util.Util;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -179,6 +180,7 @@ public class StatisticsTest {
 
 
     @Test
+    @Ignore
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
         double noiseTolerance = 2.2;
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();

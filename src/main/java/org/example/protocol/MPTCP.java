@@ -169,7 +169,7 @@ public class MPTCP implements TCP{
                     continue;
                 }
             }
-            break;
+            //break;
         }
     }
 
