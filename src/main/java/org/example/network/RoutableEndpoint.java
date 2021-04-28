@@ -49,7 +49,6 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         if (this.inputBufferIsEmpty()) return;
         Packet received = this.dequeueInputBuffer();
         this.receivedPackets.add(received);
-        //Logger.getLogger(this.getClass().getName()).log(Level.INFO, () -> "Packet: " + received + " received");
     }
 
 
