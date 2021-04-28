@@ -41,7 +41,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         if (this.isEmpty()) return false;
         if (this.peek().hasAllFlags(Flag.SYN)) return false;
 
-        Connection connection = sendingWindow.getConnection();
+        var connection = sendingWindow.getConnection();
 
         if (this.peek().hasAllFlags(Flag.ACK)) {
             if (this.peek().getOrigin().equals(connection.getConnectedNode())) {
@@ -51,7 +51,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             return false;
         }
 
-        Packet packetToUpdateWith = this.ackThisMap.get(connection.getConnectedNode());
+        var packetToUpdateWith = this.ackThisMap.get(connection.getConnectedNode());
         if (packetToUpdateWith != null) connection.update(packetToUpdateWith);
 
         if (this.inReceivingWindow(this.peek(), connection)) {
@@ -59,7 +59,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
                 connection.update(this.peek());
                 this.ackThisMap.put(this.peek().getOrigin(), this.peek());
                 this.receive(this.peek());
-                Packet packetRemoved = this.remove();
+                var packetRemoved = this.remove();
                 if (packetRemoved == null) throw new IllegalStateException("removing null packet");
                 this.packetCount++;
                 if (this.isEmpty()) return true;
