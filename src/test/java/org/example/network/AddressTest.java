@@ -13,4 +13,11 @@ public class AddressTest {
         Assert.assertTrue(address instanceof Address);
     }
 
+    @Test
+    public void twoUUIDAddressesAreNotEqual() {
+        Address address1 = new UUIDAddress();
+        Address address2 = new UUIDAddress();
+        Assert.assertNotEquals(address1, address2);
+    }
+
 }
