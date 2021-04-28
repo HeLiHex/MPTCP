@@ -236,7 +236,7 @@ public class MPTCP implements TCP{
 
     @Override
     public boolean handleIncoming() {
-        for (int i = 0; i < this.subflows.length; i++) {
+        for (var i = 0; i < this.subflows.length; i++) {
             for (TCP subflow : this.subflows) {
                 try{
                     subflow.handleIncoming();
@@ -268,8 +268,8 @@ public class MPTCP implements TCP{
     }
 
     public TCPStats[] getTcpStats() {
-        TCPStats[] tcpStats = new TCPStats[this.subflows.length];
-        for (int i = 0; i < this.subflows.length; i++) {
+        var tcpStats = new TCPStats[this.subflows.length];
+        for (var i = 0; i < this.subflows.length; i++) {
             tcpStats[i] = ((ClassicTCP)this.subflows[i]).getTcpStats();
         }
         return tcpStats;
