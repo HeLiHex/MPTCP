@@ -14,6 +14,8 @@ import org.example.simulator.statistics.TCPStats;
 import org.javatuples.Pair;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MPTCP implements TCP{
 
@@ -151,21 +153,20 @@ public class MPTCP implements TCP{
             this.subflows[0].connect(host);
             return;
         }
-        MPTCP mptcpHost = (MPTCP) host;
+        var mptcpHost = (MPTCP) host;
         TCP[] hostSubflows = mptcpHost.getSubflows();
 
-        for (int i = 0; i < this.subflows.length; i++) {
+        for (var i = 0; i < this.subflows.length; i++) {
             TCP cFlow = this.subflows[i];
             if (cFlow.isConnected()) continue;
-            for (int j = i; j < hostSubflows.length; j++) {
+            for (var j = i; j < hostSubflows.length; j++) {
                 TCP hFlow = hostSubflows[i];
                 if (hFlow.isConnected()) continue;
                 try {
                     cFlow.connect(hFlow);
-                    System.out.println("trying to connect");
                     break;
                 }catch (IllegalArgumentException e){
-                    System.out.println("connect fail");
+                    Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "connection failed");
                     continue;
                 }
             }
