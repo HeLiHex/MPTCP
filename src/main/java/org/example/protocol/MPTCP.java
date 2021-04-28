@@ -241,7 +241,7 @@ public class MPTCP implements TCP{
                 try{
                     subflow.handleIncoming();
                 }catch (IllegalArgumentException e){
-                    continue;
+                    //do nothing, continue loop
                 }
             }
         }
