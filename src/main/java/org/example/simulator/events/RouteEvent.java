@@ -28,7 +28,7 @@ public class RouteEvent extends Event {
     @Override
     public void generateNextEvent(Queue<Event> events) {
         List<Channel> channelsUsed = this.endpoint.getChannelsUsed();
-        Channel channel = channelsUsed.get(0);
+        var channel = channelsUsed.get(0);
         if (channel == null) return;
         events.add(new ChannelEvent(channel));
     }

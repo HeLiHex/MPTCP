@@ -12,7 +12,6 @@ import java.util.Queue;
 public class RunNetworkNodeEvent extends Event {
 
     private final NetworkNode node;
-    //private Endpoint packetDestination;
 
     public RunNetworkNodeEvent(NetworkNode node) {
         super(node);
@@ -21,7 +20,6 @@ public class RunNetworkNodeEvent extends Event {
 
     @Override
     public void run() {
-        //this.packetDestination = this.node.peekInputBuffer().getDestination();
         assert !this.node.inputBufferIsEmpty() : "RunNetworkNodeEvent added, but no packet to be sent";
         this.node.run();
     }
@@ -30,7 +28,7 @@ public class RunNetworkNodeEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
         List<Channel> channelsUsed = this.node.getChannelsUsed();
         assert channelsUsed.size() == 1 : "Multiple channels used in one NetworkNodeEvent";
-        Channel channel = channelsUsed.get(0);
+        var channel = channelsUsed.get(0);
         events.add(new ChannelEvent(channel));
     }
 

@@ -30,7 +30,6 @@ public class TCPSendEvent extends Event {
     public void generateNextEvent(Queue<Event> events) {
         if (!this.packetsSent.isEmpty()) {
             if (this.tcp.isConnected()) {
-                //events.add(new TCPSendEvent(this.tcp));
                 for (Packet packet : this.packetsSent) {
                     events.add(new TCPRetransmitEventGenerator(packet, 0));
                 }
