@@ -85,7 +85,7 @@ public class PacketBuilder {
 
 
     public boolean hasFlag(Flag... flags) {
-        boolean hasFlag = true;
+        var hasFlag = true;
         for (Flag flag : flags) {
             hasFlag &= this.flags.contains(flag);
         }
