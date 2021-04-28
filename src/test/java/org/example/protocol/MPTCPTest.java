@@ -9,6 +9,7 @@ import org.example.network.address.SimpleAddress;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
+import org.example.simulator.statistics.TCPStats;
 import org.example.util.Util;
 import org.junit.*;
 import org.junit.rules.Timeout;
@@ -325,6 +326,10 @@ public class MPTCPTest {
         Assert.assertNull(server.receive());
 
         eventHandler.printStatistics();
+        for (TCPStats stat: client.getTcpStats()) {
+            System.out.println(stat.toString());
+            stat.createCWNDChart();
+        }
     }
 
     @Test

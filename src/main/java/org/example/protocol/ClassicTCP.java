@@ -10,10 +10,9 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.simulator.statistics.DummyStats;
-import org.example.simulator.statistics.RealStats;
+import org.example.simulator.statistics.RealTCPStats;
 import org.example.simulator.statistics.Statistics;
-import org.example.simulator.statistics.Stats;
+import org.example.simulator.statistics.TCPStats;
 import org.example.util.Util;
 import org.javatuples.Pair;
 
@@ -23,7 +22,7 @@ import java.util.logging.Logger;
 
 public class ClassicTCP extends Routable implements TCP {
 
-    private final Stats stats;
+    private final TCPStats tcpStats;
 
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> SENDING_WINDOW_PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
@@ -36,6 +35,8 @@ public class ClassicTCP extends Routable implements TCP {
     private int otherReceivingWindowCapacity;
     private int initialSequenceNumber;
     private long rtt;
+    private long rttStartTimer = 0;
+    private boolean rttSet = false;
 
     private long afterConnectSendDelay = 100000;
 
@@ -49,8 +50,7 @@ public class ClassicTCP extends Routable implements TCP {
                        boolean isReno,
                        Address address,
                        TCP mainFlow,
-                       ReceivingWindow receivingWindow,
-                       Stats stats) {
+                       ReceivingWindow receivingWindow) {
         super(receivingWindow, NOISE_TOLERANCE, address);
         this.receivedPackets = receivedPackets;
         this.payloadsToSend = payloadsToSend;
@@ -63,12 +63,13 @@ public class ClassicTCP extends Routable implements TCP {
             this.mainFlow = mainFlow;
         }
 
-        this.stats = stats;
+        this.tcpStats = new RealTCPStats(address);
     }
 
 
     @Override
     public void connect(TCP host) {
+        this.rttStartTimer = Util.seeTime();
         if (this.isConnected()) return;
         this.initialSequenceNumber = Util.getNextRandomInt(10000);
         Packet syn = new PacketBuilder()
@@ -100,7 +101,7 @@ public class ClassicTCP extends Routable implements TCP {
                     .build();
             this.route(ack);
 
-            this.rtt = Util.seeTime();
+            this.setRTT();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
 
             this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
@@ -110,6 +111,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public void connect(Packet syn) {
+        this.rttStartTimer = Util.seeTime();
         if (this.isConnected()) return;
         Endpoint node = syn.getOrigin();
         int seqNum = Util.getNextRandomInt(10000);
@@ -123,13 +125,19 @@ public class ClassicTCP extends Routable implements TCP {
                 .withAcknowledgmentNumber(ackNum)
                 .withPayload(new Message(this.thisReceivingWindowCapacity + ""))
                 .build();
-        this.rtt = Util.seeTime() * 2;
         this.route(synAck);
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
 
         this.logger.log(Level.INFO, () -> "connection established with client: " + this.getConnection());
 
+    }
+
+    private void setRTT(){
+        if (rttSet) return;
+        this.rtt = Util.seeTime() - this.rttStartTimer;
+        this.tcpStats.setRtt(this.rtt);
+        this.rttSet = true;
     }
 
     @Override
@@ -182,7 +190,7 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     private void setConnection(Connection connection) {
-        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, this.isReno, connection, SENDING_WINDOW_PACKET_COMPARATOR, this.payloadsToSend);
+        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, this.isReno, connection, SENDING_WINDOW_PACKET_COMPARATOR, this.payloadsToSend, this.tcpStats);
     }
 
     @Override
@@ -354,10 +362,15 @@ public class ClassicTCP extends Routable implements TCP {
                     return false;
                 }
             }
+
+            this.setRTT();
+
             Packet packetToFastRetransmit = this.fastRetransmit();
             if (packetToFastRetransmit != null){
                 this.route(packetToFastRetransmit);
+
                 Statistics.packetFastRetransmit();
+                this.tcpStats.packetFastRetransmit();
             }
             return true;
         } catch (IllegalAccessException e) {
@@ -380,12 +393,17 @@ public class ClassicTCP extends Routable implements TCP {
         assert packetToSend != null;
 
         this.route(packetToSend);
+
         Statistics.packetSent();
+        this.tcpStats.packetSend();
+
         packetsSent.add(packetToSend);
         return trySend(packetsSent);
     }
 
-
+    public TCPStats getTcpStats() {
+        return tcpStats;
+    }
 
     @Override
     public void run() {
@@ -406,7 +424,6 @@ public class ClassicTCP extends Routable implements TCP {
 
     public static class ClassicTCPBuilder {
 
-        private Stats stats = new DummyStats();
         private int receivingWindowCapacity = 7;
         private List<Packet> receivedPacketsContainer = new ArrayList<>();
         private List<Pair<Integer, Payload>> payloadsToSend = new ArrayList<>();
@@ -455,11 +472,6 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
-        public ClassicTCPBuilder setStats(){
-            this.stats = new RealStats();
-            return this;
-        }
-
         public ClassicTCP build() {
             return new ClassicTCP(this.receivingWindowCapacity,
                     this.receivedPacketsContainer,
@@ -467,8 +479,7 @@ public class ClassicTCP extends Routable implements TCP {
                     this.isReno,
                     this.address,
                     this.mainflow,
-                    this.receivingWindow,
-                    this.stats);
+                    this.receivingWindow);
         }
     }
 

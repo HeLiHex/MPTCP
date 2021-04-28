@@ -516,10 +516,10 @@ public class ClassicTCPTest {
 
     @Test
     public void floodWithPacketsInOrderShouldWorkTest() {
-        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().setReno().withReceivingWindowCapacity(7).build();
         Routable r1 = new Router.RouterBuilder().withBufferSize(10).build();
         Routable r2 = new Router.RouterBuilder().withBufferSize(5).build();
-        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().setReno().withReceivingWindowCapacity(20).build();
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -563,7 +563,7 @@ public class ClassicTCPTest {
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).build();
         Routable r1 = new Router.RouterBuilder().withBufferSize(10).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(10).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(5).build();
         Routable r3 = new Router.RouterBuilder().withBufferSize(7).build();
         Routable r4 = new Router.RouterBuilder().withBufferSize(70).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).build();
@@ -671,6 +671,7 @@ public class ClassicTCPTest {
         }
 
         eventHandler.printStatistics();
+
     }
 
     @Test

@@ -10,6 +10,7 @@ import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
+import org.example.simulator.statistics.TCPStats;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -265,6 +266,14 @@ public class MPTCP implements TCP{
             if (subflow.canRetransmit(packet)) return true;
         }
         return false;
+    }
+
+    public TCPStats[] getTcpStats() {
+        TCPStats[] tcpStats = new TCPStats[this.subflows.length];
+        for (int i = 0; i < this.subflows.length; i++) {
+            tcpStats[i] = ((ClassicTCP)this.subflows[i]).getTcpStats();
+        }
+        return tcpStats;
     }
 
     @Override

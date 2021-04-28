@@ -6,6 +6,7 @@ import org.example.data.Payload;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.simulator.statistics.Statistics;
+import org.example.simulator.statistics.TCPStats;
 import org.example.util.BoundedQueue;
 import org.javatuples.Pair;
 
@@ -25,8 +26,9 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private int dupAckCount;
     private boolean fastRetransmitted;
     private final Connection connection;
+    private final TCPStats stats;
 
-    public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Pair<Integer, Payload>> payloadsToSend) {
+    public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Pair<Integer, Payload>> payloadsToSend, TCPStats stats) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, comparator);
         this.payloadsToSend = payloadsToSend;
         this.receiverWindowSize = receiverWindowCapacity;
@@ -37,6 +39,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         this.fastRetransmitted = false;
         this.connection = connection;
         this.numDupAckFastRetransmitTrigger = 3;
+        this.stats = stats;
 
     }
 
@@ -47,6 +50,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public void ackReceived(Packet ack) {
+        this.stats.ackReceived();
         int ackIndex = this.sendingPacketIndex(ack);
 
         boolean dupAck = ackIndex == -1;
@@ -120,6 +124,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private void slowStart() {
         this.setBound(this.getWindowCapacity() + 1);
         Statistics.trackCwnd(this.getWindowCapacity());
+        this.stats.trackCwnd(this.getWindowCapacity());
     }
 
     private void congestionAvoidance() {
@@ -130,6 +135,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
             this.numPacketsReceivedWithoutIncreasingWindow = 0;
             this.setBound(this.getWindowCapacity() + 1);
             Statistics.trackCwnd(this.getWindowCapacity());
+            this.stats.trackCwnd(this.getWindowCapacity());
             return;
         }
         this.numPacketsReceivedWithoutIncreasingWindow++;
@@ -142,12 +148,14 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     public void decrease(boolean timeout) {
         Statistics.trackCwnd(this.getWindowCapacity());
+        this.stats.trackCwnd(this.getWindowCapacity());
 
         this.ssthresh = this.findNewSSThresh();
         int newWindowSize = this.findNewWindowSize(timeout);
         this.setBound(newWindowSize);
 
         Statistics.trackCwnd(this.getWindowCapacity());
+        this.stats.trackCwnd(this.getWindowCapacity());
     }
 
 
