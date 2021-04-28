@@ -10,7 +10,7 @@ public abstract class Address {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Address address = (Address) o;
+        var address = (Address) o;
         return Objects.equals(this.getId(), address.getId());
     }
 
