@@ -41,7 +41,7 @@ public class EventHandler {
     }
 
     public boolean singleRun() {
-        Event event = this.events.poll();
+        var event = this.events.poll();
         //System.out.println(event);
         if (event == null) {
             if (!this.events.isEmpty())

@@ -15,7 +15,7 @@ public class RouteEvent extends Event {
 
     public RouteEvent(Endpoint endpoint, Packet packet) {
         super();
-        assert !(endpoint instanceof MPTCP) : "Should only handle Regular tcp or subflows";
+        if (endpoint instanceof MPTCP) throw new IllegalArgumentException("Should only handle Regular tcp or subflows");
         this.endpoint = endpoint;
         this.packet = packet;
     }
