@@ -20,4 +20,11 @@ public class AddressTest {
         Assert.assertNotEquals(address1, address2);
     }
 
+    @Test
+    public void nullAddressesAreNotEqualToAddress() {
+        Address address1 = new UUIDAddress();
+        Address address2 = null;
+        Assert.assertNotEquals(address1, address2);
+    }
+
 }
