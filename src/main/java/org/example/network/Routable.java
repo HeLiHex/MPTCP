@@ -38,15 +38,10 @@ public abstract class Routable implements NetworkNode {
         if (packet == null) throw new IllegalStateException("Null packet can't be routed");
         //System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
-        Channel nextChannelOnPath = this.routingTable.getPath(this, destination);
+        var nextChannelOnPath = this.routingTable.getPath(this, destination);
         nextChannelOnPath.channelPackage(packet);
 
-        //assert channelsUsed.size() < 1;
         this.channelsUsed.add(nextChannelOnPath);
-    }
-
-    private Channel getPath(NetworkNode destination) {
-        return this.routingTable.getPath(this, destination);
     }
 
     @Override
@@ -69,7 +64,7 @@ public abstract class Routable implements NetworkNode {
     @Override
     public void addChannel(NetworkNode node) {
         if (node instanceof MPTCP) {
-            MPTCP mptcp = (MPTCP) node;
+            var mptcp = (MPTCP) node;
             node = mptcp.getEndpointToAddChannelTo();
         }
 
@@ -78,7 +73,7 @@ public abstract class Routable implements NetworkNode {
             if (thisContainsNode) return;
         }
 
-        Channel channel = new Channel(this, node, this.noiseTolerance);
+        var channel = new Channel(this, node, this.noiseTolerance);
         this.channels.add(channel);
         node.addChannel(this);
     }
