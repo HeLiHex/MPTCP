@@ -1,4 +1,4 @@
-package org.example.simulator;
+package org.example.simulator.statistics;
 
 import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;

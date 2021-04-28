@@ -5,7 +5,7 @@ import org.example.data.PacketBuilder;
 import org.example.data.Payload;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
-import org.example.simulator.Statistics;
+import org.example.simulator.statistics.Statistics;
 import org.example.util.BoundedQueue;
 import org.javatuples.Pair;
 

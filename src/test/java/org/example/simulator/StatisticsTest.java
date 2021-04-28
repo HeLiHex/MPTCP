@@ -10,6 +10,7 @@ import org.example.simulator.events.Event;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
+import org.example.simulator.statistics.Statistics;
 import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Rule;

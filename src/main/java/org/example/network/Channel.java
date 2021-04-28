@@ -2,7 +2,7 @@ package org.example.network;
 
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
-import org.example.simulator.Statistics;
+import org.example.simulator.statistics.Statistics;
 import org.example.util.Util;
 
 import java.util.Queue;

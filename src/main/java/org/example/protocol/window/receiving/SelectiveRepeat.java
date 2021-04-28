@@ -7,7 +7,7 @@ import org.example.network.interfaces.Endpoint;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.protocol.window.sending.SendingWindow;
-import org.example.simulator.Statistics;
+import org.example.simulator.statistics.Statistics;
 
 import java.util.Comparator;
 import java.util.HashMap;
