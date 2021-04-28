@@ -1,10 +1,13 @@
 package org.example.simulator;
 
 import org.example.data.Message;
+import org.example.data.Packet;
+import org.example.data.PacketBuilder;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPRetransmitEventGenerator;
@@ -37,6 +40,13 @@ public class EventTest {
     @Test(expected = IllegalArgumentException.class)
     public void expectIllegalArgumentExceptionIfNullNodeGiven() {
         new RunTCPEvent(null);
+    }
+
+    @Test
+    public void routeEventEqualsTest() {
+        Event event1 = new RouteEvent(new ClassicTCP.ClassicTCPBuilder().build(), new PacketBuilder().build());
+        Event event2 = new RouteEvent(new ClassicTCP.ClassicTCPBuilder().build(), new PacketBuilder().build());
+        Assert.assertNotEquals(event1, event2);
     }
 
 
