@@ -114,4 +114,20 @@ public class ChannelTest {
         }
     }
 
+    @Test
+    public void differentChannelsAreNotEqualTest(){
+        Endpoint source1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        Endpoint destination1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+
+        Endpoint source2 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        Endpoint destination2 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+
+        Channel channel1 = new Channel(source1, destination1, 100);
+        Channel channel2 = new Channel(source2, destination2, 100);
+
+        Assert.assertNotEquals(channel1, channel2);
+    }
+
+
+
 }
