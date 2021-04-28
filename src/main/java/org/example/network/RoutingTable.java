@@ -78,7 +78,7 @@ public class RoutingTable {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         for (Map.Entry<NetworkNode, Map.Entry<Channel, Integer>> entry : this.table.entrySet()) {
             NetworkNode networkNode = entry.getKey();
             Map.Entry<Channel, Integer> value = entry.getValue();
