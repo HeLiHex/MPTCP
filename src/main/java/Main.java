@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 public class Main {
 
     public static void main(String[] args) {
+        /*
         double[] xData = new double[]{0.0, 1.0, 2.0};
         double[] yData = new double[]{2.0, 1.0, 0.0};
 
@@ -29,5 +30,7 @@ public class Main {
         } catch (IOException e) {
             Logger.getLogger(Main.class.getSimpleName()).log(Level.WARNING, "chart fail");
         }
+
+         */
     }
 }
