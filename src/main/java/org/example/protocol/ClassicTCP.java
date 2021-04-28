@@ -10,7 +10,10 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
+import org.example.simulator.statistics.DummyStats;
+import org.example.simulator.statistics.RealStats;
 import org.example.simulator.statistics.Statistics;
+import org.example.simulator.statistics.Stats;
 import org.example.util.Util;
 import org.javatuples.Pair;
 
@@ -19,6 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClassicTCP extends Routable implements TCP {
+
+    private final Stats stats;
 
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> SENDING_WINDOW_PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
@@ -44,7 +49,8 @@ public class ClassicTCP extends Routable implements TCP {
                        boolean isReno,
                        Address address,
                        TCP mainFlow,
-                       ReceivingWindow receivingWindow) {
+                       ReceivingWindow receivingWindow,
+                       Stats stats) {
         super(receivingWindow, NOISE_TOLERANCE, address);
         this.receivedPackets = receivedPackets;
         this.payloadsToSend = payloadsToSend;
@@ -56,6 +62,8 @@ public class ClassicTCP extends Routable implements TCP {
         }else{
             this.mainFlow = mainFlow;
         }
+
+        this.stats = stats;
     }
 
 
@@ -398,6 +406,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     public static class ClassicTCPBuilder {
 
+        private Stats stats = new DummyStats();
         private int receivingWindowCapacity = 7;
         private List<Packet> receivedPacketsContainer = new ArrayList<>();
         private List<Pair<Integer, Payload>> payloadsToSend = new ArrayList<>();
@@ -446,6 +455,11 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
+        public ClassicTCPBuilder setStats(){
+            this.stats = new RealStats();
+            return this;
+        }
+
         public ClassicTCP build() {
             return new ClassicTCP(this.receivingWindowCapacity,
                     this.receivedPacketsContainer,
@@ -453,7 +467,8 @@ public class ClassicTCP extends Routable implements TCP {
                     this.isReno,
                     this.address,
                     this.mainflow,
-                    this.receivingWindow);
+                    this.receivingWindow,
+                    this.stats);
         }
     }
 
