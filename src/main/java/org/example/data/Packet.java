@@ -48,8 +48,8 @@ public class Packet {
             return true;
         }
 
-        var hasFlag = this.flags.contains(flags[0]);
-        for (int i = 1; i < flags.length; i++) {
+        boolean hasFlag = this.flags.contains(flags[0]);
+        for (var i = 1; i < flags.length; i++) {
             hasFlag &= this.flags.contains(flags[i]);
         }
         return hasFlag;
