@@ -179,12 +179,10 @@ public class MPTCP implements TCP{
 
     @Override
     public void send(Payload payload) {
-        if (this.payloadsToSend.isEmpty()) {
-            this.payloadsToSend.add(Pair.with(0, payload));
-            return;
-        }
-        int indexOfLastAdded = this.payloadsToSend.get(this.payloadsToSend.size() - 1).getValue0();
-        this.payloadsToSend.add(Pair.with(indexOfLastAdded + 1, payload));
+        // avoiding duplicate code
+        // adds to the payloadsToSend list that is shared among all subflows
+        // therefore, it does not matter which subflow does this
+        this.subflows[0].send(payload);
     }
 
     @Override

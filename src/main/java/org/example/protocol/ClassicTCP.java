@@ -24,28 +24,23 @@ import java.util.logging.Logger;
 
 public class ClassicTCP extends Routable implements TCP {
 
-    private final TCPStats tcpStats;
-
     private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> SENDING_WINDOW_PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
+    private final TCPStats tcpStats;
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
     private final List<Packet> receivedPackets;
     private final List<Pair<Integer, Payload>> payloadsToSend;
     private final int thisReceivingWindowCapacity;
     private final boolean isReno;
-
+    private final TCP mainFlow;
     private int otherReceivingWindowCapacity;
     private int initialSequenceNumber;
     private long rtt;
     private long rttStartTimer = 0;
     private boolean timerStarted = false;
     private boolean rttSet = false;
-
     private long afterConnectSendDelay = 100000;
-
     private SendingWindow sendingWindow;
-
-    private final TCP mainFlow;
 
     private ClassicTCP(int thisReceivingWindowCapacity,
                        List<Packet> receivedPackets,
@@ -60,9 +55,9 @@ public class ClassicTCP extends Routable implements TCP {
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
         this.isReno = isReno;
 
-        if (mainFlow == null){
+        if (mainFlow == null) {
             this.mainFlow = this;
-        }else{
+        } else {
             this.mainFlow = mainFlow;
         }
 
@@ -82,7 +77,7 @@ public class ClassicTCP extends Routable implements TCP {
                 .withPayload(new Message(this.thisReceivingWindowCapacity + ""))
                 .build();
         this.route(syn);
-        if (!this.timerStarted){
+        if (!this.timerStarted) {
             this.rttStartTimer = Util.seeTime();
             this.timerStarted = true;
         }
@@ -132,7 +127,7 @@ public class ClassicTCP extends Routable implements TCP {
                 .build();
         this.route(synAck);
 
-        if (!this.timerStarted){
+        if (!this.timerStarted) {
             this.rttStartTimer = Util.seeTime();
             this.timerStarted = true;
         }
@@ -143,7 +138,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     }
 
-    private void setRTT(){
+    private void setRTT() {
         if (rttSet) return;
         this.rtt = Util.seeTime() - this.rttStartTimer;
         this.tcpStats.setRtt(this.rtt);
@@ -337,7 +332,7 @@ public class ClassicTCP extends Routable implements TCP {
     private void ack(Packet packet) {
         assert packet != null : "Packet is null";
 
-        if (packet.getOrigin() == null){
+        if (packet.getOrigin() == null) {
             //can't call ack on packet with no origin
             Endpoint connectedNode;
             try {
@@ -367,9 +362,9 @@ public class ClassicTCP extends Routable implements TCP {
             var receivingWindow = this.getReceivingWindow();
             var packetReceived = receivingWindow.receive(this.getSendingWindow());
             if (packetReceived && receivingWindow.shouldAck()) {
-                try{
+                try {
                     this.ack(receivingWindow.ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
-                }catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     return false;
                 }
             }
@@ -377,7 +372,7 @@ public class ClassicTCP extends Routable implements TCP {
             this.setRTT();
 
             var packetToFastRetransmit = this.fastRetransmit();
-            if (packetToFastRetransmit != null){
+            if (packetToFastRetransmit != null) {
                 this.route(packetToFastRetransmit);
 
                 Statistics.packetFastRetransmit();
@@ -395,7 +390,7 @@ public class ClassicTCP extends Routable implements TCP {
         return this.trySend(new ArrayList<>());
     }
 
-    private List<Packet> trySend(List<Packet> packetsSent){
+    private List<Packet> trySend(List<Packet> packetsSent) {
         if (this.sendingWindow == null) return packetsSent;
         if (this.sendingWindow.isQueueEmpty()) return packetsSent;
         if (this.sendingWindow.isWaitingForAck()) return packetsSent;
@@ -468,17 +463,17 @@ public class ClassicTCP extends Routable implements TCP {
             return this;
         }
 
-        public ClassicTCPBuilder withAddress(Address address){
+        public ClassicTCPBuilder withAddress(Address address) {
             this.address = address;
             return this;
         }
 
-        public ClassicTCPBuilder withMainFlow(TCP tcp){
+        public ClassicTCPBuilder withMainFlow(TCP tcp) {
             this.mainflow = tcp;
             return this;
         }
 
-        public ClassicTCPBuilder withReceivingWindow(ReceivingWindow receivingWindow){
+        public ClassicTCPBuilder withReceivingWindow(ReceivingWindow receivingWindow) {
             this.receivingWindow = receivingWindow;
             return this;
         }

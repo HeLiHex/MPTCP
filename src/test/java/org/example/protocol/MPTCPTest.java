@@ -326,13 +326,13 @@ public class MPTCPTest {
         Assert.assertNull(server.receive());
 
         eventHandler.printStatistics();
-        /*
+
         for (TCPStats stat: client.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createCWNDChart();
         }
 
-         */
+
 
 
     }
