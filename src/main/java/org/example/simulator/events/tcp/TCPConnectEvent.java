@@ -11,18 +11,21 @@ import java.util.Queue;
 public class TCPConnectEvent extends Event {
 
     private final TCP client;
-    private final Endpoint host;
+    private final TCP host;
+    private final int numAttempts;
 
-    public TCPConnectEvent(int delay, TCP client, Endpoint host) {
+    private TCPConnectEvent(int delay, TCP client, TCP host, int numAttempts) {
         super(delay);
         this.client = client;
         this.host = host;
+        this.numAttempts = numAttempts;
     }
 
-    public TCPConnectEvent(TCP client, Endpoint host) {
+    public TCPConnectEvent(TCP client, TCP host) {
         super();
         this.client = client;
         this.host = host;
+        this.numAttempts = 0;
     }
 
     @Override
@@ -33,11 +36,13 @@ public class TCPConnectEvent extends Event {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
+        if (this.numAttempts > this.client.getNumberOfFlows() * 3) return;
         if (this.client.isConnected()) return;
 
-        Channel channel = this.client.getPath(this.host);
-        events.add(new ChannelEvent(channel));
-        events.add(new TCPConnectEvent(1000, this.client, this.host));
+        for (Channel channel : this.client.getChannelsUsed()) {
+            events.add(new ChannelEvent(channel));
+        }
+        events.add(new TCPConnectEvent(1000, this.client, this.host, this.numAttempts + 1));
     }
 
     @Override

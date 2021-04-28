@@ -6,6 +6,7 @@ import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.TCP;
 import org.example.simulator.events.run.RunEndpointEvent;
 import org.example.simulator.events.run.RunNetworkNodeEvent;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 
 import java.util.Queue;
@@ -31,9 +32,11 @@ public class ChannelEvent extends Event {
         if (this.channelSuccess) {
             NetworkNode nextNode = this.channel.getDestination();
             if (nextNode instanceof TCP) {
-                events.add(new TCPInputEvent((TCP) nextNode));
+                TCP tcp = ((TCP) nextNode).getMainFlow();
+                events.add(new RunTCPEvent(tcp));
                 return;
             }
+            assert !nextNode.inputBufferIsEmpty() : "The next NetworkNode has no packet in the input buffer";
             if (nextNode instanceof Endpoint) {
                 events.add(new RunEndpointEvent((Endpoint) nextNode));
                 return;

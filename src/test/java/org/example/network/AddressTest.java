@@ -1,6 +1,7 @@
 package org.example.network;
 
-import org.example.network.interfaces.Address;
+import org.example.network.address.Address;
+import org.example.network.address.UUIDAddress;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,6 +11,20 @@ public class AddressTest {
     public void createAddressWorksTest() {
         Address address = new UUIDAddress();
         Assert.assertTrue(address instanceof Address);
+    }
+
+    @Test
+    public void twoUUIDAddressesAreNotEqual() {
+        Address address1 = new UUIDAddress();
+        Address address2 = new UUIDAddress();
+        Assert.assertNotEquals(address1, address2);
+    }
+
+    @Test
+    public void nullAddressesAreNotEqualToAddress() {
+        Address address1 = new UUIDAddress();
+        Address address2 = null;
+        Assert.assertNotEquals(address1, address2);
     }
 
 }

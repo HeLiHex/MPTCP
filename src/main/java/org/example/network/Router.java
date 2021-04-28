@@ -1,14 +1,17 @@
 package org.example.network;
 
 
+import org.example.network.address.Address;
+import org.example.network.address.UUIDAddress;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Router extends Routable {
 
-    private Router(int bufferSize, double noiseTolerance) {
-        super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance);
+    private Router(int bufferSize, double noiseTolerance, Address address) {
+        super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance, address);
     }
 
     @Override
@@ -24,6 +27,7 @@ public class Router extends Routable {
 
         private int bufferSize = 100;
         private double noiseTolerance = 100.0;
+        private Address address = new UUIDAddress();
 
         public RouterBuilder withBufferSize(int bufferSize) {
             this.bufferSize = bufferSize;
@@ -35,8 +39,13 @@ public class Router extends Routable {
             return this;
         }
 
+        public RouterBuilder withAddress(Address address){
+            this.address = address;
+            return this;
+        }
+
         public Router build() {
-            return new Router(this.bufferSize, this.noiseTolerance);
+            return new Router(this.bufferSize, this.noiseTolerance, this.address);
         }
 
 

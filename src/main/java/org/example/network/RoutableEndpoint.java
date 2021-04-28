@@ -1,6 +1,7 @@
 package org.example.network;
 
 import org.example.data.Packet;
+import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.Endpoint;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -12,17 +13,15 @@ public class RoutableEndpoint extends Routable implements Endpoint {
     protected BlockingQueue<Packet> outputBuffer;
 
     public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, double noiseTolerance) {
-        super(inputBuffer, noiseTolerance);
+        super(inputBuffer, noiseTolerance, new UUIDAddress());
         this.outputBuffer = outputBuffer;
         this.receivedPackets = new ArrayBlockingQueue<>(10000);
     }
 
-    @Override
     public Packet dequeueOutputBuffer() {
         return this.outputBuffer.poll();
     }
 
-    @Override
     public boolean enqueueOutputBuffer(Packet packet) {
         return this.outputBuffer.offer(packet);
     }
@@ -32,7 +31,6 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         return this.outputBuffer.isEmpty();
     }
 
-    @Override
     public int outputBufferSize() {
         return this.outputBuffer.size();
     }

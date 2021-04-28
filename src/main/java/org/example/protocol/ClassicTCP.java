@@ -2,49 +2,67 @@ package org.example.protocol;
 
 import org.example.data.*;
 import org.example.network.Channel;
-import org.example.network.RoutableEndpoint;
+import org.example.network.Routable;
+import org.example.network.address.Address;
+import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.Endpoint;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.util.BoundedPriorityBlockingQueue;
+import org.example.simulator.Statistics;
 import org.example.util.Util;
+import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ClassicTCP extends RoutableEndpoint implements TCP {
+public class ClassicTCP extends Routable implements TCP {
 
-    private static final int BUFFER_SIZE = 10000;
     private static final double NOISE_TOLERANCE = 100.0;
-    private static final Comparator<Packet> PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
+    private static final Comparator<Packet> SENDING_WINDOW_PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
-    private final Queue<Packet> receivedPackets;
-    private final List<Payload> payloadsToSend;
-
+    private final List<Packet> receivedPackets;
+    private final List<Pair<Integer, Payload>> payloadsToSend;
     private final int thisReceivingWindowCapacity;
+    private final boolean isReno;
+
     private int otherReceivingWindowCapacity;
-    private Connection connection;
     private int initialSequenceNumber;
     private long rtt;
 
+    private long afterConnectSendDelay = 100000;
 
-    public ClassicTCP(int thisReceivingWindowCapacity) {
-        super(new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
-                new BoundedPriorityBlockingQueue<>(BUFFER_SIZE, PACKET_COMPARATOR),
-                NOISE_TOLERANCE
-        );
-        this.receivedPackets = new PriorityQueue<>(PACKET_COMPARATOR);
-        this.payloadsToSend = new ArrayList<>();
+    private SendingWindow sendingWindow;
+
+    private final TCP mainFlow;
+
+    private ClassicTCP(int thisReceivingWindowCapacity,
+                       List<Packet> receivedPackets,
+                       List<Pair<Integer, Payload>> payloadsToSend,
+                       boolean isReno,
+                       Address address,
+                       TCP mainFlow,
+                       ReceivingWindow receivingWindow) {
+        super(receivingWindow, NOISE_TOLERANCE, address);
+        this.receivedPackets = receivedPackets;
+        this.payloadsToSend = payloadsToSend;
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
+        this.isReno = isReno;
+
+        if (mainFlow == null){
+            this.mainFlow = this;
+        }else{
+            this.mainFlow = mainFlow;
+        }
     }
 
+
     @Override
-    public void connect(Endpoint host) {
-        this.connection = null;
-        this.initialSequenceNumber = Util.getNextRandomInt(100);
+    public void connect(TCP host) {
+        if (this.isConnected()) return;
+        this.initialSequenceNumber = Util.getNextRandomInt(10000);
         Packet syn = new PacketBuilder()
                 .withDestination(host)
                 .withOrigin(this)
@@ -76,17 +94,17 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
             this.rtt = Util.seeTime();
             this.setConnection(new Connection(this, host, finalSeqNum, ackNum));
-            this.createWindows();
 
-            //this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
+            this.logger.log(Level.INFO, () -> "connection established with host: " + this.getConnection());
         }
 
     }
 
     @Override
     public void connect(Packet syn) {
+        if (this.isConnected()) return;
         Endpoint node = syn.getOrigin();
-        int seqNum = Util.getNextRandomInt(100);
+        int seqNum = Util.getNextRandomInt(10000);
         int ackNum = syn.getSequenceNumber() + 1;
         this.otherReceivingWindowCapacity = Integer.parseInt(syn.getPayload().toString());
         Packet synAck = new PacketBuilder()
@@ -101,40 +119,31 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         this.route(synAck);
 
         this.setConnection(new Connection(this, node, seqNum, ackNum));
-        this.createWindows();
+
+        this.logger.log(Level.INFO, () -> "connection established with client: " + this.getConnection());
 
     }
 
     @Override
     public void send(Payload payload) {
-        this.payloadsToSend.add(payload);
+        if (this.payloadsToSend.isEmpty()) {
+            this.payloadsToSend.add(Pair.with(0, payload));
+            return;
+        }
+        int indexOfLastAdded = this.payloadsToSend.get(this.payloadsToSend.size() - 1).getValue0();
+        this.payloadsToSend.add(Pair.with(indexOfLastAdded + 1, payload));
+
     }
 
     @Override
     public Packet receive() {
-        return this.receivedPackets.poll();
-    }
-
-    @Override
-    public void close() {
-        Packet fin = new PacketBuilder()
-                .withConnection(this.getConnection())
-                .withFlags(Flag.FIN)
-                .build();
-        this.route(fin);
+        if (this.receivedPackets.isEmpty()) return null;
+        return this.receivedPackets.remove(0);
     }
 
     @Override
     public Channel getChannel() {
-        if (this.isConnected()) {
-            return this.getPath(this.getConnection().getConnectedNode());
-        }
-        //todo - what happens with MPTCP
-        return this.getChannel(0);
-    }
-
-    private Channel getChannel(int channelIndex) {
-        return this.getChannels().get(channelIndex);
+        return this.getChannels().get(0);
     }
 
     public int getThisReceivingWindowCapacity() {
@@ -147,15 +156,25 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public boolean isConnected() {
-        return this.connection != null;
+        try {
+            return this.getSendingWindow().getConnection() != null;
+        } catch (IllegalAccessException e) {
+            //no SendingWindow means no connection
+            return false;
+        }
     }
 
     public Connection getConnection() {
-        return this.connection;
+        try {
+            return this.getSendingWindow().getConnection();
+        } catch (IllegalAccessException e) {
+            //No SendingWindow means no connection is established
+            return null;
+        }
     }
 
     private void setConnection(Connection connection) {
-        this.connection = connection;
+        this.sendingWindow = new SlidingWindow(this.otherReceivingWindowCapacity, this.isReno, connection, SENDING_WINDOW_PACKET_COMPARATOR, this.payloadsToSend);
     }
 
     @Override
@@ -165,7 +184,14 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     @Override
     public long getRTO() {
-        return 3 * this.rtt;
+        return 2 * this.rtt;
+    }
+
+    @Override
+    public long afterConnectSendDelay() {
+        long delay = this.afterConnectSendDelay;
+        this.afterConnectSendDelay = 0;
+        return delay;
     }
 
     @Override
@@ -173,7 +199,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         try {
             return this.getSendingWindow().fastRetransmit();
         } catch (IllegalAccessException e) {
-            //should not fast retransmit if there is no sending window
+            //no Sending Window results in no retransmit
             return null;
         }
     }
@@ -188,18 +214,24 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         try {
             return this.getSendingWindow().getWindowCapacity();
         } catch (IllegalAccessException e) {
+            //todo - is one correct?
             return 0;
         }
     }
 
-    private void createWindows() {
-        this.outputBuffer = new SlidingWindow(this.otherReceivingWindowCapacity, true, this.connection, PACKET_COMPARATOR, this.payloadsToSend);
-        this.inputBuffer = new SelectiveRepeat(this.thisReceivingWindowCapacity, this.connection, PACKET_COMPARATOR, this.receivedPackets);
+    @Override
+    public TCP getMainFlow() {
+        return this.mainFlow;
+    }
+
+    @Override
+    public int getNumberOfFlows() {
+        return 1;
     }
 
     public SendingWindow getSendingWindow() throws IllegalAccessException {
-        if (this.outputBuffer instanceof SendingWindow) return (SendingWindow) this.outputBuffer;
-        throw new IllegalAccessException("The outputBuffer is not of type SendingWindow");
+        if (this.sendingWindow != null) return this.sendingWindow;
+        throw new IllegalAccessException("SendingWindow is null");
     }
 
     public ReceivingWindow getReceivingWindow() throws IllegalAccessException {
@@ -209,12 +241,23 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
 
     private boolean packetIsFromValidConnection(Packet packet) {
         if (packet.hasAllFlags(Flag.SYN)) return true;
+        if (!this.isConnected()) return false;
+
         Connection conn = this.getConnection();
-        if (conn == null) return false;
         if (packet.hasAllFlags(Flag.ACK)) return true;
-        return packet.getOrigin().equals(conn.getConnectedNode())
-                && packet.getDestination().equals(conn.getConnectionSource()
-        );
+
+        try {
+            return packet.getOrigin().equals(conn.getConnectedNode())
+                    && packet.getDestination().equals(conn.getConnectionSource())
+                    && this.getReceivingWindow().inReceivingWindow(packet, conn);
+        } catch (IllegalAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean outputBufferIsEmpty() {
+        return this.sendingWindow.isEmpty();
     }
 
     @Override
@@ -222,12 +265,15 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         if (packetIsFromValidConnection(packet)) {
             return super.enqueueInputBuffer(packet);
         }
-        this.logger.log(Level.INFO, "packet was not added due to non valid connection");
+        this.logger.log(Level.INFO, packet + " was not added due to non valid connection");
+        // return true because the packet has arrived the endpoint
+        // the packet is not added to the input buffer, but it is checked
         return false;
     }
 
     private boolean unconnectedInputHandler() {
         if (this.inputBuffer.isEmpty()) return false;
+        if (!this.peekInputBuffer().getDestination().equals(this)) return false;
         Packet packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)) {
@@ -246,6 +292,7 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         try {
             return this.getSendingWindow().isSeriousLossDetected();
         } catch (IllegalAccessException e) {
+            //can't detect loss without SendingWindow
             return false;
         }
     }
@@ -254,16 +301,37 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
         try {
             return this.getSendingWindow().canRetransmit(packet);
         } catch (IllegalAccessException e) {
-            //Retransmission should not happen if there is no SendingWindow
+            //should not retransmit without SendingWindow
             return false;
         }
     }
 
+
     private void ack(Packet packet) {
         assert packet != null : "Packet is null";
+
+        if (packet.getOrigin() == null){
+            //can't call ack on packet with no origin
+            Endpoint connectedNode;
+            try {
+                connectedNode = this.getSendingWindow().getConnection().getConnectedNode();
+            } catch (IllegalAccessException e) {
+                //should not be able to ack without a SendingWindow
+                return;
+            }
+            packet = new PacketBuilder()
+                    .withDestination(connectedNode)
+                    .withOrigin(this)
+                    .withSequenceNumber(packet.getSequenceNumber())
+                    .withAcknowledgmentNumber(packet.getAcknowledgmentNumber())
+                    .withPayload(packet.getPayload())
+                    .build();
+
+        }
         Packet ack = new PacketBuilder().ackBuild(packet);
         this.route(ack);
     }
+
 
     public boolean handleIncoming() {
         if (!isConnected()) return unconnectedInputHandler();
@@ -272,32 +340,44 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
             ReceivingWindow receivingWindow = this.getReceivingWindow();
             boolean packetReceived = receivingWindow.receive(this.getSendingWindow());
             if (packetReceived && receivingWindow.shouldAck()) {
-                this.ack(receivingWindow.ackThis());
-                return true;
+                try{
+                    this.ack(receivingWindow.ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
+                }catch (IllegalArgumentException e){
+                    return false;
+                }
             }
-            //ACK is received and nothing more should be done
-            return false;
+            Packet packetToFastRetransmit = this.fastRetransmit();
+            if (packetToFastRetransmit != null){
+                this.route(packetToFastRetransmit);
+                Statistics.packetFastRetransmit();
+            }
+            return true;
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("TCP is connected but no ReceivingWindow or SendingWindow is established");
         }
     }
 
-    public Packet trySend() {
-        if (this.outputBuffer instanceof SendingWindow) {
-            SendingWindow sendingWindow = (SendingWindow) this.outputBuffer;
 
-            if (sendingWindow.isQueueEmpty()) return null;
-            if (sendingWindow.isWaitingForAck()) {
-                return null;
-            }
-
-            Packet packetToSend = sendingWindow.send();
-            assert packetToSend != null;
-            this.route(packetToSend);
-            return packetToSend;
-        }
-        return null;
+    @Override
+    public List<Packet> trySend() {
+        return this.trySend(new ArrayList<>());
     }
+
+    private List<Packet> trySend(List<Packet> packetsSent){
+        if (this.sendingWindow == null) return packetsSent;
+        if (this.sendingWindow.isQueueEmpty()) return packetsSent;
+        if (this.sendingWindow.isWaitingForAck()) return packetsSent;
+
+        Packet packetToSend = this.sendingWindow.send();
+        assert packetToSend != null;
+
+        this.route(packetToSend);
+        Statistics.packetSent();
+        packetsSent.add(packetToSend);
+        return trySend(packetsSent);
+    }
+
+
 
     @Override
     public void run() {
@@ -314,4 +394,67 @@ public class ClassicTCP extends RoutableEndpoint implements TCP {
     public int hashCode() {
         return super.hashCode();
     }
+
+
+    public static class ClassicTCPBuilder {
+
+        private int receivingWindowCapacity = 7;
+        private List<Packet> receivedPacketsContainer = new ArrayList<>();
+        private List<Pair<Integer, Payload>> payloadsToSend = new ArrayList<>();
+        private boolean isReno = true;
+        private Address address = new UUIDAddress();
+        private TCP mainflow = null;
+        private ReceivingWindow receivingWindow = new SelectiveRepeat(this.receivingWindowCapacity, Comparator.comparingInt(Packet::getSequenceNumber), this.receivedPacketsContainer);
+
+        public ClassicTCPBuilder withReceivingWindowCapacity(int receivingWindowCapacity) {
+            this.receivingWindowCapacity = receivingWindowCapacity;
+            return this;
+        }
+
+        public ClassicTCPBuilder withReceivedPacketsContainer(List<Packet> receivedPacketsContainer) {
+            this.receivedPacketsContainer = receivedPacketsContainer;
+            return this;
+        }
+
+        public ClassicTCPBuilder withPayloadsToSend(List<Pair<Integer, Payload>> payloadsToSend) {
+            this.payloadsToSend = payloadsToSend;
+            return this;
+        }
+
+        public ClassicTCPBuilder setTahoe() {
+            this.isReno = false;
+            return this;
+        }
+
+        public ClassicTCPBuilder setReno() {
+            this.isReno = true;
+            return this;
+        }
+
+        public ClassicTCPBuilder withAddress(Address address){
+            this.address = address;
+            return this;
+        }
+
+        public ClassicTCPBuilder withMainFlow(TCP tcp){
+            this.mainflow = tcp;
+            return this;
+        }
+
+        public ClassicTCPBuilder withReceivingWindow(ReceivingWindow receivingWindow){
+            this.receivingWindow = receivingWindow;
+            return this;
+        }
+
+        public ClassicTCP build() {
+            return new ClassicTCP(this.receivingWindowCapacity,
+                    this.receivedPacketsContainer,
+                    this.payloadsToSend,
+                    this.isReno,
+                    this.address,
+                    this.mainflow,
+                    this.receivingWindow);
+        }
+    }
+
 }

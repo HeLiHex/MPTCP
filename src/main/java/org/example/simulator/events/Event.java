@@ -54,4 +54,9 @@ public abstract class Event implements Comparable<Event> {
     public int hashCode() {
         return super.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

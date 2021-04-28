@@ -2,9 +2,11 @@ package org.example.protocol.window;
 
 import org.example.data.Message;
 import org.example.data.Packet;
+import org.example.data.PacketBuilder;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.junit.*;
@@ -21,12 +23,12 @@ public class SendingWindowTest {
     private EventHandler eventHandler;
 
     @Rule
-    public Timeout globalTimeout = new Timeout(60, TimeUnit.SECONDS);
+    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Before
     public void setup() throws IllegalAccessException {
-        this.client = new ClassicTCP(20);
-        this.server = new ClassicTCP(20);
+        this.client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).setTahoe().build();
+        this.server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).setTahoe().build();
         this.connect(client, server);
 
         this.sendingWindow = this.client.getSendingWindow();
@@ -65,13 +67,12 @@ public class SendingWindowTest {
     }
 
     @Test
-    public void isWaitingForAckIsFalseIfSendingWindowIsAlmostFullTest(){
+    public void isWaitingForAckIsFalseIfSendingWindowIsAlmostFullTest() throws IllegalAccessException {
         for (int i = 0; i < Math.pow(this.server.getThisReceivingWindowCapacity(), 2); i++) {
-            this.client.send(new Message("test " + i));
             this.sendingWindow.increase();
         }
         for (int i = 0; i < this.client.getOtherReceivingWindowCapacity() - 1; i++) {
-            this.client.trySend();
+            this.client.getSendingWindow().add(new PacketBuilder().build());
         }
         Assert.assertEquals(this.client.getOtherReceivingWindowCapacity(), this.sendingWindow.getWindowCapacity());
         Assert.assertFalse(this.sendingWindow.isWaitingForAck());
@@ -132,7 +133,7 @@ public class SendingWindowTest {
         }
 
         int prevWindowCapacity = client.getSendingWindow().getWindowCapacity();
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         while (eventHandler.singleRun()){
             int curWindowCapacity = client.getSendingWindow().getWindowCapacity();
 

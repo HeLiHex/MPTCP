@@ -3,28 +3,35 @@ package org.example.protocol.window.receiving;
 import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
+import org.example.network.interfaces.Endpoint;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.Statistics;
 
 import java.util.Comparator;
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SelectiveRepeat extends Window implements ReceivingWindow {
 
-    private final Queue<Packet> received;
-    private Packet ackThis;
+    private final List<Packet> received;
+    private int packetCount;
+    private Map<Endpoint, Packet> ackThisMap;
 
-    public SelectiveRepeat(int windowSize, Connection connection, Comparator<Packet> comparator, Queue<Packet> receivedContainer) {
-        super(windowSize, connection, comparator);
+    public SelectiveRepeat(int windowSize, Comparator<Packet> comparator, List<Packet> receivedContainer) {
+        super(windowSize, comparator);
         this.received = receivedContainer;
-        this.ackThis = new PacketBuilder().withConnection(connection).build();
+        this.packetCount = 0;
+        this.ackThisMap = new HashMap<>();
     }
 
     private void receive(Packet packet) {
         if (this.received.contains(packet)) return;
-        boolean added = this.received.offer(packet);
+        boolean added = this.received.add(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
         Statistics.packetReceived();
     }
@@ -32,25 +39,34 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     @Override
     public boolean receive(SendingWindow sendingWindow) {
         if (this.isEmpty()) return false;
+        if (this.peek().hasAllFlags(Flag.SYN)) return false;
 
-        Packet packet = this.poll();
+        Connection connection = sendingWindow.getConnection();
 
-        if (packet.hasAllFlags(Flag.ACK)) {
-            sendingWindow.ackReceived(packet);
+        if (this.peek().hasAllFlags(Flag.ACK)) {
+            if (this.peek().getOrigin().equals(connection.getConnectedNode())) {
+                sendingWindow.ackReceived(this.peek());
+                this.poll();
+            }
             return false;
         }
 
-        if (this.inReceivingWindow(packet)) {
-            if (receivingPacketIndex(packet) == 0) {
-                this.connection.update(packet);
-                this.ackThis = packet;
-                this.receive(packet);
-                return true;
+        Packet packetToUpdateWith = this.ackThisMap.get(connection.getConnectedNode());
+        if (packetToUpdateWith != null) connection.update(packetToUpdateWith);
+
+        if (this.inReceivingWindow(this.peek(), connection)) {
+            while (receivingPacketIndex(this.peek(), connection) == 0 && this.peek().getIndex() == this.packetCount) {
+                connection.update(this.peek());
+                this.ackThisMap.put(this.peek().getOrigin(), this.peek());
+                this.receive(this.peek());
+                this.remove();
+                this.packetCount++;
+                if (this.isEmpty()) return true;
             }
-            this.receive(packet);
             return true; // true so that duplicate AKCs are sent
         }
         //false, because packets outside the window has already ben acked
+        assert !this.isFull();
         return false;
     }
 
@@ -60,21 +76,35 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     }
 
     @Override
-    public Packet ackThis() {
+    public Packet ackThis(Endpoint endpointToReceiveAck) {
         assert shouldAck();
-        return this.ackThis;
+        return this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
     }
 
     @Override
-    public int receivingPacketIndex(Packet packet) {
+    public int receivingPacketIndex(Packet packet, Connection connection) {
         int seqNum = packet.getSequenceNumber();
-        int ackNum = this.connection.getNextAcknowledgementNumber();
+        int ackNum = connection.getNextAcknowledgementNumber();
         return seqNum - ackNum;
     }
 
     @Override
-    public boolean inReceivingWindow(Packet packet) {
-        int packetIndex = receivingPacketIndex(packet);
+    public boolean inReceivingWindow(Packet packet, Connection connection) {
+        int packetIndex = receivingPacketIndex(packet, connection);
         return inWindow(packetIndex);
     }
+
+    @Override
+    public boolean offer(Packet packet) {
+        if (this.isFull()) {
+            Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " lost due to capacity");
+            return false;
+        }
+        if (this.contains(packet)) {
+            Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " is already in queue");
+            return false;
+        }
+        return super.offer(packet);
+    }
+
 }

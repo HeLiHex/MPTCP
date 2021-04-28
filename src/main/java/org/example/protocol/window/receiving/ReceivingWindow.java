@@ -1,6 +1,8 @@
 package org.example.protocol.window.receiving;
 
 import org.example.data.Packet;
+import org.example.network.interfaces.Endpoint;
+import org.example.protocol.Connection;
 import org.example.protocol.window.IWindow;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.util.BoundedQueue;
@@ -15,12 +17,12 @@ public interface ReceivingWindow extends IWindow, BoundedQueue<Packet> {
      */
     boolean receive(SendingWindow sendingWindow);
 
-    Packet ackThis();
+    Packet ackThis(Endpoint endpointToReceiveAck);
 
     boolean shouldAck();
 
-    int receivingPacketIndex(Packet packet);
+    int receivingPacketIndex(Packet packet, Connection connection);
 
-    boolean inReceivingWindow(Packet packet);
+    boolean inReceivingWindow(Packet packet, Connection connection);
 
 }

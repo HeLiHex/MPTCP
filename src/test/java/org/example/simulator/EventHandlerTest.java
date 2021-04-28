@@ -5,6 +5,8 @@ import org.example.data.Packet;
 import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
 import org.example.simulator.events.Event;
+import org.example.simulator.events.RouteEvent;
+import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.util.Util;
@@ -92,8 +94,8 @@ public class EventHandlerTest {
     public void runTest(){
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -108,7 +110,7 @@ public class EventHandlerTest {
 
 
         client.send(new Message("test"));
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         Assert.assertEquals(0, eventHandler.getNumberOfEvents());
@@ -118,8 +120,8 @@ public class EventHandlerTest {
     public void runFloodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
         client.addChannel(r1);
@@ -139,7 +141,7 @@ public class EventHandlerTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -155,8 +157,8 @@ public class EventHandlerTest {
         Util.resetTime();
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();
@@ -177,7 +179,7 @@ public class EventHandlerTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         ArrayList<Event> eventList = new ArrayList<>();
 
@@ -196,7 +198,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventArrangementsAreConsistent(){
-        double noiseTolerance = 2;
+        double noiseTolerance = 2.5;
         int numPacketsToSend = 1001;
         ArrayList<Event> eventList1 = this.allEventsList(numPacketsToSend, noiseTolerance);
         ArrayList<Event> eventList2 = this.allEventsList(numPacketsToSend, noiseTolerance);
@@ -212,8 +214,8 @@ public class EventHandlerTest {
         double noiseTolerance = 2;
         EventHandler eventHandler = new EventHandler();
 
-        ClassicTCP client = new ClassicTCP(7);
-        ClassicTCP server = new ClassicTCP(7);
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder()
                 .withNoiseTolerance(noiseTolerance)
                 .build();
@@ -238,7 +240,7 @@ public class EventHandlerTest {
             Message msg = new Message("test " + i);
             client.send(msg);
         }
-        eventHandler.addEvent(new TCPInputEvent(client));
+        eventHandler.addEvent(new RunTCPEvent(client));
 
         Event prevEvent;
         while (true) {

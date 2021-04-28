@@ -11,9 +11,8 @@ import java.util.Random;
 
 public class ChannelTest {
 
-    private Random rand = new Random();
-    private Endpoint source = new ClassicTCP(7);
-    private Endpoint destination = new ClassicTCP(7);
+    private Endpoint source = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+    private Endpoint destination = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
     @Test
     public void channelConstructor1Test(){
@@ -114,5 +113,21 @@ public class ChannelTest {
             Assert.assertTrue(pq.poll().getCost() <= pq.peek().getCost());
         }
     }
+
+    @Test
+    public void differentChannelsAreNotEqualTest(){
+        Endpoint source1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        Endpoint destination1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+
+        Endpoint source2 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+        Endpoint destination2 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+
+        Channel channel1 = new Channel(source1, destination1, 100);
+        Channel channel2 = new Channel(source2, destination2, 100);
+
+        Assert.assertNotEquals(channel1, channel2);
+    }
+
+
 
 }

@@ -5,6 +5,8 @@ import org.example.data.Payload;
 import org.example.network.Channel;
 import org.example.network.interfaces.Endpoint;
 
+import java.util.List;
+
 public interface TCP extends Endpoint {
 
     /**
@@ -16,7 +18,7 @@ public interface TCP extends Endpoint {
      *
      * @param host to connect to
      */
-    void connect(Endpoint host);
+    void connect(TCP host);
 
     /**
      * A method that handles incoming connections
@@ -44,15 +46,6 @@ public interface TCP extends Endpoint {
      */
     Packet receive();
 
-    /**
-     * both endpoints can use terminate the connection
-     * 1. send FIN
-     * 2. receive ACK
-     * 3. the other endpoint does the same
-     * 4. the first endpoint to send FIN waits for a timeout before finally closing connection
-     */
-    void close();
-
 
     /**
      * A method that to determine if TCP has an open connection
@@ -67,15 +60,24 @@ public interface TCP extends Endpoint {
 
     long getRTO();
 
+    long afterConnectSendDelay();
+
     boolean handleIncoming();
+
+    List<Packet> trySend();
 
     boolean canRetransmit(Packet packet);
 
-    public Packet fastRetransmit();
+    Packet fastRetransmit();
 
     boolean seriousLossDetected();
 
     int getSendingWindowCapacity();
+
+    TCP getMainFlow();
+
+    int getNumberOfFlows();
+
 
 
 }

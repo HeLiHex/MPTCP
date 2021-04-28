@@ -1,6 +1,7 @@
 package org.example.network.interfaces;
 
 import org.example.data.Packet;
+import org.example.network.address.Address;
 import org.example.network.Channel;
 
 import java.util.List;
@@ -86,7 +87,9 @@ public interface NetworkNode {
      */
     int inputBufferSize();
 
-    Channel getPath(NetworkNode destination);
+    List<Channel> getChannelsUsed();
+
+    //Channel getPath(NetworkNode destination);
 
     void run();
 
