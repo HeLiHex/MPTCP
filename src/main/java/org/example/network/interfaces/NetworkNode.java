@@ -89,8 +89,6 @@ public interface NetworkNode {
 
     List<Channel> getChannelsUsed();
 
-    //Channel getPath(NetworkNode destination);
-
     void run();
 
 
