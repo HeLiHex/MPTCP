@@ -2,24 +2,20 @@ package org.example.network;
 
 import org.example.data.Packet;
 import org.example.network.address.Address;
-import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.MPTCP;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class Routable implements NetworkNode {
 
+    protected final BlockingQueue<Packet> inputBuffer;
     private final RoutingTable routingTable;
     private final List<Channel> channels;
     private final Address address;
     private final double noiseTolerance;
-    protected final BlockingQueue<Packet> inputBuffer;
-
     private List<Channel> channelsUsed;
 
     protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance, Address address) {
@@ -72,7 +68,7 @@ public abstract class Routable implements NetworkNode {
 
     @Override
     public void addChannel(NetworkNode node) {
-        if (node instanceof MPTCP){
+        if (node instanceof MPTCP) {
             MPTCP mptcp = (MPTCP) node;
             node = mptcp.getEndpointToAddChannelTo();
         }
