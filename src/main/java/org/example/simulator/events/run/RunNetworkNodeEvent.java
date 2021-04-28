@@ -1,7 +1,6 @@
 package org.example.simulator.events.run;
 
 import org.example.network.Channel;
-import org.example.network.interfaces.Endpoint;
 import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.events.ChannelEvent;
 import org.example.simulator.events.Event;
