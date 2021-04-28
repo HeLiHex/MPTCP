@@ -23,7 +23,7 @@ public abstract class Window extends BoundedPriorityBlockingQueue<Packet> implem
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
         for (Packet packet : this) {
             stringBuilder.append("[");
             stringBuilder.append(packet);
