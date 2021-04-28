@@ -81,7 +81,7 @@ public class Channel implements Comparable<Channel> {
             return false;
         }
 
-        Packet packet = this.line.poll();
+        var packet = this.line.poll();
         if (lossy()) {
             Statistics.packetLost();
             this.logger.log(Level.INFO, () -> packet.toString() + " lost due to noise");
