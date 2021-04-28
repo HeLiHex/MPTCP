@@ -73,7 +73,7 @@ public class MPTCP implements TCP{
 
     @Override
     public long processingDelay() {
-        return this.inputBufferSize() * 20;
+        return this.inputBufferSize() * (long)20;
     }
 
     @Override

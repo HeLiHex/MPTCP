@@ -59,7 +59,8 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
                 connection.update(this.peek());
                 this.ackThisMap.put(this.peek().getOrigin(), this.peek());
                 this.receive(this.peek());
-                this.remove();
+                Packet packetRemoved = this.remove();
+                if (packetRemoved == null) throw new IllegalStateException("removing null packet");
                 this.packetCount++;
                 if (this.isEmpty()) return true;
             }
