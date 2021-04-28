@@ -104,7 +104,7 @@ public class Statistics {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Statistics{");
+        final var sb = new StringBuilder("Statistics{");
         sb.append("\n");
 
         //Number

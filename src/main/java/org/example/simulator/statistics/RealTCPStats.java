@@ -109,7 +109,7 @@ public class RealTCPStats implements TCPStats {
     @Override
     public String toString() {
         this.setGoodput();
-        ObjectMapper mapper = new ObjectMapper();
+        var mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
