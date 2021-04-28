@@ -29,6 +29,17 @@ public class EventTest {
         Assert.assertTrue(linkedServer.isConnected());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void expectIllegalArgumentExceptionIfNullChannelGiven() {
+        new ChannelEvent(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void expectIllegalArgumentExceptionIfNullNodeGiven() {
+        new RunTCPEvent(null);
+    }
+
+
     @Test
     public void EventsOccurInAPreMatchedSequence() {
         int numberOfRuns = 100;
