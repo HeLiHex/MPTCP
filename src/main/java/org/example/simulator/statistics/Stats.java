@@ -48,13 +48,14 @@ public abstract class Stats {
     public void packetDeparture() {
         this.departureCustomer.add(this.arrivalCustomer.size());
         this.departureTime.add((double) Util.seeTime());
-    }
 
-    private void findTimeInSystem(){
-        for (int i = 0; i < this.departureTime.size(); i++) {
-            if (this.departureTime.get(i) - this.arrivalTime.get(i) < 0) throw new IllegalStateException("wait is less then 0");
-            this.timeInSystem.add(this.departureTime.get(i) - this.arrivalTime.get(i));
-        }
+        // Time in system calculation
+        int n = this.departureCustomer.get(this.departureCustomer.size()-1);
+        if (n == 0) return;
+        double departureTime = this.departureTime.get(this.departureCustomer.size()-1);
+        double arrivalTime = this.arrivalTime.get(n-1);
+        this.timeInSystem.add(departureTime - arrivalTime);
+
     }
 
     public void createArrivalChart() {
@@ -97,7 +98,7 @@ public abstract class Stats {
     }
 
     public void createTimeInSystemChart() {
-        this.findTimeInSystem();
+        //this.findTimeInSystem();
         XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Packet").yAxisTitle("Time In System").title("Packet Time In System").build();
         chart.addSeries("Time in system", this.timeInSystem);
         chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
