@@ -10,9 +10,8 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.simulator.statistics.RealTCPStats;
-import org.example.simulator.statistics.Statistics;
 import org.example.simulator.statistics.TCPStats;
+import org.example.simulator.statistics.Statistics;
 import org.example.util.Util;
 import org.javatuples.Pair;
 
@@ -61,7 +60,7 @@ public class ClassicTCP extends Routable implements TCP {
             this.mainFlow = mainFlow;
         }
 
-        this.tcpStats = new RealTCPStats(address);
+        this.tcpStats = new TCPStats(address);
     }
 
 
@@ -285,7 +284,11 @@ public class ClassicTCP extends Routable implements TCP {
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
         if (packetIsFromValidConnection(packet)) {
-            return super.enqueueInputBuffer(packet);
+            if (super.enqueueInputBuffer(packet)){
+                this.tcpStats.packetArrival();
+                return true;
+            }
+            return false;
         }
         this.logger.log(Level.INFO, () -> packet + " was not added due to non valid connection");
         // return true because the packet has arrived the endpoint

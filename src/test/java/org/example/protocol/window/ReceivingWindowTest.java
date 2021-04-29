@@ -8,7 +8,7 @@ import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.TCPConnectEvent;
-import org.example.simulator.statistics.RealTCPStats;
+import org.example.simulator.statistics.TCPStats;
 import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -105,7 +105,7 @@ public class ReceivingWindowTest {
         Assert.assertTrue(this.receivingWindow.inReceivingWindow(ackFromServer, client.getConnection()));
         this.receivingWindow.offer(ackFromServer);
 
-        SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend, new RealTCPStats(this.client.getAddress()));
+        SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend, new TCPStats(this.client.getAddress()));
         Assert.assertFalse(this.receivingWindow.receive(sendingWindow));
     }
 
@@ -120,7 +120,7 @@ public class ReceivingWindowTest {
         Assert.assertTrue(this.receivingWindow.inReceivingWindow(packetFromServer, client.getConnection()));
         this.receivingWindow.offer(packetFromServer);
 
-        SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend, new RealTCPStats(this.client.getAddress()));
+        SendingWindow sendingWindow = new SlidingWindow(10 , true, client.getConnection(), PACKET_COMPARATOR, this.payloadsToSend, new TCPStats(this.client.getAddress()));
         Assert.assertTrue(this.receivingWindow.receive(sendingWindow));
 
         Assert.assertEquals(packetFromServer, this.receivedPackets.remove(0));
