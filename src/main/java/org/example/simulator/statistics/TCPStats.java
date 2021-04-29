@@ -47,6 +47,7 @@ public class TCPStats {
     private int numberOfPacketsReceived; //total number of packets received
 
     private double goodput;
+    private double lossRate;
 
     public TCPStats(Address address) {
         this.dir = "./charts/";
@@ -113,8 +114,20 @@ public class TCPStats {
         return goodput;
     }
 
+    public double getLossRate() {
+        return lossRate;
+    }
+
     private void setGoodput(){
-        this.goodput = (double)(this.numberOfPacketsSent + this.numberOfPacketsRetransmitted + this.numberOfPacketsFastRetransmitted)/((double)Util.seeTime());
+        this.goodput = (double)this.numberOfPacketsSent/((double)Util.seeTime());
+    }
+
+    private void setLossRate(){
+        if (this.numberOfPacketsSent == 0){
+            this.lossRate = 0;
+            return;
+        }
+        this.lossRate = ((double) this.numberOfPacketsFastRetransmitted + (double) this.numberOfPacketsFastRetransmitted)/(double) this.numberOfPacketsSent;
     }
 
     public void trackCwnd(int cwnd) {
@@ -124,15 +137,15 @@ public class TCPStats {
 
     private void findInterArrivalTimes(){
         for (int i = 1; i < this.arrivalTime.size(); i++) {
+            if (this.arrivalTime.get(i) - this.arrivalTime.get(i-1) < 0) throw new IllegalStateException("interarrival time is less then 0");
             this.interArrivalTimes.add(this.arrivalTime.get(i) - this.arrivalTime.get(i-1));
         }
     }
 
     private void findTimeInSystem(){
         for (int i = 0; i < this.departureTime.size(); i++) {
-            this.timeInSystem.add(this.departureTime.get(i) - this.arrivalTime.get(i));
-            System.out.println(this.departureTime.get(i) - this.arrivalTime.get(i));
             if (this.departureTime.get(i) - this.arrivalTime.get(i) < 0) throw new IllegalStateException("wait is less then 0");
+            this.timeInSystem.add(this.departureTime.get(i) - this.arrivalTime.get(i));
         }
     }
 
@@ -203,6 +216,7 @@ public class TCPStats {
 
     public String toString() {
         this.setGoodput();
+        this.setLossRate();
         var mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(this);
