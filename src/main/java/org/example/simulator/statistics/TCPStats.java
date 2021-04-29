@@ -34,6 +34,8 @@ public class TCPStats {
     private final ArrayList<Double> departureTime = new ArrayList<>();
     private final ArrayList<Integer> departureCustomer = new ArrayList<>();
 
+    private final ArrayList<Double> interArrivalTimes = new ArrayList<>();
+
     private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private int numberOfPacketsRetransmitted; //total number of packets retransmitted
     private int numberOfPacketsFastRetransmitted; // total number of packets dropped
@@ -117,6 +119,13 @@ public class TCPStats {
         congestionWindowTime.add((double) Util.seeTime()/(double) this.rtt);
     }
 
+    private void findInterArrivalTimes(){
+        for (int i = 1; i < this.arrivalTime.size(); i++) {
+            this.interArrivalTimes.add(this.arrivalTime.get(i) - this.arrivalTime.get(i-1));
+            System.out.println(this.arrivalTime.get(i) - this.arrivalTime.get(i-1));
+        }
+    }
+
     public void createCWNDChart() {
         if (this.congestionWindowTime.isEmpty() || this.congestionWindowCapacities.isEmpty()) return;
         if (this.congestionWindowTime.size() != this.congestionWindowCapacities.size()) throw new IllegalStateException("the arrays must be of equal length");
@@ -153,6 +162,18 @@ public class TCPStats {
         chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
         try {
             BitmapEncoder.saveBitmap(chart, this.dir + "DepartureChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            Logger.getLogger("").log(Level.WARNING, "lol");
+        }
+    }
+
+    public void createInterArrivalChart() {
+        this.findInterArrivalTimes();
+        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Packet").yAxisTitle("Interarrival Time").title("Packet Interarrival-Time").build();
+        chart.addSeries("Interarrival Times", this.interArrivalTimes);
+        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        try {
+            BitmapEncoder.saveBitmap(chart, this.dir + "InterarrivalTime_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
             Logger.getLogger("").log(Level.WARNING, "lol");
         }
