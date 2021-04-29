@@ -207,5 +207,8 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         return this.payloadsToSend.isEmpty();
     }
 
-
+    @Override
+    public TCPStats getStats() {
+        return this.stats;
+    }
 }

@@ -81,6 +81,7 @@ public class TCPStatsTest {
         for (TCPStats stat: server.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createArrivalChart();
+            stat.createDepartureChart();
         }
 
         //sender

@@ -3,6 +3,7 @@ package org.example.protocol.window.sending;
 import org.example.data.Packet;
 import org.example.protocol.Connection;
 import org.example.protocol.window.IWindow;
+import org.example.simulator.statistics.TCPStats;
 import org.example.util.BoundedQueue;
 
 public interface SendingWindow extends IWindow, BoundedQueue<Packet> {
@@ -34,6 +35,8 @@ public interface SendingWindow extends IWindow, BoundedQueue<Packet> {
     Connection getConnection();
 
     boolean isQueueEmpty();
+
+    TCPStats getStats();
 
     @Override
     boolean offer(Packet packet);

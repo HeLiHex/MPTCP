@@ -7,11 +7,14 @@ import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.internal.series.Series;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Scatter;
 
 public class TCPStats {
 
@@ -19,15 +22,15 @@ public class TCPStats {
     private final String dir;
     private long rtt;
 
-    //CWND
+    // CWND
     private final ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
     private final ArrayList<Double> congestionWindowTime = new ArrayList<>();
 
-    //Arrival
+    // Arrival
     private final ArrayList<Double> arrivalTime = new ArrayList<>();
     private final ArrayList<Integer> arrivalCustomer = new ArrayList<>();
 
-    //Departure
+    // Departure
     private final ArrayList<Double> departureTime = new ArrayList<>();
     private final ArrayList<Integer> departureCustomer = new ArrayList<>();
 
@@ -36,6 +39,7 @@ public class TCPStats {
     private int numberOfPacketsFastRetransmitted; // total number of packets dropped
     private int numberOfPacketsArrived; //total number of packets that are enqueued
     private int numberOfAcksReceived; //total number of ACKs received
+    private int numberOfPacketsReceived; //total number of packets received
 
     private double goodput;
 
@@ -66,6 +70,12 @@ public class TCPStats {
         this.arrivalTime.add((double) Util.seeTime());
     }
 
+    public void packetDeparture() {
+        this.numberOfPacketsReceived++;
+        this.departureCustomer.add(this.arrivalCustomer.size());
+        this.departureTime.add((double) Util.seeTime());
+    }
+
     public void ackReceived() {
         this.numberOfAcksReceived++;
     }
@@ -88,6 +98,10 @@ public class TCPStats {
 
     public int getNumberOfPacketsArrived() {
         return numberOfPacketsArrived;
+    }
+
+    public int getNumberOfPacketsReceived() {
+        return numberOfPacketsReceived;
     }
 
     public double getGoodput() {
@@ -122,9 +136,23 @@ public class TCPStats {
 
         XYChart chart = new XYChartBuilder().width(800).height(600).xAxisTitle("Packet Arrival-Time").yAxisTitle("Packet").title("Packet Arrivals").build();
         chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalCustomer);
-        //chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
         try {
             BitmapEncoder.saveBitmap(chart, this.dir + "ArrivalChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            Logger.getLogger("").log(Level.WARNING, "lol");
+        }
+    }
+
+    public void createDepartureChart() {
+        if (this.departureTime.isEmpty() || this.departureCustomer.isEmpty()) return;
+        if (this.departureTime.size() != this.departureCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
+
+        XYChart chart = new XYChartBuilder().width(800).height(600).xAxisTitle("Packet Departure-Time").yAxisTitle("Packet").title("Packet Departures").build();
+        chart.addSeries("Packet Departures", this.departureTime, this.departureCustomer);
+        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        try {
+            BitmapEncoder.saveBitmap(chart, this.dir + "DepartureChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
             Logger.getLogger("").log(Level.WARNING, "lol");
         }
