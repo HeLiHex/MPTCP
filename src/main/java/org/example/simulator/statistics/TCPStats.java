@@ -7,6 +7,7 @@ import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ public class TCPStats extends Stats {
         if (this.congestionWindowTime.size() != this.congestionWindowCapacities.size()) throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder().width(10000).height(500).xAxisTitle("congestionWindowTime").yAxisTitle("CWND").title("Congestion Window Capacity").build();
-        chart.addSeries("CWND", congestionWindowTime, congestionWindowCapacities);
+        chart.addSeries("CWND", congestionWindowTime, congestionWindowCapacities).setMarker(SeriesMarkers.NONE);
         try {
             BitmapEncoder.saveBitmap(chart, this.dir + "CWNDChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
