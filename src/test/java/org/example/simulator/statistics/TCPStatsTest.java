@@ -83,6 +83,7 @@ public class TCPStatsTest {
             stat.createArrivalChart();
             stat.createDepartureChart();
             stat.createInterArrivalChart();
+            stat.createTimeInSystemChart();
         }
 
         //sender

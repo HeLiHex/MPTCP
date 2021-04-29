@@ -299,6 +299,8 @@ public class ClassicTCP extends Routable implements TCP {
     private boolean unconnectedInputHandler() {
         if (this.inputBuffer.isEmpty()) return false;
         if (!this.peekInputBuffer().getDestination().equals(this)) return false;
+
+        this.tcpStats.packetArrival();
         var packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)) {

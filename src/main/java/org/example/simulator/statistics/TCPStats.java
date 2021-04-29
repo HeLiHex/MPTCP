@@ -7,7 +7,6 @@ import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.internal.series.Series;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +33,11 @@ public class TCPStats {
     private final ArrayList<Double> departureTime = new ArrayList<>();
     private final ArrayList<Integer> departureCustomer = new ArrayList<>();
 
+    // Inter arrival times
     private final ArrayList<Double> interArrivalTimes = new ArrayList<>();
+
+    // Time in system
+    private final ArrayList<Double> timeInSystem = new ArrayList<>();
 
     private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private int numberOfPacketsRetransmitted; //total number of packets retransmitted
@@ -122,7 +125,14 @@ public class TCPStats {
     private void findInterArrivalTimes(){
         for (int i = 1; i < this.arrivalTime.size(); i++) {
             this.interArrivalTimes.add(this.arrivalTime.get(i) - this.arrivalTime.get(i-1));
-            System.out.println(this.arrivalTime.get(i) - this.arrivalTime.get(i-1));
+        }
+    }
+
+    private void findTimeInSystem(){
+        for (int i = 0; i < this.departureTime.size(); i++) {
+            this.timeInSystem.add(this.departureTime.get(i) - this.arrivalTime.get(i));
+            System.out.println(this.departureTime.get(i) - this.arrivalTime.get(i));
+            if (this.departureTime.get(i) - this.arrivalTime.get(i) < 0) throw new IllegalStateException("wait is less then 0");
         }
     }
 
@@ -174,6 +184,18 @@ public class TCPStats {
         chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
         try {
             BitmapEncoder.saveBitmap(chart, this.dir + "InterarrivalTime_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            Logger.getLogger("").log(Level.WARNING, "lol");
+        }
+    }
+
+    public void createTimeInSystemChart() {
+        this.findTimeInSystem();
+        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Packet").yAxisTitle("Time In System").title("Packet Time In System").build();
+        chart.addSeries("Time in system", this.timeInSystem);
+        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        try {
+            BitmapEncoder.saveBitmap(chart, this.dir + "TimeInSystem_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
             Logger.getLogger("").log(Level.WARNING, "lol");
         }
