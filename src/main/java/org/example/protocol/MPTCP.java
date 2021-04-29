@@ -268,7 +268,7 @@ public class MPTCP implements TCP{
     public TCPStats[] getTcpStats() {
         var tcpStats = new TCPStats[this.subflows.length];
         for (var i = 0; i < this.subflows.length; i++) {
-            tcpStats[i] = ((ClassicTCP)this.subflows[i]).getTcpStats();
+            tcpStats[i] = ((ClassicTCP)this.subflows[i]).getStats();
         }
         return tcpStats;
     }

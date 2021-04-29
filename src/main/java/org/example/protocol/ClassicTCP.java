@@ -412,7 +412,8 @@ public class ClassicTCP extends Routable implements TCP {
         return trySend(packetsSent);
     }
 
-    public TCPStats getTcpStats() {
+    @Override
+    public TCPStats getStats() {
         return tcpStats;
     }
 

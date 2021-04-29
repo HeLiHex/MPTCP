@@ -3,6 +3,7 @@ package org.example.network;
 import org.example.data.Packet;
 import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.Endpoint;
+import org.example.simulator.statistics.Stats;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -16,6 +17,11 @@ public class RoutableEndpoint extends Routable implements Endpoint {
         super(inputBuffer, noiseTolerance, new UUIDAddress());
         this.outputBuffer = outputBuffer;
         this.receivedPackets = new ArrayBlockingQueue<>(10000);
+    }
+
+    @Override
+    public Stats getStats() {
+        return null;
     }
 
     public Packet dequeueOutputBuffer() {

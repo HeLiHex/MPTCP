@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 import static org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Scatter;
 
-public class TCPStats {
+public class TCPStats extends Stats {
 
     private final String filename;
     private final String dir;
@@ -24,20 +24,6 @@ public class TCPStats {
     // CWND
     private final ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
     private final ArrayList<Double> congestionWindowTime = new ArrayList<>();
-
-    // Arrival
-    private final ArrayList<Double> arrivalTime = new ArrayList<>();
-    private final ArrayList<Integer> arrivalCustomer = new ArrayList<>();
-
-    // Departure
-    private final ArrayList<Double> departureTime = new ArrayList<>();
-    private final ArrayList<Integer> departureCustomer = new ArrayList<>();
-
-    // Inter arrival times
-    private final ArrayList<Double> interArrivalTimes = new ArrayList<>();
-
-    // Time in system
-    private final ArrayList<Double> timeInSystem = new ArrayList<>();
 
     private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private int numberOfPacketsRetransmitted; //total number of packets retransmitted
@@ -52,6 +38,11 @@ public class TCPStats {
     public TCPStats(Address address) {
         this.dir = "./charts/";
         this.filename = address.toString();
+    }
+
+    @Override
+    protected String fileName() {
+        return this.filename;
     }
 
     public void setRtt(long rtt) {
@@ -70,16 +61,16 @@ public class TCPStats {
         this.numberOfPacketsFastRetransmitted++;
     }
 
+    @Override
     public void packetArrival() {
         this.numberOfPacketsArrived++;
-        this.arrivalCustomer.add(this.arrivalCustomer.size());
-        this.arrivalTime.add((double) Util.seeTime());
+        super.packetArrival();
     }
 
+    @Override
     public void packetDeparture() {
         this.numberOfPacketsReceived++;
-        this.departureCustomer.add(this.arrivalCustomer.size());
-        this.departureTime.add((double) Util.seeTime());
+        super.packetDeparture();
     }
 
     public void ackReceived() {
@@ -135,20 +126,6 @@ public class TCPStats {
         congestionWindowTime.add((double) Util.seeTime()/(double) this.rtt);
     }
 
-    private void findInterArrivalTimes(){
-        for (int i = 1; i < this.arrivalTime.size(); i++) {
-            if (this.arrivalTime.get(i) - this.arrivalTime.get(i-1) < 0) throw new IllegalStateException("interarrival time is less then 0");
-            this.interArrivalTimes.add(this.arrivalTime.get(i) - this.arrivalTime.get(i-1));
-        }
-    }
-
-    private void findTimeInSystem(){
-        for (int i = 0; i < this.departureTime.size(); i++) {
-            if (this.departureTime.get(i) - this.arrivalTime.get(i) < 0) throw new IllegalStateException("wait is less then 0");
-            this.timeInSystem.add(this.departureTime.get(i) - this.arrivalTime.get(i));
-        }
-    }
-
     public void createCWNDChart() {
         if (this.congestionWindowTime.isEmpty() || this.congestionWindowCapacities.isEmpty()) return;
         if (this.congestionWindowTime.size() != this.congestionWindowCapacities.size()) throw new IllegalStateException("the arrays must be of equal length");
@@ -157,58 +134,6 @@ public class TCPStats {
         chart.addSeries("CWND", congestionWindowTime, congestionWindowCapacities);
         try {
             BitmapEncoder.saveBitmap(chart, this.dir + "CWNDChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
-    }
-
-    public void createArrivalChart() {
-        if (this.arrivalTime.isEmpty() || this.arrivalCustomer.isEmpty()) return;
-        if (this.arrivalTime.size() != this.arrivalCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
-
-        XYChart chart = new XYChartBuilder().width(800).height(600).xAxisTitle("Packet Arrival-Time").yAxisTitle("Packet").title("Packet Arrivals").build();
-        chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalCustomer);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, this.dir + "ArrivalChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
-    }
-
-    public void createDepartureChart() {
-        if (this.departureTime.isEmpty() || this.departureCustomer.isEmpty()) return;
-        if (this.departureTime.size() != this.departureCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
-
-        XYChart chart = new XYChartBuilder().width(800).height(600).xAxisTitle("Packet Departure-Time").yAxisTitle("Packet").title("Packet Departures").build();
-        chart.addSeries("Packet Departures", this.departureTime, this.departureCustomer);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, this.dir + "DepartureChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
-    }
-
-    public void createInterArrivalChart() {
-        this.findInterArrivalTimes();
-        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Packet").yAxisTitle("Interarrival Time").title("Packet Interarrival-Time").build();
-        chart.addSeries("Interarrival Times", this.interArrivalTimes);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, this.dir + "InterarrivalTime_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
-    }
-
-    public void createTimeInSystemChart() {
-        this.findTimeInSystem();
-        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Packet").yAxisTitle("Time In System").title("Packet Time In System").build();
-        chart.addSeries("Time in system", this.timeInSystem);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, this.dir + "TimeInSystem_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
             Logger.getLogger("").log(Level.WARNING, "lol");
         }

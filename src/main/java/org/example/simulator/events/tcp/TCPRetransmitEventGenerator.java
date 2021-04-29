@@ -34,7 +34,7 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
         if (this.tcp.canRetransmit(this.packet)) {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, () -> "Retransmit packet: " + this.packet);
             Statistics.packetRetransmit();
-            ((ClassicTCP)this.tcp).getTcpStats().packetRetransmit();
+            ((ClassicTCP)this.tcp).getStats().packetRetransmit();
             events.add(new RouteEvent(this.tcp, this.packet));
             events.add(new TCPRetransmitEventGenerator(this.packet, this.numAttempts + 1 ));
         }

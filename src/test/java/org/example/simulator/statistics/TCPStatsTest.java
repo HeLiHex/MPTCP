@@ -10,6 +10,7 @@ import org.example.protocol.MPTCP;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
+import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,6 +18,8 @@ public class TCPStatsTest {
 
     @Test
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
+        Util.resetTime();
+        Util.setSeed(1996);
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().build();
         Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2).build();
         Routable r2 = new Router.RouterBuilder().withBufferSize(5).build();
@@ -73,23 +76,28 @@ public class TCPStatsTest {
         }
 
         eventHandler.printStatistics();
-
-        TCPStats stat = server.getTcpStats();
+/*
+        TCPStats stat = server.getStats();
         System.out.println(stat);
         stat.createArrivalChart();
         stat.createDepartureChart();
         stat.createInterArrivalChart();
         stat.createTimeInSystemChart();
 
-        System.out.println(client.getTcpStats().toString());
-        client.getTcpStats().createCWNDChart();
+        System.out.println(client.getStats().toString());
+        client.getStats().createCWNDChart();
+ */
+        r1.getStats().createArrivalChart();
+        r1.getStats().createDepartureChart();
 
     }
 
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest() {
+        Util.resetTime();
+        Util.setSeed(1996);
         MPTCP client = new MPTCP(3, 21);
-        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(1.7).withAddress(new SimpleAddress("A")).build();
+        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);

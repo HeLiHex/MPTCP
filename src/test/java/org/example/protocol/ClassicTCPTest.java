@@ -618,8 +618,8 @@ public class ClassicTCPTest {
 
         eventHandler.printStatistics();
 
-        System.out.println(client.getTcpStats().toString());
-        //client.getTcpStats().createCWNDChart();
+        System.out.println(client.getStats().toString());
+        //client.getStats().createCWNDChart();
     }
 
 
