@@ -43,6 +43,12 @@ public class TCPStats extends Stats {
     }
 
     @Override
+    protected void additionalCalculations() {
+        this.setGoodput();
+        this.setLossRate();
+    }
+
+    @Override
     protected String fileName() {
         return this.filename;
     }
@@ -139,22 +145,6 @@ public class TCPStats extends Stats {
             BitmapEncoder.saveBitmap(chart, this.dir + "CWNDChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
             Logger.getLogger("").log(Level.WARNING, "lol");
-        }
-    }
-
-    public String toString() {
-        this.setGoodput();
-        this.setLossRate();
-        this.doCalculations();
-        var mapper = new ObjectMapper();
-        try {
-            String formattedString = mapper.writeValueAsString(this)
-                    .replace("{", "{\n      ")
-                    .replace("}", "\n}")
-                    .replace(",", ",\n      ");
-            return this.filename + " " + formattedString;
-        } catch (JsonProcessingException e) {
-            return "fail";
         }
     }
 }

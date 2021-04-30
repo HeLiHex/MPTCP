@@ -10,7 +10,12 @@ public class RouterStats extends Stats{
     }
 
     @Override
+    protected void additionalCalculations() {
+        //no additional calculations
+    }
+
+    @Override
     protected String fileName() {
-        return "Router_" + router.toString();
+        return router.toString();
     }
 }

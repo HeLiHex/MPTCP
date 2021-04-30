@@ -1,5 +1,7 @@
 package org.example.simulator.statistics;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
@@ -42,7 +44,9 @@ public abstract class Stats {
 
     protected abstract String fileName();
 
-    protected void doCalculations(){
+    protected abstract void additionalCalculations();
+
+    private void doCalculations(){
         if (this.interArrivalTimes.isEmpty()) return;
         this.meanArrivalRate = 1/(this.arrivalCustomer.get(this.arrivalCustomer.size()-1)/this.arrivalTime.get(this.arrivalTime.size()-1));
         //this.meanArrivalRate = this.interArrivalTimes.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
@@ -174,5 +178,22 @@ public abstract class Stats {
 
     public double getMeanNumPacketsInSystem() {
         return meanNumPacketsInSystem;
+    }
+
+
+    @Override
+    public String toString() {
+        this.doCalculations();
+        this.additionalCalculations();
+        var mapper = new ObjectMapper();
+        try {
+            String formattedString = mapper.writeValueAsString(this)
+                    .replace("{", "{\n      ")
+                    .replace("}", "\n}")
+                    .replace(",", ",\n      ");
+            return this.fileName() + " " + formattedString;
+        } catch (JsonProcessingException e) {
+            return "fail";
+        }
     }
 }

@@ -20,12 +20,12 @@ public class TCPStatsTest {
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
         Util.resetTime();
         Util.setSeed(1996);
-        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().build();
-        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(5).build();
-        Routable r3 = new Router.RouterBuilder().withBufferSize(7).build();
-        Routable r4 = new Router.RouterBuilder().withBufferSize(10).build();
-        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().build();
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().withAddress(new SimpleAddress("Client")).build();
+        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(5).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r3 = new Router.RouterBuilder().withBufferSize(7).withAddress(new SimpleAddress("Router 3")).build();
+        Routable r4 = new Router.RouterBuilder().withBufferSize(10).withAddress(new SimpleAddress("Router 4")).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Server")).build();
 
         client.addChannel(r1);
         r1.addChannel(r2);
@@ -74,7 +74,7 @@ public class TCPStatsTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
-/*
+
         eventHandler.printStatistics();
         TCPStats stat = server.getStats();
         System.out.println(stat);
@@ -88,7 +88,7 @@ public class TCPStatsTest {
         client.getStats().createCWNDChart();
 
 
- */
+        System.out.println(r1.getStats());
         r1.getStats().createArrivalChart();
         r1.getStats().createDepartureChart();
         r1.getStats().createTimeInSystemChart();
