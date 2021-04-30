@@ -4,13 +4,16 @@ import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Scatter;
 
 public abstract class Stats {
 
@@ -30,24 +33,58 @@ public abstract class Stats {
     // Time in system
     protected final ArrayList<Double> timeInSystem = new ArrayList<>();
 
+    // number of packets in system
+    protected final ArrayList<Integer> packetsInSystem = new ArrayList<>();
+
+    private double meanArrivalRate;
+    private double meanTimeInSystem;
+    private double meanNumPacketsInSystem;
 
     protected abstract String fileName();
 
+    protected void doCalculations(){
+        if (this.interArrivalTimes.isEmpty()) return;
+        this.meanArrivalRate = 1/(this.arrivalCustomer.get(this.arrivalCustomer.size()-1)/this.arrivalTime.get(this.arrivalTime.size()-1));
+        //this.meanArrivalRate = this.interArrivalTimes.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
+
+        this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
+
+        //denne tar ikke hensyn til tiden... bruk little's law
+        //this.meanNumPacketsInSystem = this.packetsInSystem.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
+
+        //Little's law
+        // L = 1/E[A] * W
+        this.meanNumPacketsInSystem = (1/this.meanArrivalRate) * this.meanTimeInSystem;
+    }
     public void packetArrival() {
-        int numberOfPackers = this.arrivalCustomer.size();
-        this.arrivalCustomer.add(numberOfPackers);
+        this.arrivalCustomer.add(this.arrivalCustomer.size());
         this.arrivalTime.add((double) Util.seeTime());
 
+        // number of packets in system
+        if (this.packetsInSystem.isEmpty()){
+            this.packetsInSystem.add(1);
+        }else{
+            this.packetsInSystem.add(this.packetsInSystem.get(this.packetsInSystem.size()-1) + 1);
+        }
+
         // inter arrival time calculation
-        if (numberOfPackers > 0){
-            if (this.arrivalTime.get(numberOfPackers) - this.arrivalTime.get(numberOfPackers-1) < 0) throw new IllegalStateException("interarrival time is less then 0");
-            this.interArrivalTimes.add(this.arrivalTime.get(numberOfPackers) - this.arrivalTime.get(numberOfPackers-1));
+        int n = this.arrivalCustomer.size() - 1;
+        if (n > 1){
+            if (this.arrivalTime.get(n) - this.arrivalTime.get(n - 1) < 0) throw new IllegalStateException("interarrival time is less then 0");
+            this.interArrivalTimes.add(this.arrivalTime.get(n) - this.arrivalTime.get(n - 1));
+        }else{
+            this.interArrivalTimes.add(0.0);
         }
     }
 
     public void packetDeparture() {
         this.departureCustomer.add(this.arrivalCustomer.size());
         this.departureTime.add((double) Util.seeTime());
+
+        // number of packets in system
+        if (!this.packetsInSystem.isEmpty()) {
+            this.packetsInSystem.add(this.packetsInSystem.get(this.packetsInSystem.size() - 1) - 1);
+        }
 
         // Time in system calculation
         int n = this.departureCustomer.get(this.departureCustomer.size()-1);
@@ -62,9 +99,9 @@ public abstract class Stats {
         if (this.arrivalTime.isEmpty() || this.arrivalCustomer.isEmpty()) return;
         if (this.arrivalTime.size() != this.arrivalCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
 
-        XYChart chart = new XYChartBuilder().width(800).height(600).xAxisTitle("Packet Arrival-Time").yAxisTitle("Packet").title("Packet Arrivals").build();
+        XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Arrival-Time").yAxisTitle("Packet").title("Packet Arrivals").build();
         chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalCustomer);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         try {
             BitmapEncoder.saveBitmap(chart, DIR + "ArrivalChart_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
@@ -76,9 +113,9 @@ public abstract class Stats {
         if (this.departureTime.isEmpty() || this.departureCustomer.isEmpty()) return;
         if (this.departureTime.size() != this.departureCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
 
-        XYChart chart = new XYChartBuilder().width(800).height(600).xAxisTitle("Packet Departure-Time").yAxisTitle("Packet").title("Packet Departures").build();
+        XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Departure-Time").yAxisTitle("Packet").title("Packet Departures").build();
         chart.addSeries("Packet Departures", this.departureTime, this.departureCustomer);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         try {
             BitmapEncoder.saveBitmap(chart, DIR + "DepartureChart_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
@@ -87,9 +124,9 @@ public abstract class Stats {
     }
 
     public void createInterArrivalChart() {
-        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Packet").yAxisTitle("Interarrival Time").title("Packet Interarrival-Time").build();
-        chart.addSeries("Interarrival Times", this.interArrivalTimes);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Arrival Time").yAxisTitle("Interarrival Time").title("Packet Interarrival-Time").build();
+        chart.addSeries("Interarrival Times", this.arrivalTime, this.interArrivalTimes);
+        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         try {
             BitmapEncoder.saveBitmap(chart, DIR + "InterarrivalTime_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
@@ -98,10 +135,9 @@ public abstract class Stats {
     }
 
     public void createTimeInSystemChart() {
-        //this.findTimeInSystem();
-        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Packet").yAxisTitle("Time In System").title("Packet Time In System").build();
-        chart.addSeries("Time in system", this.timeInSystem);
-        chart.getStyler().setDefaultSeriesRenderStyle(Scatter);
+        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Departure Time").yAxisTitle("Time In System").title("Packet Time In System").build();
+        chart.addSeries("Time in system", this.departureTime, this.timeInSystem);
+        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         try {
             BitmapEncoder.saveBitmap(chart, DIR + "TimeInSystem_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
@@ -109,5 +145,34 @@ public abstract class Stats {
         }
     }
 
+    public void createNumberOfPacketsInSystemChart() {
+        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Time").yAxisTitle("Number of packets in system").title("number of packets in system").build();
+        chart.addSeries("Packets in system", this.combine(this.arrivalTime, this.departureTime), this.packetsInSystem).setMarker(SeriesMarkers.DIAMOND);
+        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
+        try {
+            BitmapEncoder.saveBitmap(chart, DIR + "PacketsInSystem_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            Logger.getLogger("").log(Level.WARNING, "lol");
+        }
+    }
 
+    private List<Double> combine(List<Double> l1, List<Double> l2){
+        List<Double> result = new ArrayList<>();
+        result.addAll(l1);
+        result.addAll(l2);
+        Collections.sort(result);
+        return result;
+    }
+
+    public double getMeanArrivalRate() {
+        return meanArrivalRate;
+    }
+
+    public double getMeanTimeInSystem() {
+        return meanTimeInSystem;
+    }
+
+    public double getMeanNumPacketsInSystem() {
+        return meanNumPacketsInSystem;
+    }
 }

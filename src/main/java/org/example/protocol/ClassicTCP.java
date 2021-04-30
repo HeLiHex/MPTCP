@@ -261,7 +261,7 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     private boolean packetIsFromValidConnection(Packet packet) {
-        if (packet.hasAllFlags(Flag.SYN)) return true;
+        if (packet.hasAllFlags(Flag.SYN) && !this.isConnected()) return true;
         if (!this.isConnected()) return false;
 
         var conn = this.getConnection();
@@ -285,7 +285,7 @@ public class ClassicTCP extends Routable implements TCP {
     public boolean enqueueInputBuffer(Packet packet) {
         if (packetIsFromValidConnection(packet)) {
             if (super.enqueueInputBuffer(packet)){
-                this.tcpStats.packetArrival();
+                if (!packet.hasAllFlags(Flag.ACK) && !packet.hasAllFlags(Flag.SYN)) this.tcpStats.packetArrival();
                 return true;
             }
             return false;
@@ -300,7 +300,6 @@ public class ClassicTCP extends Routable implements TCP {
         if (this.inputBuffer.isEmpty()) return false;
         if (!this.peekInputBuffer().getDestination().equals(this)) return false;
 
-        this.tcpStats.packetArrival();
         var packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)) {

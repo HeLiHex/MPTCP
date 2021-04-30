@@ -82,6 +82,7 @@ public class TCPStatsTest {
         stat.createDepartureChart();
         stat.createInterArrivalChart();
         stat.createTimeInSystemChart();
+        stat.createNumberOfPacketsInSystemChart();
 
         System.out.println(client.getStats().toString());
         client.getStats().createCWNDChart();
@@ -90,17 +91,18 @@ public class TCPStatsTest {
         r1.getStats().createDepartureChart();
         r1.getStats().createTimeInSystemChart();
         r1.getStats().createInterArrivalChart();
+        r1.getStats().createNumberOfPacketsInSystemChart();
 
     }
 
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest() {
         Util.resetTime();
-        Util.setSeed(1337);
+        Util.setSeed(1996);
         MPTCP client = new MPTCP(3, 21);
-        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.2).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.2).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.2).withAddress(new SimpleAddress("C")).build();
+        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.5).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.5).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.5).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
 
         //path one

@@ -7,6 +7,7 @@ import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import java.io.IOException;
@@ -133,6 +134,7 @@ public class TCPStats extends Stats {
 
         XYChart chart = new XYChartBuilder().width(10000).height(500).xAxisTitle("congestionWindowTime").yAxisTitle("CWND").title("Congestion Window Capacity").build();
         chart.addSeries("CWND", congestionWindowTime, congestionWindowCapacities).setMarker(SeriesMarkers.NONE);
+        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Area);
         try {
             BitmapEncoder.saveBitmap(chart, this.dir + "CWNDChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
@@ -143,9 +145,14 @@ public class TCPStats extends Stats {
     public String toString() {
         this.setGoodput();
         this.setLossRate();
+        this.doCalculations();
         var mapper = new ObjectMapper();
         try {
-            return mapper.writeValueAsString(this);
+            String formattedString = mapper.writeValueAsString(this)
+                    .replace("{", "{\n      ")
+                    .replace("}", "\n}")
+                    .replace(",", ",\n      ");
+            return this.filename + " " + formattedString;
         } catch (JsonProcessingException e) {
             return "fail";
         }
