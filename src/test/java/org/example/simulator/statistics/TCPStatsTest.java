@@ -74,7 +74,7 @@ public class TCPStatsTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
-
+/*
         eventHandler.printStatistics();
         TCPStats stat = server.getStats();
         System.out.println(stat);
@@ -87,6 +87,8 @@ public class TCPStatsTest {
         System.out.println(client.getStats().toString());
         client.getStats().createCWNDChart();
 
+
+ */
         r1.getStats().createArrivalChart();
         r1.getStats().createDepartureChart();
         r1.getStats().createTimeInSystemChart();
