@@ -77,7 +77,7 @@ public class MPTCP implements TCP{
 
     @Override
     public long processingDelay() {
-        return this.inputBufferSize() * (long)20;
+        return 1000;
     }
 
     @Override
@@ -224,7 +224,8 @@ public class MPTCP implements TCP{
 
     @Override
     public long getRTO() {
-        throw new IllegalStateException(DEPRECATED_STRING);
+        return this.subflows[0].getRTO();
+        //throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override

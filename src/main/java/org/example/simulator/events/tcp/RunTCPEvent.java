@@ -57,10 +57,12 @@ public class RunTCPEvent extends Event {
         if (this.scheduleFirstSend){
             //add delay before sending first packet
             //this is important if we have a "downloading situation"
-            events.add(new RunTCPEvent(this.tcp, 1000));
+            events.add(new RunTCPEvent(this.tcp, 1000000));
             return;
         }
 
+
+        if (packetsSent == null) return;
         for (Packet packet : this.packetsSent) {
             events.add(new TCPRetransmitEventGenerator(packet, 0));
         }

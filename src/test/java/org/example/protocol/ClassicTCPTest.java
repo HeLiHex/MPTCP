@@ -791,7 +791,7 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsBeforeConnectingShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Routable router = new Router.RouterBuilder().withBufferSize(1000).withNoiseTolerance(2.2).build();
+        Routable router = new Router.RouterBuilder().withNoiseTolerance(2.5).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
         client.addChannel(router);
@@ -885,7 +885,7 @@ public class ClassicTCPTest {
     @Test
     public void serverFloodWithPacketsBeforeConnectingShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Routable router = new Router.RouterBuilder().withBufferSize(1000).withNoiseTolerance(2.2).build();
+        Routable router = new Router.RouterBuilder().withBufferSize(1000).withNoiseTolerance(1000).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
         client.addChannel(router);

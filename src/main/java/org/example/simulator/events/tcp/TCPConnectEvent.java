@@ -41,7 +41,7 @@ public class TCPConnectEvent extends Event {
         for (Channel channel : this.client.getChannelsUsed()) {
             events.add(new ChannelEvent(channel));
         }
-        events.add(new TCPConnectEvent(1000, this.client, this.host, this.numAttempts + 1));
+        events.add(new TCPConnectEvent(100000, this.client, this.host, this.numAttempts + 1));
     }
 
     @Override

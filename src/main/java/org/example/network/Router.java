@@ -25,6 +25,11 @@ public class Router extends Routable {
     }
 
     @Override
+    public long processingDelay() {
+        return super.processingDelay()*100;
+    }
+
+    @Override
     public boolean enqueueInputBuffer(Packet packet) {
         this.stats.packetArrival();
         return super.enqueueInputBuffer(packet);
