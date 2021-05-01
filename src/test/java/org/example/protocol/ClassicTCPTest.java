@@ -517,8 +517,8 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsInOrderShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().setReno().withReceivingWindowCapacity(7).build();
-        Routable r1 = new Router.RouterBuilder().withBufferSize(10).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(5).build();
+        Routable r1 = new Router.RouterBuilder().withBufferSize(100).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(500).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().setReno().withReceivingWindowCapacity(20).build();
 
         client.addChannel(r1);
@@ -839,8 +839,8 @@ public class ClassicTCPTest {
     @Test
     public void serverFloodWithPacketsInOrderShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Routable r1 = new Router.RouterBuilder().withBufferSize(10).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(5).build();
+        Routable r1 = new Router.RouterBuilder().withBufferSize(100).build();
+        Routable r2 = new Router.RouterBuilder().withBufferSize(500).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(20).build();
 
         client.addChannel(r1);

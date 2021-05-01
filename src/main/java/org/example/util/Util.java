@@ -16,6 +16,10 @@ public class Util {
         random.setSeed(seed);
     }
 
+    public static double getNextRandomDouble() {
+        return random.nextDouble();
+    }
+
     public static int getNextRandomInt() {
         return random.nextInt();
     }
@@ -29,7 +33,7 @@ public class Util {
     }
 
     public static void tickTime(Event event) {
-        time = event.getInstant() + 1;
+        time = event.getInstant();
     }
 
     public static long getTime() {
