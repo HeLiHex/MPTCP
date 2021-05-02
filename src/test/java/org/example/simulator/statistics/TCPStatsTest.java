@@ -95,6 +95,7 @@ public class TCPStatsTest {
         r1.getStats().createTimeInSystemChart();
         r1.getStats().createInterArrivalChart();
         r1.getStats().createNumberOfPacketsInSystemChart();
+        ((RouterStats)r1.getStats()).createQueueSizeChart();
 
     }
 

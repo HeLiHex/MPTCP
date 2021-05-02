@@ -1,9 +1,5 @@
 package org.example.network;
 
-
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.PoissonDistribution;
-import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.address.UUIDAddress;
@@ -17,18 +13,16 @@ import java.util.logging.Logger;
 public class Router extends Routable {
 
     private final RouterStats stats;
-    private long interArrivalTime;
+    private final double arrivalRate;
     private final int bufferSize;
-    private final double queueUsage;
     private int artificialQueueSize;
 
     private Router(int bufferSize, double noiseTolerance, Address address) {
         super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance, address);
         this.stats = new RouterStats(this);
-        this.interArrivalTime = 0;
         this.bufferSize = bufferSize;
-        this.queueUsage = 0.95;
-        this.artificialQueueSize = getPoissonRandom(bufferSize*this.queueUsage);
+        this.arrivalRate = 0.9 * this.bufferSize;
+        this.artificialQueueSize = getPoissonRandom(arrivalRate);
     }
 
     @Override
@@ -51,20 +45,26 @@ public class Router extends Routable {
     @Override
     public long processingDelay() {
         return (super.processingDelay()*100 + this.artificialQueueSize);
-
     }
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        this.artificialQueueSize = getPoissonRandom(this.bufferSize*this.queueUsage);
         this.stats.packetArrival();
         if (this.artificialQueueSize + this.inputBufferSize() >= this.bufferSize) return false;
         return super.enqueueInputBuffer(packet);
     }
 
+    private void arrivalAndServiceProcess(){
+        this.artificialQueueSize = getPoissonRandom(arrivalRate);
+        if (this.artificialQueueSize > this.bufferSize) this.artificialQueueSize = bufferSize;
+        if (this.artificialQueueSize < 0) this.artificialQueueSize = 0;
+        System.out.println(this.artificialQueueSize);
+        this.stats.trackQueueSize(this.artificialQueueSize);
+    }
+
     @Override
     public void run() {
-        this.artificialQueueSize = getPoissonRandom(this.bufferSize*this.queueUsage);
+        this.arrivalAndServiceProcess();
         if (!this.inputBufferIsEmpty()) {
             this.route(this.dequeueInputBuffer());
             this.stats.packetDeparture();

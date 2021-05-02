@@ -7,6 +7,7 @@ import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.internal.series.Series;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 
 public abstract class Stats {
 
-    private static final String DIR = "./charts/";
+    protected static final String DIR = "./charts/";
 
     // Arrival
     protected final ArrayList<Double> arrivalTime = new ArrayList<>();
@@ -99,6 +100,10 @@ public abstract class Stats {
 
     }
 
+
+
+
+
     public void createArrivalChart() {
         if (this.arrivalTime.isEmpty() || this.arrivalCustomer.isEmpty()) return;
         if (this.arrivalTime.size() != this.arrivalCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
@@ -106,11 +111,7 @@ public abstract class Stats {
         XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Arrival-Time").yAxisTitle("Packet").title("Packet Arrivals").build();
         chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalCustomer);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, DIR + "ArrivalChart_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
+        saveChart(chart, "ArrivalChart_");
     }
 
     public void createDepartureChart() {
@@ -120,44 +121,28 @@ public abstract class Stats {
         XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Departure-Time").yAxisTitle("Packet").title("Packet Departures").build();
         chart.addSeries("Packet Departures", this.departureTime, this.departureCustomer);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, DIR + "DepartureChart_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
+        saveChart(chart,"DepartureChart_");
     }
 
     public void createInterArrivalChart() {
         XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Arrival Time").yAxisTitle("Interarrival Time").title("Packet Interarrival-Time").build();
         chart.addSeries("Interarrival Times", this.arrivalTime, this.interArrivalTimes);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, DIR + "InterarrivalTime_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
+        saveChart(chart, "InterarrivalTime_");
     }
 
     public void createTimeInSystemChart() {
         XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Departure Time").yAxisTitle("Time In System").title("Packet Time In System").build();
         chart.addSeries("Time in system", this.departureTime, this.timeInSystem);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, DIR + "TimeInSystem_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
+        saveChart(chart, "TimeInSystem_");
     }
 
     public void createNumberOfPacketsInSystemChart() {
         XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Time").yAxisTitle("Number of packets in system").title("number of packets in system").build();
         chart.addSeries("Packets in system", this.combine(this.arrivalTime, this.departureTime), this.packetsInSystem).setMarker(SeriesMarkers.DIAMOND);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-        try {
-            BitmapEncoder.saveBitmap(chart, DIR + "PacketsInSystem_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
+        saveChart(chart, "PacketsInSystem_");
     }
 
     private List<Double> combine(List<Double> l1, List<Double> l2){
@@ -180,6 +165,14 @@ public abstract class Stats {
         return meanNumPacketsInSystem;
     }
 
+
+    public void saveChart(XYChart chart, String chartName){
+        try {
+            BitmapEncoder.saveBitmap(chart, DIR + chartName + fileName(), BitmapEncoder.BitmapFormat.PNG);
+        } catch (IOException e) {
+            Logger.getLogger("").log(Level.WARNING, "lol");
+        }
+    }
 
     @Override
     public String toString() {
