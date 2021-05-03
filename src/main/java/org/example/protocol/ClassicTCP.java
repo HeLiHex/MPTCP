@@ -204,7 +204,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long getRTO() {
-        return 6 * this.rtt;
+        return 2 * this.rtt;
     }
 
     @Override

@@ -12,7 +12,6 @@ import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.util.Util;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TCPStatsTest {
@@ -22,10 +21,10 @@ public class TCPStatsTest {
         Util.resetTime();
         Util.setSeed(1996);
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().withAddress(new SimpleAddress("Client")).build();
-        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.2).withAddress(new SimpleAddress("Router 1")).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(5).withAddress(new SimpleAddress("Router 2")).build();
-        Routable r3 = new Router.RouterBuilder().withBufferSize(7).withAddress(new SimpleAddress("Router 3")).build();
-        Routable r4 = new Router.RouterBuilder().withBufferSize(10).withAddress(new SimpleAddress("Router 4")).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.7).withNoiseTolerance(2.2).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.88).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.88).withAddress(new SimpleAddress("Router 3")).build();
+        Routable r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("Router 4")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Server")).build();
 
         client.addChannel(r1);
@@ -104,9 +103,9 @@ public class TCPStatsTest {
         Util.resetTime();
         Util.setSeed(1996);
         MPTCP client = new MPTCP(3, 21);
-        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.5).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.5).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.5).withAddress(new SimpleAddress("C")).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.89).withNoiseTolerance(2.5).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.89).withNoiseTolerance(2.5).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.89).withNoiseTolerance(2.5).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
 
         //path one

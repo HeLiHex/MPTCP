@@ -430,10 +430,10 @@ public class RoutableTest {
     public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
         double noiseTolerance = 2.5;
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), 100);
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
-        Router r2 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
-        Router r3 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
-        Router r4 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).withBufferSize(1000).build();
+        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
+        Router r2 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
+        Router r3 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
+        Router r4 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), 100);
 
         client.addChannel(r1);
