@@ -22,7 +22,7 @@ public class TCPStatsTest {
         Util.resetTime();
         Util.setSeed(1996);
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().withAddress(new SimpleAddress("Client")).build();
-        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r1 = new Router.RouterBuilder().withBufferSize(10).withNoiseTolerance(2.2).withAddress(new SimpleAddress("Router 1")).build();
         Routable r2 = new Router.RouterBuilder().withBufferSize(5).withAddress(new SimpleAddress("Router 2")).build();
         Routable r3 = new Router.RouterBuilder().withBufferSize(7).withAddress(new SimpleAddress("Router 3")).build();
         Routable r4 = new Router.RouterBuilder().withBufferSize(10).withAddress(new SimpleAddress("Router 4")).build();

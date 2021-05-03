@@ -1,6 +1,7 @@
 package org.example.network;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
+import org.apache.commons.math3.random.RandomGeneratorFactory;
 import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.address.UUIDAddress;
@@ -24,14 +25,26 @@ public class Router extends Routable {
         super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance, address);
         this.stats = new RouterStats(this);
         this.bufferSize = bufferSize;
-        this.queueSizeMean = 0.7 * this.bufferSize;
+        this.queueSizeMean = 0.86 * this.bufferSize;
         this.poissonDistribution = Util.getPoissonDistribution(this.queueSizeMean);
-        this.artificialQueueSize = this.poissonDistribution.sample();
+        this.setArtificialQueueSize();
     }
 
     @Override
     public RouterStats getStats(){
         return this.stats;
+    }
+
+    private void setArtificialQueueSize(){
+        int queueSize = this.poissonDistribution.sample() + this.inputBufferSize();
+        if (queueSize > this.bufferSize) queueSize = this.bufferSize;
+        if (queueSize < 0) queueSize = 0;
+
+        this.artificialQueueSize = queueSize;
+
+        this.stats.trackQueueSize(this.artificialQueueSize);
+
+        System.out.println(this.artificialQueueSize);
     }
 
 
@@ -43,21 +56,16 @@ public class Router extends Routable {
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
         this.stats.packetArrival();
-        if (this.artificialQueueSize + this.inputBufferSize() >= this.bufferSize) return false;
+        if (this.artificialQueueSize >= this.bufferSize){
+            //packets dropped due to full buffer
+            return false;
+        }
         return super.enqueueInputBuffer(packet);
-    }
-
-    private void arrivalAndServiceProcess(){
-        this.artificialQueueSize = poissonDistribution.sample();
-        if (this.artificialQueueSize > this.bufferSize) this.artificialQueueSize = bufferSize;
-        if (this.artificialQueueSize < 0) this.artificialQueueSize = 0;
-        System.out.println(this.artificialQueueSize);
-        this.stats.trackQueueSize(this.artificialQueueSize);
     }
 
     @Override
     public void run() {
-        this.arrivalAndServiceProcess();
+        this.setArtificialQueueSize();
         if (!this.inputBufferIsEmpty()) {
             this.route(this.dequeueInputBuffer());
             this.stats.packetDeparture();
