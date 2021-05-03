@@ -1,5 +1,7 @@
 package org.example.util;
 
+import org.apache.commons.math3.distribution.PoissonDistribution;
+import org.apache.commons.math3.random.RandomGeneratorFactory;
 import org.example.simulator.events.Event;
 
 import java.util.Random;
@@ -46,6 +48,10 @@ public class Util {
 
     public static void resetTime() {
         time = 0;
+    }
+
+    public static PoissonDistribution getPoissonDistribution(double mean){
+        return new PoissonDistribution(RandomGeneratorFactory.createRandomGenerator(random), mean, PoissonDistribution.DEFAULT_EPSILON, PoissonDistribution.DEFAULT_MAX_ITERATIONS);
     }
 
 

@@ -1,10 +1,12 @@
 package org.example.network;
 
+import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.address.UUIDAddress;
 import org.example.simulator.statistics.RouterStats;
 import org.example.util.Util;
+
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
@@ -13,16 +15,18 @@ import java.util.logging.Logger;
 public class Router extends Routable {
 
     private final RouterStats stats;
-    private final double arrivalRate;
+    private final double queueSizeMean;
     private final int bufferSize;
     private int artificialQueueSize;
+    private final PoissonDistribution poissonDistribution;
 
     private Router(int bufferSize, double noiseTolerance, Address address) {
         super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance, address);
         this.stats = new RouterStats(this);
         this.bufferSize = bufferSize;
-        this.arrivalRate = 0.9 * this.bufferSize;
-        this.artificialQueueSize = getPoissonRandom(arrivalRate);
+        this.queueSizeMean = 0.7 * this.bufferSize;
+        this.poissonDistribution = Util.getPoissonDistribution(this.queueSizeMean);
+        this.artificialQueueSize = this.poissonDistribution.sample();
     }
 
     @Override
@@ -30,17 +34,6 @@ public class Router extends Routable {
         return this.stats;
     }
 
-    //source - https://stackoverflow.com/questions/9832919/generate-poisson-arrival-in-java
-    private static int getPoissonRandom(double mean) {
-        double L = Math.exp(-mean);
-        int k = 0;
-        double p = 1.0;
-        do {
-            p = p * Util.getNextRandomDouble();
-            k++;
-        } while (p > L);
-        return k - 1;
-    }
 
     @Override
     public long processingDelay() {
@@ -55,7 +48,7 @@ public class Router extends Routable {
     }
 
     private void arrivalAndServiceProcess(){
-        this.artificialQueueSize = getPoissonRandom(arrivalRate);
+        this.artificialQueueSize = poissonDistribution.sample();
         if (this.artificialQueueSize > this.bufferSize) this.artificialQueueSize = bufferSize;
         if (this.artificialQueueSize < 0) this.artificialQueueSize = 0;
         System.out.println(this.artificialQueueSize);
