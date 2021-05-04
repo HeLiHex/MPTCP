@@ -46,16 +46,6 @@ public class MPTCPTest {
         new Channel.ChannelBuilder().build(r3, r4);
         new Channel.ChannelBuilder().build(r4, server);
         new Channel.ChannelBuilder().build(r4, server);
-/*
-        client.addChannel(r11);
-        client.addChannel(r12);
-        r11.addChannel(r3);
-        r12.addChannel(r3);
-        r3.addChannel(r4);
-        r4.addChannel(server);
-        r4.addChannel(server);
-
- */
 
         client.updateRoutingTable();
         r11.updateRoutingTable();
@@ -90,12 +80,6 @@ public class MPTCPTest {
         Routable router = new Router.RouterBuilder().withAddress(new SimpleAddress("router")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withAddress(new SimpleAddress("server")).withReceivingWindowCapacity(7).build();
 
-        /*
-        client.addChannel(router);
-        client.addChannel(router);
-        router.addChannel(server);
-         */
-
         new Channel.ChannelBuilder().build(client, router);
         new Channel.ChannelBuilder().build(client, router);
         new Channel.ChannelBuilder().build(router, server);
@@ -126,16 +110,6 @@ public class MPTCPTest {
         Routable r1 = new Router.RouterBuilder().build();
         Routable r2 = new Router.RouterBuilder().build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-
-        /*
-        //path one
-        client.addChannel(r1);
-        r1.addChannel(server);
-
-        //path two
-        client.addChannel(r2);
-        r2.addChannel(server);
-         */
 
         //path one
         new Channel.ChannelBuilder().build(client, r1);
@@ -183,18 +157,6 @@ public class MPTCPTest {
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(2, 20);
-
-        /*
-        client.addChannel(r1);
-        client.addChannel(r2);
-
-        r3.addChannel(r1);
-        r3.addChannel(r2);
-
-        server.addChannel(r3);
-        server.addChannel(r3);
-
-         */
 
         new Channel.ChannelBuilder().build(client, r1);
         new Channel.ChannelBuilder().build(client, r2);
@@ -251,21 +213,6 @@ public class MPTCPTest {
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
-
-        /*
-        //path one
-        client.addChannel(r1);
-        r1.addChannel(server);
-
-        //path two
-        client.addChannel(r2);
-        r2.addChannel(server);
-
-        //path three
-        client.addChannel(r3);
-        r3.addChannel(server);
-
-         */
 
         //path one
         new Channel.ChannelBuilder().build(client, r1);
@@ -329,21 +276,6 @@ public class MPTCPTest {
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
-
-        /*
-        //path one
-        client.addChannel(r1);
-        r1.addChannel(server);
-
-        //path two
-        client.addChannel(r2);
-        r2.addChannel(server);
-
-        //path three
-        client.addChannel(r3);
-        r3.addChannel(server);
-
-         */
 
         //path one
         new Channel.ChannelBuilder().build(client, r1);
@@ -410,21 +342,6 @@ public class MPTCPTest {
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
-
-        /*
-        //path one
-        client.addChannel(r1);
-        r1.addChannel(server);
-
-        //path two
-        client.addChannel(r2);
-        r2.addChannel(server);
-
-        //path three
-        client.addChannel(r3);
-        r3.addChannel(server);
-
-         */
 
         //path one
         new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(client, r1);
@@ -493,11 +410,6 @@ public class MPTCPTest {
 
             for (int i = 1; i <= numSubflows; i++) {
                 Routable router = new Router.RouterBuilder().withAddress(new SimpleAddress("Router " + i)).build();
-                /*
-                client.addChannel(router);
-                router.addChannel(server);
-
-                 */
 
                 new Channel.ChannelBuilder().build(client, router);
                 new Channel.ChannelBuilder().build(router, server);

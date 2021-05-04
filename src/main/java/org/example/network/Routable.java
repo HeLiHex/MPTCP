@@ -64,39 +64,23 @@ public abstract class Routable implements NetworkNode {
         return this.channels;
     }
 
-/*
-    @Override
-    public void addChannel(NetworkNode node) {
-        if (node instanceof MPTCP) {
-            var mptcp = (MPTCP) node;
-            node = mptcp.getEndpointToAddChannelTo();
-        }
-
-        for (Channel channel : this.getChannels()) {
-            boolean thisContainsNode = channel.getDestination().equals(node);
-            if (thisContainsNode) return;
-        }
-
-        var channel = new Channel(this, node, this.noiseTolerance);
-        this.channels.add(channel);
-        node.addChannel(this);
-    }
-
-
- */
-
 
     @Override
     public void addChannel(NetworkNode node, double noiseTolerance, int cost) {
-        if (node instanceof MPTCP) {
+        /*if (node instanceof MPTCP) {
             var mptcp = (MPTCP) node;
             node = mptcp.getEndpointToAddChannelTo();
         }
 
+         */
+
+        /*
         for (Channel channel : this.getChannels()) {
             boolean thisContainsNode = channel.getDestination().equals(node);
             if (thisContainsNode) return;
         }
+
+         */
 
         var channel = new Channel(this, node, noiseTolerance, cost);
         this.channels.add(channel);

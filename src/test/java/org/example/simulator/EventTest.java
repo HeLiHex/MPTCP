@@ -61,7 +61,6 @@ public class EventTest {
             this.tcp = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
             this.host = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
-            //this.tcp.addChannel(this.host);
             new Channel.ChannelBuilder().build(this.tcp, this.host);
 
             this.tcp.updateRoutingTable();

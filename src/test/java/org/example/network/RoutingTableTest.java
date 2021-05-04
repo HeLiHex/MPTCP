@@ -16,13 +16,6 @@ public class RoutingTableTest {
         NetworkNode r3 = new Router.RouterBuilder().build();
         Endpoint r4 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
-        /*
-        r1.addChannel(r2);
-        r2.addChannel(r3);
-        r3.addChannel(r4);
-
-         */
-
         new Channel.ChannelBuilder().build(r1, r2);
         new Channel.ChannelBuilder().build(r2, r3);
         new Channel.ChannelBuilder().build(r3, r4);
@@ -37,12 +30,6 @@ public class RoutingTableTest {
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
         NetworkNode r4 = new Router.RouterBuilder().build();
-
-        /*
-        r1.addChannel(r2);
-        r2.addChannel(r3);
-        r3.addChannel(r4);
-         */
 
         new Channel.ChannelBuilder().build(r1, r2);
         new Channel.ChannelBuilder().build(r2, r3);
@@ -62,12 +49,6 @@ public class RoutingTableTest {
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
         Endpoint r4 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-
-        /*
-        r1.addChannel(r2);
-        r2.addChannel(r3);
-
-         */
 
         new Channel.ChannelBuilder().build(r1, r2);
         new Channel.ChannelBuilder().build(r2, r3);
@@ -97,14 +78,6 @@ public class RoutingTableTest {
             NetworkNode r2 = new Router.RouterBuilder().build();
             NetworkNode r3 = new Router.RouterBuilder().build();
             Endpoint r4 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-
-            /*
-            r1.addChannel(r2);
-            r1.addChannel(r3);
-            r2.addChannel(r4);
-            r3.addChannel(r4);
-
-             */
 
             new Channel.ChannelBuilder().build(r1, r2);
             new Channel.ChannelBuilder().build(r1, r3);

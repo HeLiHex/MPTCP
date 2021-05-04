@@ -48,7 +48,6 @@ public class ReceivingWindowTest {
     }
 
     private void connect(ClassicTCP client, ClassicTCP server){
-        //client.addChannel(server);
         new Channel.ChannelBuilder().build(client, server);
         client.updateRoutingTable();
         server.updateRoutingTable();

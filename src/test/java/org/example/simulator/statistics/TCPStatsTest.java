@@ -33,15 +33,6 @@ public class TCPStatsTest {
         Routable r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 4")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Server")).build();
 
-        /*
-        client.addChannel(r1);
-        r1.addChannel(r2);
-        r2.addChannel(r3);
-        r3.addChannel(r4);
-        r4.addChannel(server);
-
-         */
-
         new Channel.ChannelBuilder().build(client, r1);
         new Channel.ChannelBuilder().build(r1, r2);
         new Channel.ChannelBuilder().build(r2, r3);
@@ -121,21 +112,6 @@ public class TCPStatsTest {
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
-
-        /*
-        //path one
-        client.addChannel(r1);
-        r1.addChannel(server);
-
-        //path two
-        client.addChannel(r2);
-        r2.addChannel(server);
-
-        //path three
-        client.addChannel(r3);
-        r3.addChannel(server);
-
-         */
 
         //path one
         new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(client, r1);
