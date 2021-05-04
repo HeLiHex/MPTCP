@@ -36,7 +36,7 @@ public class Router extends Routable {
     }
 
     private void setArtificialQueueSize(){
-        int queueSize = this.poissonDistribution.sample() + this.inputBufferSize();
+        int queueSize = this.poissonDistribution.sample();// + this.inputBufferSize();
         if (queueSize > this.bufferSize) queueSize = this.bufferSize;
         if (queueSize < 0) queueSize = 0;
 
@@ -44,13 +44,15 @@ public class Router extends Routable {
 
         this.stats.trackQueueSize(this.artificialQueueSize);
 
-        System.out.println(this.artificialQueueSize);
     }
 
 
     @Override
     public long processingDelay() {
-        return (super.processingDelay()*100 + this.artificialQueueSize);
+        long propagationDelay = this.inputBufferSize()*1000;
+        long delay = propagationDelay + this.artificialQueueSize;
+        System.out.println("router delay: " + delay);
+        return delay;
     }
 
     @Override
@@ -78,7 +80,7 @@ public class Router extends Routable {
 
         private int bufferSize = 1000;
         private double noiseTolerance = 100.0;
-        private double averageQueueUtilization = 0.86;
+        private double averageQueueUtilization = 0.85;
         private Address address = new UUIDAddress();
 
         public RouterBuilder withAverageQueueUtilization(double averageQueueUtilization) {

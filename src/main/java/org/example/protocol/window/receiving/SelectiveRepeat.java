@@ -68,7 +68,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             return true; // true so that duplicate AKCs are sent
         }
         //false, because packets outside the window has already ben acked
-        assert !this.isFull();
+        //assert !this.isFull();
         return false;
     }
 

@@ -41,7 +41,9 @@ public class Channel implements Comparable<Channel> {
     }
 
     public long propagationDelay() {
-        return 100*this.cost ;
+        long delay = 100*this.cost;
+        System.out.println("channel delay: " + delay );
+        return delay;
     }
 
     private boolean lossy() {
@@ -54,6 +56,12 @@ public class Channel implements Comparable<Channel> {
         }
         this.goodState = Util.getNextRandomInt(100) >= 50;
         return noise > this.noiseTolerance;
+        /*
+        int noise = Util.getNextRandomInt(1000);
+        System.out.println(noise);
+        return noise < 1;
+
+         */
     }
 
     public void channelPackage(Packet packet) {

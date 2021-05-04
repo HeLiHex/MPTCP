@@ -266,9 +266,9 @@ public class MPTCPTest {
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest() {
         MPTCP client = new MPTCP(3, 21);
-        Routable r1 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withNoiseTolerance(1000).withAddress(new SimpleAddress("C")).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withNoiseTolerance(1000).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withNoiseTolerance(1000).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withNoiseTolerance(1000).withAddress(new SimpleAddress("C")).build();
         MPTCP server = new MPTCP(3, 21);
 
         //path one
@@ -329,7 +329,6 @@ public class MPTCPTest {
     }
 
     @Test
-    @Ignore
     public void MPTCPFloodWithPacketsInLossyChannelsShouldWorkTest() {
         MPTCP client = new MPTCP(3, 21);
         Routable r1 = new Router.RouterBuilder().withNoiseTolerance(2.2).withAddress(new SimpleAddress("A")).build();
