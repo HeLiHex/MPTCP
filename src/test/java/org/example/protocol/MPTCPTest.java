@@ -7,6 +7,7 @@ import org.example.network.Channel;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.network.address.SimpleAddress;
+import org.example.network.address.UUIDAddress;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
@@ -29,7 +30,7 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPWithTwoSubFlowsAndNonDistinctPathConnectAndSendCorrectTest() {
-        MPTCP client = new MPTCP(2, 14);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(14).withAddress(new SimpleAddress("MPTCP-Client")).build();
 
         Router r11 = new Router.RouterBuilder().build();
         Router r12 = new Router.RouterBuilder().build();
@@ -37,7 +38,7 @@ public class MPTCPTest {
         Router r3 = new Router.RouterBuilder().build();
         Router r4 = new Router.RouterBuilder().build();
 
-        MPTCP server = new MPTCP(2, 14);
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(14).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         new Channel.ChannelBuilder().build(client, r11);
         new Channel.ChannelBuilder().build(client, r12);
@@ -76,7 +77,7 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPConnectToTCPTest() {
-        MPTCP client = new MPTCP(2, 14);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(14).withAddress(new SimpleAddress("MPTCP-Client")).build();
         Routable router = new Router.RouterBuilder().withAddress(new SimpleAddress("router")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withAddress(new SimpleAddress("server")).withReceivingWindowCapacity(7).build();
 
@@ -106,7 +107,7 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPConnectThenSendMsgOverTwoSubflowsTest() {
-        MPTCP client = new MPTCP(2, 14);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(14).withAddress(new SimpleAddress("MPTCP-Client")).build();
         Routable r1 = new Router.RouterBuilder().build();
         Routable r2 = new Router.RouterBuilder().build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
@@ -152,11 +153,11 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPConnectToMPTCPNonDistinctPathTest() {
-        MPTCP client = new MPTCP(2, 20);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(20).withAddress(new SimpleAddress("MPTCP-Client")).build();
         Routable r1 = new Router.RouterBuilder().withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(2, 20);
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(20).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         new Channel.ChannelBuilder().build(client, r1);
         new Channel.ChannelBuilder().build(client, r2);
@@ -208,11 +209,11 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPConnectToMPTCPThenSendMsgOverThreeSubflowsTest() {
-        MPTCP client = new MPTCP(3, 21);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Client")).build();
         Routable r1 = new Router.RouterBuilder().withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(3, 21);
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
         new Channel.ChannelBuilder().build(client, r1);
@@ -271,11 +272,11 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest() {
-        MPTCP client = new MPTCP(3, 21);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Client")).build();
         Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(3, 21);
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
         new Channel.ChannelBuilder().build(client, r1);
@@ -337,11 +338,11 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPFloodWithPacketsInLossyChannelsShouldWorkTest() {
-        MPTCP client = new MPTCP(3, 21);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Client")).build();
         Routable r1 = new Router.RouterBuilder().withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(3, 21);
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
         new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(client, r1);
@@ -405,8 +406,8 @@ public class MPTCPTest {
     public void MPTCPFloodWithPacketsInOrderWithVariableNumberOfSubflowsShouldWorkTest() {
         int maxSubflows = 10;
         for (int numSubflows = 1; numSubflows <= maxSubflows; numSubflows++) {
-            MPTCP client = new MPTCP(numSubflows, 21);
-            MPTCP server = new MPTCP(numSubflows, 21);
+            MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(numSubflows).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Client")).build();
+            MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(numSubflows).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
             for (int i = 1; i <= numSubflows; i++) {
                 Routable router = new Router.RouterBuilder().withAddress(new SimpleAddress("Router " + i)).build();

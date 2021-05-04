@@ -6,6 +6,7 @@ import org.example.network.Channel;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.network.address.SimpleAddress;
+import org.example.network.address.UUIDAddress;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.MPTCP;
 import org.example.simulator.EventHandler;
@@ -108,11 +109,11 @@ public class TCPStatsTest {
 
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest() {
-        MPTCP client = new MPTCP(3, 21);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Client")).build();
         Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("A")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("B")).build();
         Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP(3, 21);
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
         new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(client, r1);
@@ -193,7 +194,7 @@ public class TCPStatsTest {
     @Test
     @Ignore
     public void MPTCPRealistic2HomogeneousDisconnectedFlowsWithDifferentTrafficParameters() {
-        MPTCP client = new MPTCP(2, 20);
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(20).withAddress(new SimpleAddress("MPTCP-Client")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("A1")).build();
         Routable r12 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("A2")).build();
@@ -205,7 +206,7 @@ public class TCPStatsTest {
         Routable r23 = new Router.RouterBuilder().withAverageQueueUtilization(0.85).withAddress(new SimpleAddress("B3")).build();
         Routable r24 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("B4")).build();
 
-        MPTCP server = new MPTCP(2, 20);
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(20).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
         new Channel.ChannelBuilder().withNoiseTolerance(2.8).build(client, r11);

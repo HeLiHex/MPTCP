@@ -1,5 +1,6 @@
 package org.example.protocol;
 
+import org.apache.commons.math3.analysis.function.Add;
 import org.example.data.Packet;
 import org.example.data.Payload;
 import org.example.network.Channel;
@@ -27,11 +28,11 @@ public class MPTCP implements TCP{
     private final Address address;
     private final ReceivingWindow receivingWindow;
 
-    public MPTCP(int numberOfSubflows, int receivingWindowCapacity) {
+    private MPTCP(int numberOfSubflows, int receivingWindowCapacity, Address address) {
         this.receivedPackets = new ArrayList<>();
         this.payloadsToSend = new ArrayList<>();
         this.subflows = new TCP[numberOfSubflows];
-        this.address = new UUIDAddress();
+        this.address = address;
         this.receivingWindow = new SelectiveRepeat(receivingWindowCapacity, PACKET_INDEX_COMPARATOR, this.receivedPackets);
 
         for (var i = 0; i < numberOfSubflows; i++) {
@@ -288,5 +289,34 @@ public class MPTCP implements TCP{
     @Override
     public int getSendingWindowCapacity() {
         throw new IllegalStateException(DEPRECATED_STRING);
+    }
+
+
+
+    public static class MPTCPBuilder {
+
+        private int numberOfSubflows = 2;
+        private int receivingWindowCapacity = 20;
+        private Address address = new UUIDAddress();
+
+        public MPTCPBuilder withNumberOfSubflows(int numberOfSubflows){
+            this.numberOfSubflows = numberOfSubflows;
+            return this;
+        }
+
+        public MPTCPBuilder withReceivingWindowCapacity(int capacity){
+            this.receivingWindowCapacity = capacity;
+            return this;
+        }
+
+        public MPTCPBuilder withAddress(Address address){
+            this.address = address;
+            return this;
+        }
+
+        public MPTCP build(){
+            return new MPTCP(this.numberOfSubflows, this.receivingWindowCapacity , this.address);
+        }
+
     }
 }
