@@ -97,12 +97,26 @@ public class MPTCP implements TCP{
         }
         throw new IllegalStateException("no endpoints available for channel adding");
     }
-
+/*
     @Override
     public void addChannel(NetworkNode node) {
         for (TCP subflow : this.subflows){
             if (subflow.getChannels().isEmpty()){
                 subflow.addChannel(node);
+                return;
+            }
+        }
+    }
+
+ */
+
+
+
+    @Override
+    public void addChannel(NetworkNode node, double noiseTolerance, int cost) {
+        for (TCP subflow : this.subflows){
+            if (subflow.getChannels().isEmpty()){
+                subflow.addChannel(node, noiseTolerance, cost);
                 return;
             }
         }

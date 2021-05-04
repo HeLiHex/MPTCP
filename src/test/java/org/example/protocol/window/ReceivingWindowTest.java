@@ -1,6 +1,7 @@
 package org.example.protocol.window;
 
 import org.example.data.*;
+import org.example.network.Channel;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
@@ -47,7 +48,8 @@ public class ReceivingWindowTest {
     }
 
     private void connect(ClassicTCP client, ClassicTCP server){
-        client.addChannel(server);
+        //client.addChannel(server);
+        new Channel.ChannelBuilder().build(client, server);
         client.updateRoutingTable();
         server.updateRoutingTable();
 

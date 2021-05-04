@@ -1,7 +1,10 @@
 package org.example.network;
 
 import org.example.data.Packet;
+import org.example.network.address.Address;
+import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.NetworkNode;
+import org.example.protocol.MPTCP;
 import org.example.simulator.statistics.Statistics;
 import org.example.util.Util;
 
@@ -18,10 +21,10 @@ public class Channel implements Comparable<Channel> {
     private final NetworkNode destination;
     private final int cost;
     private final double noiseTolerance;
-    private final int capacity = 100;
+    private final int capacity = 1000;
     boolean goodState = true;
 
-    private Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost) {
+    public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
         this.line = new ArrayBlockingQueue<>(capacity);
 
@@ -126,4 +129,31 @@ public class Channel implements Comparable<Channel> {
     public boolean equals(Object obj) {
         return super.equals(obj);
     }
+
+    public static class ChannelBuilder {
+
+        double noiseTolerance = 1000;
+        int cost = Util.getNextRandomInt(100);
+
+        public ChannelBuilder withCost (int cost) {
+            this.cost = cost;
+            return this;
+        }
+
+        public ChannelBuilder withNoiseTolerance (double noiseTolerance) {
+            this.noiseTolerance = noiseTolerance;
+            return this;
+        }
+
+        public void build(NetworkNode node1, NetworkNode node2) {
+            //Channel oneToTwo = new Channel(node1, node2, this.noiseTolerance, this.cost);
+            //Channel twoToOne = new Channel(node1, node2, this.noiseTolerance, this.cost);
+            if (node1 instanceof MPTCP) node1 = ((MPTCP) node1).getEndpointToAddChannelTo();
+            if (node2 instanceof MPTCP) node2 = ((MPTCP) node2).getEndpointToAddChannelTo();
+            node1.addChannel(node2, this.noiseTolerance, this.cost);
+            node2.addChannel(node1, this.noiseTolerance, this.cost);
+        }
+
+    }
+
 }

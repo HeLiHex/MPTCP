@@ -39,7 +39,9 @@ public interface NetworkNode {
      *
      * @param node to add Channel to
      */
-    void addChannel(NetworkNode node);
+    //void addChannel(NetworkNode node);
+
+    void addChannel(NetworkNode node, double noiseTolerance, int cost);
 
 
     /**

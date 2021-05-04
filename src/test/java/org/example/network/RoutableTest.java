@@ -14,9 +14,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class RoutableTest {
 
-    private static final Random RANDOM_GENERATOR = new Random();
-
-
     @Test
     public void routableWithRandomAddressAreNotEqualTest(){
         NetworkNode node1 = new Router.RouterBuilder().build();
@@ -34,11 +31,11 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
-        client.addChannel(r1);
-        r1.addChannel(r2);
-        r2.addChannel(r3);
-        r3.addChannel(r4);
-        r4.addChannel(server);
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(r3, r4);
+        new Channel.ChannelBuilder().build(r4, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -73,12 +70,21 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         client.addChannel(r1);
         client.addChannel(r2);
         r1.addChannel(r3);
         r2.addChannel(r4);
         server.addChannel(r3);
         server.addChannel(r4);
+
+         */
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(client, r2);
+        new Channel.ChannelBuilder().build(r1, r3);
+        new Channel.ChannelBuilder().build(r2, r4);
+        new Channel.ChannelBuilder().build(server, r3);
+        new Channel.ChannelBuilder().build(server, r4);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -114,11 +120,20 @@ public class RoutableTest {
         Router r3 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         client.addChannel(r1);
         r1.addChannel(r2);
         r1.addChannel(r3);
         r2.addChannel(r3);
         server.addChannel(r3);
+
+         */
+
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r1, r3);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(server, r3);
 
         client.updateRoutingTable();
         server.updateRoutingTable();
@@ -144,7 +159,7 @@ public class RoutableTest {
     }
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationWithDeadEnd(){
+    public void routingPacketRoutsItToItsDestinationWithDeadEnd(){
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -152,11 +167,20 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         client.addChannel(r1);
         r1.addChannel(r2);
         r1.addChannel(r4);
         r2.addChannel(r3);
         server.addChannel(r4);
+
+         */
+
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r1, r4);
+        new Channel.ChannelBuilder().build(r1, r3);
+        new Channel.ChannelBuilder().build(server, r4);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -192,6 +216,7 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         //tree one
         client.addChannel(r1);
         r1.addChannel(server);
@@ -199,6 +224,16 @@ public class RoutableTest {
         //tree two
         r2.addChannel(r3);
         r3.addChannel(r4);
+
+         */
+
+        //tree one
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, server);
+
+        //tree two
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(r3, r4);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -234,10 +269,18 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         client.addChannel(r1);
         r1.addChannel(r2);
         r2.addChannel(r3);
         server.addChannel(r3);
+
+         */
+
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(server, r3);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -264,7 +307,7 @@ public class RoutableTest {
 
 
     @Test
-    public synchronized void routingPacketRoutsItToItsDestinationCrazyGraph(){
+    public void routingPacketRoutsItToItsDestinationCrazyGraph(){
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -279,7 +322,7 @@ public class RoutableTest {
         Router r11 = new Router.RouterBuilder().build();
         Router r12 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
-
+/*
         client.addChannel(r1);
         client.addChannel(r2);
         r1.addChannel(r3);
@@ -296,6 +339,24 @@ public class RoutableTest {
         r10.addChannel(r11);
         r11.addChannel(r12);
         r12.addChannel(server);
+
+ */
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(client, r2);
+        new Channel.ChannelBuilder().build(r1, r3);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(r3, r4);
+        new Channel.ChannelBuilder().build(r3, r9);
+        new Channel.ChannelBuilder().build(r4, r5);
+        new Channel.ChannelBuilder().build(r4, r6);
+        new Channel.ChannelBuilder().build(r5, r6);
+        new Channel.ChannelBuilder().build(r6, r9);
+        new Channel.ChannelBuilder().build(r6, r7);
+        new Channel.ChannelBuilder().build(r7, r8);
+        new Channel.ChannelBuilder().build(r9, r10);
+        new Channel.ChannelBuilder().build(r10, r11);
+        new Channel.ChannelBuilder().build(r11, r12);
+        new Channel.ChannelBuilder().build(r12, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -331,16 +392,23 @@ public class RoutableTest {
 
 
     @Test(expected = IllegalArgumentException.class)
-    public synchronized void unconnectedClientCantRoutPacketToDestination(){
+    public void unconnectedClientCantRoutPacketToDestination(){
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
         Router r3 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         r1.addChannel(r2);
         r2.addChannel(r3);
         server.addChannel(r3);
+
+         */
+
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(server, r3);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -358,7 +426,7 @@ public class RoutableTest {
 
 
     @Test(expected = IllegalArgumentException.class)
-    public synchronized void unconnectedTreesCantRoutPacket(){
+    public void unconnectedTreesCantRoutPacket(){
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -366,11 +434,20 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         client.addChannel(r1);
         r1.addChannel(r2);
 
         r3.addChannel(r4);
         server.addChannel(r4);
+
+         */
+
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, r2);
+
+        new Channel.ChannelBuilder().build(r3, r4);
+        new Channel.ChannelBuilder().build(server, r4);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -386,7 +463,6 @@ public class RoutableTest {
     }
 
 
-
     @Test
     public void faultyChannelsDropPacket(){
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
@@ -396,11 +472,20 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100), 100);
 
+        /*
         client.addChannel(r1);
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
         server.addChannel(r4);
+
+         */
+
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(-100).build(r1, r2);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(r3, r4);
+        new Channel.ChannelBuilder().build(server, r4);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -430,17 +515,26 @@ public class RoutableTest {
     public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
         double noiseTolerance = 2.5;
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), 100);
-        Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        Router r2 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        Router r3 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
-        Router r4 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
+        Router r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.1).build();
+        Router r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.1).build();
+        Router r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.1).build();
+        Router r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.1).build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000), 100);
 
+        /*
         client.addChannel(r1);
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
         r4.addChannel(server);
+
+         */
+
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, r2);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r2, r3);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r3, r4);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(server, r4);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();

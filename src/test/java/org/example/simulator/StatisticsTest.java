@@ -1,6 +1,7 @@
 package org.example.simulator;
 
 import org.example.data.Message;
+import org.example.network.Channel;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
@@ -50,8 +51,8 @@ public class StatisticsTest {
             ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
             Router r1 = new Router.RouterBuilder().build();
 
-            client.addChannel(r1);
-            r1.addChannel(server);
+            new Channel.ChannelBuilder().build(client, r1);
+            new Channel.ChannelBuilder().build(r1, server);
 
             client.updateRoutingTable();
             r1.updateRoutingTable();
@@ -102,8 +103,8 @@ public class StatisticsTest {
                     .withNoiseTolerance(noiseTolerance)
                     .build();
 
-            client.addChannel(r1);
-            r1.addChannel(server);
+            new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+            new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
 
             client.updateRoutingTable();
             r1.updateRoutingTable();
@@ -142,8 +143,8 @@ public class StatisticsTest {
                     .withNoiseTolerance(noiseTolerance)
                     .build();
 
-            client.addChannel(r1);
-            r1.addChannel(server);
+            new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+            new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
 
             client.updateRoutingTable();
             r1.updateRoutingTable();
@@ -183,11 +184,16 @@ public class StatisticsTest {
     public void statisticsAreAsExpectedInLossyChannelRunTest() {
         double noiseTolerance = 2.5;
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withNoiseTolerance(noiseTolerance).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
+        /*
         client.addChannel(r1);
         r1.addChannel(server);
+
+         */
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -259,9 +265,13 @@ public class StatisticsTest {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(1).build();
-
+/*
         client.addChannel(r1);
         r1.addChannel(server);
+
+ */
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -283,8 +293,14 @@ public class StatisticsTest {
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
 
+        /*
         client.addChannel(r1);
         r1.addChannel(server);
+
+         */
+
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -319,8 +335,14 @@ public class StatisticsTest {
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().withNoiseTolerance(noiseTolerance).build();
 
+        /*
         client.addChannel(r1);
         r1.addChannel(server);
+
+         */
+
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -356,9 +378,13 @@ public class StatisticsTest {
 
         //no loss
         Router r1 = new Router.RouterBuilder().build();
-
+/*
         client.addChannel(r1);
         r1.addChannel(server);
+
+ */
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();

@@ -2,6 +2,7 @@ package org.example.simulator;
 
 import org.example.data.Message;
 import org.example.data.Packet;
+import org.example.network.Channel;
 import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
 import org.example.simulator.events.Event;
@@ -98,8 +99,13 @@ public class EventHandlerTest {
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
+        /*
         client.addChannel(r1);
         r1.addChannel(server);
+
+         */
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -124,8 +130,14 @@ public class EventHandlerTest {
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
+        /*
         client.addChannel(r1);
         r1.addChannel(server);
+
+         */
+
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -159,12 +171,14 @@ public class EventHandlerTest {
 
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Router r1 = new Router.RouterBuilder()
-                .withNoiseTolerance(noiseTolerance)
-                .build();
+        Router r1 = new Router.RouterBuilder().build();
 
+        /*
         client.addChannel(r1);
         r1.addChannel(server);
+         */
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -216,12 +230,15 @@ public class EventHandlerTest {
 
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Router r1 = new Router.RouterBuilder()
-                .withNoiseTolerance(noiseTolerance)
-                .build();
+        Router r1 = new Router.RouterBuilder().build();
 
+        /*
         client.addChannel(r1);
         r1.addChannel(server);
+
+         */
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();

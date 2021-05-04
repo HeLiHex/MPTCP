@@ -15,9 +15,18 @@ public class RoutingTableTest {
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
         Endpoint r4 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
+
+        /*
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
+
+         */
+
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(r3, r4);
+
         r1.route(new PacketBuilder().withDestination(r4).build());
     }
 
@@ -29,9 +38,15 @@ public class RoutingTableTest {
         NetworkNode r3 = new Router.RouterBuilder().build();
         NetworkNode r4 = new Router.RouterBuilder().build();
 
+        /*
         r1.addChannel(r2);
         r2.addChannel(r3);
         r3.addChannel(r4);
+         */
+
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().build(r3, r4);
 
         r1.updateRoutingTable();
         r2.updateRoutingTable();
@@ -48,8 +63,14 @@ public class RoutingTableTest {
         NetworkNode r3 = new Router.RouterBuilder().build();
         Endpoint r4 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
+        /*
         r1.addChannel(r2);
         r2.addChannel(r3);
+
+         */
+
+        new Channel.ChannelBuilder().build(r1, r2);
+        new Channel.ChannelBuilder().build(r2, r3);
 
         r1.updateRoutingTable();
         r2.updateRoutingTable();
@@ -77,10 +98,18 @@ public class RoutingTableTest {
             NetworkNode r3 = new Router.RouterBuilder().build();
             Endpoint r4 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
+            /*
             r1.addChannel(r2);
             r1.addChannel(r3);
             r2.addChannel(r4);
             r3.addChannel(r4);
+
+             */
+
+            new Channel.ChannelBuilder().build(r1, r2);
+            new Channel.ChannelBuilder().build(r1, r3);
+            new Channel.ChannelBuilder().build(r2, r4);
+            new Channel.ChannelBuilder().build(r3, r4);
 
             r1.updateRoutingTable();
             r2.updateRoutingTable();
