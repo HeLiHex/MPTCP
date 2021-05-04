@@ -146,8 +146,6 @@ public class Channel implements Comparable<Channel> {
         }
 
         public void build(NetworkNode node1, NetworkNode node2) {
-            //Channel oneToTwo = new Channel(node1, node2, this.noiseTolerance, this.cost);
-            //Channel twoToOne = new Channel(node1, node2, this.noiseTolerance, this.cost);
             if (node1 instanceof MPTCP) node1 = ((MPTCP) node1).getEndpointToAddChannelTo();
             if (node2 instanceof MPTCP) node2 = ((MPTCP) node2).getEndpointToAddChannelTo();
             node1.addChannel(node2, this.noiseTolerance, this.cost);
