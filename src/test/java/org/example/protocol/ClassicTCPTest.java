@@ -628,10 +628,10 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).build();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2.2).build();
+        Routable router = new Router.RouterBuilder().build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).build();
 
-        new Channel.ChannelBuilder().build(client, router);
+        new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(client, router);
         new Channel.ChannelBuilder().build(router, server);
 
         client.updateRoutingTable();
@@ -685,7 +685,7 @@ public class ClassicTCPTest {
             Util.setSeed(1337);
             Util.resetTime();
             ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(windowCapacity).build();
-            Routable router = new Router.RouterBuilder().withNoiseTolerance(1000).build();
+            Routable router = new Router.RouterBuilder().build();
             ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(windowCapacity).build();
 
             new Channel.ChannelBuilder().build(client, router);
@@ -740,10 +740,10 @@ public class ClassicTCPTest {
             Util.setSeed(1337);
             Util.resetTime();
             ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(windowCapacity).build();
-            Routable router = new Router.RouterBuilder().withNoiseTolerance(3).build();
+            Routable router = new Router.RouterBuilder().build();
             ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(windowCapacity).build();
 
-            new Channel.ChannelBuilder().build(client, router);
+            new Channel.ChannelBuilder().withNoiseTolerance(3).build(client, router);
             new Channel.ChannelBuilder().build(router, server);
 
             client.updateRoutingTable();
@@ -793,7 +793,7 @@ public class ClassicTCPTest {
     @Test
     public void floodWithPacketsBeforeConnectingShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
-        Routable router = new Router.RouterBuilder().withNoiseTolerance(2.5).build();
+        Routable router = new Router.RouterBuilder().build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
         new Channel.ChannelBuilder().withNoiseTolerance(2.5).build(client, router);

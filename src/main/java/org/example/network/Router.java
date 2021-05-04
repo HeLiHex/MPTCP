@@ -21,8 +21,8 @@ public class Router extends Routable {
     private int artificialQueueSize;
     private final PoissonDistribution poissonDistribution;
 
-    private Router(int bufferSize, double noiseTolerance, Address address, double averageQueueUtilization) {
-        super(new ArrayBlockingQueue<>(bufferSize), noiseTolerance, address);
+    private Router(int bufferSize, Address address, double averageQueueUtilization) {
+        super(new ArrayBlockingQueue<>(bufferSize), address);
         this.stats = new RouterStats(this);
         this.bufferSize = bufferSize;
         this.queueSizeMean = averageQueueUtilization * this.bufferSize;
@@ -79,17 +79,11 @@ public class Router extends Routable {
     public static class RouterBuilder {
 
         private int bufferSize = 1000;
-        private double noiseTolerance = 100.0;
         private double averageQueueUtilization = 0.85;
         private Address address = new UUIDAddress();
 
         public RouterBuilder withAverageQueueUtilization(double averageQueueUtilization) {
             this.averageQueueUtilization = averageQueueUtilization;
-            return this;
-        }
-
-        public RouterBuilder withNoiseTolerance(double noiseTolerance) {
-            this.noiseTolerance = noiseTolerance;
             return this;
         }
 
@@ -99,7 +93,7 @@ public class Router extends Routable {
         }
 
         public Router build() {
-            return new Router(this.bufferSize, this.noiseTolerance, this.address, this.averageQueueUtilization);
+            return new Router(this.bufferSize, this.address, this.averageQueueUtilization);
         }
 
     }

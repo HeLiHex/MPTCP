@@ -16,14 +16,12 @@ public abstract class Routable implements NetworkNode {
     private final RoutingTable routingTable;
     private final List<Channel> channels;
     private final Address address;
-    private final double noiseTolerance;
     private List<Channel> channelsUsed;
 
-    protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance, Address address) {
+    protected Routable(BlockingQueue<Packet> inputBuffer, Address address) {
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
         this.address = address;
-        this.noiseTolerance = noiseTolerance;
         this.routingTable = new RoutingTable();
 
         this.channelsUsed = new ArrayList<>(1);

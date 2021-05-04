@@ -27,13 +27,13 @@ public class TCPStatsTest {
     @Test
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().withAddress(new SimpleAddress("Client")).build();
-        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withNoiseTolerance(2).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 2")).build();
         Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 3")).build();
         Routable r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 4")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Server")).build();
 
-        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().withNoiseTolerance(2).build(client, r1);
         new Channel.ChannelBuilder().build(r1, r2);
         new Channel.ChannelBuilder().build(r2, r3);
         new Channel.ChannelBuilder().build(r3, r4);

@@ -13,8 +13,8 @@ public class RoutableEndpoint extends Routable implements Endpoint {
     private final BlockingQueue<Packet> receivedPackets;
     protected BlockingQueue<Packet> outputBuffer;
 
-    public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer, double noiseTolerance) {
-        super(inputBuffer, noiseTolerance, new UUIDAddress());
+    public RoutableEndpoint(BlockingQueue<Packet> inputBuffer, BlockingQueue<Packet> outputBuffer) {
+        super(inputBuffer, new UUIDAddress());
         this.outputBuffer = outputBuffer;
         this.receivedPackets = new ArrayBlockingQueue<>(10000);
     }

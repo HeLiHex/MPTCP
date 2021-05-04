@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 
 public class ClassicTCP extends Routable implements TCP {
 
-    private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> SENDING_WINDOW_PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final TCPStats tcpStats;
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
@@ -48,7 +47,7 @@ public class ClassicTCP extends Routable implements TCP {
                        Address address,
                        TCP mainFlow,
                        ReceivingWindow receivingWindow) {
-        super(receivingWindow, NOISE_TOLERANCE, address);
+        super(receivingWindow, address);
         this.receivedPackets = receivedPackets;
         this.payloadsToSend = payloadsToSend;
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
