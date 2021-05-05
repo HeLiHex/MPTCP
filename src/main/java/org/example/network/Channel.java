@@ -1,8 +1,9 @@
 package org.example.network;
 
+import net.andreinc.markovneat.MChain;
+import net.andreinc.markovneat.MState;
+import org.example.data.Flag;
 import org.example.data.Packet;
-import org.example.network.address.Address;
-import org.example.network.address.UUIDAddress;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.MPTCP;
 import org.example.simulator.statistics.Statistics;
@@ -20,22 +21,26 @@ public class Channel implements Comparable<Channel> {
     private final NetworkNode source;
     private final NetworkNode destination;
     private final int cost;
-    private final double noiseTolerance;
+    private final double loss;
     private final int capacity = 1000;
-    boolean goodState = true;
+    private boolean goodState;
 
-    public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance, int cost) {
+
+    public Channel(NetworkNode source, NetworkNode destination, double loss, int cost) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
         this.line = new ArrayBlockingQueue<>(capacity);
 
         this.source = source;
         this.destination = destination;
-        this.noiseTolerance = noiseTolerance;
+        this.loss = loss;
         this.cost = cost;
+
+        this.goodState = true;
+
     }
 
-    public Channel(NetworkNode source, NetworkNode destination, double noiseTolerance) {
-        this(source, destination, noiseTolerance, Util.getNextRandomInt(100));
+    public Channel(NetworkNode source, NetworkNode destination, double loss) {
+        this(source, destination, loss, Util.getNextRandomInt(100));
     }
 
     //loopback
@@ -45,26 +50,23 @@ public class Channel implements Comparable<Channel> {
 
     public long propagationDelay() {
         long delay = 100*this.cost;
-        System.out.println("channel delay: " + delay );
+        //System.out.println("channel delay: " + delay );
         return delay;
     }
 
     private boolean lossy() {
         if (this.source.equals(this.destination)) return false;
-        double gaussianNoise = Util.getNextGaussian();
-        double noise = StrictMath.abs(gaussianNoise);
-        if (goodState) {
-            this.goodState = Util.getNextRandomInt(100) >= 10;
-            return noise > this.noiseTolerance + 2;
+/*
+        if (this.goodState) {
+            this.goodState = Util.getNextRandomDouble() > this.loss;
+        }else{
+            this.goodState = Util.getNextRandomDouble() > 0.4;
         }
-        this.goodState = Util.getNextRandomInt(100) >= 50;
-        return noise > this.noiseTolerance;
-        /*
-        int noise = Util.getNextRandomInt(1000);
-        System.out.println(noise);
-        return noise < 1;
+        System.out.println(!goodState);
+        return !goodState;
 
-         */
+ */
+        return Util.getNextRandomDouble() < this.loss;
     }
 
     public void channelPackage(Packet packet) {
@@ -92,7 +94,9 @@ public class Channel implements Comparable<Channel> {
             return false;
         }
 
+        int size = this.line.size();
         var packet = this.line.poll();
+        assert this.line.size() < size : "no packet removed";
         if (lossy()) {
             Statistics.packetLost();
             this.logger.log(Level.INFO, () -> packet.toString() + " lost due to noise");
@@ -132,7 +136,7 @@ public class Channel implements Comparable<Channel> {
 
     public static class ChannelBuilder {
 
-        double noiseTolerance = 1000;
+        double loss = 0;
         int cost = Util.getNextRandomInt(100);
 
         public ChannelBuilder withCost (int cost) {
@@ -140,16 +144,16 @@ public class Channel implements Comparable<Channel> {
             return this;
         }
 
-        public ChannelBuilder withNoiseTolerance (double noiseTolerance) {
-            this.noiseTolerance = noiseTolerance;
+        public ChannelBuilder withLoss(double loss) {
+            this.loss = loss;
             return this;
         }
 
         public void build(NetworkNode node1, NetworkNode node2) {
             if (node1 instanceof MPTCP) node1 = ((MPTCP) node1).getEndpointToAddChannelTo();
             if (node2 instanceof MPTCP) node2 = ((MPTCP) node2).getEndpointToAddChannelTo();
-            node1.addChannel(node2, this.noiseTolerance, this.cost);
-            node2.addChannel(node1, this.noiseTolerance, this.cost);
+            node1.addChannel(node2, this.loss, this.cost);
+            node2.addChannel(node1, this.loss, this.cost);
         }
 
     }

@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Util {
 
-    private static final Random random = new Random(1337);
+    public static final Random random = new Random(1337);
     private static long time = 0;
     private Util() {
         throw new IllegalStateException("Utility class");

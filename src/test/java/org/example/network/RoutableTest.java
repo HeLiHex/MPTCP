@@ -9,7 +9,6 @@ import org.example.simulator.events.RouteEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class RoutableTest {
@@ -393,7 +392,7 @@ public class RoutableTest {
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
 
         new Channel.ChannelBuilder().build(client, r1);
-        new Channel.ChannelBuilder().withNoiseTolerance(-100).build(r1, r2);
+        new Channel.ChannelBuilder().withLoss(100).build(r1, r2);
         new Channel.ChannelBuilder().build(r2, r3);
         new Channel.ChannelBuilder().build(r3, r4);
         new Channel.ChannelBuilder().build(server, r4);
@@ -432,11 +431,11 @@ public class RoutableTest {
         Router r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.1).build();
         Endpoint server = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000));
 
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, r2);
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r2, r3);
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r3, r4);
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(server, r4);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(r1, r2);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(r2, r3);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(r3, r4);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(server, r4);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();

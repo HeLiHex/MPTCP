@@ -266,10 +266,15 @@ public class ClassicTCP extends Routable implements TCP {
         var conn = this.getConnection();
         if (packet.hasAllFlags(Flag.ACK)) return true;
 
+
         try {
+            System.out.println(packet + " in window: " + this.getReceivingWindow().inReceivingWindow(packet, conn));
+            boolean inWindow = this.getReceivingWindow().inReceivingWindow(packet, conn);
+            if (!inWindow) this.ack(this.getReceivingWindow().ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
+
             return packet.getOrigin().equals(conn.getConnectedNode())
                     && packet.getDestination().equals(conn.getConnectionSource())
-                    && this.getReceivingWindow().inReceivingWindow(packet, conn);
+                    && inWindow;
         } catch (IllegalAccessException e) {
             return false;
         }
@@ -287,12 +292,13 @@ public class ClassicTCP extends Routable implements TCP {
                 if (!packet.hasAllFlags(Flag.ACK) && !packet.hasAllFlags(Flag.SYN)) this.tcpStats.packetArrival();
                 return true;
             }
-            return false;
+            this.logger.log(Level.INFO, () -> packet + " was not delivered to TCP");
+            return true;
         }
         this.logger.log(Level.INFO, () -> packet + " was not added due to non valid connection");
         // return true because the packet has arrived the endpoint
         // the packet is not added to the input buffer, but it is checked
-        return false;
+        return true;
     }
 
     private boolean unconnectedInputHandler() {
@@ -335,6 +341,8 @@ public class ClassicTCP extends Routable implements TCP {
     private void ack(Packet packet) {
         assert packet != null : "Packet is null";
 
+        if (packet.getSequenceNumber() == -1) return;
+
         if (packet.getOrigin() == null) {
             //can't call ack on packet with no origin
             Endpoint connectedNode;
@@ -354,6 +362,7 @@ public class ClassicTCP extends Routable implements TCP {
 
         }
         Packet ack = new PacketBuilder().ackBuild(packet);
+        System.out.println("ack sent: " + ack);
         this.route(ack);
     }
 

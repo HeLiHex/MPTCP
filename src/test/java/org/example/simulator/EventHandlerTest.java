@@ -6,10 +6,8 @@ import org.example.network.Channel;
 import org.example.network.Router;
 import org.example.protocol.ClassicTCP;
 import org.example.simulator.events.Event;
-import org.example.simulator.events.RouteEvent;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
-import org.example.simulator.events.tcp.TCPInputEvent;
 import org.example.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
@@ -162,8 +160,8 @@ public class EventHandlerTest {
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -197,7 +195,7 @@ public class EventHandlerTest {
 
     @Test
     public void eventArrangementsAreConsistent(){
-        double noiseTolerance = 2.5;
+        double noiseTolerance = 0.01;
         int numPacketsToSend = 1001;
         ArrayList<Event> eventList1 = this.allEventsList(numPacketsToSend, noiseTolerance);
         ArrayList<Event> eventList2 = this.allEventsList(numPacketsToSend, noiseTolerance);
@@ -210,15 +208,15 @@ public class EventHandlerTest {
 
     @Test
     public void eventAreRunningInCorrectOrderWithRespectToTime() {
-        double noiseTolerance = 2;
+        double noiseTolerance = 0.01;
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Router r1 = new Router.RouterBuilder().build();
 
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(client, r1);
-        new Channel.ChannelBuilder().withNoiseTolerance(noiseTolerance).build(r1, server);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(client, r1);
+        new Channel.ChannelBuilder().withLoss(noiseTolerance).build(r1, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();

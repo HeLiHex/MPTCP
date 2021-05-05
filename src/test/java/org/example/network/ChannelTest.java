@@ -49,7 +49,7 @@ public class ChannelTest {
 
     @Test
     public void channelPacketDeliversPacketToDestinationNodeTest(){
-        Channel channel = new Channel(source, destination, 100);
+        Channel channel = new Channel(source, destination, 0);
         Payload payload = new Message( "Test");
         Packet packet = new PacketBuilder()
                 .withOrigin(source)

@@ -43,7 +43,6 @@ public class MPTCP implements TCP{
                     .withPayloadsToSend(this.payloadsToSend)
                     .withReceivingWindow(this.receivingWindow)
                     .withMainFlow(this)
-                    .setReno()
                     .build();
             this.subflows[i] = tcp;
         }

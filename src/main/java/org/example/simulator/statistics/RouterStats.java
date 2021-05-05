@@ -30,7 +30,7 @@ public class RouterStats extends Stats{
     public void createQueueSizeChart() {
         XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Time").yAxisTitle("Queue size").title("Queue size").build();
         chart.addSeries("Router queue size", this.queueSize).setMarker(SeriesMarkers.NONE);
-        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Area);
+        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
         try {
             BitmapEncoder.saveBitmap(chart, DIR + "QueueSize_" + this.fileName(), BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {

@@ -6,7 +6,6 @@ import org.example.network.Channel;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.network.address.SimpleAddress;
-import org.example.network.address.UUIDAddress;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.MPTCP;
 import org.example.simulator.EventHandler;
@@ -29,15 +28,15 @@ public class TCPStatsTest {
     @Test
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().withAddress(new SimpleAddress("Client")).build();
-        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
-        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 2")).build();
-        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 3")).build();
-        Routable r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 4")).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 3")).build();
+        Routable r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 4")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Server")).build();
 
-        new Channel.ChannelBuilder().withNoiseTolerance(2).build(client, r1);
+        new Channel.ChannelBuilder().build(client, r1);
         new Channel.ChannelBuilder().build(r1, r2);
-        new Channel.ChannelBuilder().build(r2, r3);
+        new Channel.ChannelBuilder().withLoss(0.05).build(r2, r3);
         new Channel.ChannelBuilder().build(r3, r4);
         new Channel.ChannelBuilder().build(r4, server);
 
@@ -98,11 +97,14 @@ public class TCPStatsTest {
 
 
         System.out.println(r1.getStats());
+        /*
         r1.getStats().createArrivalChart();
         r1.getStats().createDepartureChart();
         r1.getStats().createTimeInSystemChart();
         r1.getStats().createInterArrivalChart();
         r1.getStats().createNumberOfPacketsInSystemChart();
+
+         */
         ((RouterStats)r1.getStats()).createQueueSizeChart();
 
     }
@@ -116,16 +118,16 @@ public class TCPStatsTest {
         MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
-        new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(client, r1);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(r1, server);
+        new Channel.ChannelBuilder().withLoss(0.001).build(client, r1);
+        new Channel.ChannelBuilder().withLoss(0.001).build(r1, server);
 
         //path two
-        new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(client, r2);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(r2, server);
+        new Channel.ChannelBuilder().withLoss(0.001).build(client, r2);
+        new Channel.ChannelBuilder().withLoss(0.001).build(r2, server);
 
         //path three
-        new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(client, r3);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.6).build(r3, server);
+        new Channel.ChannelBuilder().withLoss(0.001).build(client, r3);
+        new Channel.ChannelBuilder().withLoss(0.001).build(r3, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -209,18 +211,18 @@ public class TCPStatsTest {
         MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(20).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
-        new Channel.ChannelBuilder().withNoiseTolerance(2.8).build(client, r11);
+        new Channel.ChannelBuilder().withLoss(2.8).build(client, r11);
         new Channel.ChannelBuilder().build(r11, r12);
         new Channel.ChannelBuilder().build(r12, r13);
         new Channel.ChannelBuilder().build(r13, r14);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.8).build(r14, server);
+        new Channel.ChannelBuilder().withLoss(2.8).build(r14, server);
 
         //path two
-        new Channel.ChannelBuilder().withNoiseTolerance(2.8).build(client, r21);
+        new Channel.ChannelBuilder().withLoss(2.8).build(client, r21);
         new Channel.ChannelBuilder().build(r21, r22);
         new Channel.ChannelBuilder().build(r22, r23);
         new Channel.ChannelBuilder().build(r23, r24);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.8).build(r24, server);
+        new Channel.ChannelBuilder().withLoss(2.8).build(r24, server);
 
         client.updateRoutingTable();
 

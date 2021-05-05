@@ -7,7 +7,6 @@ import org.example.network.Channel;
 import org.example.network.Routable;
 import org.example.network.Router;
 import org.example.network.address.SimpleAddress;
-import org.example.network.address.UUIDAddress;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
@@ -345,16 +344,16 @@ public class MPTCPTest {
         MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
-        new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(client, r1);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(r1, server);
+        new Channel.ChannelBuilder().withLoss(0.001).build(client, r1);
+        new Channel.ChannelBuilder().withLoss(0.01).build(r1, server);
 
         //path two
-        new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(client, r2);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(r2, server);
+        new Channel.ChannelBuilder().withLoss(0.001).build(client, r2);
+        new Channel.ChannelBuilder().withLoss(0.001).build(r2, server);
 
         //path three
-        new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(client, r3);
-        new Channel.ChannelBuilder().withNoiseTolerance(2.2).build(r3, server);
+        new Channel.ChannelBuilder().withLoss(0.01).build(client, r3);
+        new Channel.ChannelBuilder().withLoss(0.001).build(r3, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();
@@ -403,6 +402,7 @@ public class MPTCPTest {
 
 
     @Test
+    @Ignore
     public void MPTCPFloodWithPacketsInOrderWithVariableNumberOfSubflowsShouldWorkTest() {
         int maxSubflows = 10;
         for (int numSubflows = 1; numSubflows <= maxSubflows; numSubflows++) {
