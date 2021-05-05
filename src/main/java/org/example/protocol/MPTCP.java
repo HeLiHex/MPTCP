@@ -1,6 +1,5 @@
 package org.example.protocol;
 
-import org.apache.commons.math3.analysis.function.Add;
 import org.example.data.Packet;
 import org.example.data.Payload;
 import org.example.network.Channel;
@@ -43,6 +42,7 @@ public class MPTCP implements TCP{
                     .withPayloadsToSend(this.payloadsToSend)
                     .withReceivingWindow(this.receivingWindow)
                     .withMainFlow(this)
+                    .setReno()
                     .build();
             this.subflows[i] = tcp;
         }

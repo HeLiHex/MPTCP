@@ -27,16 +27,16 @@ public class TCPStatsTest {
 
     @Test
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
-        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().withAddress(new SimpleAddress("Client")).build();
-        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 1")).build();
-        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 2")).build();
-        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 3")).build();
-        Routable r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.8).withAddress(new SimpleAddress("Router 4")).build();
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Client")).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.91).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.91).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.91).withAddress(new SimpleAddress("Router 3")).build();
+        Routable r4 = new Router.RouterBuilder().withAverageQueueUtilization(0.91).withAddress(new SimpleAddress("Router 4")).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Server")).build();
 
         new Channel.ChannelBuilder().build(client, r1);
         new Channel.ChannelBuilder().build(r1, r2);
-        new Channel.ChannelBuilder().withLoss(0.01).build(r2, r3);
+        new Channel.ChannelBuilder().withLoss(0.005).build(r2, r3);
         new Channel.ChannelBuilder().build(r3, r4);
         new Channel.ChannelBuilder().build(r4, server);
 
@@ -111,23 +111,23 @@ public class TCPStatsTest {
 
     @Test
     public void MPTCPFloodWithPacketsInOrderShouldWorkTest() {
-        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Client")).build();
-        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("A")).build();
-        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("B")).build();
-        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.86).withAddress(new SimpleAddress("C")).build();
-        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(60).withAddress(new SimpleAddress("MPTCP-Client")).build();
+        Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.94).withAddress(new SimpleAddress("A")).build();
+        Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.94).withAddress(new SimpleAddress("B")).build();
+        Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.9).withAddress(new SimpleAddress("C")).build();
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(3).withReceivingWindowCapacity(60).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
         //path one
-        new Channel.ChannelBuilder().withLoss(0.001).build(client, r1);
-        new Channel.ChannelBuilder().withLoss(0.001).build(r1, server);
+        new Channel.ChannelBuilder().build(client, r1);
+        new Channel.ChannelBuilder().withLoss(0.005).build(r1, server);
 
         //path two
-        new Channel.ChannelBuilder().withLoss(0.001).build(client, r2);
-        new Channel.ChannelBuilder().withLoss(0.001).build(r2, server);
+        new Channel.ChannelBuilder().build(client, r2);
+        new Channel.ChannelBuilder().withLoss(0.005).build(r2, server);
 
         //path three
-        new Channel.ChannelBuilder().withLoss(0.001).build(client, r3);
-        new Channel.ChannelBuilder().withLoss(0.001).build(r3, server);
+        new Channel.ChannelBuilder().build(client, r3);
+        new Channel.ChannelBuilder().withLoss(0.005).build(r3, server);
 
         client.updateRoutingTable();
         r1.updateRoutingTable();

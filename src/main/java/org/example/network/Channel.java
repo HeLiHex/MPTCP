@@ -46,7 +46,7 @@ public class Channel implements Comparable<Channel> {
     }
 
     public long transmissionDelay() {
-        long delay = 100*this.cost;
+        long delay = 100*(this.cost + 1);
         //System.out.println("channel delay: " + delay );
         return delay;
     }
@@ -56,7 +56,7 @@ public class Channel implements Comparable<Channel> {
         if (this.goodState) {
             this.goodState = Util.getNextRandomDouble() >= this.loss;
         }else{
-            this.goodState = Util.getNextRandomDouble() >= 0.4;
+            this.goodState = Util.getNextRandomDouble() >= 0.5;
         }
         return !this.goodState;
 

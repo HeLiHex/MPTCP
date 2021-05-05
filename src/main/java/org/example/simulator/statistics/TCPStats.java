@@ -132,7 +132,7 @@ public class TCPStats extends Stats {
 
     public void trackCwnd(int cwnd) {
         congestionWindowCapacities.add(cwnd);
-        congestionWindowTime.add((double) Util.seeTime()/(double) this.rtt);
+        congestionWindowTime.add((double) Util.seeTime());
     }
 
     public void createCWNDChart() {

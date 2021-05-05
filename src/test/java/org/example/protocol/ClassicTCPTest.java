@@ -627,9 +627,9 @@ public class ClassicTCPTest {
 
     @Test
     public void floodWithPacketsInOrderButInLossyChannelShouldWorkTest() {
-        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).build();
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).build();
         Routable router = new Router.RouterBuilder().build();
-        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).build();
+        ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).build();
 
         new Channel.ChannelBuilder().withLoss(0.001).build(client, router);
         new Channel.ChannelBuilder().build(router, server);
@@ -796,7 +796,7 @@ public class ClassicTCPTest {
         Routable router = new Router.RouterBuilder().withAverageQueueUtilization(0.7).build();
         ClassicTCP server = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
-        new Channel.ChannelBuilder().withLoss(0.001).build(client, router);
+        new Channel.ChannelBuilder().withLoss(0.0001).build(client, router);
         new Channel.ChannelBuilder().build(router, server);
 
         client.updateRoutingTable();

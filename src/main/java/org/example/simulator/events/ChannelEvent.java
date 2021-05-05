@@ -45,7 +45,7 @@ public class ChannelEvent extends Event {
         }
 
         //hack
-        /*
+
         NetworkNode nextNode = this.channel.getDestination();
         if (nextNode instanceof TCP) {
             System.out.println();
@@ -54,8 +54,6 @@ public class ChannelEvent extends Event {
             events.add(new RunTCPEvent(tcp));
             return;
         }
-
-         */
 
 
     }

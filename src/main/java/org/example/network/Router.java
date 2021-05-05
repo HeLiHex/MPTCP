@@ -50,6 +50,7 @@ public class Router extends Routable {
 
     @Override
     public long processingDelay() {
+        this.setArtificialQueueSize();
         long propagationDelay = this.inputBufferSize()*100;
         long delay = propagationDelay + this.artificialQueueSize;
         //System.out.println("router delay: " + delay);
@@ -58,6 +59,7 @@ public class Router extends Routable {
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
+        this.setArtificialQueueSize();
         this.stats.packetArrival();
         if (this.artificialQueueSize >= this.bufferSize){
             //packets dropped due to full buffer
@@ -71,7 +73,6 @@ public class Router extends Routable {
 
     @Override
     public void run() {
-        this.setArtificialQueueSize();
         if (!this.inputBufferIsEmpty()) {
             this.route(this.dequeueInputBuffer());
             this.stats.packetDeparture();

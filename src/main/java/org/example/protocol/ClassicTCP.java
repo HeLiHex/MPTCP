@@ -203,7 +203,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long getRTO() {
-        return 3 * this.rtt;
+        return 4*this.rtt;
     }
 
     @Override
@@ -302,7 +302,7 @@ public class ClassicTCP extends Routable implements TCP {
         this.logger.log(Level.INFO, () -> packet + " was not added due to non valid connection");
         // return true because the packet has arrived the endpoint
         // the packet is not added to the input buffer, but it is checked
-        return true;
+        return false;
     }
 
     private boolean unconnectedInputHandler() {
