@@ -1,8 +1,5 @@
 package org.example.network;
 
-import net.andreinc.markovneat.MChain;
-import net.andreinc.markovneat.MState;
-import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.MPTCP;
@@ -48,7 +45,7 @@ public class Channel implements Comparable<Channel> {
         this(source, source, 0, 0);
     }
 
-    public long propagationDelay() {
+    public long transmissionDelay() {
         long delay = 100*this.cost;
         //System.out.println("channel delay: " + delay );
         return delay;
@@ -56,17 +53,14 @@ public class Channel implements Comparable<Channel> {
 
     private boolean lossy() {
         if (this.source.equals(this.destination)) return false;
-/*
         if (this.goodState) {
-            this.goodState = Util.getNextRandomDouble() > this.loss;
+            this.goodState = Util.getNextRandomDouble() >= this.loss;
         }else{
-            this.goodState = Util.getNextRandomDouble() > 0.4;
+            this.goodState = Util.getNextRandomDouble() >= 0.4;
         }
-        System.out.println(!goodState);
-        return !goodState;
+        return !this.goodState;
 
- */
-        return Util.getNextRandomDouble() < this.loss;
+        //return Util.getNextRandomDouble() < this.loss;
     }
 
     public void channelPackage(Packet packet) {

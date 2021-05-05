@@ -106,7 +106,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " lost due to capacity");
             return false;
         }
-        if (this.contains(packet)) {
+        if (this.contains(packet) && !packet.hasAllFlags(Flag.ACK)) {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " is already in queue");
             return false;
         }

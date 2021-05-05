@@ -36,7 +36,7 @@ public class TCPStatsTest {
 
         new Channel.ChannelBuilder().build(client, r1);
         new Channel.ChannelBuilder().build(r1, r2);
-        new Channel.ChannelBuilder().withLoss(0.05).build(r2, r3);
+        new Channel.ChannelBuilder().withLoss(0.01).build(r2, r3);
         new Channel.ChannelBuilder().build(r3, r4);
         new Channel.ChannelBuilder().build(r4, server);
 

@@ -203,7 +203,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long getRTO() {
-        return 2 * this.rtt;
+        return 3 * this.rtt;
     }
 
     @Override
@@ -269,12 +269,16 @@ public class ClassicTCP extends Routable implements TCP {
 
         try {
             System.out.println(packet + " in window: " + this.getReceivingWindow().inReceivingWindow(packet, conn));
+
             boolean inWindow = this.getReceivingWindow().inReceivingWindow(packet, conn);
-            if (!inWindow) this.ack(this.getReceivingWindow().ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
+            if (!inWindow){
+                System.out.println(this.getReceivingWindow().receivingPacketIndex(packet, this.getConnection()));
+                this.ack(this.getReceivingWindow().ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
+                return false;
+            }
 
             return packet.getOrigin().equals(conn.getConnectedNode())
-                    && packet.getDestination().equals(conn.getConnectionSource())
-                    && inWindow;
+                    && packet.getDestination().equals(conn.getConnectionSource());
         } catch (IllegalAccessException e) {
             return false;
         }

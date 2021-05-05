@@ -126,7 +126,8 @@ public class TCPStats extends Stats {
             this.lossRate = 0;
             return;
         }
-        this.lossRate = ((double) this.numberOfPacketsFastRetransmitted + (double) this.numberOfPacketsFastRetransmitted)/(double) this.numberOfPacketsSent;
+
+        this.lossRate = (this.numberOfPacketsFastRetransmitted + this.numberOfPacketsRetransmitted)/(double) this.numberOfPacketsSent;
     }
 
     public void trackCwnd(int cwnd) {
