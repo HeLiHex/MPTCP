@@ -45,7 +45,7 @@ public class Channel implements Comparable<Channel> {
         this(source, source, 0, 0);
     }
 
-    public long transmissionDelay() {
+    public long propagationDelay() {
         long delay = 100*(this.cost + 1);
         //System.out.println("channel delay: " + delay );
         return delay;
@@ -55,17 +55,16 @@ public class Channel implements Comparable<Channel> {
         if (this.source.equals(this.destination)) return false;
         if (this.goodState) {
             this.goodState = Util.getNextRandomDouble() >= this.loss;
-        }else{
-            this.goodState = Util.getNextRandomDouble() >= 0.5;
+            return Util.getNextRandomDouble() < this.loss;
         }
-        return !this.goodState;
-
-        //return Util.getNextRandomDouble() < this.loss;
+        this.goodState = Util.getNextRandomDouble() >= 0.5;
+        return Util.getNextRandomDouble() < 0.5;
     }
 
     public void channelPackage(Packet packet) {
         if (!this.line.offer(packet)) {
-            this.logger.log(Level.INFO, () -> packet.toString() + " lost due to channel capacity");
+            throw new IllegalStateException("packet dropped in channel");
+            //this.logger.log(Level.INFO, () -> packet.toString() + " lost due to channel capacity");
         }
     }
 

@@ -1,8 +1,6 @@
 package org.example.network;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
-import org.apache.commons.math3.random.RandomGeneratorFactory;
-import org.example.data.Flag;
 import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.address.UUIDAddress;
@@ -49,23 +47,26 @@ public class Router extends Routable {
 
 
     @Override
-    public long processingDelay() {
+    public long delay() {
         this.setArtificialQueueSize();
-        long propagationDelay = this.inputBufferSize()*100;
-        long delay = propagationDelay + this.artificialQueueSize;
+        long transmissionDelay = 10;
+        long delay = transmissionDelay + this.artificialQueueSize * transmissionDelay;
         //System.out.println("router delay: " + delay);
         return delay;
     }
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        this.setArtificialQueueSize();
+        //this.setArtificialQueueSize();
         this.stats.packetArrival();
+        /*
         if (this.artificialQueueSize >= this.bufferSize){
             //packets dropped due to full buffer
             System.out.println("packet dropped");
             return false;
         }
+
+         */
 
         boolean success = super.enqueueInputBuffer(packet);
         return success;

@@ -22,7 +22,7 @@ public interface NetworkNode {
     void route(Packet packet);
 
 
-    long processingDelay();
+    long delay();
 
 
     /**

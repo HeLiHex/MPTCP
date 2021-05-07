@@ -76,8 +76,8 @@ public class MPTCP implements TCP{
     }
 
     @Override
-    public long processingDelay() {
-        return 1000;
+    public long delay() {
+        return 10;
     }
 
     @Override

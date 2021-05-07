@@ -27,7 +27,7 @@ public class TCPStatsTest {
 
     @Test
     public void floodWithPacketsInBigCongestedNetworkShouldWorkTest() {
-        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Client")).build();
+        ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(10).setReno().withAddress(new SimpleAddress("Client")).build();
         Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.91).withAddress(new SimpleAddress("Router 1")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.91).withAddress(new SimpleAddress("Router 2")).build();
         Routable r3 = new Router.RouterBuilder().withAverageQueueUtilization(0.91).withAddress(new SimpleAddress("Router 3")).build();
@@ -36,7 +36,7 @@ public class TCPStatsTest {
 
         new Channel.ChannelBuilder().build(client, r1);
         new Channel.ChannelBuilder().build(r1, r2);
-        new Channel.ChannelBuilder().withLoss(0.005).build(r2, r3);
+        new Channel.ChannelBuilder().withLoss(0.01).build(r2, r3);
         new Channel.ChannelBuilder().build(r3, r4);
         new Channel.ChannelBuilder().build(r4, server);
 
@@ -119,11 +119,11 @@ public class TCPStatsTest {
 
         //path one
         new Channel.ChannelBuilder().build(client, r1);
-        new Channel.ChannelBuilder().withLoss(0.005).build(r1, server);
+        new Channel.ChannelBuilder().withLoss(0.015).build(r1, server);
 
         //path two
         new Channel.ChannelBuilder().build(client, r2);
-        new Channel.ChannelBuilder().withLoss(0.005).build(r2, server);
+        new Channel.ChannelBuilder().withLoss(0.015).build(r2, server);
 
         //path three
         new Channel.ChannelBuilder().build(client, r3);

@@ -20,12 +20,12 @@ public abstract class Event implements Comparable<Event> {
 
     protected Event(NetworkNode node) {
         if (node == null) throw new IllegalArgumentException("node is null");
-        this.instant = this.findInstant(node.processingDelay());
+        this.instant = this.findInstant(node.delay());
     }
 
     protected Event(Channel channel) {
         if (channel == null) throw new IllegalArgumentException("channel is null");
-        this.instant = this.findInstant(channel.transmissionDelay());
+        this.instant = this.findInstant(channel.propagationDelay());
     }
 
     private long findInstant(long delay) {

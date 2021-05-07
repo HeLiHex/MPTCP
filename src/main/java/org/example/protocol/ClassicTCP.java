@@ -203,7 +203,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long getRTO() {
-        return 4*this.rtt;
+        return 3*this.rtt;
     }
 
     @Override
@@ -224,9 +224,9 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     @Override
-    public long processingDelay() {
+    public long delay() {
         //todo
-        return 1000;
+        return 10;
     }
 
     @Override
