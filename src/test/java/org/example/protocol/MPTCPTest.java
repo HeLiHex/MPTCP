@@ -402,10 +402,11 @@ public class MPTCPTest {
 
 
     @Test
-    @Ignore
     public void MPTCPFloodWithPacketsInOrderWithVariableNumberOfSubflowsShouldWorkTest() {
-        int maxSubflows = 5;
+        int maxSubflows = 10;
         for (int numSubflows = 1; numSubflows <= maxSubflows; numSubflows++) {
+            Util.setSeed(1337);
+            Util.resetTime();
             MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(numSubflows).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Client")).build();
             MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(numSubflows).withReceivingWindowCapacity(21).withAddress(new SimpleAddress("MPTCP-Server")).build();
 
