@@ -179,6 +179,7 @@ public class TCPStatsTest {
             stat.createDepartureChart();
             stat.createInterArrivalChart();
             stat.createTimeInSystemChart();
+            stat.createNumberOfPacketsInSystemChart();
         }
 
         //sender

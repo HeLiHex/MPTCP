@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public abstract class Stats {
 
     protected static final String DIR = "./charts/";
+    private static final int timescale = 1000;
 
     // Arrival
     protected final ArrayList<Packet> arrivalPacket = new ArrayList<>();
@@ -39,7 +40,7 @@ public abstract class Stats {
     protected final ArrayList<Double> timeInSystem = new ArrayList<>();
 
     // number of packets in system
-    protected final ArrayList<Integer> packetsInSystem = new ArrayList<>();
+    protected final ArrayList<Integer> numPacketsInSystem = new ArrayList<>();
 
     private double meanArrivalRate;
     private double meanTimeInSystem;
@@ -51,60 +52,82 @@ public abstract class Stats {
 
     private void doCalculations(){
         if (this.interArrivalTimes.isEmpty()) return;
-        this.meanArrivalRate = 1/(this.arrivalNum.get(this.arrivalNum.size()-1)/this.arrivalTime.get(this.arrivalTime.size()-1));
-        //this.meanArrivalRate = this.interArrivalTimes.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
+        this.meanArrivalRate = this.arrivalNum.size()/(this.arrivalTime.get(this.arrivalTime.size()-1));
 
         this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
 
-        //denne tar ikke hensyn til tiden... bruk little's law
-        //this.meanNumPacketsInSystem = this.packetsInSystem.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
-
         //Little's law
         // L = 1/E[A] * W
-        this.meanNumPacketsInSystem = (1/this.meanArrivalRate) * this.meanTimeInSystem;
+        this.meanNumPacketsInSystem = this.meanArrivalRate * this.meanTimeInSystem;
     }
+
     public void packetArrival(Packet packet) {
         this.arrivalPacket.add(packet);
         this.arrivalNum.add(this.arrivalNum.size());
-        this.arrivalTime.add((double) Util.seeTime());
+        this.arrivalTime.add((double) Util.seeTime()/timescale);
 
         // number of packets in system
-        if (this.packetsInSystem.isEmpty()){
-            this.packetsInSystem.add(1);
-        }else{
-            this.packetsInSystem.add(this.packetsInSystem.get(this.packetsInSystem.size()-1) + 1);
-        }
+        this.addPacketsInSystem();
 
         // inter arrival time calculation
+        this.addInterArrivalTime();
+    }
+
+    public void packetDeparture(Packet packet) {
+        this.departurePacket.add(packet);
+        this.departureNum.add(this.arrivalNum.size());
+        this.departureTime.add((double) Util.seeTime()/timescale);
+
+        // number of packets in system
+        this.removePacketsInSystem();
+
+        // Time in system calculation
+        this.addTimeInSystem(packet);
+    }
+
+    private void addTimeInSystem(Packet packet){
+        int packetArrivalIndex = this.arrivalIndexOf(packet);
+        int packetDepartureIndex = this.departureIndexOf(packet);
+
+        double arrivalTime = this.arrivalTime.get(packetArrivalIndex);
+        double departureTime = this.departureTime.get(packetDepartureIndex);
+        double timeInSystem = departureTime - arrivalTime;
+        if (timeInSystem < 0) throw new IllegalStateException("packet cannot be in system a negative amount of time");
+        this.timeInSystem.add(timeInSystem);
+    }
+
+    private void addInterArrivalTime(){
         int n = this.arrivalNum.size() - 1;
         if (n > 1){
-            if (this.arrivalTime.get(n) - this.arrivalTime.get(n - 1) < 0) throw new IllegalStateException("interarrival time is less then 0");
-            this.interArrivalTimes.add(this.arrivalTime.get(n) - this.arrivalTime.get(n - 1));
+            double interArrivalTime = this.arrivalTime.get(n) - this.arrivalTime.get(n - 1);
+            if (interArrivalTime < 0) throw new IllegalStateException("interarrival time is less then 0");
+            this.interArrivalTimes.add(interArrivalTime);
         }else{
             this.interArrivalTimes.add(0.0);
         }
     }
 
-    public void packetDeparture(Packet packet) {
-        this.departureNum.add(this.arrivalNum.size());
-        this.departureTime.add((double) Util.seeTime());
-
-        // number of packets in system
-        if (!this.packetsInSystem.isEmpty()) {
-            this.packetsInSystem.add(this.packetsInSystem.get(this.packetsInSystem.size() - 1) - 1);
+    private void addPacketsInSystem(){
+        if (this.numPacketsInSystem.isEmpty()){
+            this.numPacketsInSystem.add(1);
+        }else{
+            this.numPacketsInSystem.add(this.numPacketsInSystem.get(this.numPacketsInSystem.size()-1) + 1);
         }
-
-        // Time in system calculation
-        int n = this.departureNum.get(this.departureNum.size()-1);
-        if (n == 0) return;
-        double departureTime = this.departureTime.get(this.departureNum.size()-1);
-        double arrivalTime = this.arrivalTime.get(n-1);
-        this.timeInSystem.add(departureTime - arrivalTime);
-
     }
 
+    private void removePacketsInSystem(){
+        if (!this.numPacketsInSystem.isEmpty()) {
+            this.numPacketsInSystem.add(this.numPacketsInSystem.get(this.numPacketsInSystem.size() - 1) - 1);
+        }
+    }
 
+    private int arrivalIndexOf(Packet packet){
+        return this.arrivalPacket.indexOf(packet);
+    }
 
+    private int departureIndexOf(Packet packet){
+        return this.departurePacket.indexOf(packet);
+    }
 
 
     public void createArrivalChart() {
@@ -143,7 +166,7 @@ public abstract class Stats {
 
     public void createNumberOfPacketsInSystemChart() {
         XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Time").yAxisTitle("Number of packets in system").title("number of packets in system").build();
-        chart.addSeries("Packets in system", this.combine(this.arrivalTime, this.departureTime), this.packetsInSystem).setMarker(SeriesMarkers.DIAMOND);
+        chart.addSeries("Packets in system", this.combine(this.arrivalTime, this.departureTime), this.numPacketsInSystem).setMarker(SeriesMarkers.DIAMOND);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart, "PacketsInSystem_");
     }
