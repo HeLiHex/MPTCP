@@ -98,11 +98,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
             }
             if (this.sendingPacketIndex(packet) >= this.getWindowCapacity() - 1) this.seriousLossDetected = true;
             this.dupAckCount = 0;
-
-            System.out.println("------------");
-            this.forEach(System.out::println);
-            System.out.println("------------");
-
             return true;
         }
         return false;

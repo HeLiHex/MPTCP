@@ -58,7 +58,7 @@ public class Router extends Routable {
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
         //this.setArtificialQueueSize();
-        this.stats.packetArrival();
+        this.stats.packetArrival(packet);
         /*
         if (this.artificialQueueSize >= this.bufferSize){
             //packets dropped due to full buffer
@@ -75,8 +75,9 @@ public class Router extends Routable {
     @Override
     public void run() {
         if (!this.inputBufferIsEmpty()) {
-            this.route(this.dequeueInputBuffer());
-            this.stats.packetDeparture();
+            Packet packet = this.dequeueInputBuffer();
+            this.route(packet);
+            this.stats.packetDeparture(packet);
             return;
         }
         Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "this router has an empty buffer");

@@ -2,6 +2,7 @@ package org.example.simulator.statistics;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
@@ -70,15 +71,15 @@ public class TCPStats extends Stats {
     }
 
     @Override
-    public void packetArrival() {
+    public void packetArrival(Packet packet) {
         this.numberOfPacketsArrived++;
-        super.packetArrival();
+        super.packetArrival(packet);
     }
 
     @Override
-    public void packetDeparture() {
+    public void packetDeparture(Packet packet) {
         this.numberOfPacketsReceived++;
-        super.packetDeparture();
+        super.packetDeparture(packet);
     }
 
     public void ackReceived() {

@@ -2,12 +2,12 @@ package org.example.simulator.statistics;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.data.Packet;
 import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.internal.series.Series;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import java.io.IOException;
@@ -23,12 +23,14 @@ public abstract class Stats {
     protected static final String DIR = "./charts/";
 
     // Arrival
+    protected final ArrayList<Packet> arrivalPacket = new ArrayList<>();
     protected final ArrayList<Double> arrivalTime = new ArrayList<>();
-    protected final ArrayList<Integer> arrivalCustomer = new ArrayList<>();
+    protected final ArrayList<Integer> arrivalNum = new ArrayList<>();
 
     // Departure
+    protected final ArrayList<Packet> departurePacket = new ArrayList<>();
     protected final ArrayList<Double> departureTime = new ArrayList<>();
-    protected final ArrayList<Integer> departureCustomer = new ArrayList<>();
+    protected final ArrayList<Integer> departureNum = new ArrayList<>();
 
     // Inter arrival times
     protected final ArrayList<Double> interArrivalTimes = new ArrayList<>();
@@ -49,7 +51,7 @@ public abstract class Stats {
 
     private void doCalculations(){
         if (this.interArrivalTimes.isEmpty()) return;
-        this.meanArrivalRate = 1/(this.arrivalCustomer.get(this.arrivalCustomer.size()-1)/this.arrivalTime.get(this.arrivalTime.size()-1));
+        this.meanArrivalRate = 1/(this.arrivalNum.get(this.arrivalNum.size()-1)/this.arrivalTime.get(this.arrivalTime.size()-1));
         //this.meanArrivalRate = this.interArrivalTimes.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
 
         this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
@@ -61,8 +63,9 @@ public abstract class Stats {
         // L = 1/E[A] * W
         this.meanNumPacketsInSystem = (1/this.meanArrivalRate) * this.meanTimeInSystem;
     }
-    public void packetArrival() {
-        this.arrivalCustomer.add(this.arrivalCustomer.size());
+    public void packetArrival(Packet packet) {
+        this.arrivalPacket.add(packet);
+        this.arrivalNum.add(this.arrivalNum.size());
         this.arrivalTime.add((double) Util.seeTime());
 
         // number of packets in system
@@ -73,7 +76,7 @@ public abstract class Stats {
         }
 
         // inter arrival time calculation
-        int n = this.arrivalCustomer.size() - 1;
+        int n = this.arrivalNum.size() - 1;
         if (n > 1){
             if (this.arrivalTime.get(n) - this.arrivalTime.get(n - 1) < 0) throw new IllegalStateException("interarrival time is less then 0");
             this.interArrivalTimes.add(this.arrivalTime.get(n) - this.arrivalTime.get(n - 1));
@@ -82,8 +85,8 @@ public abstract class Stats {
         }
     }
 
-    public void packetDeparture() {
-        this.departureCustomer.add(this.arrivalCustomer.size());
+    public void packetDeparture(Packet packet) {
+        this.departureNum.add(this.arrivalNum.size());
         this.departureTime.add((double) Util.seeTime());
 
         // number of packets in system
@@ -92,9 +95,9 @@ public abstract class Stats {
         }
 
         // Time in system calculation
-        int n = this.departureCustomer.get(this.departureCustomer.size()-1);
+        int n = this.departureNum.get(this.departureNum.size()-1);
         if (n == 0) return;
-        double departureTime = this.departureTime.get(this.departureCustomer.size()-1);
+        double departureTime = this.departureTime.get(this.departureNum.size()-1);
         double arrivalTime = this.arrivalTime.get(n-1);
         this.timeInSystem.add(departureTime - arrivalTime);
 
@@ -105,21 +108,21 @@ public abstract class Stats {
 
 
     public void createArrivalChart() {
-        if (this.arrivalTime.isEmpty() || this.arrivalCustomer.isEmpty()) return;
-        if (this.arrivalTime.size() != this.arrivalCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
+        if (this.arrivalTime.isEmpty() || this.arrivalNum.isEmpty()) return;
+        if (this.arrivalTime.size() != this.arrivalNum.size()) throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Arrival-Time").yAxisTitle("Packet").title("Packet Arrivals").build();
-        chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalCustomer);
+        chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalNum);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart, "ArrivalChart_");
     }
 
     public void createDepartureChart() {
-        if (this.departureTime.isEmpty() || this.departureCustomer.isEmpty()) return;
-        if (this.departureTime.size() != this.departureCustomer.size()) throw new IllegalStateException("the arrays must be of equal length");
+        if (this.departureTime.isEmpty() || this.departureNum.isEmpty()) return;
+        if (this.departureTime.size() != this.departureNum.size()) throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Departure-Time").yAxisTitle("Packet").title("Packet Departures").build();
-        chart.addSeries("Packet Departures", this.departureTime, this.departureCustomer);
+        chart.addSeries("Packet Departures", this.departureTime, this.departureNum);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart,"DepartureChart_");
     }

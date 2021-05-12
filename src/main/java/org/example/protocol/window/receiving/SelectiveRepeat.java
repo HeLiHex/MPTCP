@@ -46,7 +46,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         if (this.peek().hasAllFlags(Flag.ACK)) {
             if (this.peek().getOrigin().equals(connection.getConnectedNode())) {
                 sendingWindow.ackReceived(this.peek());
-                System.out.println("Ack received: " + this.peek());
                 this.poll();
             }
             return false;
@@ -59,11 +58,10 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             while (receivingPacketIndex(this.peek(), connection) == 0 && this.peek().getIndex() == this.packetCount) {
                 connection.update(this.peek());
                 this.ackThisMap.put(this.peek().getOrigin(), this.peek());
-                System.out.println("packet received: " + this.peek());
                 this.receive(this.peek());
                 var packetRemoved = this.remove();
                 if (packetRemoved == null) throw new IllegalStateException("removing null packet");
-                sendingWindow.getStats().packetDeparture(); // hack, but works
+                sendingWindow.getStats().packetDeparture(packetRemoved); // hack, but works
                 this.packetCount++;
                 if (this.isEmpty()) return true;
             }
@@ -83,7 +81,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     public Packet ackThis(Endpoint endpointToReceiveAck) {
         assert shouldAck();
         Packet packetToAck = this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
-        System.out.println("packet to ack: " + packetToAck);
         return packetToAck;
     }
 

@@ -268,11 +268,8 @@ public class ClassicTCP extends Routable implements TCP {
 
 
         try {
-            System.out.println(packet + " in window: " + this.getReceivingWindow().inReceivingWindow(packet, conn));
-
             boolean inWindow = this.getReceivingWindow().inReceivingWindow(packet, conn);
             if (!inWindow){
-                System.out.println(this.getReceivingWindow().receivingPacketIndex(packet, this.getConnection()));
                 this.ack(this.getReceivingWindow().ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
                 return false;
             }
@@ -293,7 +290,7 @@ public class ClassicTCP extends Routable implements TCP {
     public boolean enqueueInputBuffer(Packet packet) {
         if (packetIsFromValidConnection(packet)) {
             if (super.enqueueInputBuffer(packet)){
-                if (!packet.hasAllFlags(Flag.ACK) && !packet.hasAllFlags(Flag.SYN)) this.tcpStats.packetArrival();
+                if (!packet.hasAllFlags(Flag.ACK) && !packet.hasAllFlags(Flag.SYN)) this.tcpStats.packetArrival(packet);
                 return true;
             }
             this.logger.log(Level.INFO, () -> packet + " was not delivered to TCP");
@@ -366,7 +363,6 @@ public class ClassicTCP extends Routable implements TCP {
 
         }
         Packet ack = new PacketBuilder().ackBuild(packet);
-        System.out.println("ack sent: " + ack);
         this.route(ack);
     }
 
