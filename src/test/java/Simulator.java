@@ -9,12 +9,20 @@ import org.example.protocol.TCP;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.statistics.TCPStats;
+import org.example.util.Util;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class Simulator {
 
     private int numPacketsToSend = 2000;
+
+    @Before
+    public void setUp(){
+        Util.resetTime();
+        Util.setSeed(1337);
+    }
 
     private void numPacketsToSend(TCP tcpToSend, int numPacketsToSend){
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -84,6 +92,7 @@ public class Simulator {
 
         System.out.println(server.getStats().toString());
         server.getStats().createCWNDChart();
+        server.getStats().createDepartureChart();
     }
 
     @Test

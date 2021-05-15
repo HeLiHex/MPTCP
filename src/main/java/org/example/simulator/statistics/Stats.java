@@ -25,8 +25,8 @@ public abstract class Stats {
     protected static final Styler.ChartTheme theme = Styler.ChartTheme.Matlab;
     protected static final int chartWidth = 1500;
     protected static final int chartHeight = 600;
-    protected static final Font titleFont = new Font("myFont", 0, 50);
-    protected static final Font axisFont = new Font("myFont", 0, 30);
+    protected static final Font titleFont = new Font("myFont", 0, 30);
+    protected static final Font axisFont = new Font("myFont", 0, 25);
     protected static final Font tickFont = new Font("myFont", 0, 15);
 
     protected static final int timescale = 1000;
@@ -96,6 +96,10 @@ public abstract class Stats {
     private void addTimeInSystem(Packet packet){
         int packetArrivalIndex = this.arrivalIndexOf(packet);
         int packetDepartureIndex = this.departureIndexOf(packet);
+
+        if (packetArrivalIndex == -1 || packetDepartureIndex == -1){
+            return;
+        }
 
         double arrivalTime = this.arrivalTime.get(packetArrivalIndex);
         double departureTime = this.departureTime.get(packetDepartureIndex);

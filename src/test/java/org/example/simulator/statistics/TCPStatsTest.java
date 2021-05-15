@@ -96,7 +96,7 @@ public class TCPStatsTest {
         client.getStats().createCWNDChart();
 
 
-        System.out.println(r1.getStats());
+        //System.out.println(r1.getStats());
         /*
         r1.getStats().createArrivalChart();
         r1.getStats().createDepartureChart();

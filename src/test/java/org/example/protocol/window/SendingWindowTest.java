@@ -9,7 +9,6 @@ import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
-import org.example.simulator.events.tcp.TCPInputEvent;
 import org.junit.*;
 import org.junit.rules.Timeout;
 

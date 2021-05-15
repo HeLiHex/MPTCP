@@ -403,7 +403,7 @@ public class MPTCPTest {
 
     @Test
     public void MPTCPFloodWithPacketsInOrderWithVariableNumberOfSubflowsShouldWorkTest() {
-        int maxSubflows = 10;
+        int maxSubflows = 5;
         for (int numSubflows = 1; numSubflows <= maxSubflows; numSubflows++) {
             Util.setSeed(1337);
             Util.resetTime();

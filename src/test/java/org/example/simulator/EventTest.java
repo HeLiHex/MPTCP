@@ -1,7 +1,6 @@
 package org.example.simulator;
 
 import org.example.data.Message;
-import org.example.data.Packet;
 import org.example.data.PacketBuilder;
 import org.example.network.Channel;
 import org.example.protocol.ClassicTCP;

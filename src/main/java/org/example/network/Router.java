@@ -77,7 +77,7 @@ public class Router extends Routable {
         if (!this.inputBufferIsEmpty()) {
             Packet packet = this.dequeueInputBuffer();
             this.route(packet);
-            this.stats.packetDeparture(packet);
+            //this.stats.packetDeparture(packet);
             return;
         }
         Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "this router has an empty buffer");

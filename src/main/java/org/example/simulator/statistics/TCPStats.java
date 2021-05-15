@@ -135,11 +135,14 @@ public class TCPStats extends Stats {
         XYChart chart = new XYChartBuilder()
                 .width(chartWidth)
                 .height(chartHeight)
-                .xAxisTitle("congestionWindowTime")
-                .yAxisTitle("CWND")
+                .xAxisTitle("Time")
+                .yAxisTitle("CWND Size")
                 .title("Congestion Window Capacity")
                 .theme(theme)
                 .build();
+        chart.getStyler().setChartTitleFont(titleFont);
+        chart.getStyler().setAxisTitleFont(axisFont);
+        chart.getStyler().setAxisTickLabelsFont(tickFont);
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("CWND", congestionWindowTime, congestionWindowCapacities).setMarker(SeriesMarkers.NONE);
