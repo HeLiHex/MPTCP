@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.data.Packet;
 import org.example.util.Util;
-import org.knowm.xchart.BitmapEncoder;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.*;
+import org.knowm.xchart.internal.series.Series;
+import org.knowm.xchart.style.Styler;
 import org.knowm.xchart.style.markers.SeriesMarkers;
+import org.knowm.xchart.style.theme.Theme;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,14 @@ import java.util.logging.Logger;
 public abstract class Stats {
 
     protected static final String DIR = "./charts/";
-    private static final int timescale = 1000;
+    protected static final Styler.ChartTheme theme = Styler.ChartTheme.Matlab;
+    protected static final int chartWidth = 1500;
+    protected static final int chartHeight = 600;
+    protected static final Font titleFont = new Font("myFont", 0, 50);
+    protected static final Font axisFont = new Font("myFont", 0, 30);
+    protected static final Font tickFont = new Font("myFont", 0, 15);
+
+    protected static final int timescale = 1000;
 
     // Arrival
     protected final ArrayList<Packet> arrivalPacket = new ArrayList<>();
@@ -92,6 +100,7 @@ public abstract class Stats {
         double arrivalTime = this.arrivalTime.get(packetArrivalIndex);
         double departureTime = this.departureTime.get(packetDepartureIndex);
         double timeInSystem = departureTime - arrivalTime;
+        if (timeInSystem < 10/timescale) timeInSystem = 10/timescale;
         if (timeInSystem < 0) throw new IllegalStateException("packet cannot be in system a negative amount of time");
         this.timeInSystem.add(timeInSystem);
     }
@@ -134,7 +143,19 @@ public abstract class Stats {
         if (this.arrivalTime.isEmpty() || this.arrivalNum.isEmpty()) return;
         if (this.arrivalTime.size() != this.arrivalNum.size()) throw new IllegalStateException("the arrays must be of equal length");
 
-        XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Arrival-Time").yAxisTitle("Packet").title("Packet Arrivals").build();
+        XYChart chart = new XYChartBuilder()
+                .width(chartWidth)
+                .height(chartHeight)
+                .xAxisTitle("Packet Arrival-Time")
+                .yAxisTitle("Packet")
+                .title("Packet Arrivals")
+                .theme(theme)
+                .build();
+        chart.getStyler().setChartTitleFont(titleFont);
+        chart.getStyler().setAxisTitleFont(axisFont);
+        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalNum);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart, "ArrivalChart_");
@@ -144,29 +165,77 @@ public abstract class Stats {
         if (this.departureTime.isEmpty() || this.departureNum.isEmpty()) return;
         if (this.departureTime.size() != this.departureNum.size()) throw new IllegalStateException("the arrays must be of equal length");
 
-        XYChart chart = new XYChartBuilder().width(1000).height(600).xAxisTitle("Packet Departure-Time").yAxisTitle("Packet").title("Packet Departures").build();
+        XYChart chart = new XYChartBuilder()
+                .width(chartWidth)
+                .height(chartHeight)
+                .xAxisTitle("Packet Departure-Time")
+                .yAxisTitle("Packet")
+                .title("Packet Departures")
+                .theme(theme)
+                .build();
+        chart.getStyler().setChartTitleFont(titleFont);
+        chart.getStyler().setAxisTitleFont(axisFont);
+        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Packet Departures", this.departureTime, this.departureNum);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart,"DepartureChart_");
     }
 
     public void createInterArrivalChart() {
-        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Arrival Time").yAxisTitle("Interarrival Time").title("Packet Interarrival-Time").build();
+        XYChart chart = new XYChartBuilder()
+                .width(chartWidth)
+                .height(chartHeight)
+                .xAxisTitle("Arrival Time")
+                .yAxisTitle("Interarrival Time")
+                .title("Packet Interarrival-Time")
+                .theme(theme)
+                .build();
+        chart.getStyler().setChartTitleFont(titleFont);
+        chart.getStyler().setAxisTitleFont(axisFont);
+        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Interarrival Times", this.arrivalTime, this.interArrivalTimes);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart, "InterarrivalTime_");
     }
 
     public void createTimeInSystemChart() {
-        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Departure Time").yAxisTitle("Time In System").title("Packet Time In System").build();
+        XYChart chart = new XYChartBuilder()
+                .width(chartWidth)
+                .height(chartHeight)
+                .xAxisTitle("Departure Time")
+                .yAxisTitle("Time In System")
+                .title("Packet Time In System")
+                .theme(theme)
+                .build();
+        chart.getStyler().setChartTitleFont(titleFont);
+        chart.getStyler().setAxisTitleFont(axisFont);
+        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Time in system", this.departureTime, this.timeInSystem);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart, "TimeInSystem_");
     }
 
     public void createNumberOfPacketsInSystemChart() {
-        XYChart chart = new XYChartBuilder().width(10000).height(600).xAxisTitle("Time").yAxisTitle("Number of packets in system").title("number of packets in system").build();
-        chart.addSeries("Packets in system", this.combine(this.arrivalTime, this.departureTime), this.numPacketsInSystem).setMarker(SeriesMarkers.DIAMOND);
+        XYChart chart = new XYChartBuilder()
+                .width(chartWidth)
+                .height(chartHeight)
+                .xAxisTitle("Time")
+                .yAxisTitle("Number of packets in system")
+                .title("number of packets in system")
+                .theme(theme)
+                .build();
+        chart.getStyler().setChartTitleFont(titleFont);
+        chart.getStyler().setAxisTitleFont(axisFont);
+        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setXAxisLabelRotation(45);
+        chart.addSeries("Packets in system", this.combine(this.arrivalTime, this.departureTime), this.numPacketsInSystem);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         saveChart(chart, "PacketsInSystem_");
     }
@@ -192,9 +261,10 @@ public abstract class Stats {
     }
 
 
-    public void saveChart(XYChart chart, String chartName){
+    protected void saveChart(XYChart chart, String chartName){
         try {
-            BitmapEncoder.saveBitmap(chart, DIR + chartName + fileName(), BitmapEncoder.BitmapFormat.PNG);
+            VectorGraphicsEncoder.saveVectorGraphic(chart, DIR + chartName + fileName(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
+            //BitmapEncoder.saveBitmap(chart, DIR + chartName + fileName(), BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
             Logger.getLogger("").log(Level.WARNING, "lol");
         }

@@ -1,22 +1,14 @@
 package org.example.simulator.statistics;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.util.Util;
-import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Scatter;
 
 public class TCPStats extends Stats {
 
@@ -119,7 +111,7 @@ public class TCPStats extends Stats {
     }
 
     private void setGoodput(){
-        this.goodput = (double)this.numberOfPacketsSent/((double)Util.seeTime());
+        this.goodput = (double)this.numberOfPacketsSent/((double)Util.seeTime()/(double)timescale);
     }
 
     private void setLossRate(){
@@ -140,13 +132,18 @@ public class TCPStats extends Stats {
         if (this.congestionWindowTime.isEmpty() || this.congestionWindowCapacities.isEmpty()) return;
         if (this.congestionWindowTime.size() != this.congestionWindowCapacities.size()) throw new IllegalStateException("the arrays must be of equal length");
 
-        XYChart chart = new XYChartBuilder().width(10000).height(500).xAxisTitle("congestionWindowTime").yAxisTitle("CWND").title("Congestion Window Capacity").build();
+        XYChart chart = new XYChartBuilder()
+                .width(chartWidth)
+                .height(chartHeight)
+                .xAxisTitle("congestionWindowTime")
+                .yAxisTitle("CWND")
+                .title("Congestion Window Capacity")
+                .theme(theme)
+                .build();
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("CWND", congestionWindowTime, congestionWindowCapacities).setMarker(SeriesMarkers.NONE);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Area);
-        try {
-            BitmapEncoder.saveBitmap(chart, this.dir + "CWNDChart_" + this.filename, BitmapEncoder.BitmapFormat.PNG);
-        } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
-        }
+        this.saveChart(chart, "CWNDChart_");
     }
 }
