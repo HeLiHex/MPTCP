@@ -18,10 +18,10 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
     private final Packet packet;
     private final int numAttempts;
 
-    public TCPRetransmitEventGenerator(Packet packe, int numAttempts) {
-        super(((TCP) packe.getOrigin()).getRTO());
-        this.tcp = (TCP) packe.getOrigin();
-        this.packet = packe;
+    public TCPRetransmitEventGenerator(Packet packet, int numAttempts) {
+        super(((TCP) packet.getOrigin()).getRTO());
+        this.tcp = (TCP) packet.getOrigin();
+        this.packet = packet;
         this.numAttempts = numAttempts;
     }
 

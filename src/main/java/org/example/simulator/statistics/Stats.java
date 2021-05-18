@@ -104,7 +104,9 @@ public abstract class Stats {
         double arrivalTime = this.arrivalTime.get(packetArrivalIndex);
         double departureTime = this.departureTime.get(packetDepartureIndex);
         double timeInSystem = departureTime - arrivalTime;
-        if (timeInSystem < 10/timescale) timeInSystem = 10/timescale;
+
+        double minTime = (double)10/(double)timescale;
+        if (timeInSystem < minTime) timeInSystem = minTime;
         if (timeInSystem < 0) throw new IllegalStateException("packet cannot be in system a negative amount of time");
         this.timeInSystem.add(timeInSystem);
     }
@@ -210,7 +212,7 @@ public abstract class Stats {
         XYChart chart = new XYChartBuilder()
                 .width(chartWidth)
                 .height(chartHeight)
-                .xAxisTitle("Departure Time")
+                .xAxisTitle("Time")
                 .yAxisTitle("Time In System")
                 .title("Packet Time In System")
                 .theme(theme)

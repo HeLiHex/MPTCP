@@ -36,8 +36,8 @@ public class Router extends Routable {
 
     private void setArtificialQueueSize(){
         int queueSize = this.poissonDistribution.sample();// + this.inputBufferSize();
-        if (queueSize > this.bufferSize) queueSize = this.bufferSize;
-        if (queueSize < 0) queueSize = 0;
+        //if (queueSize > this.bufferSize) queueSize = this.bufferSize;
+        //if (queueSize < 0) queueSize = 0;
 
         this.artificialQueueSize = queueSize;
 
@@ -85,7 +85,7 @@ public class Router extends Routable {
 
     public static class RouterBuilder {
 
-        private int bufferSize = 1000;
+        private int bufferSize = 100;
         private double averageQueueUtilization = 0.85;
         private Address address = new UUIDAddress();
 

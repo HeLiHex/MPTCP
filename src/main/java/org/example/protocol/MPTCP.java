@@ -199,6 +199,7 @@ public class MPTCP implements TCP{
             if (!subflow.isConnected()) return false;
         }
         return true;
+
     }
 
 
@@ -225,8 +226,8 @@ public class MPTCP implements TCP{
 
     @Override
     public long getRTO() {
-        return this.subflows[0].getRTO();
-        //throw new IllegalStateException(DEPRECATED_STRING);
+        //return this.subflows[0].getRTO();
+        throw new IllegalStateException(DEPRECATED_STRING);
     }
 
     @Override
