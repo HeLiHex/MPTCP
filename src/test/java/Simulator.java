@@ -8,7 +8,6 @@ import org.example.protocol.ClassicTCP;
 import org.example.protocol.MPTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.EventHandler;
-import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.simulator.statistics.TCPStats;
 import org.example.util.Util;
@@ -296,7 +295,7 @@ public class Simulator {
     }
 
     @Test
-    public void MPTCP_shortPathLowLoss() {
+    public void MPTCP_HomoShortPathLowLoss() {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-ShortPathLowLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
@@ -361,7 +360,7 @@ public class Simulator {
     }
 
     @Test
-    public void MPTCP_shortPathHighLoss() {
+    public void MPTCP_HomoShortPathHighLoss() {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-ShortPathHighLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
@@ -426,7 +425,7 @@ public class Simulator {
     }
 
     @Test
-    public void MPTCP_LongPathLowLoss() {
+    public void MPTCP_HomoLongPathLowLoss() {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-LongPathLowLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 11")).build();
@@ -543,7 +542,7 @@ public class Simulator {
     }
 
     @Test
-    public void MPTCP_LongPathHighLoss() {
+    public void MPTCP_HomoLongPathHighLoss() {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-LongPathHighLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 11")).build();
@@ -650,6 +649,194 @@ public class Simulator {
         Assert.assertTrue(r28.inputBufferIsEmpty());
         Assert.assertTrue(r29.inputBufferIsEmpty());
         Assert.assertTrue(r210.inputBufferIsEmpty());
+
+        this.allReceived(client, this.numPacketsToSend);
+
+        Assert.assertNull(server.receive());
+        eventHandler.printStatistics();
+        this.getStats(server, client);
+
+    }
+
+    @Test
+    public void MPTCP_HeteroLowLoss(){
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-HeteroLowLoss")).build();
+
+        Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 11")).build();
+        Routable r12 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 12")).build();
+        Routable r13 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 13")).build();
+        Routable r14 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 14")).build();
+        Routable r15 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 15")).build();
+        Routable r16 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 16")).build();
+        Routable r17 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 17")).build();
+        Routable r18 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 18")).build();
+        Routable r19 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 19")).build();
+        Routable r110 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 110")).build();
+
+        Routable r21 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r22 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r23 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 3")).build();
+        Routable r24 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 4")).build();
+
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Server-HeteroLowLoss")).build();
+
+        // long path
+        new Channel.ChannelBuilder().withCost(1).build(client, r11);
+        new Channel.ChannelBuilder().withCost(10).build(r11, r12);
+        new Channel.ChannelBuilder().withCost(50).build(r12, r13);
+        new Channel.ChannelBuilder().withCost(50).build(r13, r14);
+        new Channel.ChannelBuilder().withCost(50).withLoss(0.001).build(r14, r15);
+        new Channel.ChannelBuilder().withCost(50).withLoss(0.001).build(r15, r16);
+        new Channel.ChannelBuilder().withCost(50).withLoss(0.001).build(r16, r17);
+        new Channel.ChannelBuilder().withCost(50).build(r17, r18);
+        new Channel.ChannelBuilder().withCost(50).build(r18, r19);
+        new Channel.ChannelBuilder().withCost(10).build(r19, r110);
+        new Channel.ChannelBuilder().withCost(1).build(r110, server);
+
+        // short path
+        new Channel.ChannelBuilder().withCost(1).build(client, r21);
+        new Channel.ChannelBuilder().withCost(10).build(r21, r22);
+        new Channel.ChannelBuilder().withCost(10).withLoss(0.001).build(r22, r23);
+        new Channel.ChannelBuilder().withCost(10).build(r23, r24);
+        new Channel.ChannelBuilder().withCost(1).build(r24, server);
+
+        client.updateRoutingTable();
+
+        r11.updateRoutingTable();
+        r12.updateRoutingTable();
+        r13.updateRoutingTable();
+        r14.updateRoutingTable();
+        r15.updateRoutingTable();
+        r16.updateRoutingTable();
+        r17.updateRoutingTable();
+        r18.updateRoutingTable();
+        r19.updateRoutingTable();
+        r110.updateRoutingTable();
+
+        r21.updateRoutingTable();
+        r22.updateRoutingTable();
+        r23.updateRoutingTable();
+        r24.updateRoutingTable();
+
+        server.updateRoutingTable();
+
+        this.numPacketsToSend(server, this.numPacketsToSend);
+        EventHandler eventHandler = this.connectAndRun(server, client);
+
+
+        Assert.assertTrue("client still has packets to send", client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(r11.inputBufferIsEmpty());
+        Assert.assertTrue(r12.inputBufferIsEmpty());
+        Assert.assertTrue(r13.inputBufferIsEmpty());
+        Assert.assertTrue(r14.inputBufferIsEmpty());
+        Assert.assertTrue(r15.inputBufferIsEmpty());
+        Assert.assertTrue(r16.inputBufferIsEmpty());
+        Assert.assertTrue(r17.inputBufferIsEmpty());
+        Assert.assertTrue(r18.inputBufferIsEmpty());
+        Assert.assertTrue(r19.inputBufferIsEmpty());
+        Assert.assertTrue(r110.inputBufferIsEmpty());
+
+        Assert.assertTrue(r21.inputBufferIsEmpty());
+        Assert.assertTrue(r22.inputBufferIsEmpty());
+        Assert.assertTrue(r23.inputBufferIsEmpty());
+        Assert.assertTrue(r24.inputBufferIsEmpty());
+
+        this.allReceived(client, this.numPacketsToSend);
+
+        Assert.assertNull(server.receive());
+        eventHandler.printStatistics();
+        this.getStats(server, client);
+
+    }
+
+    @Test
+    public void MPTCP_HeteroHighLoss(){
+        MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-HeteroHighLoss")).build();
+
+        Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 11")).build();
+        Routable r12 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 12")).build();
+        Routable r13 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 13")).build();
+        Routable r14 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 14")).build();
+        Routable r15 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 15")).build();
+        Routable r16 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 16")).build();
+        Routable r17 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 17")).build();
+        Routable r18 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 18")).build();
+        Routable r19 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 19")).build();
+        Routable r110 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 110")).build();
+
+        Routable r21 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
+        Routable r22 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r23 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 3")).build();
+        Routable r24 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 4")).build();
+
+        MPTCP server = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Server-HeteroHighLoss")).build();
+
+        // long path
+        new Channel.ChannelBuilder().withCost(1).build(client, r11);
+        new Channel.ChannelBuilder().withCost(10).build(r11, r12);
+        new Channel.ChannelBuilder().withCost(50).build(r12, r13);
+        new Channel.ChannelBuilder().withCost(50).build(r13, r14);
+        new Channel.ChannelBuilder().withCost(50).withLoss(0.001).build(r14, r15);
+        new Channel.ChannelBuilder().withCost(50).withLoss(0.01).build(r15, r16);
+        new Channel.ChannelBuilder().withCost(50).withLoss(0.001).build(r16, r17);
+        new Channel.ChannelBuilder().withCost(50).build(r17, r18);
+        new Channel.ChannelBuilder().withCost(50).build(r18, r19);
+        new Channel.ChannelBuilder().withCost(10).build(r19, r110);
+        new Channel.ChannelBuilder().withCost(1).build(r110, server);
+
+        // short path
+        new Channel.ChannelBuilder().withCost(1).build(client, r21);
+        new Channel.ChannelBuilder().withCost(10).build(r21, r22);
+        new Channel.ChannelBuilder().withCost(10).withLoss(0.01).build(r22, r23);
+        new Channel.ChannelBuilder().withCost(10).build(r23, r24);
+        new Channel.ChannelBuilder().withCost(1).build(r24, server);
+
+        client.updateRoutingTable();
+
+        r11.updateRoutingTable();
+        r12.updateRoutingTable();
+        r13.updateRoutingTable();
+        r14.updateRoutingTable();
+        r15.updateRoutingTable();
+        r16.updateRoutingTable();
+        r17.updateRoutingTable();
+        r18.updateRoutingTable();
+        r19.updateRoutingTable();
+        r110.updateRoutingTable();
+
+        r21.updateRoutingTable();
+        r22.updateRoutingTable();
+        r23.updateRoutingTable();
+        r24.updateRoutingTable();
+
+        server.updateRoutingTable();
+
+        this.numPacketsToSend(server, this.numPacketsToSend);
+        EventHandler eventHandler = this.connectAndRun(server, client);
+
+
+        Assert.assertTrue("client still has packets to send", client.outputBufferIsEmpty());
+        Assert.assertTrue(server.outputBufferIsEmpty());
+        Assert.assertTrue(client.inputBufferIsEmpty());
+        Assert.assertTrue(server.inputBufferIsEmpty());
+        Assert.assertTrue(r11.inputBufferIsEmpty());
+        Assert.assertTrue(r12.inputBufferIsEmpty());
+        Assert.assertTrue(r13.inputBufferIsEmpty());
+        Assert.assertTrue(r14.inputBufferIsEmpty());
+        Assert.assertTrue(r15.inputBufferIsEmpty());
+        Assert.assertTrue(r16.inputBufferIsEmpty());
+        Assert.assertTrue(r17.inputBufferIsEmpty());
+        Assert.assertTrue(r18.inputBufferIsEmpty());
+        Assert.assertTrue(r19.inputBufferIsEmpty());
+        Assert.assertTrue(r110.inputBufferIsEmpty());
+
+        Assert.assertTrue(r21.inputBufferIsEmpty());
+        Assert.assertTrue(r22.inputBufferIsEmpty());
+        Assert.assertTrue(r23.inputBufferIsEmpty());
+        Assert.assertTrue(r24.inputBufferIsEmpty());
 
         this.allReceived(client, this.numPacketsToSend);
 
