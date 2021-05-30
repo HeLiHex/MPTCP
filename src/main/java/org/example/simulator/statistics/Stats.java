@@ -62,7 +62,7 @@ public abstract class Stats {
         if (this.interArrivalTimes.isEmpty()) return;
         this.meanArrivalRate = this.arrivalNum.size() / (this.arrivalTime.get(this.arrivalTime.size() - 1));
 
-        this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble((f) -> f.doubleValue()).average().getAsDouble();
+        this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble(Double::doubleValue).average().getAsDouble();
 
         //Little's law
         // L = 1/E[A] * W
