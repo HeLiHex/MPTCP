@@ -192,7 +192,6 @@ public class TCPStatsTest {
 
 
     @Test
-    @Ignore
     public void MPTCPRealistic2HomogeneousDisconnectedFlowsWithDifferentTrafficParameters() {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(20).withAddress(new SimpleAddress("MPTCP-Client")).build();
 
