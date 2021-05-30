@@ -273,7 +273,6 @@ public abstract class Stats {
         try {
             VectorGraphicsEncoder.saveVectorGraphic(chart, DIR + chartName + fileName(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
         } catch (IOException e) {
-            Logger.getLogger("").log(Level.WARNING, "lol");
         }
     }
 

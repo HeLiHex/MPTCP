@@ -84,7 +84,6 @@ public class ClassicTCP extends Routable implements TCP {
         Endpoint host = synAck.getOrigin();
         if (synAck.hasAllFlags(Flag.SYN, Flag.ACK)) {
             if (synAck.getAcknowledgmentNumber() != this.initialSequenceNumber + 1) {
-                this.logger.log(Level.INFO, "Wrong ack number");
                 return;
             }
             this.otherReceivingWindowCapacity = Integer.parseInt(synAck.getPayload().toString());
@@ -275,10 +274,8 @@ public class ClassicTCP extends Routable implements TCP {
                 if (!packet.hasAllFlags(Flag.ACK) && !packet.hasAllFlags(Flag.SYN)) this.tcpStats.packetArrival(packet);
                 return true;
             }
-            this.logger.log(Level.INFO, () -> packet + " was not delivered to TCP");
             return true;
         }
-        this.logger.log(Level.INFO, () -> packet + " was not added due to non valid connection");
         // return true because the packet has arrived the endpoint
         // the packet is not added to the input buffer, but it is checked
         return false;

@@ -60,7 +60,6 @@ public class Packet {
     }
 
     public Endpoint getDestination() {
-        if (this.destination == null) logger.log(Level.WARNING, "This packet has no destination");
         return this.destination;
     }
 

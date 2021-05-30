@@ -84,13 +84,11 @@ public class Channel implements Comparable<Channel> {
 
         var packet = this.line.poll();
         if (lossy()) {
-            this.logger.log(Level.INFO, () -> packet.toString() + " lost due to noise");
             return false;
         }
 
         boolean sendSuccess = this.destination.enqueueInputBuffer(packet);
         if (!sendSuccess) {
-            this.logger.log(Level.INFO, () -> packet.toString() + " was not delivered to " + this.destination);
             return false;
         }
         return true;
