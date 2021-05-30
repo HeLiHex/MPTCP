@@ -45,6 +45,5 @@ public class EventHandler {
 
     public void run() {
         while (singleRun()) ;
-        System.out.println(Util.seeTime());
     }
 }

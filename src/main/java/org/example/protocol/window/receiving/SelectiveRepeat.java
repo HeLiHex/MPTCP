@@ -65,8 +65,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             }
             return true; // true so that duplicate AKCs are sent
         }
-        //false, because packets outside the window has already ben acked
-        //assert !this.isFull();
         return false;
     }
 
@@ -77,9 +75,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
 
     @Override
     public Packet ackThis(Endpoint endpointToReceiveAck) {
-        assert shouldAck();
-        Packet packetToAck = this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
-        return packetToAck;
+        return this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
     }
 
     @Override

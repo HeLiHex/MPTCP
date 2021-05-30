@@ -39,7 +39,6 @@ public class Router extends Routable {
         this.stats.trackQueueSize(this.artificialQueueSize);
     }
 
-
     @Override
     public long delay() {
         this.setArtificialQueueSize();
