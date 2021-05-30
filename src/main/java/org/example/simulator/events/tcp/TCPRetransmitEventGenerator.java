@@ -27,11 +27,8 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
 
     @Override
     public void generateNextEvent(Queue<Event> events) {
-        //todo - hvor mange forsøk burde man egentlig få? Jeg tror egentlig 3, men det kan være litt lite til tider
         if (this.numAttempts > 3) return;
-
         if (!this.tcp.isConnected()) return;
-
         if (this.tcp.canRetransmit(this.packet)) {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, () -> "Retransmit packet: " + this.packet);
             Statistics.packetRetransmit();
