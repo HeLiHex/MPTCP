@@ -283,7 +283,7 @@ public abstract class Stats {
         this.additionalCalculations();
         var mapper = new ObjectMapper();
         try {
-            String formattedString = mapper.writeValueAsString(this)
+            var formattedString = mapper.writeValueAsString(this)
                     .replace("{", "{\n      ")
                     .replace("}", "\n}")
                     .replace(",", ",\n      ");
