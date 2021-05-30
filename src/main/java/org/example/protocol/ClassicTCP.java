@@ -138,7 +138,6 @@ public class ClassicTCP extends Routable implements TCP {
     private void setRTT() {
         if (rttSet) return;
         this.rtt = Util.seeTime() - this.rttStartTimer;
-        this.tcpStats.setRtt(this.rtt);
         this.rttSet = true;
     }
 
