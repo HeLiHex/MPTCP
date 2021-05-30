@@ -34,14 +34,9 @@ public class Router extends Routable {
     }
 
     private void setArtificialQueueSize() {
-        int queueSize = this.poissonDistribution.sample();// + this.inputBufferSize();
-        //if (queueSize > this.bufferSize) queueSize = this.bufferSize;
-        //if (queueSize < 0) queueSize = 0;
-
+        int queueSize = this.poissonDistribution.sample();
         this.artificialQueueSize = queueSize;
-
         this.stats.trackQueueSize(this.artificialQueueSize);
-
     }
 
 
@@ -49,24 +44,12 @@ public class Router extends Routable {
     public long delay() {
         this.setArtificialQueueSize();
         long transmissionDelay = 10;
-        long delay = transmissionDelay + this.artificialQueueSize * transmissionDelay;
-        //System.out.println("router delay: " + delay);
-        return delay;
+        return transmissionDelay + this.artificialQueueSize * transmissionDelay;
     }
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        //this.setArtificialQueueSize();
         this.stats.packetArrival(packet);
-        /*
-        if (this.artificialQueueSize >= this.bufferSize){
-            //packets dropped due to full buffer
-            System.out.println("packet dropped");
-            return false;
-        }
-
-         */
-
         boolean success = super.enqueueInputBuffer(packet);
         return success;
     }
@@ -76,7 +59,6 @@ public class Router extends Routable {
         if (!this.inputBufferIsEmpty()) {
             Packet packet = this.dequeueInputBuffer();
             this.route(packet);
-            //this.stats.packetDeparture(packet);
             return;
         }
         Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "this router has an empty buffer");
