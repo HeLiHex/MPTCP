@@ -55,6 +55,16 @@ public class Router extends Routable {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public static class RouterBuilder {
 
         private int bufferSize = 100;
