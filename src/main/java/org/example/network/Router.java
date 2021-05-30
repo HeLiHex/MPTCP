@@ -4,16 +4,13 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.address.UUIDAddress;
-import org.example.simulator.statistics.RouterStats;
+import org.example.simulator.statistics.Stats;
 import org.example.util.Util;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Router extends Routable {
 
-    private final RouterStats stats;
     private final double queueSizeMean;
     private final int bufferSize;
     private final PoissonDistribution poissonDistribution;
@@ -21,7 +18,6 @@ public class Router extends Routable {
 
     private Router(int bufferSize, Address address, double averageQueueUtilization) {
         super(new ArrayBlockingQueue<>(bufferSize), address);
-        this.stats = new RouterStats(this);
         this.bufferSize = bufferSize;
         this.queueSizeMean = averageQueueUtilization * this.bufferSize;
         this.poissonDistribution = Util.getPoissonDistribution(this.queueSizeMean);
@@ -29,14 +25,13 @@ public class Router extends Routable {
     }
 
     @Override
-    public RouterStats getStats() {
-        return this.stats;
+    public Stats getStats() {
+        return null;
     }
 
     private void setArtificialQueueSize() {
         int queueSize = this.poissonDistribution.sample();
         this.artificialQueueSize = queueSize;
-        this.stats.trackQueueSize(this.artificialQueueSize);
     }
 
     @Override
@@ -48,7 +43,6 @@ public class Router extends Routable {
 
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
-        this.stats.packetArrival(packet);
         return super.enqueueInputBuffer(packet);
     }
 

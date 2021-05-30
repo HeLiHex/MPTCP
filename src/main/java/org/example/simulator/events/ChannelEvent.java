@@ -50,8 +50,6 @@ public class ChannelEvent extends Event {
             if (!tcp.inputBufferIsEmpty()) return;
             events.add(new RunTCPEvent(tcp));
         }
-
-
     }
 
     @Override
