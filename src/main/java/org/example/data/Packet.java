@@ -3,7 +3,6 @@ package org.example.data;
 import org.example.network.interfaces.Endpoint;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Packet {

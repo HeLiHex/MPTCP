@@ -8,8 +8,6 @@ import org.example.simulator.events.EventGenerator;
 import org.example.simulator.events.RouteEvent;
 
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TCPRetransmitEventGenerator extends EventGenerator {
 
