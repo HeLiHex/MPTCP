@@ -14,8 +14,8 @@ public class EventHandler {
 
     public EventHandler() {
         this.events = new PriorityQueue<>();
-        Util.setSeed(1337);
-        Util.resetTime();
+        //Util.setSeed(1337);
+        //Util.resetTime();
         Statistics.reset();
     }
 
@@ -48,13 +48,14 @@ public class EventHandler {
                 throw new IllegalStateException("get null event when events queue are nonempty!");
             return false;
         }
-        event.run();
         Util.tickTime(event);
+        event.run();
         event.generateNextEvent(this.events);
         return true;
     }
 
     public void run() {
         while (singleRun()) ;
+        System.out.println(Util.seeTime());
     }
 }

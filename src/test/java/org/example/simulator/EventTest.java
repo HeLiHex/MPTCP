@@ -1,8 +1,8 @@
 package org.example.simulator;
 
 import org.example.data.Message;
-import org.example.data.Packet;
 import org.example.data.PacketBuilder;
+import org.example.network.Channel;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
 import org.example.simulator.events.ChannelEvent;
@@ -60,7 +60,8 @@ public class EventTest {
             this.tcp = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
             this.host = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
-            this.tcp.addChannel(this.host);
+            new Channel.ChannelBuilder().build(this.tcp, this.host);
+
             this.tcp.updateRoutingTable();
             this.host.updateRoutingTable();
             this.connect(this.tcp, this.host);

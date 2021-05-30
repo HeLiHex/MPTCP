@@ -105,7 +105,7 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     @Override
     public Packet fastRetransmit() {
-        if (this.dupAckCount >= this.numDupAckFastRetransmitTrigger) {
+        if (this.dupAckCount > this.numDupAckFastRetransmitTrigger) {
             this.dupAckCount = 0;
             this.decrease(false);
             this.fastRetransmitted = true;
@@ -207,5 +207,8 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         return this.payloadsToSend.isEmpty();
     }
 
-
+    @Override
+    public TCPStats getStats() {
+        return this.stats;
+    }
 }

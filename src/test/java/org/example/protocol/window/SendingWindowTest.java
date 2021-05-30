@@ -3,12 +3,12 @@ package org.example.protocol.window;
 import org.example.data.Message;
 import org.example.data.Packet;
 import org.example.data.PacketBuilder;
+import org.example.network.Channel;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
-import org.example.simulator.events.tcp.TCPInputEvent;
 import org.junit.*;
 import org.junit.rules.Timeout;
 
@@ -36,7 +36,7 @@ public class SendingWindowTest {
     }
 
     private void connect(ClassicTCP client, ClassicTCP server){
-        client.addChannel(server);
+        new Channel.ChannelBuilder().build(client, server);
         client.updateRoutingTable();
         server.updateRoutingTable();
 

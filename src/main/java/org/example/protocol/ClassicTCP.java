@@ -10,9 +10,8 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.simulator.statistics.RealTCPStats;
-import org.example.simulator.statistics.Statistics;
 import org.example.simulator.statistics.TCPStats;
+import org.example.simulator.statistics.Statistics;
 import org.example.util.Util;
 import org.javatuples.Pair;
 
@@ -24,7 +23,6 @@ import java.util.logging.Logger;
 
 public class ClassicTCP extends Routable implements TCP {
 
-    private static final double NOISE_TOLERANCE = 100.0;
     private static final Comparator<Packet> SENDING_WINDOW_PACKET_COMPARATOR = Comparator.comparingInt(Packet::getSequenceNumber);
     private final TCPStats tcpStats;
     private final Logger logger = Logger.getLogger(ClassicTCP.class.getSimpleName());
@@ -49,7 +47,7 @@ public class ClassicTCP extends Routable implements TCP {
                        Address address,
                        TCP mainFlow,
                        ReceivingWindow receivingWindow) {
-        super(receivingWindow, NOISE_TOLERANCE, address);
+        super(receivingWindow, address);
         this.receivedPackets = receivedPackets;
         this.payloadsToSend = payloadsToSend;
         this.thisReceivingWindowCapacity = thisReceivingWindowCapacity;
@@ -61,7 +59,7 @@ public class ClassicTCP extends Routable implements TCP {
             this.mainFlow = mainFlow;
         }
 
-        this.tcpStats = new RealTCPStats(address);
+        this.tcpStats = new TCPStats(address);
     }
 
 
@@ -205,7 +203,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long getRTO() {
-        return 2 * this.rtt;
+        return 3*this.rtt;
     }
 
     @Override
@@ -226,9 +224,9 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     @Override
-    public long processingDelay() {
+    public long delay() {
         //todo
-        return super.processingDelay();
+        return 10;
     }
 
     @Override
@@ -262,16 +260,22 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     private boolean packetIsFromValidConnection(Packet packet) {
-        if (packet.hasAllFlags(Flag.SYN)) return true;
+        if (packet.hasAllFlags(Flag.SYN) && !this.isConnected()) return true;
         if (!this.isConnected()) return false;
 
         var conn = this.getConnection();
         if (packet.hasAllFlags(Flag.ACK)) return true;
 
+
         try {
+            boolean inWindow = this.getReceivingWindow().inReceivingWindow(packet, conn);
+            if (!inWindow){
+                this.ack(this.getReceivingWindow().ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
+                return false;
+            }
+
             return packet.getOrigin().equals(conn.getConnectedNode())
-                    && packet.getDestination().equals(conn.getConnectionSource())
-                    && this.getReceivingWindow().inReceivingWindow(packet, conn);
+                    && packet.getDestination().equals(conn.getConnectionSource());
         } catch (IllegalAccessException e) {
             return false;
         }
@@ -285,7 +289,12 @@ public class ClassicTCP extends Routable implements TCP {
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
         if (packetIsFromValidConnection(packet)) {
-            return super.enqueueInputBuffer(packet);
+            if (super.enqueueInputBuffer(packet)){
+                if (!packet.hasAllFlags(Flag.ACK) && !packet.hasAllFlags(Flag.SYN)) this.tcpStats.packetArrival(packet);
+                return true;
+            }
+            this.logger.log(Level.INFO, () -> packet + " was not delivered to TCP");
+            return true;
         }
         this.logger.log(Level.INFO, () -> packet + " was not added due to non valid connection");
         // return true because the packet has arrived the endpoint
@@ -296,6 +305,7 @@ public class ClassicTCP extends Routable implements TCP {
     private boolean unconnectedInputHandler() {
         if (this.inputBuffer.isEmpty()) return false;
         if (!this.peekInputBuffer().getDestination().equals(this)) return false;
+
         var packet = this.dequeueInputBuffer();
 
         if (packet.hasAllFlags(Flag.SYN, Flag.ACK)) {
@@ -331,6 +341,8 @@ public class ClassicTCP extends Routable implements TCP {
 
     private void ack(Packet packet) {
         assert packet != null : "Packet is null";
+
+        if (packet.getSequenceNumber() == -1) return;
 
         if (packet.getOrigin() == null) {
             //can't call ack on packet with no origin
@@ -407,7 +419,8 @@ public class ClassicTCP extends Routable implements TCP {
         return trySend(packetsSent);
     }
 
-    public TCPStats getTcpStats() {
+    @Override
+    public TCPStats getStats() {
         return tcpStats;
     }
 

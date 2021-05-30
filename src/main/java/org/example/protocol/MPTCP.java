@@ -27,11 +27,11 @@ public class MPTCP implements TCP{
     private final Address address;
     private final ReceivingWindow receivingWindow;
 
-    public MPTCP(int numberOfSubflows, int receivingWindowCapacity) {
+    private MPTCP(int numberOfSubflows, int receivingWindowCapacity, Address address) {
         this.receivedPackets = new ArrayList<>();
         this.payloadsToSend = new ArrayList<>();
         this.subflows = new TCP[numberOfSubflows];
-        this.address = new UUIDAddress();
+        this.address = address;
         this.receivingWindow = new SelectiveRepeat(receivingWindowCapacity, PACKET_INDEX_COMPARATOR, this.receivedPackets);
 
         for (var i = 0; i < numberOfSubflows; i++) {
@@ -42,6 +42,7 @@ public class MPTCP implements TCP{
                     .withPayloadsToSend(this.payloadsToSend)
                     .withReceivingWindow(this.receivingWindow)
                     .withMainFlow(this)
+                    .setReno()
                     .build();
             this.subflows[i] = tcp;
         }
@@ -75,8 +76,8 @@ public class MPTCP implements TCP{
     }
 
     @Override
-    public long processingDelay() {
-        return this.inputBufferSize() * (long)20;
+    public long delay() {
+        return 10;
     }
 
     @Override
@@ -97,11 +98,12 @@ public class MPTCP implements TCP{
         throw new IllegalStateException("no endpoints available for channel adding");
     }
 
+
     @Override
-    public void addChannel(NetworkNode node) {
+    public void addChannel(NetworkNode node, double noiseTolerance, int cost) {
         for (TCP subflow : this.subflows){
-            if (subflow.getChannels().isEmpty()){
-                subflow.addChannel(node);
+            if (subflow.getChannels().isEmpty()){ // only allowing one channel per subflow
+                subflow.addChannel(node, noiseTolerance, cost);
                 return;
             }
         }
@@ -197,6 +199,7 @@ public class MPTCP implements TCP{
             if (!subflow.isConnected()) return false;
         }
         return true;
+
     }
 
 
@@ -223,6 +226,7 @@ public class MPTCP implements TCP{
 
     @Override
     public long getRTO() {
+        //return this.subflows[0].getRTO();
         throw new IllegalStateException(DEPRECATED_STRING);
     }
 
@@ -267,7 +271,7 @@ public class MPTCP implements TCP{
     public TCPStats[] getTcpStats() {
         var tcpStats = new TCPStats[this.subflows.length];
         for (var i = 0; i < this.subflows.length; i++) {
-            tcpStats[i] = ((ClassicTCP)this.subflows[i]).getTcpStats();
+            tcpStats[i] = ((ClassicTCP)this.subflows[i]).getStats();
         }
         return tcpStats;
     }
@@ -285,5 +289,34 @@ public class MPTCP implements TCP{
     @Override
     public int getSendingWindowCapacity() {
         throw new IllegalStateException(DEPRECATED_STRING);
+    }
+
+
+
+    public static class MPTCPBuilder {
+
+        private int numberOfSubflows = 2;
+        private int receivingWindowCapacity = 20;
+        private Address address = new UUIDAddress();
+
+        public MPTCPBuilder withNumberOfSubflows(int numberOfSubflows){
+            this.numberOfSubflows = numberOfSubflows;
+            return this;
+        }
+
+        public MPTCPBuilder withReceivingWindowCapacity(int capacity){
+            this.receivingWindowCapacity = capacity;
+            return this;
+        }
+
+        public MPTCPBuilder withAddress(Address address){
+            this.address = address;
+            return this;
+        }
+
+        public MPTCP build(){
+            return new MPTCP(this.numberOfSubflows, this.receivingWindowCapacity , this.address);
+        }
+
     }
 }

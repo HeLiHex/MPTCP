@@ -61,13 +61,14 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
                 this.receive(this.peek());
                 var packetRemoved = this.remove();
                 if (packetRemoved == null) throw new IllegalStateException("removing null packet");
+                sendingWindow.getStats().packetDeparture(packetRemoved); // hack, but works
                 this.packetCount++;
                 if (this.isEmpty()) return true;
             }
             return true; // true so that duplicate AKCs are sent
         }
         //false, because packets outside the window has already ben acked
-        assert !this.isFull();
+        //assert !this.isFull();
         return false;
     }
 
@@ -79,7 +80,8 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
     @Override
     public Packet ackThis(Endpoint endpointToReceiveAck) {
         assert shouldAck();
-        return this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
+        Packet packetToAck = this.ackThisMap.getOrDefault(endpointToReceiveAck, new PacketBuilder().build());
+        return packetToAck;
     }
 
     @Override
@@ -101,7 +103,7 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " lost due to capacity");
             return false;
         }
-        if (this.contains(packet)) {
+        if (this.contains(packet) && !packet.hasAllFlags(Flag.ACK)) {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, () -> packet + " is already in queue");
             return false;
         }

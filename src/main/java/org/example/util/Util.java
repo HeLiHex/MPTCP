@@ -1,12 +1,14 @@
 package org.example.util;
 
+import org.apache.commons.math3.distribution.PoissonDistribution;
+import org.apache.commons.math3.random.RandomGeneratorFactory;
 import org.example.simulator.events.Event;
 
 import java.util.Random;
 
 public class Util {
 
-    private static final Random random = new Random(1337);
+    public static final Random random = new Random(1337);
     private static long time = 0;
     private Util() {
         throw new IllegalStateException("Utility class");
@@ -14,6 +16,10 @@ public class Util {
 
     public static void setSeed(int seed) {
         random.setSeed(seed);
+    }
+
+    public static double getNextRandomDouble() {
+        return random.nextDouble();
     }
 
     public static int getNextRandomInt() {
@@ -29,7 +35,7 @@ public class Util {
     }
 
     public static void tickTime(Event event) {
-        time = event.getInstant() + 1;
+        time = event.getInstant();
     }
 
     public static long getTime() {
@@ -42,6 +48,10 @@ public class Util {
 
     public static void resetTime() {
         time = 0;
+    }
+
+    public static PoissonDistribution getPoissonDistribution(double mean){
+        return new PoissonDistribution(RandomGeneratorFactory.createRandomGenerator(random), mean, PoissonDistribution.DEFAULT_EPSILON, PoissonDistribution.DEFAULT_MAX_ITERATIONS);
     }
 
 

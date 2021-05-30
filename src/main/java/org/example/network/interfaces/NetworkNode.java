@@ -22,7 +22,7 @@ public interface NetworkNode {
     void route(Packet packet);
 
 
-    long processingDelay();
+    long delay();
 
 
     /**
@@ -34,12 +34,13 @@ public interface NetworkNode {
 
 
     /**
-     * A method that creates and adds a Channel to this and the given node.
-     * Effectively creating two directed edges in each direction with their own individual attributes
+     * * A method that creates and adds a Channel to the list of channels.
      *
-     * @param node to add Channel to
+     * @param node NetworkNode to create channel to
+     * @param noiseTolerance
+     * @param cost the cost of the channel used in routing
      */
-    void addChannel(NetworkNode node);
+    void addChannel(NetworkNode node, double noiseTolerance, int cost);
 
 
     /**

@@ -4,6 +4,7 @@ import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.MPTCP;
+import org.example.simulator.statistics.Stats;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +16,18 @@ public abstract class Routable implements NetworkNode {
     private final RoutingTable routingTable;
     private final List<Channel> channels;
     private final Address address;
-    private final double noiseTolerance;
     private List<Channel> channelsUsed;
 
-    protected Routable(BlockingQueue<Packet> inputBuffer, double noiseTolerance, Address address) {
+    protected Routable(BlockingQueue<Packet> inputBuffer, Address address) {
         this.inputBuffer = inputBuffer;
         this.channels = new ArrayList<>();
         this.address = address;
-        this.noiseTolerance = noiseTolerance;
         this.routingTable = new RoutingTable();
 
         this.channelsUsed = new ArrayList<>(1);
     }
+
+    public abstract Stats getStats();
 
     @Override
     public void updateRoutingTable() {
@@ -52,7 +53,7 @@ public abstract class Routable implements NetworkNode {
     }
 
     @Override
-    public long processingDelay() {
+    public long delay() {
         return ((long) this.inputBufferSize()) * 10;
     }
 
@@ -61,21 +62,11 @@ public abstract class Routable implements NetworkNode {
         return this.channels;
     }
 
+
     @Override
-    public void addChannel(NetworkNode node) {
-        if (node instanceof MPTCP) {
-            var mptcp = (MPTCP) node;
-            node = mptcp.getEndpointToAddChannelTo();
-        }
-
-        for (Channel channel : this.getChannels()) {
-            boolean thisContainsNode = channel.getDestination().equals(node);
-            if (thisContainsNode) return;
-        }
-
-        var channel = new Channel(this, node, this.noiseTolerance);
+    public void addChannel(NetworkNode node, double noiseTolerance, int cost) {
+        var channel = new Channel(this, node, noiseTolerance, cost);
         this.channels.add(channel);
-        node.addChannel(this);
     }
 
     @Override
