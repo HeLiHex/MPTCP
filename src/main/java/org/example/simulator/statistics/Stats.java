@@ -25,9 +25,9 @@ public abstract class Stats {
     protected static final Styler.ChartTheme theme = Styler.ChartTheme.Matlab;
     protected static final int CHART_WIDTH = 1500;
     protected static final int CHART_HEIGHT = 600;
-    protected static final Font TITLE_FONT = new Font("myFont", 0, 30);
-    protected static final Font AXIS_FONT = new Font("myFont", 0, 25);
-    protected static final Font TICK_FONT = new Font("myFont", 0, 15);
+    protected static final Font TITLE_FONT = new Font("titleFont", 0, 30);
+    protected static final Font AXIS_FONT = new Font("axisFont", 0, 25);
+    protected static final Font TICK_FONT = new Font("tickFont", 0, 15);
 
     protected static final int TIMESCALE = 1000;
 

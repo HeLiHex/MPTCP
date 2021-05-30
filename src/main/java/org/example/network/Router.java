@@ -1,7 +1,6 @@
 package org.example.network;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
-import org.example.data.Packet;
 import org.example.network.address.Address;
 import org.example.network.address.UUIDAddress;
 import org.example.simulator.statistics.Stats;
