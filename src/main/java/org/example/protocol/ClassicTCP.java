@@ -233,7 +233,6 @@ public class ClassicTCP extends Routable implements TCP {
         try {
             return this.getSendingWindow().getWindowCapacity();
         } catch (IllegalAccessException e) {
-            //todo - is one correct?
             return 0;
         }
     }
