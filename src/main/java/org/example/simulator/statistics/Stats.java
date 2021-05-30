@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.data.Packet;
 import org.example.util.Util;
-import org.knowm.xchart.*;
-import org.knowm.xchart.internal.series.Series;
+import org.knowm.xchart.VectorGraphicsEncoder;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.Styler;
-import org.knowm.xchart.style.markers.SeriesMarkers;
-import org.knowm.xchart.style.theme.Theme;
 
 import java.awt.*;
 import java.io.IOException;
@@ -58,9 +58,9 @@ public abstract class Stats {
 
     protected abstract void additionalCalculations();
 
-    private void doCalculations(){
+    private void doCalculations() {
         if (this.interArrivalTimes.isEmpty()) return;
-        this.meanArrivalRate = this.arrivalNum.size()/(this.arrivalTime.get(this.arrivalTime.size()-1));
+        this.meanArrivalRate = this.arrivalNum.size() / (this.arrivalTime.get(this.arrivalTime.size() - 1));
 
         this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
 
@@ -72,7 +72,7 @@ public abstract class Stats {
     public void packetArrival(Packet packet) {
         this.arrivalPacket.add(packet);
         this.arrivalNum.add(this.arrivalNum.size());
-        this.arrivalTime.add((double) Util.seeTime()/timescale);
+        this.arrivalTime.add((double) Util.seeTime() / timescale);
 
         // number of packets in system
         this.addPacketsInSystem();
@@ -84,7 +84,7 @@ public abstract class Stats {
     public void packetDeparture(Packet packet) {
         this.departurePacket.add(packet);
         this.departureNum.add(this.arrivalNum.size());
-        this.departureTime.add((double) Util.seeTime()/timescale);
+        this.departureTime.add((double) Util.seeTime() / timescale);
 
         // number of packets in system
         this.removePacketsInSystem();
@@ -93,11 +93,11 @@ public abstract class Stats {
         this.addTimeInSystem(packet);
     }
 
-    private void addTimeInSystem(Packet packet){
+    private void addTimeInSystem(Packet packet) {
         int packetArrivalIndex = this.arrivalIndexOf(packet);
         int packetDepartureIndex = this.departureIndexOf(packet);
 
-        if (packetArrivalIndex == -1 || packetDepartureIndex == -1){
+        if (packetArrivalIndex == -1 || packetDepartureIndex == -1) {
             return;
         }
 
@@ -105,49 +105,50 @@ public abstract class Stats {
         double departureTime = this.departureTime.get(packetDepartureIndex);
         double timeInSystem = departureTime - arrivalTime;
 
-        double minTime = (double)10/(double)timescale;
+        double minTime = (double) 10 / (double) timescale;
         if (timeInSystem < minTime) timeInSystem = minTime;
         if (timeInSystem < 0) throw new IllegalStateException("packet cannot be in system a negative amount of time");
         this.timeInSystem.add(timeInSystem);
     }
 
-    private void addInterArrivalTime(){
+    private void addInterArrivalTime() {
         int n = this.arrivalNum.size() - 1;
-        if (n > 1){
+        if (n > 1) {
             double interArrivalTime = this.arrivalTime.get(n) - this.arrivalTime.get(n - 1);
             if (interArrivalTime < 0) throw new IllegalStateException("interarrival time is less then 0");
             this.interArrivalTimes.add(interArrivalTime);
-        }else{
+        } else {
             this.interArrivalTimes.add(0.0);
         }
     }
 
-    private void addPacketsInSystem(){
-        if (this.numPacketsInSystem.isEmpty()){
+    private void addPacketsInSystem() {
+        if (this.numPacketsInSystem.isEmpty()) {
             this.numPacketsInSystem.add(1);
-        }else{
-            this.numPacketsInSystem.add(this.numPacketsInSystem.get(this.numPacketsInSystem.size()-1) + 1);
+        } else {
+            this.numPacketsInSystem.add(this.numPacketsInSystem.get(this.numPacketsInSystem.size() - 1) + 1);
         }
     }
 
-    private void removePacketsInSystem(){
+    private void removePacketsInSystem() {
         if (!this.numPacketsInSystem.isEmpty()) {
             this.numPacketsInSystem.add(this.numPacketsInSystem.get(this.numPacketsInSystem.size() - 1) - 1);
         }
     }
 
-    private int arrivalIndexOf(Packet packet){
+    private int arrivalIndexOf(Packet packet) {
         return this.arrivalPacket.indexOf(packet);
     }
 
-    private int departureIndexOf(Packet packet){
+    private int departureIndexOf(Packet packet) {
         return this.departurePacket.indexOf(packet);
     }
 
 
     public void createArrivalChart() {
         if (this.arrivalTime.isEmpty() || this.arrivalNum.isEmpty()) return;
-        if (this.arrivalTime.size() != this.arrivalNum.size()) throw new IllegalStateException("the arrays must be of equal length");
+        if (this.arrivalTime.size() != this.arrivalNum.size())
+            throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder()
                 .width(chartWidth)
@@ -169,7 +170,8 @@ public abstract class Stats {
 
     public void createDepartureChart() {
         if (this.departureTime.isEmpty() || this.departureNum.isEmpty()) return;
-        if (this.departureTime.size() != this.departureNum.size()) throw new IllegalStateException("the arrays must be of equal length");
+        if (this.departureTime.size() != this.departureNum.size())
+            throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder()
                 .width(chartWidth)
@@ -186,7 +188,7 @@ public abstract class Stats {
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Packet Departures", this.departureTime, this.departureNum);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-        saveChart(chart,"DepartureChart_");
+        saveChart(chart, "DepartureChart_");
     }
 
     public void createInterArrivalChart() {
@@ -246,7 +248,7 @@ public abstract class Stats {
         saveChart(chart, "PacketsInSystem_");
     }
 
-    private List<Double> combine(List<Double> l1, List<Double> l2){
+    private List<Double> combine(List<Double> l1, List<Double> l2) {
         List<Double> result = new ArrayList<>();
         result.addAll(l1);
         result.addAll(l2);
@@ -267,7 +269,7 @@ public abstract class Stats {
     }
 
 
-    protected void saveChart(XYChart chart, String chartName){
+    protected void saveChart(XYChart chart, String chartName) {
         try {
             VectorGraphicsEncoder.saveVectorGraphic(chart, DIR + chartName + fileName(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
             //BitmapEncoder.saveBitmap(chart, DIR + chartName + fileName(), BitmapEncoder.BitmapFormat.PNG);

@@ -14,12 +14,10 @@ public class TCPStats extends Stats {
 
     private final String filename;
     private final String dir;
-    private long rtt;
-
     // CWND
     private final ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
     private final ArrayList<Double> congestionWindowTime = new ArrayList<>();
-
+    private long rtt;
     private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private int numberOfPacketsRetransmitted; //total number of packets retransmitted
     private int numberOfPacketsFastRetransmitted; // total number of packets dropped
@@ -110,18 +108,18 @@ public class TCPStats extends Stats {
         return lossRate;
     }
 
-    private void setGoodput(){
+    private void setGoodput() {
         if (congestionWindowTime.isEmpty()) return;
-        this.goodput = (double)this.numberOfPacketsSent/(this.congestionWindowTime.get(this.congestionWindowTime.size()-1)/(double)timescale);
+        this.goodput = (double) this.numberOfPacketsSent / (this.congestionWindowTime.get(this.congestionWindowTime.size() - 1) / (double) timescale);
     }
 
-    private void setLossRate(){
-        if (this.numberOfPacketsSent == 0){
+    private void setLossRate() {
+        if (this.numberOfPacketsSent == 0) {
             this.lossRate = 0;
             return;
         }
 
-        this.lossRate = (this.numberOfPacketsFastRetransmitted + this.numberOfPacketsRetransmitted)/(double) this.numberOfPacketsSent;
+        this.lossRate = (this.numberOfPacketsFastRetransmitted + this.numberOfPacketsRetransmitted) / (double) this.numberOfPacketsSent;
     }
 
     public void trackCwnd(int cwnd) {
@@ -131,7 +129,8 @@ public class TCPStats extends Stats {
 
     public void createCWNDChart() {
         if (this.congestionWindowTime.isEmpty() || this.congestionWindowCapacities.isEmpty()) return;
-        if (this.congestionWindowTime.size() != this.congestionWindowCapacities.size()) throw new IllegalStateException("the arrays must be of equal length");
+        if (this.congestionWindowTime.size() != this.congestionWindowCapacities.size())
+            throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder()
                 .width(chartWidth)

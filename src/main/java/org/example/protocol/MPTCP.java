@@ -13,11 +13,13 @@ import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.simulator.statistics.TCPStats;
 import org.javatuples.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MPTCP implements TCP{
+public class MPTCP implements TCP {
 
     private static final String DEPRECATED_STRING = "DEPRECATED";
     private static final Comparator<Packet> PACKET_INDEX_COMPARATOR = Comparator.comparingInt(Packet::getIndex);
@@ -36,7 +38,7 @@ public class MPTCP implements TCP{
 
         for (var i = 0; i < numberOfSubflows; i++) {
             TCP tcp = new ClassicTCP.ClassicTCPBuilder()
-                    .withReceivingWindowCapacity(receivingWindowCapacity/numberOfSubflows)
+                    .withReceivingWindowCapacity(receivingWindowCapacity / numberOfSubflows)
                     .withAddress(new SimpleAddress("Subflow " + i + " " + this.address))
                     .withReceivedPacketsContainer(this.receivedPackets)
                     .withPayloadsToSend(this.payloadsToSend)
@@ -84,14 +86,14 @@ public class MPTCP implements TCP{
     public List<Channel> getChannels() {
         List<Channel> channels = new ArrayList<>();
         for (TCP subflow : this.subflows) {
-            for (Channel c  : subflow.getChannels()) {
+            for (Channel c : subflow.getChannels()) {
                 channels.add(c);
             }
         }
         return channels;
     }
 
-    public Endpoint getEndpointToAddChannelTo(){
+    public Endpoint getEndpointToAddChannelTo() {
         for (Endpoint endpoint : this.subflows) {
             if (endpoint.getChannels().isEmpty()) return endpoint;
         }
@@ -101,8 +103,8 @@ public class MPTCP implements TCP{
 
     @Override
     public void addChannel(NetworkNode node, double noiseTolerance, int cost) {
-        for (TCP subflow : this.subflows){
-            if (subflow.getChannels().isEmpty()){ // only allowing one channel per subflow
+        for (TCP subflow : this.subflows) {
+            if (subflow.getChannels().isEmpty()) { // only allowing one channel per subflow
                 subflow.addChannel(node, noiseTolerance, cost);
                 return;
             }
@@ -145,7 +147,7 @@ public class MPTCP implements TCP{
         throw new IllegalStateException(DEPRECATED_STRING);
     }
 
-    public TCP[] getSubflows(){
+    public TCP[] getSubflows() {
         return this.subflows;
     }
 
@@ -167,7 +169,7 @@ public class MPTCP implements TCP{
                 try {
                     cFlow.connect(hFlow);
                     break;
-                }catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "connection failed");
                 }
             }
@@ -239,9 +241,9 @@ public class MPTCP implements TCP{
     public boolean handleIncoming() {
         for (var i = 0; i < this.subflows.length; i++) {
             for (TCP subflow : this.subflows) {
-                try{
+                try {
                     subflow.handleIncoming();
-                }catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     //do nothing, continue loop
                 }
             }
@@ -271,7 +273,7 @@ public class MPTCP implements TCP{
     public TCPStats[] getTcpStats() {
         var tcpStats = new TCPStats[this.subflows.length];
         for (var i = 0; i < this.subflows.length; i++) {
-            tcpStats[i] = ((ClassicTCP)this.subflows[i]).getStats();
+            tcpStats[i] = ((ClassicTCP) this.subflows[i]).getStats();
         }
         return tcpStats;
     }
@@ -292,30 +294,29 @@ public class MPTCP implements TCP{
     }
 
 
-
     public static class MPTCPBuilder {
 
         private int numberOfSubflows = 2;
         private int receivingWindowCapacity = 20;
         private Address address = new UUIDAddress();
 
-        public MPTCPBuilder withNumberOfSubflows(int numberOfSubflows){
+        public MPTCPBuilder withNumberOfSubflows(int numberOfSubflows) {
             this.numberOfSubflows = numberOfSubflows;
             return this;
         }
 
-        public MPTCPBuilder withReceivingWindowCapacity(int capacity){
+        public MPTCPBuilder withReceivingWindowCapacity(int capacity) {
             this.receivingWindowCapacity = capacity;
             return this;
         }
 
-        public MPTCPBuilder withAddress(Address address){
+        public MPTCPBuilder withAddress(Address address) {
             this.address = address;
             return this;
         }
 
-        public MPTCP build(){
-            return new MPTCP(this.numberOfSubflows, this.receivingWindowCapacity , this.address);
+        public MPTCP build() {
+            return new MPTCP(this.numberOfSubflows, this.receivingWindowCapacity, this.address);
         }
 
     }

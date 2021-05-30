@@ -7,7 +7,6 @@ import org.example.network.address.UUIDAddress;
 import org.example.simulator.statistics.RouterStats;
 import org.example.util.Util;
 
-
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,8 +16,8 @@ public class Router extends Routable {
     private final RouterStats stats;
     private final double queueSizeMean;
     private final int bufferSize;
-    private int artificialQueueSize;
     private final PoissonDistribution poissonDistribution;
+    private int artificialQueueSize;
 
     private Router(int bufferSize, Address address, double averageQueueUtilization) {
         super(new ArrayBlockingQueue<>(bufferSize), address);
@@ -30,11 +29,11 @@ public class Router extends Routable {
     }
 
     @Override
-    public RouterStats getStats(){
+    public RouterStats getStats() {
         return this.stats;
     }
 
-    private void setArtificialQueueSize(){
+    private void setArtificialQueueSize() {
         int queueSize = this.poissonDistribution.sample();// + this.inputBufferSize();
         //if (queueSize > this.bufferSize) queueSize = this.bufferSize;
         //if (queueSize < 0) queueSize = 0;
@@ -94,7 +93,7 @@ public class Router extends Routable {
             return this;
         }
 
-        public RouterBuilder withAddress(Address address){
+        public RouterBuilder withAddress(Address address) {
             this.address = address;
             return this;
         }

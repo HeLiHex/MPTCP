@@ -9,7 +9,7 @@ public class UtilTest {
 
 
     @Test
-    public void getGaussianIsStable(){
+    public void getGaussianIsStable() {
         ArrayList<Double> doubles = new ArrayList<>();
         Util.setSeed(1337);
 
@@ -21,14 +21,14 @@ public class UtilTest {
         Assert.assertEquals(doubles.size(), arraySize);
 
         Util.setSeed(1337);
-        for (double gaussian : doubles){
+        for (double gaussian : doubles) {
             Assert.assertEquals(gaussian, Util.getNextGaussian(), 0);
         }
     }
 
 
     @Test
-    public void getNextRandomIsStable(){
+    public void getNextRandomIsStable() {
         ArrayList<Integer> ints = new ArrayList<>();
         Util.setSeed(1337);
 
@@ -40,14 +40,14 @@ public class UtilTest {
         Assert.assertEquals(ints.size(), arraySize);
 
         Util.setSeed(1337);
-        for (double rand : ints){
+        for (double rand : ints) {
             Assert.assertEquals(rand, Util.getNextRandomInt(), 0);
         }
     }
 
 
     @Test
-    public void getNextRandomWithBoundIsStable(){
+    public void getNextRandomWithBoundIsStable() {
         ArrayList<Integer> ints = new ArrayList<>();
         int bound = 100;
         Util.setSeed(1337);
@@ -60,14 +60,14 @@ public class UtilTest {
         Assert.assertEquals(ints.size(), arraySize);
 
         Util.setSeed(1337);
-        for (double rand : ints){
+        for (double rand : ints) {
             Assert.assertEquals(rand, Util.getNextRandomInt(bound), 0);
         }
     }
 
 
     @Test
-    public void allIsStable(){
+    public void allIsStable() {
         ArrayList<Integer> ints = new ArrayList<>();
         ArrayList<Integer> boundedInts = new ArrayList<>();
         ArrayList<Double> doubles = new ArrayList<>();

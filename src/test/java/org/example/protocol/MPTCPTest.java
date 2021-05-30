@@ -11,7 +11,10 @@ import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
 import org.example.util.Util;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import java.util.concurrent.TimeUnit;
@@ -225,7 +228,6 @@ public class MPTCPTest {
         //path three
         new Channel.ChannelBuilder().build(client, r3);
         new Channel.ChannelBuilder().build(r3, server);
-
 
 
         client.updateRoutingTable();

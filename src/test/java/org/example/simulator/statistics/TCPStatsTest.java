@@ -20,7 +20,7 @@ import org.junit.Test;
 public class TCPStatsTest {
 
     @Before
-    public void setup(){
+    public void setup() {
         Util.resetTime();
         Util.setSeed(1);
     }
@@ -105,7 +105,7 @@ public class TCPStatsTest {
         r1.getStats().createNumberOfPacketsInSystemChart();
 
          */
-        ((RouterStats)r1.getStats()).createQueueSizeChart();
+        ((RouterStats) r1.getStats()).createQueueSizeChart();
 
     }
 
@@ -173,7 +173,7 @@ public class TCPStatsTest {
         eventHandler.printStatistics();
 
         //receiver
-        for (TCPStats stat: server.getTcpStats()) {
+        for (TCPStats stat : server.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createArrivalChart();
             stat.createDepartureChart();
@@ -183,15 +183,12 @@ public class TCPStatsTest {
         }
 
         //sender
-        for (TCPStats stat: client.getTcpStats()) {
+        for (TCPStats stat : client.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createCWNDChart();
         }
 
     }
-
-
-
 
 
     @Test
@@ -280,7 +277,7 @@ public class TCPStatsTest {
         eventHandler.printStatistics();
 
         //receiver
-        for (TCPStats stat: server.getTcpStats()) {
+        for (TCPStats stat : server.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createArrivalChart();
             stat.createDepartureChart();
@@ -289,7 +286,7 @@ public class TCPStatsTest {
         }
 
         //sender
-        for (TCPStats stat: client.getTcpStats()) {
+        for (TCPStats stat : client.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createCWNDChart();
         }

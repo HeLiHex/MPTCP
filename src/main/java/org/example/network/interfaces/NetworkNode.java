@@ -1,8 +1,8 @@
 package org.example.network.interfaces;
 
 import org.example.data.Packet;
-import org.example.network.address.Address;
 import org.example.network.Channel;
+import org.example.network.address.Address;
 
 import java.util.List;
 
@@ -36,9 +36,9 @@ public interface NetworkNode {
     /**
      * * A method that creates and adds a Channel to the list of channels.
      *
-     * @param node NetworkNode to create channel to
+     * @param node           NetworkNode to create channel to
      * @param noiseTolerance
-     * @param cost the cost of the channel used in routing
+     * @param cost           the cost of the channel used in routing
      */
     void addChannel(NetworkNode node, double noiseTolerance, int cost);
 

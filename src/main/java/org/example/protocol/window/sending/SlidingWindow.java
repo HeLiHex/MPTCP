@@ -20,13 +20,13 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     private final List<Pair<Integer, Payload>> payloadsToSend;
     private final int receiverWindowSize;
     private final boolean isReno;
+    private final Connection connection;
+    private final TCPStats stats;
     private boolean seriousLossDetected = false;
     private int numPacketsReceivedWithoutIncreasingWindow;
     private int ssthresh;
     private int dupAckCount;
     private boolean fastRetransmitted;
-    private final Connection connection;
-    private final TCPStats stats;
 
     public SlidingWindow(int receiverWindowCapacity, boolean isReno, Connection connection, Comparator<Packet> comparator, List<Pair<Integer, Payload>> payloadsToSend, TCPStats stats) {
         super(DEFAULT_CONGESTION_WINDOW_CAPACITY, comparator);

@@ -20,26 +20,26 @@ public class Simulator {
     private int numPacketsToSend = 2000;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         Util.resetTime();
         Util.setSeed(1);
     }
 
-    private void numPacketsToSend(TCP tcpToSend, int numPacketsToSend){
+    private void numPacketsToSend(TCP tcpToSend, int numPacketsToSend) {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             tcpToSend.send(msg);
         }
     }
 
-    private EventHandler connectAndRun(TCP client, TCP server){
+    private EventHandler connectAndRun(TCP client, TCP server) {
         EventHandler eventHandler = new EventHandler();
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
         return eventHandler;
     }
 
-    private void allReceived(TCP receiver, int numPacketsToSend){
+    private void allReceived(TCP receiver, int numPacketsToSend) {
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);
             Packet received = receiver.receive();
@@ -49,7 +49,7 @@ public class Simulator {
     }
 
     @Test
-    public void shortPathLowLoss(){
+    public void shortPathLowLoss() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Client-ShortPathLowLoss")).build();
         Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
@@ -97,7 +97,7 @@ public class Simulator {
     }
 
     @Test
-    public void shortPathHighLoss(){
+    public void shortPathHighLoss() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Client-ShortPathHighLoss")).build();
         Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
@@ -146,7 +146,7 @@ public class Simulator {
     }
 
     @Test
-    public void longPathLowLoss(){
+    public void longPathLowLoss() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Client-LongPathLowLoss")).build();
         Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
@@ -211,7 +211,7 @@ public class Simulator {
     }
 
     @Test
-    public void longPathHighLoss(){
+    public void longPathHighLoss() {
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(30).setReno().withAddress(new SimpleAddress("Client-LongPathHighLoss")).build();
         Routable r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
         Routable r2 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
@@ -276,9 +276,9 @@ public class Simulator {
     }
 
 
-    private void getStats(MPTCP sender, MPTCP receiver){
+    private void getStats(MPTCP sender, MPTCP receiver) {
         //receiver
-        for (TCPStats stat: receiver.getTcpStats()) {
+        for (TCPStats stat : receiver.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createArrivalChart();
             stat.createDepartureChart();
@@ -288,7 +288,7 @@ public class Simulator {
         }
 
         //sender
-        for (TCPStats stat: sender.getTcpStats()) {
+        for (TCPStats stat : sender.getTcpStats()) {
             System.out.println(stat.toString());
             stat.createCWNDChart();
         }
@@ -299,7 +299,7 @@ public class Simulator {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-ShortPathLowLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
-        Routable r12= new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r12 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
         Routable r13 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 3")).build();
         Routable r14 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 4")).build();
 
@@ -364,7 +364,7 @@ public class Simulator {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-ShortPathHighLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 1")).build();
-        Routable r12= new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
+        Routable r12 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 2")).build();
         Routable r13 = new Router.RouterBuilder().withAverageQueueUtilization(0.98).withAddress(new SimpleAddress("Router 3")).build();
         Routable r14 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 4")).build();
 
@@ -659,7 +659,7 @@ public class Simulator {
     }
 
     @Test
-    public void MPTCP_HeteroLowLoss(){
+    public void MPTCP_HeteroLowLoss() {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-HeteroLowLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 11")).build();
@@ -753,7 +753,7 @@ public class Simulator {
     }
 
     @Test
-    public void MPTCP_HeteroHighLoss(){
+    public void MPTCP_HeteroHighLoss() {
         MPTCP client = new MPTCP.MPTCPBuilder().withNumberOfSubflows(2).withReceivingWindowCapacity(30).withAddress(new SimpleAddress("MPTCP-Client-HeteroHighLoss")).build();
 
         Routable r11 = new Router.RouterBuilder().withAverageQueueUtilization(0.5).withAddress(new SimpleAddress("Router 11")).build();

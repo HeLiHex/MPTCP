@@ -9,7 +9,10 @@ import org.example.protocol.window.sending.SendingWindow;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.tcp.RunTCPEvent;
 import org.example.simulator.events.tcp.TCPConnectEvent;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import java.util.concurrent.TimeUnit;
@@ -17,13 +20,12 @@ import java.util.concurrent.TimeUnit;
 
 public class SendingWindowTest {
 
+    @Rule
+    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
     private ClassicTCP client;
     private ClassicTCP server;
     private SendingWindow sendingWindow;
     private EventHandler eventHandler;
-
-    @Rule
-    public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Before
     public void setup() throws IllegalAccessException {
@@ -35,7 +37,7 @@ public class SendingWindowTest {
 
     }
 
-    private void connect(ClassicTCP client, ClassicTCP server){
+    private void connect(ClassicTCP client, ClassicTCP server) {
         new Channel.ChannelBuilder().build(client, server);
         client.updateRoutingTable();
         server.updateRoutingTable();
@@ -46,17 +48,17 @@ public class SendingWindowTest {
     }
 
     @Test
-    public void initCorrectWindowSizeTest(){
+    public void initCorrectWindowSizeTest() {
         Assert.assertEquals(1, this.sendingWindow.getWindowCapacity());
     }
 
     @Test
-    public void initIsWaitingForAckIsFalseIfNoPacketsAreSentTest(){
+    public void initIsWaitingForAckIsFalseIfNoPacketsAreSentTest() {
         Assert.assertFalse(this.sendingWindow.isWaitingForAck());
     }
 
     @Test
-    public void initIsWaitingForAckIsTrueIfSendingWindowIsFullTest(){
+    public void initIsWaitingForAckIsTrueIfSendingWindowIsFullTest() {
         for (int i = 0; i < this.client.getThisReceivingWindowCapacity(); i++) {
             this.client.send(new Message("test " + i));
         }
@@ -79,7 +81,7 @@ public class SendingWindowTest {
     }
 
     @Test
-    public void windowCantIncreaseToMoreThanServersReceivingWindow(){
+    public void windowCantIncreaseToMoreThanServersReceivingWindow() {
         for (int i = 0; i < Math.pow(this.server.getThisReceivingWindowCapacity(), 2) * 10; i++) {
             this.sendingWindow.increase();
         }
@@ -87,7 +89,7 @@ public class SendingWindowTest {
     }
 
     @Test
-    public void windowCanDecreaseWhenInMaxCapacity(){
+    public void windowCanDecreaseWhenInMaxCapacity() {
         for (int i = 0; i < Math.pow(this.server.getThisReceivingWindowCapacity(), 2); i++) {
             this.sendingWindow.increase();
         }
@@ -96,13 +98,13 @@ public class SendingWindowTest {
     }
 
     @Test
-    public void initWindowCanNotDecrease(){
+    public void initWindowCanNotDecrease() {
         this.sendingWindow.decrease();
         Assert.assertEquals(1, this.sendingWindow.getWindowCapacity());
     }
 
     @Test
-    public void windowWillDecreaseToDefaultValueIfDecreasedEnough(){
+    public void windowWillDecreaseToDefaultValueIfDecreasedEnough() {
         for (int i = 0; i < this.server.getThisReceivingWindowCapacity(); i++) {
             this.sendingWindow.increase();
         }
@@ -134,17 +136,17 @@ public class SendingWindowTest {
 
         int prevWindowCapacity = client.getSendingWindow().getWindowCapacity();
         eventHandler.addEvent(new RunTCPEvent(client));
-        while (eventHandler.singleRun()){
+        while (eventHandler.singleRun()) {
             int curWindowCapacity = client.getSendingWindow().getWindowCapacity();
 
             boolean loss = curWindowCapacity < prevWindowCapacity;
             boolean packetAcked = curWindowCapacity > prevWindowCapacity;
 
-            if (loss){
+            if (loss) {
                 Assert.assertEquals(1, curWindowCapacity);
-            }else if (packetAcked){
+            } else if (packetAcked) {
                 Assert.assertTrue(this.client.getOtherReceivingWindowCapacity() >= curWindowCapacity);
-            }else{
+            } else {
                 Assert.assertEquals(prevWindowCapacity, curWindowCapacity);
             }
             prevWindowCapacity = curWindowCapacity;
@@ -157,14 +159,13 @@ public class SendingWindowTest {
         //Assert.assertTrue(router.inputBufferIsEmpty());
 
         for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message( "test " + i);
+            Message msg = new Message("test " + i);
             Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
 
     }
-
 
 
 }

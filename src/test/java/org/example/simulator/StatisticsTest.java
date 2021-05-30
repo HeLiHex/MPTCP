@@ -300,7 +300,7 @@ public class StatisticsTest {
         eventHandler.addEvent(new RunTCPEvent(client));
 
         Event lastEvent = null;
-        while (!eventHandler.getEvents().isEmpty()){
+        while (!eventHandler.getEvents().isEmpty()) {
             lastEvent = eventHandler.peekEvent();
             eventHandler.singleRun();
         }
@@ -336,7 +336,7 @@ public class StatisticsTest {
 
         int numRetransmitGenerators = 0;
 
-        while (eventHandler.peekEvent() != null){
+        while (eventHandler.peekEvent() != null) {
             if (eventHandler.peekEvent() instanceof TCPRetransmitEventGenerator) numRetransmitGenerators++;
             eventHandler.singleRun();
         }
@@ -381,7 +381,7 @@ public class StatisticsTest {
         int numberOfChannels = 4;
         //accumulative ack results in fewer ChannelEvents than numberOfChannels * numPacketsSent
         Assert.assertTrue(numPacketsToSend * numberOfChannels > channelEventCount);
-        Assert.assertTrue(numPacketsToSend * (numberOfChannels/2) < channelEventCount);
+        Assert.assertTrue(numPacketsToSend * (numberOfChannels / 2) < channelEventCount);
 
 
     }

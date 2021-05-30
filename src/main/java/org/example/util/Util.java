@@ -10,6 +10,7 @@ public class Util {
 
     public static final Random random = new Random(1337);
     private static long time = 0;
+
     private Util() {
         throw new IllegalStateException("Utility class");
     }
@@ -50,7 +51,7 @@ public class Util {
         time = 0;
     }
 
-    public static PoissonDistribution getPoissonDistribution(double mean){
+    public static PoissonDistribution getPoissonDistribution(double mean) {
         return new PoissonDistribution(RandomGeneratorFactory.createRandomGenerator(random), mean, PoissonDistribution.DEFAULT_EPSILON, PoissonDistribution.DEFAULT_MAX_ITERATIONS);
     }
 

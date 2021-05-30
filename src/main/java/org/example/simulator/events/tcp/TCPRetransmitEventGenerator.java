@@ -3,10 +3,10 @@ package org.example.simulator.events.tcp;
 import org.example.data.Packet;
 import org.example.protocol.ClassicTCP;
 import org.example.protocol.TCP;
-import org.example.simulator.statistics.Statistics;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.EventGenerator;
 import org.example.simulator.events.RouteEvent;
+import org.example.simulator.statistics.Statistics;
 
 import java.util.Queue;
 import java.util.logging.Level;
@@ -28,16 +28,16 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
     @Override
     public void generateNextEvent(Queue<Event> events) {
         //todo - hvor mange forsøk burde man egentlig få? Jeg tror egentlig 3, men det kan være litt lite til tider
-        if (this.numAttempts > 3 ) return;
-        
+        if (this.numAttempts > 3) return;
+
         if (!this.tcp.isConnected()) return;
 
         if (this.tcp.canRetransmit(this.packet)) {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, () -> "Retransmit packet: " + this.packet);
             Statistics.packetRetransmit();
-            ((ClassicTCP)this.tcp).getStats().packetRetransmit();
+            ((ClassicTCP) this.tcp).getStats().packetRetransmit();
             events.add(new RouteEvent(this.tcp, this.packet));
-            events.add(new TCPRetransmitEventGenerator(this.packet, this.numAttempts + 1 ));
+            events.add(new TCPRetransmitEventGenerator(this.packet, this.numAttempts + 1));
         }
     }
 

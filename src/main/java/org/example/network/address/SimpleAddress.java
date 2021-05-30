@@ -1,6 +1,6 @@
 package org.example.network.address;
 
-public class SimpleAddress extends Address{
+public class SimpleAddress extends Address {
 
     private final String id;
 

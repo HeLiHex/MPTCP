@@ -10,7 +10,7 @@ import org.junit.Test;
 public class RoutingTableTest {
 
     @Test(expected = IllegalStateException.class)
-    public void routingTableTrowsIllegalStateExceptionIfNotUpdated(){
+    public void routingTableTrowsIllegalStateExceptionIfNotUpdated() {
         Endpoint r1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
@@ -25,7 +25,7 @@ public class RoutingTableTest {
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void routingTableTrowsIllegalArgumentExceptionIfDestinationIsNull(){
+    public void routingTableTrowsIllegalArgumentExceptionIfDestinationIsNull() {
         NetworkNode r1 = new Router.RouterBuilder().build();
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
@@ -44,7 +44,7 @@ public class RoutingTableTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void routingTableTrowsIllegalArgumentExceptionIfDestinationIsUnconnected(){
+    public void routingTableTrowsIllegalArgumentExceptionIfDestinationIsUnconnected() {
         Endpoint r1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         NetworkNode r2 = new Router.RouterBuilder().build();
         NetworkNode r3 = new Router.RouterBuilder().build();
@@ -62,7 +62,7 @@ public class RoutingTableTest {
     }
 
 
-    private Channel getChannelFromTo(NetworkNode from, NetworkNode destination){
+    private Channel getChannelFromTo(NetworkNode from, NetworkNode destination) {
         for (Channel c : from.getChannels()) {
             if (c.getDestination().equals(destination)) return c;
         }
@@ -72,7 +72,7 @@ public class RoutingTableTest {
 
 
     @Test
-    public void getPathChoosesShortestPathTest(){
+    public void getPathChoosesShortestPathTest() {
         for (int i = 0; i < 100; i++) {
             Endpoint r1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
             NetworkNode r2 = new Router.RouterBuilder().build();
@@ -89,11 +89,11 @@ public class RoutingTableTest {
             r3.updateRoutingTable();
             r4.updateRoutingTable();
 
-            Channel channelOnePathOne = getChannelFromTo(r1,r2);
-            Channel channelTwoPathOne = getChannelFromTo(r2,r4);
+            Channel channelOnePathOne = getChannelFromTo(r1, r2);
+            Channel channelTwoPathOne = getChannelFromTo(r2, r4);
 
-            Channel channelOnePathTwo = getChannelFromTo(r1,r3);
-            Channel channelTwoPathTwo = getChannelFromTo(r3,r4);
+            Channel channelOnePathTwo = getChannelFromTo(r1, r3);
+            Channel channelTwoPathTwo = getChannelFromTo(r3, r4);
 
             int pathOne = channelOnePathOne.getCost() + channelTwoPathOne.getCost();
             int pathTwo = channelOnePathTwo.getCost() + channelTwoPathTwo.getCost();
@@ -114,7 +114,7 @@ public class RoutingTableTest {
 
 
     @Test
-    public void toStringTest(){
+    public void toStringTest() {
         RoutingTable routingTable = new RoutingTable();
         routingTable.update(new Router.RouterBuilder().build());
         routingTable.toString();
@@ -122,7 +122,7 @@ public class RoutingTableTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getPathWhenNoPathIsThereTest(){
+    public void getPathWhenNoPathIsThereTest() {
         RoutingTable routingTable = new RoutingTable();
         routingTable.update(new Router.RouterBuilder().build());
         routingTable.getPath(new Router.RouterBuilder().build(), new Router.RouterBuilder().build());

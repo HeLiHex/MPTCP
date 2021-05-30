@@ -10,8 +10,8 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.simulator.statistics.TCPStats;
 import org.example.simulator.statistics.Statistics;
+import org.example.simulator.statistics.TCPStats;
 import org.example.util.Util;
 import org.javatuples.Pair;
 
@@ -203,7 +203,7 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long getRTO() {
-        return 3*this.rtt;
+        return 3 * this.rtt;
     }
 
     @Override
@@ -269,7 +269,7 @@ public class ClassicTCP extends Routable implements TCP {
 
         try {
             boolean inWindow = this.getReceivingWindow().inReceivingWindow(packet, conn);
-            if (!inWindow){
+            if (!inWindow) {
                 this.ack(this.getReceivingWindow().ackThis(this.getSendingWindow().getConnection().getConnectedNode()));
                 return false;
             }
@@ -289,7 +289,7 @@ public class ClassicTCP extends Routable implements TCP {
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
         if (packetIsFromValidConnection(packet)) {
-            if (super.enqueueInputBuffer(packet)){
+            if (super.enqueueInputBuffer(packet)) {
                 if (!packet.hasAllFlags(Flag.ACK) && !packet.hasAllFlags(Flag.SYN)) this.tcpStats.packetArrival(packet);
                 return true;
             }

@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.PriorityQueue;
-import java.util.Random;
 
 public class ChannelTest {
 
@@ -15,7 +14,7 @@ public class ChannelTest {
     private Endpoint destination = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
     @Test
-    public void channelConstructor1Test(){
+    public void channelConstructor1Test() {
         Channel channel = new Channel(source, destination, 100);
         Assert.assertTrue(channel instanceof Channel);
         Assert.assertEquals(source, channel.getSource());
@@ -23,7 +22,7 @@ public class ChannelTest {
     }
 
     @Test
-    public void channelConstructor2Test(){
+    public void channelConstructor2Test() {
         Channel channel = new Channel(source);
         Assert.assertTrue(channel instanceof Channel);
         Assert.assertEquals(source, channel.getSource());
@@ -32,7 +31,7 @@ public class ChannelTest {
     }
 
     @Test
-    public void channelWithConstructor1CostIsPositiveTest(){
+    public void channelWithConstructor1CostIsPositiveTest() {
         for (int i = 0; i < 10000; i++) {
             Channel channel = new Channel(source, destination, 100);
             Assert.assertTrue(channel.getCost() >= 0);
@@ -40,7 +39,7 @@ public class ChannelTest {
     }
 
     @Test
-    public void channelWithConstructor2CostIsZeroTest(){
+    public void channelWithConstructor2CostIsZeroTest() {
         for (int i = 0; i < 10000; i++) {
             Channel channel = new Channel(source);
             Assert.assertEquals(0, channel.getCost());
@@ -48,9 +47,9 @@ public class ChannelTest {
     }
 
     @Test
-    public void channelPacketDeliversPacketToDestinationNodeTest(){
+    public void channelPacketDeliversPacketToDestinationNodeTest() {
         Channel channel = new Channel(source, destination, 0);
-        Payload payload = new Message( "Test");
+        Payload payload = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withOrigin(source)
                 .withDestination(destination)
@@ -65,9 +64,9 @@ public class ChannelTest {
 
 
     @Test
-    public void lossyChannelDropPacketTest(){
+    public void lossyChannelDropPacketTest() {
         Channel channel = new Channel(source, destination, 0);
-        Payload payload = new Message( "Test");
+        Payload payload = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withOrigin(source)
                 .withDestination(destination)
@@ -81,10 +80,10 @@ public class ChannelTest {
 
 
     @Test
-    public void aLittleLossyChannelWillDropPacketAfterAWhileTest(){
+    public void aLittleLossyChannelWillDropPacketAfterAWhileTest() {
         for (int i = 0; i < 10000; i++) {
             Channel channel = new Channel(source, destination, 3);
-            Payload payload = new Message( "Test");
+            Payload payload = new Message("Test");
             Packet packet = new PacketBuilder()
                     .withOrigin(source)
                     .withDestination(destination)
@@ -93,7 +92,7 @@ public class ChannelTest {
                     .build();
             channel.channelPackage(packet);
             Packet receivedPacket = destination.dequeueInputBuffer();
-            if (receivedPacket == null){
+            if (receivedPacket == null) {
                 Assert.assertTrue(true);
                 return;
             }
@@ -102,20 +101,20 @@ public class ChannelTest {
     }
 
     @Test
-    public void channelCompareToWorksInPriorityQueueTest(){
+    public void channelCompareToWorksInPriorityQueueTest() {
         int size = 1000;
         PriorityQueue<Channel> pq = new PriorityQueue<>(size);
         for (int i = 0; i < size; i++) {
             Channel c = new Channel(source, destination, 0);
             pq.add(c);
         }
-        while (pq.size() > 1){
+        while (pq.size() > 1) {
             Assert.assertTrue(pq.poll().getCost() <= pq.peek().getCost());
         }
     }
 
     @Test
-    public void differentChannelsAreNotEqualTest(){
+    public void differentChannelsAreNotEqualTest() {
         Endpoint source1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
         Endpoint destination1 = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
 
@@ -127,7 +126,6 @@ public class ChannelTest {
 
         Assert.assertNotEquals(channel1, channel2);
     }
-
 
 
 }

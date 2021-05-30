@@ -26,13 +26,13 @@ public class EventHandlerTest {
     public Timeout globalTimeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Before
-    public void setup(){
+    public void setup() {
         Util.setSeed(1337);
         Util.resetTime();
     }
 
     @Test
-    public void runRunsWithoutErrorTest(){
+    public void runRunsWithoutErrorTest() {
         EventHandler eventHandler = new EventHandler();
         Event eventOne = new Event(Util.getTime()) {
             @Override
@@ -88,9 +88,8 @@ public class EventHandlerTest {
     }
 
 
-
     @Test
-    public void runTest(){
+    public void runTest() {
         EventHandler eventHandler = new EventHandler();
 
         ClassicTCP client = new ClassicTCP.ClassicTCPBuilder().withReceivingWindowCapacity(7).build();
@@ -144,14 +143,14 @@ public class EventHandlerTest {
         eventHandler.run();
 
         for (int i = 1; i <= numPacketsToSend; i++) {
-            Message msg = new Message( "test " + i);
+            Message msg = new Message("test " + i);
             Packet received = server.receive();
             Assert.assertNotNull(received);
             Assert.assertEquals(received.getPayload(), msg);
         }
     }
 
-    private ArrayList<Event> allEventsList(int numPacketsToSend, double noiseTolerance){
+    private ArrayList<Event> allEventsList(int numPacketsToSend, double noiseTolerance) {
         Util.setSeed(1337);
         Util.resetTime();
         EventHandler eventHandler = new EventHandler();
@@ -180,7 +179,7 @@ public class EventHandlerTest {
 
         ArrayList<Event> eventList = new ArrayList<>();
 
-        while (eventHandler.peekEvent() != null){
+        while (eventHandler.peekEvent() != null) {
             eventList.add(eventHandler.peekEvent());
             eventHandler.singleRun();
         }
@@ -194,13 +193,13 @@ public class EventHandlerTest {
     }
 
     @Test
-    public void eventArrangementsAreConsistent(){
+    public void eventArrangementsAreConsistent() {
         double noiseTolerance = 0.01;
         int numPacketsToSend = 1001;
         ArrayList<Event> eventList1 = this.allEventsList(numPacketsToSend, noiseTolerance);
         ArrayList<Event> eventList2 = this.allEventsList(numPacketsToSend, noiseTolerance);
 
-        for (Event event : eventList1){
+        for (Event event : eventList1) {
             Assert.assertEquals(event.getClass(), eventList2.remove(0).getClass());
         }
     }

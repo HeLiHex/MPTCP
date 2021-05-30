@@ -2,7 +2,6 @@ package org.example.network;
 
 import org.example.data.*;
 import org.example.network.interfaces.Endpoint;
-
 import org.example.network.interfaces.NetworkNode;
 import org.example.simulator.EventHandler;
 import org.example.simulator.events.RouteEvent;
@@ -14,7 +13,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class RoutableTest {
 
     @Test
-    public void routableWithRandomAddressAreNotEqualTest(){
+    public void routableWithRandomAddressAreNotEqualTest() {
         NetworkNode node1 = new Router.RouterBuilder().build();
         NetworkNode node2 = new Router.RouterBuilder().build();
         Assert.assertNotEquals(node1, node2);
@@ -22,7 +21,7 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationStraitLine(){
+    public void routingPacketRoutsItToItsDestinationStraitLine() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -43,7 +42,7 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -53,7 +52,7 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
         Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(receivedPayload, msg);
@@ -61,7 +60,7 @@ public class RoutableTest {
 
 
     @Test
-    public  void routingPacketRoutsItToItsDestinationCircleGraph(){
+    public void routingPacketRoutsItToItsDestinationCircleGraph() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -84,7 +83,7 @@ public class RoutableTest {
         server.updateRoutingTable();
 
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -95,7 +94,7 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
         Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(receivedPayload, msg);
@@ -103,7 +102,7 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationWithCycle(){
+    public void routingPacketRoutsItToItsDestinationWithCycle() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -123,7 +122,7 @@ public class RoutableTest {
         r3.updateRoutingTable();
 
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -133,14 +132,14 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
         Payload receivedPayload = receivedPacket.getPayload();
 
-        Assert.assertEquals(receivedPayload,msg);
+        Assert.assertEquals(receivedPayload, msg);
     }
 
     @Test
-    public void routingPacketRoutsItToItsDestinationWithDeadEnd(){
+    public void routingPacketRoutsItToItsDestinationWithDeadEnd() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -161,7 +160,7 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -172,7 +171,7 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
         Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
@@ -180,7 +179,7 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationForrest(){
+    public void routingPacketRoutsItToItsDestinationForrest() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -204,7 +203,7 @@ public class RoutableTest {
         server.updateRoutingTable();
 
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -214,7 +213,7 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
         Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
@@ -222,7 +221,7 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationWithUnconnectedNode(){
+    public void routingPacketRoutsItToItsDestinationWithUnconnectedNode() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -242,7 +241,7 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -252,7 +251,7 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
         Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
@@ -260,7 +259,7 @@ public class RoutableTest {
 
 
     @Test
-    public void routingPacketRoutsItToItsDestinationCrazyGraph(){
+    public void routingPacketRoutsItToItsDestinationCrazyGraph() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -308,7 +307,7 @@ public class RoutableTest {
         r12.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -318,16 +317,15 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
         Payload receivedPayload = receivedPacket.getPayload();
 
         Assert.assertEquals(msg, receivedPayload);
     }
 
 
-
     @Test(expected = IllegalArgumentException.class)
-    public void unconnectedClientCantRoutPacketToDestination(){
+    public void unconnectedClientCantRoutPacketToDestination() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -344,7 +342,7 @@ public class RoutableTest {
         r3.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         client.route(new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -352,9 +350,8 @@ public class RoutableTest {
     }
 
 
-
     @Test(expected = IllegalArgumentException.class)
-    public void unconnectedTreesCantRoutPacket(){
+    public void unconnectedTreesCantRoutPacket() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -374,7 +371,7 @@ public class RoutableTest {
         r3.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         client.route(new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -383,7 +380,7 @@ public class RoutableTest {
 
 
     @Test
-    public void faultyChannelsDropPacket(){
+    public void faultyChannelsDropPacket() {
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(100), new ArrayBlockingQueue<>(100));
         Router r1 = new Router.RouterBuilder().build();
         Router r2 = new Router.RouterBuilder().build();
@@ -405,7 +402,7 @@ public class RoutableTest {
         server.updateRoutingTable();
 
 
-        Message msg = new Message( "hello på do!");
+        Message msg = new Message("hello på do!");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -415,14 +412,14 @@ public class RoutableTest {
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
 
-        Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
+        Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
 
         Assert.assertNull(receivedPacket);
     }
 
 
     @Test
-    public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent(){
+    public void not100PercentLossyRoutersAreLoosingPacketIfEnoughPacketsAreSent() {
         double noiseTolerance = 2.5;
         Endpoint client = new RoutableEndpoint(new ArrayBlockingQueue<>(1000), new ArrayBlockingQueue<>(1000));
         Router r1 = new Router.RouterBuilder().withAverageQueueUtilization(0.1).build();
@@ -448,7 +445,7 @@ public class RoutableTest {
         EventHandler eventHandler = new EventHandler();
 
         for (int i = 0; i < 1000; i++) {
-            Message msg = new Message( i + "");
+            Message msg = new Message(i + "");
             Packet packet = new PacketBuilder()
                     .withPayload(msg)
                     .withDestination(server)
@@ -459,8 +456,8 @@ public class RoutableTest {
         eventHandler.run();
 
         for (int i = 0; i < 1000; i++) {
-            Packet receivedPacket = ((RoutableEndpoint)server).getReceivedPacket();
-            if (receivedPacket == null){
+            Packet receivedPacket = ((RoutableEndpoint) server).getReceivedPacket();
+            if (receivedPacket == null) {
                 return;
             }
         }

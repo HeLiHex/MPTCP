@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 public class Channel implements Comparable<Channel> {
 
+    private static final double BAD_TO_GOOD_PROB = 0.2;
     private final Logger logger;
     private final Queue<Packet> line;
     private final NetworkNode source;
@@ -21,7 +22,6 @@ public class Channel implements Comparable<Channel> {
     private final double loss;
     private final int capacity = 1000;
     private boolean goodState;
-    private static final double BAD_TO_GOOD_PROB = 0.2;
 
 
     public Channel(NetworkNode source, NetworkNode destination, double loss, int cost) {
@@ -47,7 +47,7 @@ public class Channel implements Comparable<Channel> {
     }
 
     public long propagationDelay() {
-        long delay = 10*(this.cost + 1);
+        long delay = 10 * (this.cost + 1L);
         //System.out.println("channel delay: " + delay );
         return delay;
     }
@@ -133,7 +133,7 @@ public class Channel implements Comparable<Channel> {
         double loss = 0;
         int cost = Util.getNextRandomInt(100);
 
-        public ChannelBuilder withCost (int cost) {
+        public ChannelBuilder withCost(int cost) {
             if (cost < 0 || cost > 100) throw new IllegalStateException("cost is not valid");
             this.cost = cost;
             return this;

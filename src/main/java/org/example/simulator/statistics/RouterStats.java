@@ -1,7 +1,6 @@
 package org.example.simulator.statistics;
 
 import org.example.network.Router;
-import org.example.util.Util;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RouterStats extends Stats{
+public class RouterStats extends Stats {
 
     private final Router router;
     private final ArrayList queueSize;
@@ -23,7 +22,7 @@ public class RouterStats extends Stats{
         this.queueSize = new ArrayList();
     }
 
-    public void trackQueueSize(int queueSize){
+    public void trackQueueSize(int queueSize) {
         this.queueSize.add(queueSize);
     }
 

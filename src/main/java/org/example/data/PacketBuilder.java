@@ -25,8 +25,8 @@ public class PacketBuilder {
     }
 
     public Packet ackBuild(Packet packetToAck) {
-        if (packetToAck.getOrigin() == null) throw  new IllegalArgumentException("no origin");
-        if (packetToAck.getDestination() == null) throw  new IllegalArgumentException("no destination");
+        if (packetToAck.getOrigin() == null) throw new IllegalArgumentException("no origin");
+        if (packetToAck.getDestination() == null) throw new IllegalArgumentException("no destination");
 
         this.withDestination(packetToAck.getOrigin());
         this.withOrigin(packetToAck.getDestination());
@@ -81,7 +81,6 @@ public class PacketBuilder {
         this.index = index;
         return this;
     }
-
 
 
     public boolean hasFlag(Flag... flags) {

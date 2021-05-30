@@ -19,7 +19,7 @@ public class AppTest {
     }
 
     @Test
-    public void shouldAssertTrueIfFalse(){
+    public void shouldAssertTrueIfFalse() {
         assertFalse(false);
     }
 }

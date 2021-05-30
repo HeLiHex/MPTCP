@@ -9,7 +9,7 @@ public class BoundedPriorityBlockingQueueTest {
 
 
     @Test
-    public void bothConstructorsWorkTest(){
+    public void bothConstructorsWorkTest() {
         BoundedQueue bq1 = new BoundedPriorityBlockingQueue(10);
         BoundedQueue<Packet> bq2 = new BoundedPriorityBlockingQueue<>(10, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
         Assert.assertTrue(bq1 instanceof BoundedPriorityBlockingQueue);
@@ -18,7 +18,7 @@ public class BoundedPriorityBlockingQueueTest {
 
 
     @Test
-    public void offerInsertsOrdered(){
+    public void offerInsertsOrdered() {
         BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
                 new BoundedPriorityBlockingQueue<>(5, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
 
@@ -53,7 +53,7 @@ public class BoundedPriorityBlockingQueueTest {
     }
 
     @Test
-    public void isFullWorksReturnsTrueIfFullTest(){
+    public void isFullWorksReturnsTrueIfFullTest() {
         BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
                 new BoundedPriorityBlockingQueue<>(5, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
 
@@ -84,7 +84,7 @@ public class BoundedPriorityBlockingQueueTest {
 
 
     @Test
-    public void isFullWorksReturnsFalseIfNotFullTest(){
+    public void isFullWorksReturnsFalseIfNotFullTest() {
         BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
                 new BoundedPriorityBlockingQueue<>(5, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
 
@@ -111,7 +111,7 @@ public class BoundedPriorityBlockingQueueTest {
 
 
     @Test
-    public void resizeWorksTest(){
+    public void resizeWorksTest() {
         BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
                 new BoundedPriorityBlockingQueue<>(5, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
 
@@ -120,7 +120,7 @@ public class BoundedPriorityBlockingQueueTest {
     }
 
     @Test
-    public void resizeAllowsMoreElementsInQueue(){
+    public void resizeAllowsMoreElementsInQueue() {
         BoundedPriorityBlockingQueue<Packet> boundedPriorityBlockingQueue =
                 new BoundedPriorityBlockingQueue<>(4, (packet, t1) -> packet.getSequenceNumber() - t1.getSequenceNumber());
         Packet one = new PacketBuilder()
@@ -166,7 +166,6 @@ public class BoundedPriorityBlockingQueueTest {
         boundedPriorityBlockingQueue.offer(eight);
 
         Assert.assertTrue(boundedPriorityBlockingQueue.isFull());
-
 
 
         Packet nine = new PacketBuilder()

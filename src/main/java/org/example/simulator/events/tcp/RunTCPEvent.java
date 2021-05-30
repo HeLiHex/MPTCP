@@ -30,16 +30,15 @@ public class RunTCPEvent extends Event {
 
     @Override
     public void run() {
-        if (this.tcp instanceof MPTCP){
+        if (this.tcp instanceof MPTCP) {
             for (TCP subflow : ((MPTCP) this.tcp).getSubflows()) {
-                if (subflow.isConnected()){
+                if (subflow.isConnected()) {
                     this.tcp.handleIncoming();
                     this.packetsSent = this.tcp.trySend();
                     return;
                 }
             }
-        }
-        else if (this.tcp.isConnected()){
+        } else if (this.tcp.isConnected()) {
             this.tcp.handleIncoming();
             this.packetsSent = this.tcp.trySend();
             return;
@@ -54,7 +53,7 @@ public class RunTCPEvent extends Event {
             events.add(new ChannelEvent(channel));
         }
 
-        if (this.scheduleFirstSend){
+        if (this.scheduleFirstSend) {
             //add delay before sending first packet
             //this is important if we have a "downloading situation"
             events.add(new RunTCPEvent(this.tcp, 1000000));

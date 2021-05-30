@@ -6,13 +6,13 @@ import org.junit.Test;
 public class MessageTest {
 
     @Test
-    public void createMessageWorksTest(){
+    public void createMessageWorksTest() {
         Message message = new Message("test");
         Assert.assertTrue(message instanceof Message);
     }
 
     @Test
-    public void stringInMessageIsCorrectTest(){
+    public void stringInMessageIsCorrectTest() {
         String s1 = "test";
         Message message1 = new Message(s1);
         Assert.assertEquals(s1, message1.toString());
@@ -23,7 +23,7 @@ public class MessageTest {
     }
 
     @Test
-    public void sizeOfMessageIsCorrectTest(){
+    public void sizeOfMessageIsCorrectTest() {
         String s1 = "test";
         Message message1 = new Message(s1);
         Assert.assertEquals(s1.length(), message1.size());
@@ -35,7 +35,7 @@ public class MessageTest {
 
 
     @Test
-    public void messagesWithEqualStringsAreEqualTest(){
+    public void messagesWithEqualStringsAreEqualTest() {
         String s = "test";
         Message message1 = new Message(s);
         Message message2 = new Message(s);
