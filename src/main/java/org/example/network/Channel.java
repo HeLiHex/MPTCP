@@ -79,13 +79,10 @@ public class Channel implements Comparable<Channel> {
     }
 
     public boolean channel() {
-        //channel is in some cases called without the packet making it's way to the line
-        //this prevents NullPointerException
         if (this.line.isEmpty()) {
             return false;
         }
 
-        int size = this.line.size();
         var packet = this.line.poll();
         if (lossy()) {
             Statistics.packetLost();
