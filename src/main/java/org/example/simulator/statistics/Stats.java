@@ -62,7 +62,7 @@ public abstract class Stats {
         if (this.interArrivalTimes.isEmpty()) return;
         this.meanArrivalRate = this.arrivalNum.size() / (this.arrivalTime.get(this.arrivalTime.size() - 1));
 
-        this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble(f -> f.doubleValue()).average().getAsDouble();
+        this.meanTimeInSystem = this.timeInSystem.stream().mapToDouble((f) -> f.doubleValue()).average().getAsDouble();
 
         //Little's law
         // L = 1/E[A] * W
@@ -101,14 +101,14 @@ public abstract class Stats {
             return;
         }
 
-        double arrivalTime = this.arrivalTime.get(packetArrivalIndex);
-        double departureTime = this.departureTime.get(packetDepartureIndex);
-        double timeInSystem = departureTime - arrivalTime;
+        double arrival = this.arrivalTime.get(packetArrivalIndex);
+        double departure = this.departureTime.get(packetDepartureIndex);
+        double inSystem = departure - arrival;
 
         double minTime = (double) 10 / (double) TIMESCALE;
-        if (timeInSystem < minTime) timeInSystem = minTime;
-        if (timeInSystem < 0) throw new IllegalStateException("packet cannot be in system a negative amount of time");
-        this.timeInSystem.add(timeInSystem);
+        if (inSystem < minTime) inSystem = minTime;
+        if (inSystem < 0) throw new IllegalStateException("packet cannot be in system a negative amount of time");
+        this.timeInSystem.add(inSystem);
     }
 
     private void addInterArrivalTime() {
