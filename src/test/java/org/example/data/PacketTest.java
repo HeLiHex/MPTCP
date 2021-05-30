@@ -30,7 +30,7 @@ public class PacketTest {
 
     @Test
     public void buildPacketWithMsgBuildsPacketMsgOriginTest() {
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder().withPayload(msg).build();
         Assert.assertEquals(msg, packet.getPayload());
     }

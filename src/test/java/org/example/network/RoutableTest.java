@@ -42,7 +42,7 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -83,7 +83,7 @@ public class RoutableTest {
         server.updateRoutingTable();
 
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -122,7 +122,7 @@ public class RoutableTest {
         r3.updateRoutingTable();
 
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -160,7 +160,7 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -203,7 +203,7 @@ public class RoutableTest {
         server.updateRoutingTable();
 
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -241,7 +241,7 @@ public class RoutableTest {
         r4.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -307,7 +307,7 @@ public class RoutableTest {
         r12.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -342,7 +342,7 @@ public class RoutableTest {
         r3.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         client.route(new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -371,7 +371,7 @@ public class RoutableTest {
         r3.updateRoutingTable();
         server.updateRoutingTable();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         client.route(new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)
@@ -402,7 +402,7 @@ public class RoutableTest {
         server.updateRoutingTable();
 
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         Packet packet = new PacketBuilder()
                 .withPayload(msg)
                 .withDestination(server)

@@ -103,7 +103,7 @@ public class ClassicTCPTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
 
         client.send(msg);
         eventHandler.addEvent(new RunTCPEvent(client));
@@ -140,7 +140,7 @@ public class ClassicTCPTest {
         eventHandler.addEvent(new TCPConnectEvent(client, server));
         eventHandler.run();
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
 
         client.send(msg);
         eventHandler.addEvent(new RunTCPEvent(client));
