@@ -56,7 +56,7 @@ public class Router extends Routable {
     @Override
     public void run() {
         if (!this.inputBufferIsEmpty()) {
-            Packet packet = this.dequeueInputBuffer();
+            var packet = this.dequeueInputBuffer();
             this.route(packet);
             return;
         }
