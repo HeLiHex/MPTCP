@@ -381,7 +381,6 @@ public class MPTCPTest {
         eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
 
-        //todo - this fails bcuz of the retranmitt issue... I think. quick fix is to set noisetolerance to 2.5
         Assert.assertTrue("client still has packets to send", client.outputBufferIsEmpty());
         Assert.assertTrue(server.outputBufferIsEmpty());
 
