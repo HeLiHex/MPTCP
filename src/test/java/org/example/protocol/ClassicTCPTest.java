@@ -426,7 +426,6 @@ public class ClassicTCPTest {
 
         eventHandler.addEvent(new RouteEvent(client, packet));
         eventHandler.run();
-        //Assert.assertNotNull(server.receive());
 
         int indexAfterReceived = server.getReceivingWindow().receivingPacketIndex(packet, server.getConnection());
         Assert.assertEquals(client.getThisReceivingWindowCapacity() - 1, indexAfterReceived);

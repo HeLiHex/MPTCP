@@ -126,7 +126,6 @@ public class SendingWindowTest {
         Assert.assertTrue(server.inputBufferIsEmpty());
         Assert.assertTrue(client.outputBufferIsEmpty());
         Assert.assertTrue(server.outputBufferIsEmpty());
-        //Assert.assertTrue(router.inputBufferIsEmpty());
 
         int numPacketsToSend = server.getThisReceivingWindowCapacity() * 100;
         for (int i = 1; i <= numPacketsToSend; i++) {
@@ -156,7 +155,6 @@ public class SendingWindowTest {
         Assert.assertTrue(server.inputBufferIsEmpty());
         Assert.assertTrue(client.outputBufferIsEmpty());
         Assert.assertTrue(server.outputBufferIsEmpty());
-        //Assert.assertTrue(router.inputBufferIsEmpty());
 
         for (int i = 1; i <= numPacketsToSend; i++) {
             Message msg = new Message("test " + i);

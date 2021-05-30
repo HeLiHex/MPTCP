@@ -36,7 +36,6 @@ public abstract class Routable implements NetworkNode {
     @Override
     public void route(Packet packet) {
         if (packet == null) throw new IllegalStateException("Null packet can't be routed");
-        //System.out.println("packet: " + packet + " is routed through router: " + this.address);
         NetworkNode destination = packet.getDestination();
         var nextChannelOnPath = this.routingTable.getPath(this, destination);
         nextChannelOnPath.channelPackage(packet);

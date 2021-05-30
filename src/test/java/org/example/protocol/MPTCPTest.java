@@ -63,7 +63,7 @@ public class MPTCPTest {
         System.out.println("connected");
 
 
-        Message msg = new Message("hello på do!");
+        Message msg = new Message("Test");
         client.send(msg);
         eventHandler.addEvent(new RunTCPEvent(client));
         eventHandler.run();
@@ -135,8 +135,8 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[0].isConnected());
         Assert.assertFalse(client.getSubflows()[1].isConnected());
 
-        Message msg1 = new Message("hello 1!");
-        Message msg2 = new Message("hello 2!");
+        Message msg1 = new Message("Test 1!");
+        Message msg2 = new Message("Test 2!");
 
         client.send(msg1);
         client.send(msg2);
@@ -184,9 +184,9 @@ public class MPTCPTest {
 
         Assert.assertTrue(client.isConnected());
 
-        Message msg1 = new Message("hello 1!");
-        Message msg2 = new Message("hello 2!");
-        Message msg3 = new Message("hello 3!");
+        Message msg1 = new Message("Test 1!");
+        Message msg2 = new Message("Test 2!");
+        Message msg3 = new Message("Test 3!");
 
         client.send(msg1);
         client.send(msg2);
@@ -245,9 +245,9 @@ public class MPTCPTest {
         Assert.assertTrue(client.getSubflows()[1].isConnected());
         Assert.assertTrue(client.getSubflows()[2].isConnected());
 
-        Message msg1 = new Message("hello 1!");
-        Message msg2 = new Message("hello 2!");
-        Message msg3 = new Message("hello 3!");
+        Message msg1 = new Message("Test 1!");
+        Message msg2 = new Message("Test 2!");
+        Message msg3 = new Message("Test 3!");
 
         client.send(msg1);
         client.send(msg2);

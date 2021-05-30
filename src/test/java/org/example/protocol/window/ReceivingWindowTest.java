@@ -94,7 +94,7 @@ public class ReceivingWindowTest {
     @Test
     public void receiveReturnsFalseIfAckIsReceived() {
         Packet ackFromServer = new PacketBuilder()
-                .withSequenceNumber(this.client.getConnection().getNextAcknowledgementNumber()) //hack to find clients expected next packet sequence number
+                .withSequenceNumber(this.client.getConnection().getNextAcknowledgementNumber())
                 .withFlags(Flag.ACK)
                 .withConnection(this.server.getConnection())
                 .build();
@@ -109,7 +109,7 @@ public class ReceivingWindowTest {
     @Test
     public void receiveReturnsTrueIfPacketIsReceived() {
         Packet packetFromServer = new PacketBuilder()
-                .withSequenceNumber(this.client.getConnection().getNextAcknowledgementNumber()) //hack to find clients expected next packet sequence number
+                .withSequenceNumber(this.client.getConnection().getNextAcknowledgementNumber())
                 .withPayload(new Message("test"))
                 .withConnection(this.server.getConnection())
                 .build();
