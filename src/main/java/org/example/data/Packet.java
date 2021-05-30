@@ -3,12 +3,8 @@ package org.example.data;
 import org.example.network.interfaces.Endpoint;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Packet {
-
-    private final Logger logger;
-
     private final Endpoint destination;
     private final Endpoint origin;
     private final List<Flag> flags;
@@ -20,8 +16,6 @@ public class Packet {
 
 
     protected Packet(Endpoint destination, Endpoint origin, List<Flag> flags, Payload payload, int sequenceNumber, int acknowledgmentNumber, int index) {
-        this.logger = Logger.getLogger(this.getClass().getName());
-
         this.destination = destination;
         this.origin = origin;
         this.flags = flags;

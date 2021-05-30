@@ -7,13 +7,11 @@ import org.example.util.Util;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Logger;
 
 public class Channel implements Comparable<Channel> {
 
     private static final double BAD_TO_GOOD_PROB = 0.2;
     private static final int CAPACITY = 1000;
-    private final Logger logger;
     private final Queue<Packet> line;
     private final NetworkNode source;
     private final NetworkNode destination;
@@ -23,16 +21,12 @@ public class Channel implements Comparable<Channel> {
 
 
     public Channel(NetworkNode source, NetworkNode destination, double loss, int cost) {
-        this.logger = Logger.getLogger(getClass().getSimpleName());
         this.line = new ArrayBlockingQueue<>(CAPACITY);
-
         this.source = source;
         this.destination = destination;
         this.loss = loss;
         this.cost = cost;
-
         this.goodState = true;
-
     }
 
     public Channel(NetworkNode source, NetworkNode destination, double loss) {
@@ -85,12 +79,8 @@ public class Channel implements Comparable<Channel> {
         if (lossy()) {
             return false;
         }
+        return this.destination.enqueueInputBuffer(packet);
 
-        boolean sendSuccess = this.destination.enqueueInputBuffer(packet);
-        if (!sendSuccess) {
-            return false;
-        }
-        return true;
     }
 
     @Override
