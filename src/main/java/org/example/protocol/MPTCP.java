@@ -204,7 +204,6 @@ public class MPTCP implements TCP {
 
     }
 
-
     @Override
     public Channel getChannel() {
         throw new IllegalStateException(DEPRECATED_STRING);
@@ -222,13 +221,7 @@ public class MPTCP implements TCP {
     }
 
     @Override
-    public long getRTT() {
-        throw new IllegalStateException(DEPRECATED_STRING);
-    }
-
-    @Override
     public long getRTO() {
-        //return this.subflows[0].getRTO();
         throw new IllegalStateException(DEPRECATED_STRING);
     }
 
@@ -282,17 +275,6 @@ public class MPTCP implements TCP {
     public Packet fastRetransmit() {
         throw new IllegalStateException(DEPRECATED_STRING);
     }
-
-    @Override
-    public boolean seriousLossDetected() {
-        throw new IllegalStateException(DEPRECATED_STRING);
-    }
-
-    @Override
-    public int getSendingWindowCapacity() {
-        throw new IllegalStateException(DEPRECATED_STRING);
-    }
-
 
     public static class MPTCPBuilder {
 

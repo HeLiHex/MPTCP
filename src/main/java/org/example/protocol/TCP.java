@@ -56,8 +56,6 @@ public interface TCP extends Endpoint {
 
     Channel getChannel();
 
-    long getRTT();
-
     long getRTO();
 
     long afterConnectSendDelay();
@@ -69,10 +67,6 @@ public interface TCP extends Endpoint {
     boolean canRetransmit(Packet packet);
 
     Packet fastRetransmit();
-
-    boolean seriousLossDetected();
-
-    int getSendingWindowCapacity();
 
     TCP getMainFlow();
 
