@@ -23,11 +23,11 @@ public abstract class Stats {
 
     protected static final String DIR = "./charts/";
     protected static final Styler.ChartTheme theme = Styler.ChartTheme.Matlab;
-    protected static final int chartWidth = 1500;
-    protected static final int chartHeight = 600;
-    protected static final Font titleFont = new Font("myFont", 0, 30);
-    protected static final Font axisFont = new Font("myFont", 0, 25);
-    protected static final Font tickFont = new Font("myFont", 0, 15);
+    protected static final int CHART_WIDTH = 1500;
+    protected static final int CHART_HEIGHT = 600;
+    protected static final Font TITLE_FONT = new Font("myFont", 0, 30);
+    protected static final Font AXIS_FONT = new Font("myFont", 0, 25);
+    protected static final Font TICK_FONT = new Font("myFont", 0, 15);
 
     protected static final int timescale = 1000;
 
@@ -151,16 +151,16 @@ public abstract class Stats {
             throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder()
-                .width(chartWidth)
-                .height(chartHeight)
+                .width(CHART_WIDTH)
+                .height(CHART_HEIGHT)
                 .xAxisTitle("Packet Arrival-Time")
                 .yAxisTitle("Packet")
                 .title("Packet Arrivals")
                 .theme(theme)
                 .build();
-        chart.getStyler().setChartTitleFont(titleFont);
-        chart.getStyler().setAxisTitleFont(axisFont);
-        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setChartTitleFont(TITLE_FONT);
+        chart.getStyler().setAxisTitleFont(AXIS_FONT);
+        chart.getStyler().setAxisTickLabelsFont(TICK_FONT);
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Packet Arrivals", this.arrivalTime, this.arrivalNum);
@@ -174,16 +174,16 @@ public abstract class Stats {
             throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder()
-                .width(chartWidth)
-                .height(chartHeight)
+                .width(CHART_WIDTH)
+                .height(CHART_HEIGHT)
                 .xAxisTitle("Packet Departure-Time")
                 .yAxisTitle("Packet")
                 .title("Packet Departures")
                 .theme(theme)
                 .build();
-        chart.getStyler().setChartTitleFont(titleFont);
-        chart.getStyler().setAxisTitleFont(axisFont);
-        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setChartTitleFont(TITLE_FONT);
+        chart.getStyler().setAxisTitleFont(AXIS_FONT);
+        chart.getStyler().setAxisTickLabelsFont(TICK_FONT);
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Packet Departures", this.departureTime, this.departureNum);
@@ -193,16 +193,16 @@ public abstract class Stats {
 
     public void createInterArrivalChart() {
         XYChart chart = new XYChartBuilder()
-                .width(chartWidth)
-                .height(chartHeight)
+                .width(CHART_WIDTH)
+                .height(CHART_HEIGHT)
                 .xAxisTitle("Arrival Time")
                 .yAxisTitle("Interarrival Time")
                 .title("Packet Interarrival-Time")
                 .theme(theme)
                 .build();
-        chart.getStyler().setChartTitleFont(titleFont);
-        chart.getStyler().setAxisTitleFont(axisFont);
-        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setChartTitleFont(TITLE_FONT);
+        chart.getStyler().setAxisTitleFont(AXIS_FONT);
+        chart.getStyler().setAxisTickLabelsFont(TICK_FONT);
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Interarrival Times", this.arrivalTime, this.interArrivalTimes);
@@ -212,16 +212,16 @@ public abstract class Stats {
 
     public void createTimeInSystemChart() {
         XYChart chart = new XYChartBuilder()
-                .width(chartWidth)
-                .height(chartHeight)
+                .width(CHART_WIDTH)
+                .height(CHART_HEIGHT)
                 .xAxisTitle("Time")
                 .yAxisTitle("Time In System")
                 .title("Packet Time In System")
                 .theme(theme)
                 .build();
-        chart.getStyler().setChartTitleFont(titleFont);
-        chart.getStyler().setAxisTitleFont(axisFont);
-        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setChartTitleFont(TITLE_FONT);
+        chart.getStyler().setAxisTitleFont(AXIS_FONT);
+        chart.getStyler().setAxisTickLabelsFont(TICK_FONT);
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Time in system", this.departureTime, this.timeInSystem);
@@ -231,16 +231,16 @@ public abstract class Stats {
 
     public void createNumberOfPacketsInSystemChart() {
         XYChart chart = new XYChartBuilder()
-                .width(chartWidth)
-                .height(chartHeight)
+                .width(CHART_WIDTH)
+                .height(CHART_HEIGHT)
                 .xAxisTitle("Time")
                 .yAxisTitle("Number of packets in system")
                 .title("number of packets in system")
                 .theme(theme)
                 .build();
-        chart.getStyler().setChartTitleFont(titleFont);
-        chart.getStyler().setAxisTitleFont(axisFont);
-        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setChartTitleFont(TITLE_FONT);
+        chart.getStyler().setAxisTitleFont(AXIS_FONT);
+        chart.getStyler().setAxisTickLabelsFont(TICK_FONT);
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("Packets in system", this.combine(this.arrivalTime, this.departureTime), this.numPacketsInSystem);

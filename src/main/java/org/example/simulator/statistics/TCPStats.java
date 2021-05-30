@@ -133,16 +133,16 @@ public class TCPStats extends Stats {
             throw new IllegalStateException("the arrays must be of equal length");
 
         XYChart chart = new XYChartBuilder()
-                .width(chartWidth)
-                .height(chartHeight)
+                .width(CHART_WIDTH)
+                .height(CHART_HEIGHT)
                 .xAxisTitle("Time")
                 .yAxisTitle("CWND Size")
                 .title("Congestion Window Capacity")
                 .theme(theme)
                 .build();
-        chart.getStyler().setChartTitleFont(titleFont);
-        chart.getStyler().setAxisTitleFont(axisFont);
-        chart.getStyler().setAxisTickLabelsFont(tickFont);
+        chart.getStyler().setChartTitleFont(TITLE_FONT);
+        chart.getStyler().setAxisTitleFont(AXIS_FONT);
+        chart.getStyler().setAxisTickLabelsFont(TICK_FONT);
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setXAxisLabelRotation(45);
         chart.addSeries("CWND", congestionWindowTime, congestionWindowCapacities).setMarker(SeriesMarkers.NONE);
