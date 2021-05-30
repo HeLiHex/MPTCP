@@ -110,7 +110,7 @@ public class TCPStats extends Stats {
 
     private void setGoodput() {
         if (congestionWindowTime.isEmpty()) return;
-        this.goodput = (double) this.numberOfPacketsSent / (this.congestionWindowTime.get(this.congestionWindowTime.size() - 1) / (double) timescale);
+        this.goodput = (double) this.numberOfPacketsSent / (this.congestionWindowTime.get(this.congestionWindowTime.size() - 1) / (double) TIMESCALE);
     }
 
     private void setLossRate() {

@@ -29,7 +29,7 @@ public abstract class Stats {
     protected static final Font AXIS_FONT = new Font("myFont", 0, 25);
     protected static final Font TICK_FONT = new Font("myFont", 0, 15);
 
-    protected static final int timescale = 1000;
+    protected static final int TIMESCALE = 1000;
 
     // Arrival
     protected final ArrayList<Packet> arrivalPacket = new ArrayList<>();
@@ -72,7 +72,7 @@ public abstract class Stats {
     public void packetArrival(Packet packet) {
         this.arrivalPacket.add(packet);
         this.arrivalNum.add(this.arrivalNum.size());
-        this.arrivalTime.add((double) Util.seeTime() / timescale);
+        this.arrivalTime.add((double) Util.seeTime() / TIMESCALE);
 
         // number of packets in system
         this.addPacketsInSystem();
@@ -84,7 +84,7 @@ public abstract class Stats {
     public void packetDeparture(Packet packet) {
         this.departurePacket.add(packet);
         this.departureNum.add(this.arrivalNum.size());
-        this.departureTime.add((double) Util.seeTime() / timescale);
+        this.departureTime.add((double) Util.seeTime() / TIMESCALE);
 
         // number of packets in system
         this.removePacketsInSystem();
@@ -105,7 +105,7 @@ public abstract class Stats {
         double departureTime = this.departureTime.get(packetDepartureIndex);
         double timeInSystem = departureTime - arrivalTime;
 
-        double minTime = (double) 10 / (double) timescale;
+        double minTime = (double) 10 / (double) TIMESCALE;
         if (timeInSystem < minTime) timeInSystem = minTime;
         if (timeInSystem < 0) throw new IllegalStateException("packet cannot be in system a negative amount of time");
         this.timeInSystem.add(timeInSystem);
