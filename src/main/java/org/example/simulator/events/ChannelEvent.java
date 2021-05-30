@@ -44,15 +44,11 @@ public class ChannelEvent extends Event {
             return;
         }
 
-        //hack
-
         NetworkNode nextNode = this.channel.getDestination();
         if (nextNode instanceof TCP) {
-            System.out.println();
             var tcp = ((TCP) nextNode).getMainFlow();
             if (!tcp.inputBufferIsEmpty()) return;
             events.add(new RunTCPEvent(tcp));
-            return;
         }
 
 
