@@ -272,7 +272,6 @@ public abstract class Stats {
     protected void saveChart(XYChart chart, String chartName) {
         try {
             VectorGraphicsEncoder.saveVectorGraphic(chart, DIR + chartName + fileName(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
-            //BitmapEncoder.saveBitmap(chart, DIR + chartName + fileName(), BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
             Logger.getLogger("").log(Level.WARNING, "lol");
         }
