@@ -42,16 +42,10 @@ public class Router extends Routable {
     }
 
     @Override
-    public boolean enqueueInputBuffer(Packet packet) {
-        return super.enqueueInputBuffer(packet);
-    }
-
-    @Override
     public void run() {
         if (!this.inputBufferIsEmpty()) {
             var packet = this.dequeueInputBuffer();
             this.route(packet);
-            return;
         }
     }
 
