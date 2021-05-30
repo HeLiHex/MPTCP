@@ -82,7 +82,6 @@ public class Simulator {
 
         this.allReceived(client, this.numPacketsToSend);
 
-        eventHandler.printStatistics();
         TCPStats stat = client.getStats();
         System.out.println(stat);
         stat.createArrivalChart();
@@ -131,7 +130,6 @@ public class Simulator {
 
         this.allReceived(client, this.numPacketsToSend);
 
-        eventHandler.printStatistics();
         TCPStats stat = client.getStats();
         System.out.println(stat);
         stat.createArrivalChart();
@@ -197,7 +195,6 @@ public class Simulator {
 
         this.allReceived(client, this.numPacketsToSend);
 
-        eventHandler.printStatistics();
         TCPStats stat = client.getStats();
         System.out.println(stat);
         stat.createArrivalChart();
@@ -262,7 +259,6 @@ public class Simulator {
 
         this.allReceived(client, this.numPacketsToSend);
 
-        eventHandler.printStatistics();
         TCPStats stat = client.getStats();
         System.out.println(stat);
         stat.createArrivalChart();
@@ -354,7 +350,6 @@ public class Simulator {
         this.allReceived(client, this.numPacketsToSend);
 
         Assert.assertNull(server.receive());
-        eventHandler.printStatistics();
         this.getStats(server, client);
 
     }
@@ -419,7 +414,6 @@ public class Simulator {
         this.allReceived(client, this.numPacketsToSend);
 
         Assert.assertNull(server.receive());
-        eventHandler.printStatistics();
         this.getStats(server, client);
 
     }
@@ -536,7 +530,6 @@ public class Simulator {
         this.allReceived(client, this.numPacketsToSend);
 
         Assert.assertNull(server.receive());
-        eventHandler.printStatistics();
         this.getStats(server, client);
 
     }
@@ -653,7 +646,6 @@ public class Simulator {
         this.allReceived(client, this.numPacketsToSend);
 
         Assert.assertNull(server.receive());
-        eventHandler.printStatistics();
         this.getStats(server, client);
 
     }
@@ -747,7 +739,6 @@ public class Simulator {
         this.allReceived(client, this.numPacketsToSend);
 
         Assert.assertNull(server.receive());
-        eventHandler.printStatistics();
         this.getStats(server, client);
 
     }
@@ -841,7 +832,6 @@ public class Simulator {
         this.allReceived(client, this.numPacketsToSend);
 
         Assert.assertNull(server.receive());
-        eventHandler.printStatistics();
         this.getStats(server, client);
 
     }

@@ -558,7 +558,6 @@ public class ClassicTCPTest {
             Assert.assertEquals(received.getPayload(), msg);
         }
 
-        eventHandler.printStatistics();
     }
 
     @Test
@@ -617,11 +616,6 @@ public class ClassicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
-
-        eventHandler.printStatistics();
-
-        System.out.println(client.getStats().toString());
-        //client.getStats().createCWNDChart();
     }
 
 
@@ -674,9 +668,6 @@ public class ClassicTCPTest {
             Assert.assertNotNull("iteration: " + i, received);
             Assert.assertEquals(msg, received.getPayload());
         }
-
-        eventHandler.printStatistics();
-
     }
 
     @Test
@@ -833,8 +824,6 @@ public class ClassicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
-
-        eventHandler.printStatistics();
     }
 
 
@@ -879,8 +868,6 @@ public class ClassicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(received.getPayload(), msg);
         }
-
-        eventHandler.printStatistics();
     }
 
 
@@ -927,8 +914,6 @@ public class ClassicTCPTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
-
-        eventHandler.printStatistics();
     }
 
 }

@@ -3,7 +3,6 @@ package org.example.network;
 import org.example.data.Packet;
 import org.example.network.interfaces.NetworkNode;
 import org.example.protocol.MPTCP;
-import org.example.simulator.statistics.Statistics;
 import org.example.util.Util;
 
 import java.util.Queue;
@@ -85,7 +84,6 @@ public class Channel implements Comparable<Channel> {
 
         var packet = this.line.poll();
         if (lossy()) {
-            Statistics.packetLost();
             this.logger.log(Level.INFO, () -> packet.toString() + " lost due to noise");
             return false;
         }
@@ -93,7 +91,6 @@ public class Channel implements Comparable<Channel> {
         boolean sendSuccess = this.destination.enqueueInputBuffer(packet);
         if (!sendSuccess) {
             this.logger.log(Level.INFO, () -> packet.toString() + " was not delivered to " + this.destination);
-            Statistics.packetDropped();
             return false;
         }
         return true;

@@ -5,7 +5,6 @@ import org.example.data.PacketBuilder;
 import org.example.data.Payload;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
-import org.example.simulator.statistics.Statistics;
 import org.example.simulator.statistics.TCPStats;
 import org.example.util.BoundedQueue;
 import org.javatuples.Pair;
@@ -123,7 +122,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
 
     private void slowStart() {
         this.setBound(this.getWindowCapacity() + 1);
-        Statistics.trackCwnd(this.getWindowCapacity());
         this.stats.trackCwnd(this.getWindowCapacity());
     }
 
@@ -134,7 +132,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         if (allPacketsInOneWindowReceived) {
             this.numPacketsReceivedWithoutIncreasingWindow = 0;
             this.setBound(this.getWindowCapacity() + 1);
-            Statistics.trackCwnd(this.getWindowCapacity());
             this.stats.trackCwnd(this.getWindowCapacity());
             return;
         }
@@ -147,14 +144,10 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     }
 
     public void decrease(boolean timeout) {
-        Statistics.trackCwnd(this.getWindowCapacity());
         this.stats.trackCwnd(this.getWindowCapacity());
-
         this.ssthresh = this.findNewSSThresh();
         int newWindowSize = this.findNewWindowSize(timeout);
         this.setBound(newWindowSize);
-
-        Statistics.trackCwnd(this.getWindowCapacity());
         this.stats.trackCwnd(this.getWindowCapacity());
     }
 

@@ -333,8 +333,6 @@ public class MPTCPTest {
         }
         Assert.assertNull(server.receive());
 
-        eventHandler.printStatistics();
-
     }
 
     @Test
@@ -398,7 +396,6 @@ public class MPTCPTest {
         }
         Assert.assertNull(server.receive());
 
-        eventHandler.printStatistics();
     }
 
 

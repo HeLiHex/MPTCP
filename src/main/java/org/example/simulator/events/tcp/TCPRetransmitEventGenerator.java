@@ -6,7 +6,6 @@ import org.example.protocol.TCP;
 import org.example.simulator.events.Event;
 import org.example.simulator.events.EventGenerator;
 import org.example.simulator.events.RouteEvent;
-import org.example.simulator.statistics.Statistics;
 
 import java.util.Queue;
 import java.util.logging.Level;
@@ -31,7 +30,6 @@ public class TCPRetransmitEventGenerator extends EventGenerator {
         if (!this.tcp.isConnected()) return;
         if (this.tcp.canRetransmit(this.packet)) {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, () -> "Retransmit packet: " + this.packet);
-            Statistics.packetRetransmit();
             ((ClassicTCP) this.tcp).getStats().packetRetransmit();
             events.add(new RouteEvent(this.tcp, this.packet));
             events.add(new TCPRetransmitEventGenerator(this.packet, this.numAttempts + 1));

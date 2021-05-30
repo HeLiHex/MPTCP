@@ -10,7 +10,6 @@ import org.example.protocol.window.receiving.ReceivingWindow;
 import org.example.protocol.window.receiving.SelectiveRepeat;
 import org.example.protocol.window.sending.SendingWindow;
 import org.example.protocol.window.sending.SlidingWindow;
-import org.example.simulator.statistics.Statistics;
 import org.example.simulator.statistics.TCPStats;
 import org.example.util.Util;
 import org.javatuples.Pair;
@@ -197,11 +196,6 @@ public class ClassicTCP extends Routable implements TCP {
     }
 
     @Override
-    public long getRTT() {
-        return this.rtt;
-    }
-
-    @Override
     public long getRTO() {
         return 3 * this.rtt;
     }
@@ -226,15 +220,6 @@ public class ClassicTCP extends Routable implements TCP {
     @Override
     public long delay() {
         return 10;
-    }
-
-    @Override
-    public int getSendingWindowCapacity() {
-        try {
-            return this.getSendingWindow().getWindowCapacity();
-        } catch (IllegalAccessException e) {
-            return 0;
-        }
     }
 
     @Override
@@ -384,8 +369,6 @@ public class ClassicTCP extends Routable implements TCP {
             var packetToFastRetransmit = this.fastRetransmit();
             if (packetToFastRetransmit != null) {
                 this.route(packetToFastRetransmit);
-
-                Statistics.packetFastRetransmit();
                 this.tcpStats.packetFastRetransmit();
             }
             return true;
@@ -409,8 +392,6 @@ public class ClassicTCP extends Routable implements TCP {
         assert packetToSend != null;
 
         this.route(packetToSend);
-
-        Statistics.packetSent();
         this.tcpStats.packetSend();
 
         packetsSent.add(packetToSend);

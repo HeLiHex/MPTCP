@@ -7,7 +7,6 @@ import org.example.network.interfaces.Endpoint;
 import org.example.protocol.Connection;
 import org.example.protocol.window.Window;
 import org.example.protocol.window.sending.SendingWindow;
-import org.example.simulator.statistics.Statistics;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,7 +32,6 @@ public class SelectiveRepeat extends Window implements ReceivingWindow {
         if (this.received.contains(packet)) return;
         boolean added = this.received.add(packet);
         if (!added) throw new IllegalStateException("Packet was not added to the received queue");
-        Statistics.packetReceived();
     }
 
     @Override

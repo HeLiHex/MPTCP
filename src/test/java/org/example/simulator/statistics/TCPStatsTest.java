@@ -82,8 +82,6 @@ public class TCPStatsTest {
             Assert.assertNotNull(received);
             Assert.assertEquals(msg, received.getPayload());
         }
-
-        eventHandler.printStatistics();
         TCPStats stat = server.getStats();
         System.out.println(stat);
         stat.createArrivalChart();
@@ -154,8 +152,6 @@ public class TCPStatsTest {
             Assert.assertEquals("iteration " + i, received.getPayload(), msg);
         }
         Assert.assertNull(server.receive());
-
-        eventHandler.printStatistics();
 
         //receiver
         for (TCPStats stat : server.getTcpStats()) {
