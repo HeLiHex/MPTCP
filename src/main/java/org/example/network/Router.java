@@ -60,7 +60,6 @@ public class Router extends Routable {
             this.route(packet);
             return;
         }
-        Logger.getLogger(this.getClass().getSimpleName()).log(Level.INFO, "this router has an empty buffer");
     }
 
     public static class RouterBuilder {
