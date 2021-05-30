@@ -20,13 +20,13 @@ public class Channel implements Comparable<Channel> {
     private final NetworkNode destination;
     private final int cost;
     private final double loss;
-    private final int capacity = 1000;
+    private static final int CAPACITY = 1000;
     private boolean goodState;
 
 
     public Channel(NetworkNode source, NetworkNode destination, double loss, int cost) {
         this.logger = Logger.getLogger(getClass().getSimpleName());
-        this.line = new ArrayBlockingQueue<>(capacity);
+        this.line = new ArrayBlockingQueue<>(CAPACITY);
 
         this.source = source;
         this.destination = destination;
@@ -63,7 +63,6 @@ public class Channel implements Comparable<Channel> {
     public void channelPackage(Packet packet) {
         if (!this.line.offer(packet)) {
             throw new IllegalStateException("packet dropped in channel");
-            //this.logger.log(Level.INFO, () -> packet.toString() + " lost due to channel capacity");
         }
     }
 
