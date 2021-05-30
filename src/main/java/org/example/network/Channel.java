@@ -47,9 +47,7 @@ public class Channel implements Comparable<Channel> {
     }
 
     public long propagationDelay() {
-        long delay = 10 * (this.cost + 1L);
-        //System.out.println("channel delay: " + delay );
-        return delay;
+        return 10 * (this.cost + 1L);
     }
 
     private boolean lossy() {
