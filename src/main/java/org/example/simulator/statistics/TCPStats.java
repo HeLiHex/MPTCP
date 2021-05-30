@@ -13,11 +13,9 @@ import java.util.ArrayList;
 public class TCPStats extends Stats {
 
     private final String filename;
-    private final String dir;
     // CWND
     private final ArrayList<Integer> congestionWindowCapacities = new ArrayList<>();
     private final ArrayList<Double> congestionWindowTime = new ArrayList<>();
-    private long rtt;
     private int numberOfPacketsSent; //total number of packets sent (both normal and retransmissions)
     private int numberOfPacketsRetransmitted; //total number of packets retransmitted
     private int numberOfPacketsFastRetransmitted; // total number of packets dropped
@@ -29,7 +27,6 @@ public class TCPStats extends Stats {
     private double lossRate;
 
     public TCPStats(Address address) {
-        this.dir = "./charts/";
         this.filename = address.toString();
     }
 
@@ -42,10 +39,6 @@ public class TCPStats extends Stats {
     @Override
     protected String fileName() {
         return this.filename;
-    }
-
-    public void setRtt(long rtt) {
-        this.rtt = rtt;
     }
 
     public void packetSend() {
