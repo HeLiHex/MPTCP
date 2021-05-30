@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 public class Channel implements Comparable<Channel> {
 
     private static final double BAD_TO_GOOD_PROB = 0.2;
+    private static final int CAPACITY = 1000;
     private final Logger logger;
     private final Queue<Packet> line;
     private final NetworkNode source;
     private final NetworkNode destination;
     private final int cost;
     private final double loss;
-    private static final int CAPACITY = 1000;
     private boolean goodState;
 
 
