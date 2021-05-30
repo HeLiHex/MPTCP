@@ -225,7 +225,6 @@ public class ClassicTCP extends Routable implements TCP {
 
     @Override
     public long delay() {
-        //todo
         return 10;
     }
 
