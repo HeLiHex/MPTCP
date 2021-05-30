@@ -50,8 +50,7 @@ public class Router extends Routable {
     @Override
     public boolean enqueueInputBuffer(Packet packet) {
         this.stats.packetArrival(packet);
-        boolean success = super.enqueueInputBuffer(packet);
-        return success;
+        return super.enqueueInputBuffer(packet);
     }
 
     @Override
