@@ -292,14 +292,6 @@ public class ClassicTCP extends Routable implements TCP {
         return false;
     }
 
-    public boolean seriousLossDetected() {
-        try {
-            return this.getSendingWindow().isSeriousLossDetected();
-        } catch (IllegalAccessException e) {
-            //can't detect loss without SendingWindow
-            return false;
-        }
-    }
 
     public boolean canRetransmit(Packet packet) {
         try {

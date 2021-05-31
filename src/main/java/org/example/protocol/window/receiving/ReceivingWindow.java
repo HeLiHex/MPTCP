@@ -37,7 +37,7 @@ public interface ReceivingWindow extends IWindow, BoundedQueue<Packet> {
      * A method that calculates the receiving window packet index
      * of the given packet
      *
-     * @param packet     to calculate packet index too
+     * @param packet     to calculate packet index of
      * @param connection to use in the calculation
      * @return the packet index of the given packet
      */

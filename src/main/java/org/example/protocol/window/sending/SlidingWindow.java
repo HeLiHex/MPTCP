@@ -162,11 +162,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     }
 
     @Override
-    public boolean isSeriousLossDetected() {
-        return this.seriousLossDetected;
-    }
-
-    @Override
     public int sendingPacketIndex(Packet packet) {
         int packetSeqNum = packet.getSequenceNumber();
         int connSeqNum = this.connection.getNextSequenceNumber();
