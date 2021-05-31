@@ -14,6 +14,7 @@ public interface IWindow {
 
     /**
      * A method that returns the window capacity
+     *
      * @return the window capacity
      */
     int getWindowCapacity();

@@ -225,10 +225,6 @@ public class MPTCP implements TCP {
         throw new IllegalStateException(DEPRECATED_STRING);
     }
 
-    @Override
-    public long afterConnectSendDelay() {
-        throw new IllegalStateException(DEPRECATED_STRING);
-    }
 
     @Override
     public boolean handleIncoming() {

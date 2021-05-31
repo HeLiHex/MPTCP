@@ -167,17 +167,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
     }
 
     @Override
-    public int packetsInTransmission() {
-        return this.size();
-    }
-
-    @Override
-    public boolean inSendingWindow(Packet packet) {
-        int packetIndex = sendingPacketIndex(packet);
-        return inWindow(packetIndex);
-    }
-
-    @Override
     public int sendingPacketIndex(Packet packet) {
         int packetSeqNum = packet.getSequenceNumber();
         int connSeqNum = this.connection.getNextSequenceNumber();
@@ -189,11 +178,6 @@ public class SlidingWindow extends Window implements SendingWindow, BoundedQueue
         return connection;
     }
 
-
-    @Override
-    public int queueSize() {
-        return this.payloadsToSend.size();
-    }
 
     @Override
     public boolean isQueueEmpty() {

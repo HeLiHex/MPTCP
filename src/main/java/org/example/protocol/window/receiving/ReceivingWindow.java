@@ -28,6 +28,7 @@ public interface ReceivingWindow extends IWindow, BoundedQueue<Packet> {
 
     /**
      * A method that checks if a ACK should be sent or not
+     *
      * @return
      */
     boolean shouldAck();
@@ -36,7 +37,7 @@ public interface ReceivingWindow extends IWindow, BoundedQueue<Packet> {
      * A method that calculates the receiving window packet index
      * of the given packet
      *
-     * @param packet to calculate packet index too
+     * @param packet     to calculate packet index too
      * @param connection to use in the calculation
      * @return the packet index of the given packet
      */
@@ -45,7 +46,7 @@ public interface ReceivingWindow extends IWindow, BoundedQueue<Packet> {
     /**
      * A method that checks if a packet is inside the receiving window
      *
-     * @param packet packet to check
+     * @param packet     packet to check
      * @param connection to use in calculation
      * @return true if the packet is inside the receiving window
      */
