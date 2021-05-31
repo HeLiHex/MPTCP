@@ -14,7 +14,7 @@ public interface BoundedQueue<T> extends Iterable<T>, Collection<T>, BlockingQue
     boolean isFull();
 
     /**
-     * A method that reuirns the bound of the BoundedQueue
+     * A method that returns the bound of the BoundedQueue
      *
      * @return the bound
      */
