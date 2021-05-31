@@ -54,22 +54,61 @@ public interface TCP extends Endpoint {
      */
     boolean isConnected();
 
+    /**
+     * A method that returns the available channel to route packets through
+     *
+     * @return an available Channel
+     */
     Channel getChannel();
 
+    /**
+     * A method that returns the retransmission timeout value
+     *
+     * @return the RTO for this connection
+     */
     long getRTO();
 
-    long afterConnectSendDelay();
-
+    /**
+     * A method to handle the incoming packets
+     *
+     * @return returns true if a packet should be ACKed
+     */
     boolean handleIncoming();
 
+    /**
+     * A method to handle the sending process of TCP
+     *
+     * @return a List of the sent packets
+     */
     List<Packet> trySend();
 
+    /**
+     * A method that checks if a packet should be retransmitted or not
+     *
+     * @param packet that should be checked for possible retransmission
+     * @return true if the packet should be retransmitted
+     */
     boolean canRetransmit(Packet packet);
 
+    /**
+     * A method that returns a packet that should be fast retransmitted
+     *
+     * @return Packet if there is a packet to fast-retransmit, else null
+     */
     Packet fastRetransmit();
 
+    /**
+     * A method that returns the main flow or controller of this TCP
+     *
+     * @return the main TCP flow
+     */
     TCP getMainFlow();
 
+    /**
+     * A method that retuns the number of subflows available
+     *
+     * @return the number of subflows
+     */
     int getNumberOfFlows();
 
 

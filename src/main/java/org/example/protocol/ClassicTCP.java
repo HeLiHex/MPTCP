@@ -36,7 +36,6 @@ public class ClassicTCP extends Routable implements TCP {
     private long rttStartTimer = 0;
     private boolean timerStarted = false;
     private boolean rttSet = false;
-    private long afterConnectSendDelay = 100000;
     private SendingWindow sendingWindow;
 
     private ClassicTCP(int thisReceivingWindowCapacity,
@@ -198,12 +197,6 @@ public class ClassicTCP extends Routable implements TCP {
         return 3 * this.rtt;
     }
 
-    @Override
-    public long afterConnectSendDelay() {
-        long delay = this.afterConnectSendDelay;
-        this.afterConnectSendDelay = 0;
-        return delay;
-    }
 
     @Override
     public Packet fastRetransmit() {

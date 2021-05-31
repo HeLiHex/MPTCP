@@ -24,13 +24,7 @@ public interface SendingWindow extends IWindow, BoundedQueue<Packet> {
 
     boolean isSeriousLossDetected();
 
-    int packetsInTransmission();
-
     int sendingPacketIndex(Packet packet);
-
-    boolean inSendingWindow(Packet packet);
-
-    int queueSize();
 
     Connection getConnection();
 

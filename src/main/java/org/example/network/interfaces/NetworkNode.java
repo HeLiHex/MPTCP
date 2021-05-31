@@ -22,6 +22,11 @@ public interface NetworkNode {
     void route(Packet packet);
 
 
+    /**
+     * A method that returns the NetworkNode's associated delay
+     *
+     * @return delay
+     */
     long delay();
 
 
@@ -88,8 +93,16 @@ public interface NetworkNode {
      */
     int inputBufferSize();
 
+    /**
+     * A method that returns a list of all channels used during an event
+     *
+     * @return A List with Channel objects
+     */
     List<Channel> getChannelsUsed();
 
+    /**
+     * A method to run the NetworkNode
+     */
     void run();
 
 

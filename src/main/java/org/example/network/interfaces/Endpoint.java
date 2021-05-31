@@ -10,6 +10,11 @@ public interface Endpoint extends NetworkNode {
     boolean outputBufferIsEmpty();
 
 
+    /**
+     * A method that checks is the endpoint is connected
+     *
+     * @return True if connected
+     */
     boolean isConnected();
 
 
